@@ -65,6 +65,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GameDataPath.cs" />
     <Compile Include="IniConf.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>
@@ -135,6 +136,10 @@
     <ProjectReference Include="..\Helpers\LZO2Wrapper\LZO2Helper.csproj">
       <Project>{5e10735c-e0be-4003-a085-4d51434682f4}</Project>
       <Name>LZO2Helper</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Helpers\SevenZip\SevenZipHelper.csproj">
+      <Project>{a3a102e9-e5aa-4bed-a86b-757f668ebfe5}</Project>
+      <Name>SevenZipHelper</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
