@@ -75,7 +75,9 @@ namespace MEDataExplorer
                     if (flag == 0x02)
                         MessageBox.Show("Warning: Large Aware Address flag is not enabled in MassEffect.exe file.");
                     else if (flag == 0x22)
+                    {
                         ; // LAA flag enabled
+                    }
                     else
                         throw new Exception("Not expected flags in exe file");
                 }
