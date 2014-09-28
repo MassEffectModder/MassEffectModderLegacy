@@ -73,7 +73,7 @@ namespace MEDataExplorer
                     fs.Seek(0x146, SeekOrigin.Begin); // offset to byte with LAA flag
                     var flag = fs.ReadByte();
                     if (flag == 0x02)
-                        MessageBox.Show("Warning: Large Aware Address flag is not enabled on MassEffect.exe file.");
+                        MessageBox.Show("Warning: Large Aware Address flag is not enabled in MassEffect.exe file.");
                     else if (flag == 0x22)
                         ; // LAA flag enabled
                     else
