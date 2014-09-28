@@ -34,12 +34,12 @@ namespace MEDataExplorer
 {
     public partial class MainWindow : Form
     {
-        public IniConf _configIni;
+        public ConfIni _configIni;
 
         public MainWindow()
         {
             InitializeComponent();
-            _configIni = new IniConf();
+            _configIni = new ConfIni();
         }
 
         private void massEffect1ToolStripMenuItemCommon(MeType type)

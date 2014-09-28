@@ -36,7 +36,7 @@ namespace MEDataExplorer
     {
         MeType _gameSelected;
         MainWindow _mainWindow;
-        IniConf _configIni;
+        ConfIni _configIni;
         GameData _gameData;
 
         public TexExplorer(MainWindow main)
@@ -52,9 +52,18 @@ namespace MEDataExplorer
             _gameData = new GameData(gameType, _configIni);
             if (_gameSelected == MeType.ME1_TYPE)
             {
-                var path = _gameData.GamerSettingsIniPath;
+                var path = _gameData.EngineConfigIniPath;
                 var exist = File.Exists(path);
-                // TODO: check/update for texture max size
+                if (!exist)
+                    return;
+                ConfIni engineConf = new ConfIni(path);
+                var str = engineConf.Read("TEXTUREGROUP_Character_Diff", "TextureLODSettings");
+                if (str != "(MinLODSize=512,MaxLODSize=4096,LODBias=0)")
+                {
+                    engineConf.Write("TEXTUREGROUP_Character_Diff", "(MinLODSize=512,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
+                    engineConf.Write("TEXTUREGROUP_Character_Norm", "(MinLODSize=512,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
+                    engineConf.Write("TEXTUREGROUP_Character_Spec", "(MinLODSize=256,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
+                }
             }
         }
 

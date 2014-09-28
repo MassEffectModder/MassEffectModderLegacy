@@ -28,7 +28,7 @@ using System.Windows.Forms;
 
 namespace MEDataExplorer
 {
-    public class IniConf
+    public class ConfIni
     {
         string _iniPath;
 
@@ -40,7 +40,7 @@ namespace MEDataExplorer
         private static extern Boolean WritePrivateProfileString(string section, string key,
                 string value, string filename);
 
-        public IniConf(string iniPath = null)
+        public ConfIni(string iniPath = null)
         {
             if (iniPath != null)
                 _iniPath = iniPath;

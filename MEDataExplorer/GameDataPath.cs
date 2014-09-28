@@ -30,11 +30,11 @@ namespace MEDataExplorer
     {
         private string _path = null;
         private MeType _gameType;
-        private IniConf _configIni;
+        private ConfIni _configIni;
 
         public bool DLCDataCacheDone = false;
 
-        public GameData(MeType type, IniConf configIni)
+        public GameData(MeType type, ConfIni configIni)
         {
             _gameType = type;
             _configIni = configIni;
@@ -173,11 +173,14 @@ namespace MEDataExplorer
             }
         }
 
-        public string GamerSettingsIniPath
+        public string EngineConfigIniPath
         {
             get
             {
-                return GameUserPath + @"\BIOGame\Config\GamerSettings.ini";
+                if (_gameType == MeType.ME1_TYPE)
+                    return GameUserPath + @"\BIOGame\Config\BIOEngine.ini";
+                else
+                    return null;
             }
         }
     }
