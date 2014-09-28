@@ -23,7 +23,7 @@ namespace MEDataExplorer
 {
     public enum MeType
     {
-        ME1_TYPE,
+        ME1_TYPE = 1,
         ME2_TYPE,
         ME3_TYPE
     }

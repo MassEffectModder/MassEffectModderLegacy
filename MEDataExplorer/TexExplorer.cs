@@ -37,6 +37,7 @@ namespace MEDataExplorer
         MeType _gameSelected;
         MainWindow _mainWindow;
         IniConf _configIni;
+        GameData _gameData;
 
         public TexExplorer(MainWindow main)
         {
@@ -48,6 +49,13 @@ namespace MEDataExplorer
         {
             _gameSelected = gameType;
             _configIni = _mainWindow._configIni;
+            _gameData = new GameData(gameType, _configIni);
+            if (_gameSelected == MeType.ME1_TYPE)
+            {
+                var path = _gameData.GamerSettingsIniPath;
+                var exist = File.Exists(path);
+                // TODO: check/update for texture max size
+            }
         }
 
         private void TexExplorer_FormClosed(object sender, FormClosedEventArgs e)
