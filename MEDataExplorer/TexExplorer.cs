@@ -64,6 +64,22 @@ namespace MEDataExplorer
                     engineConf.Write("TEXTUREGROUP_Character_Norm", "(MinLODSize=512,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
                     engineConf.Write("TEXTUREGROUP_Character_Spec", "(MinLODSize=256,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
                 }
+
+                if (!File.Exists(_gameData.GameExePath))
+                    throw new FileNotFoundException("Game exe not found: " + _gameData.GameExePath);
+
+                using (FileStream fs = new FileStream(_gameData.GameExePath, FileMode.Open, FileAccess.Read))
+                {
+                    fs.Seek(0x146, SeekOrigin.Begin); // offset to byte with LAA flag
+                    var flag = fs.ReadByte();
+                    if (flag == 0x02)
+                        MessageBox.Show("Warning: Large Aware Address flag is not enabled on MassEffect.exe file.");
+                    else if (flag == 0x22)
+                        ; // LAA flag enabled
+                    else
+                        throw new Exception("Not expected flags in exe file");
+                }
+
             }
         }
 

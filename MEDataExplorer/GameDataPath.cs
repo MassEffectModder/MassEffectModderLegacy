@@ -158,6 +158,21 @@ namespace MEDataExplorer
             }
         }
 
+        public string GameExePath
+        {
+            get
+            {
+                if (_gameType == MeType.ME1_TYPE)
+                    return _path + @"\Binaries\MassEffect.exe";
+                else if (_gameType == MeType.ME2_TYPE)
+                    return _path + @"\Binaries\MassEffect2.exe";
+                else if (_gameType == MeType.ME3_TYPE)
+                    return _path + @"\Binaries\Win32\MassEffect3.exe";
+                else
+                    return null;
+            }
+        }
+
         public string GameUserPath
         {
             get
