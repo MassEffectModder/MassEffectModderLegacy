@@ -1,1 +1,8 @@
 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+
+
+The main source of information about the game data
+is ME3Explorer source code and wiki pages:
+
+http://sourceforge.net/p/me3explorer/code/HEAD/tree/
+http://me3explorer.wikispaces.com
