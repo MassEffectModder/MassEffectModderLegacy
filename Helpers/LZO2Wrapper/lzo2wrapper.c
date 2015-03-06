@@ -25,7 +25,7 @@
 #include "lzo_asm.h"
 
 
-#define USE_ASM
+//#define USE_ASM
 
 BOOL WINAPI DllMain(HINSTANCE hin, DWORD reason, LPVOID lpvReserved) { return TRUE; }
 
