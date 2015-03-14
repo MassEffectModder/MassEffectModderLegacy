@@ -67,7 +67,6 @@ namespace MEDataExplorer
             }
 
             OpenFileDialog selectExe = new OpenFileDialog();
-            selectExe.Filter = key + " exe file|MassEffect.exe";
             selectExe.Title = "Please select the Mass Effect " + (int)_gameType + " executable file";
             switch (_gameType)
             {

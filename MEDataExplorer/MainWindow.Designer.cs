@@ -55,7 +55,9 @@ namespace MEDataExplorer
             this.massEffect2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.massEffect3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuGame.SuspendLayout();
+            this.statusStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuGame
@@ -100,10 +102,17 @@ namespace MEDataExplorer
             // 
             // statusStrip
             // 
+            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel});
             this.statusStrip.Location = new System.Drawing.Point(0, 271);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Size = new System.Drawing.Size(796, 22);
             this.statusStrip.TabIndex = 1;
+            // 
+            // toolStripStatusLabel
+            // 
+            this.toolStripStatusLabel.Name = "toolStripStatusLabel";
+            this.toolStripStatusLabel.Size = new System.Drawing.Size(0, 17);
             // 
             // MainWindow
             // 
@@ -118,6 +127,8 @@ namespace MEDataExplorer
             this.Text = "MEDataExplorer";
             this.menuGame.ResumeLayout(false);
             this.menuGame.PerformLayout();
+            this.statusStrip.ResumeLayout(false);
+            this.statusStrip.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -131,6 +142,7 @@ namespace MEDataExplorer
         private System.Windows.Forms.ToolStripMenuItem massEffect1ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem massEffect2ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem massEffect3ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel;
     }
 }
 

@@ -72,5 +72,10 @@ namespace MEDataExplorer
         {
             toolStripMenuGame.Enabled = enable;
         }
+
+        public void updateStatusLabel(string text)
+        {
+            toolStripStatusLabel.Text = text;
+        }
     }
 }
