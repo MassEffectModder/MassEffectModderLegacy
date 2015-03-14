@@ -37,11 +37,7 @@ BOOL WINAPI DllMain(HINSTANCE hin, DWORD reason, LPVOID lpvReserved) { return TR
 
 static HEAP_ALLOC(wrkmem, LZO1X_999_MEM_COMPRESS);
 
-#if !_WIN64
-LZO_EXPORT int LZODecompress32(unsigned char *src, unsigned int src_len, unsigned char *dst, unsigned int *dst_len)
-#else
-LZO_EXPORT int LZODecompress64(unsigned char *src, unsigned int src_len, unsigned char *dst, unsigned int *dst_len)
-#endif
+LZO_EXPORT int LZODecompress(unsigned char *src, unsigned int src_len, unsigned char *dst, unsigned int *dst_len)
 {
 	int status;
 
@@ -58,11 +54,7 @@ LZO_EXPORT int LZODecompress64(unsigned char *src, unsigned int src_len, unsigne
 	return status;
 }
 
-#if !_WIN64
-LZO_EXPORT int LZOCompress32(unsigned char *src, unsigned int src_len, unsigned char *dst, unsigned int *dst_len)
-#else
-LZO_EXPORT int LZOCompress64(unsigned char *src, unsigned int src_len, unsigned char *dst, unsigned int *dst_len)
-#endif
+LZO_EXPORT int LZOCompress(unsigned char *src, unsigned int src_len, unsigned char *dst, unsigned int *dst_len)
 {
 	int status;
 
