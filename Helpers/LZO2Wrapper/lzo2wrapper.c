@@ -24,8 +24,9 @@
 #include "lzo1x.h"
 #include "lzo_asm.h"
 
-
-//#define USE_ASM
+#if !_WIN64
+#define USE_ASM
+#endif
 
 BOOL WINAPI DllMain(HINSTANCE hin, DWORD reason, LPVOID lpvReserved) { return TRUE; }
 
@@ -36,7 +37,11 @@ BOOL WINAPI DllMain(HINSTANCE hin, DWORD reason, LPVOID lpvReserved) { return TR
 
 static HEAP_ALLOC(wrkmem, LZO1X_999_MEM_COMPRESS);
 
-LZO_EXPORT int LZODecompress(unsigned char *src, unsigned int src_len, unsigned char *dst, unsigned int *dst_len)
+#if !_WIN64
+LZO_EXPORT int LZODecompress32(unsigned char *src, unsigned int src_len, unsigned char *dst, unsigned int *dst_len)
+#else
+LZO_EXPORT int LZODecompress64(unsigned char *src, unsigned int src_len, unsigned char *dst, unsigned int *dst_len)
+#endif
 {
 	int status;
 
@@ -53,7 +58,11 @@ LZO_EXPORT int LZODecompress(unsigned char *src, unsigned int src_len, unsigned 
 	return status;
 }
 
-LZO_EXPORT int LZOCompress(unsigned char *src, unsigned int src_len, unsigned char *dst, unsigned int *dst_len)
+#if !_WIN64
+LZO_EXPORT int LZOCompress32(unsigned char *src, unsigned int src_len, unsigned char *dst, unsigned int *dst_len)
+#else
+LZO_EXPORT int LZOCompress64(unsigned char *src, unsigned int src_len, unsigned char *dst, unsigned int *dst_len)
+#endif
 {
 	int status;
 
