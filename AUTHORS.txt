@@ -1,8 +1,10 @@
 Pawel Kolodziejski <aquadran at users.sourceforge.net>
 
 
-The main source of information about the game data
-is ME3Explorer source code and wiki pages:
+Inspired by ME3Explorer: Explorer for modding Mass Effect 1-3.
+Created by amarok86, kfreon, saltisgood, warrantyvoider and others.
+A lot of information about Mass Effect 1-3 game data is
+source code of ME3Explorer and wiki pages.
 
 http://sourceforge.net/p/me3explorer/code/HEAD/tree/
-http://me3explorer.wikispaces.com
+http://me3explorer.wikia.com/wiki/ME3Explorer_Wiki

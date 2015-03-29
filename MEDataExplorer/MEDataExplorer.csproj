@@ -11,6 +11,7 @@
     <AssemblyName>MEDataExplorer</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -23,7 +24,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -185,9 +185,9 @@
       <Project>{5e10735c-e0be-4003-a085-4d51434682f4}</Project>
       <Name>LZO2Helper</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Helpers\SevenZip\SevenZipHelper.csproj">
-      <Project>{a3a102e9-e5aa-4bed-a86b-757f668ebfe5}</Project>
-      <Name>SevenZipHelper</Name>
+    <ProjectReference Include="..\Helpers\ZlibWrapper\ZlibHelper.csproj">
+      <Project>{7c8af7ae-d0d9-4355-8d1f-8420c133db31}</Project>
+      <Name>ZlibHelper</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

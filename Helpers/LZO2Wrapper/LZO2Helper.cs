@@ -1,7 +1,7 @@
 /*
  * C# LZO2 Helper for wrapper
  *
- * Copyright (C) 2014 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2014-2015 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -33,11 +33,11 @@ namespace LZO2Helper
         private static extern Int32 LZOCompress([In] byte[] srcBuf, uint srcLen, [Out] byte[] dstBuf, ref uint dstLen);
 
 
-        public unsafe static uint Decompress(byte[] src, byte[] dst)
+        public unsafe static uint Decompress(byte[] src, uint srcLen, byte[] dst)
         {
             uint dstLen = 0;
 
-            int status = LZODecompress(src, (uint)src.Length, dst, ref dstLen);
+            int status = LZODecompress(src, srcLen, dst, ref dstLen);
 
             return dstLen;
         }

@@ -1,7 +1,7 @@
 /*
  * LZO DLL Wrapper
  *
- * Copyright (C) 2014 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2014-2015 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -39,30 +39,34 @@ static HEAP_ALLOC(wrkmem, LZO1X_999_MEM_COMPRESS);
 
 LZO_EXPORT int LZODecompress(unsigned char *src, unsigned int src_len, unsigned char *dst, unsigned int *dst_len)
 {
-	int status;
+	lzo_uint len;
 
-	status = lzo_init();
+	int status = lzo_init();
 	if (status != LZO_E_OK)
 		return status;
 
 #ifdef USE_ASM
-	status = lzo1x_decompress_asm(src, src_len, dst, (lzo_uint *)dst_len, NULL);
+	status = lzo1x_decompress_asm(src, src_len, dst, &len, NULL);
 #else
-	status = lzo1x_decompress(src, src_len, dst, (lzo_uint *)dst_len, NULL);
+	status = lzo1x_decompress(src, src_len, dst, &len, NULL);
 #endif
+	if (status == LZO_E_OK)
+		*dst_len = (unsigned int)len;
 
 	return status;
 }
 
 LZO_EXPORT int LZOCompress(unsigned char *src, unsigned int src_len, unsigned char *dst, unsigned int *dst_len)
 {
-	int status;
+	lzo_uint len;
 
-	status = lzo_init();
+	int status = lzo_init();
 	if (status != LZO_E_OK)
 		return status;
 
-	status = lzo1x_999_compress(src, src_len, dst, (lzo_uint *)dst_len, wrkmem);
+	status = lzo1x_999_compress(src, src_len, dst, &len, wrkmem);
+	if (status == LZO_E_OK)
+		*dst_len = (unsigned int)len;
 
 	return status;
 }
