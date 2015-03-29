@@ -112,9 +112,9 @@ namespace MEDataExplorer
                     {
                         case MeType.ME1_TYPE:
                         case MeType.ME2_TYPE:
-                            return _path + @"BioGame\CookedPC\";
+                            return _path + @"\BioGame\CookedPC\";
                         case MeType.ME3_TYPE:
-                            return _path + @"BioGame\CookedPCConsole\";
+                            return _path + @"\BioGame\CookedPCConsole\";
                         default:
                             return null;
                     }
@@ -133,10 +133,10 @@ namespace MEDataExplorer
                     switch (_gameType)
                     {
                         case MeType.ME1_TYPE:
-                            return _path + @"DLC\";
+                            return _path + @"\DLC\";
                         case MeType.ME2_TYPE:
                         case MeType.ME3_TYPE:
-                            return _path + @"BioGame\DLC\";
+                            return _path + @"\BioGame\DLC\";
                         default:
                             return null;
                     }
@@ -151,7 +151,7 @@ namespace MEDataExplorer
             get
             {
                 if (_gameType == MeType.ME3_TYPE)
-                    return _path + @"BioGame\DLCCache\";
+                    return _path + @"\BioGame\DLCCache\";
                 else
                     return null;
             }
