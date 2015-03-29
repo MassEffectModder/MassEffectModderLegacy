@@ -1,7 +1,7 @@
 ﻿/*
- * SevenZip Helper
+ * C# Zlib Helper for wrapper
  *
- * Copyright (C) 2014 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2015 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,12 +26,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SevenZipHelper")]
+[assembly: AssemblyTitle("ZlibHelper")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SevenZipHelper")]
-[assembly: AssemblyCopyright("Copyright © 2014")]
+[assembly: AssemblyProduct("ZlibHelper")]
+[assembly: AssemblyCopyright("Copyright © 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -41,7 +41,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("0e83d9c2-2112-4e95-936d-5e0f30cd6e7f")]
+[assembly: Guid("64dfa6dd-c633-4516-b3cb-247e2aed2755")]
 
 // Version information for an assembly consists of the following four values:
 //

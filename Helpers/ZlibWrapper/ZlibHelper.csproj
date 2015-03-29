@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A3A102E9-E5AA-4BED-A86B-757F668EBFE5}</ProjectGuid>
+    <ProjectGuid>{7C8AF7AE-D0D9-4355-8D1F-8420C133DB31}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SevenZipHelper</RootNamespace>
-    <AssemblyName>SevenZipHelper</AssemblyName>
+    <RootNamespace>ZlibHelper</RootNamespace>
+    <AssemblyName>ZlibHelper</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -28,11 +29,13 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x64\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -41,6 +44,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
@@ -51,14 +55,17 @@
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x86\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <GenerateSerializationAssemblies>On</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -75,25 +82,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="7zip\Common\CommandLineParser.cs" />
-    <Compile Include="7zip\Common\CRC.cs" />
-    <Compile Include="7zip\Common\InBuffer.cs" />
-    <Compile Include="7zip\Common\OutBuffer.cs" />
-    <Compile Include="7zip\Compress\LZMA\LzmaBase.cs" />
-    <Compile Include="7zip\Compress\LZMA\LzmaDecoder.cs" />
-    <Compile Include="7zip\Compress\LZMA\LzmaEncoder.cs" />
-    <Compile Include="7zip\Compress\LZ\IMatchFinder.cs" />
-    <Compile Include="7zip\Compress\LZ\LzBinTree.cs" />
-    <Compile Include="7zip\Compress\LZ\LzInWindow.cs" />
-    <Compile Include="7zip\Compress\LZ\LzOutWindow.cs" />
-    <Compile Include="7zip\Compress\RangeCoder\RangeCoder.cs" />
-    <Compile Include="7zip\Compress\RangeCoder\RangeCoderBit.cs" />
-    <Compile Include="7zip\Compress\RangeCoder\RangeCoderBitTree.cs" />
-    <Compile Include="7zip\ICoder.cs" />
-    <Compile Include="SevenZipHelper.cs" />
+    <Compile Include="ZlibHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>if exist $(SolutionDir)\MEDataExplorer\bin\x86\Debug\ copy $(ProjectDir)\zlibwrapper32.dll $(SolutionDir)\MEDataExplorer\bin\x86\Debug\zlibwrapper.dll
+if exist $(SolutionDir)\MEDataExplorer\bin\x64\Debug\ copy $(ProjectDir)\zlibwrapper64.dll $(SolutionDir)\MEDataExplorer\bin\x64\Debug\zlibwrapper.dll</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
