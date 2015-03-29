@@ -192,7 +192,7 @@ namespace MEDataExplorer
             get
             {
                 if (_gameType == MeType.ME1_TYPE)
-                    return GameUserPath + @"\BIOGame\Config\BIOEngine.ini";
+                    return GameUserPath + @"\Config\BIOEngine.ini";
                 else
                     return null;
             }
