@@ -87,8 +87,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if exist $(SolutionDir)\MEDataExplorer\bin\x86\Debug\ copy $(ProjectDir)\zlibwrapper32.dll $(SolutionDir)\MEDataExplorer\bin\x86\Debug\zlibwrapper.dll
-if exist $(SolutionDir)\MEDataExplorer\bin\x64\Debug\ copy $(ProjectDir)\zlibwrapper64.dll $(SolutionDir)\MEDataExplorer\bin\x64\Debug\zlibwrapper.dll</PostBuildEvent>
+    <PostBuildEvent>if exist $(SolutionDir)\MEDataExplorer\bin\x86\Debug\ copy $(ProjectDir)\zlibwrapper.dll $(SolutionDir)\MEDataExplorer\bin\x86\Debug\zlibwrapper.dll
+</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
