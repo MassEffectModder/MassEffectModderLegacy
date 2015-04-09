@@ -1,7 +1,7 @@
 ﻿/*
  * MEDataExplorer
  *
- * Copyright (C) 2014 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2014-2015 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -38,6 +38,7 @@ namespace MEDataExplorer
         MainWindow _mainWindow;
         ConfIni _configIni;
         GameData _gameData;
+        List<string> _packageFiles;
 
         public TexExplorer(MainWindow main)
         {
@@ -50,6 +51,7 @@ namespace MEDataExplorer
             _gameSelected = gameType;
             _configIni = _mainWindow._configIni;
             _gameData = new GameData(gameType, _configIni);
+            _mainWindow.updateStatusLabel("");
             if (_gameSelected == MeType.ME1_TYPE)
             {
                 var path = _gameData.EngineConfigIniPath;
@@ -82,7 +84,44 @@ namespace MEDataExplorer
                         throw new Exception("Not expected flags in exe file");
                 }
 
+                _packageFiles = Directory.GetFiles(_gameData.MainData, "*.*",
+                    SearchOption.AllDirectories).Where(s => s.EndsWith(".upk",
+                        StringComparison.OrdinalIgnoreCase) ||
+                        s.EndsWith(".u", StringComparison.OrdinalIgnoreCase) ||
+                        s.EndsWith(".sfm", StringComparison.OrdinalIgnoreCase)).ToList();
+                _packageFiles.AddRange(Directory.GetFiles(_gameData.DLCData, "*.*",
+                    SearchOption.AllDirectories).Where(s => s.EndsWith(".upk",
+                        StringComparison.OrdinalIgnoreCase) ||
+                        s.EndsWith(".u", StringComparison.OrdinalIgnoreCase) ||
+                        s.EndsWith(".sfm", StringComparison.OrdinalIgnoreCase)));
+                _packageFiles.RemoveAll(s => s.Contains("RefShaderCache-PC-D3D-SM3.upk"));
             }
+            else if (_gameSelected == MeType.ME2_TYPE)
+            {
+                _packageFiles = Directory.GetFiles(_gameData.MainData, "*.pcc", SearchOption.AllDirectories).ToList();
+                _packageFiles.AddRange(Directory.GetFiles(_gameData.DLCData, "*.pcc", SearchOption.AllDirectories));
+            }
+            else if (_gameSelected == MeType.ME3_TYPE)
+            {
+                _packageFiles = Directory.GetFiles(_gameData.MainData, "*.pcc", SearchOption.AllDirectories).ToList();
+                if (Directory.Exists(_gameData.DLCDataCache))
+                    _packageFiles.AddRange(Directory.GetFiles(_gameData.DLCDataCache, "*.pcc", SearchOption.AllDirectories));
+                _packageFiles.RemoveAll(s => s.Contains("GuidCache.pcc"));
+            }
+
+            for (int i = 0; i < _packageFiles.Count; i++)
+            {
+                _mainWindow.updateStatusLabel("File " + (i + 1) + " of " + _packageFiles.Count);
+                Application.DoEvents();
+                MatchTextures(_packageFiles[i]);
+            }
+            _mainWindow.updateStatusLabel("Done");
+        }
+
+        void MatchTextures(string packageFileName)
+        {
+            var package = new Package(_gameSelected, packageFileName);
+            package.SaveToFile();
         }
 
         private void TexExplorer_FormClosed(object sender, FormClosedEventArgs e)
