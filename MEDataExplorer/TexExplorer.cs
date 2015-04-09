@@ -37,7 +37,7 @@ namespace MEDataExplorer
         MeType _gameSelected;
         MainWindow _mainWindow;
         ConfIni _configIni;
-        GameData _gameData;
+        public static GameData gameData;
         List<string> _packageFiles;
 
         public TexExplorer(MainWindow main)
@@ -50,11 +50,11 @@ namespace MEDataExplorer
         {
             _gameSelected = gameType;
             _configIni = _mainWindow._configIni;
-            _gameData = new GameData(gameType, _configIni);
+            gameData = new GameData(gameType, _configIni);
             _mainWindow.updateStatusLabel("");
             if (_gameSelected == MeType.ME1_TYPE)
             {
-                var path = _gameData.EngineConfigIniPath;
+                var path = gameData.EngineConfigIniPath;
                 var exist = File.Exists(path);
                 if (!exist)
                     return;
@@ -67,10 +67,10 @@ namespace MEDataExplorer
                     engineConf.Write("TEXTUREGROUP_Character_Spec", "(MinLODSize=256,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
                 }
 
-                if (!File.Exists(_gameData.GameExePath))
-                    throw new FileNotFoundException("Game exe not found: " + _gameData.GameExePath);
+                if (!File.Exists(gameData.GameExePath))
+                    throw new FileNotFoundException("Game exe not found: " + gameData.GameExePath);
 
-                using (FileStream fs = new FileStream(_gameData.GameExePath, FileMode.Open, FileAccess.Read))
+                using (FileStream fs = new FileStream(gameData.GameExePath, FileMode.Open, FileAccess.Read))
                 {
                     fs.Seek(0x146, SeekOrigin.Begin); // offset to byte with LAA flag
                     var flag = fs.ReadByte();
@@ -84,12 +84,12 @@ namespace MEDataExplorer
                         throw new Exception("Not expected flags in exe file");
                 }
 
-                _packageFiles = Directory.GetFiles(_gameData.MainData, "*.*",
+                _packageFiles = Directory.GetFiles(gameData.MainData, "*.*",
                     SearchOption.AllDirectories).Where(s => s.EndsWith(".upk",
                         StringComparison.OrdinalIgnoreCase) ||
                         s.EndsWith(".u", StringComparison.OrdinalIgnoreCase) ||
                         s.EndsWith(".sfm", StringComparison.OrdinalIgnoreCase)).ToList();
-                _packageFiles.AddRange(Directory.GetFiles(_gameData.DLCData, "*.*",
+                _packageFiles.AddRange(Directory.GetFiles(gameData.DLCData, "*.*",
                     SearchOption.AllDirectories).Where(s => s.EndsWith(".upk",
                         StringComparison.OrdinalIgnoreCase) ||
                         s.EndsWith(".u", StringComparison.OrdinalIgnoreCase) ||
@@ -98,14 +98,14 @@ namespace MEDataExplorer
             }
             else if (_gameSelected == MeType.ME2_TYPE)
             {
-                _packageFiles = Directory.GetFiles(_gameData.MainData, "*.pcc", SearchOption.AllDirectories).ToList();
-                _packageFiles.AddRange(Directory.GetFiles(_gameData.DLCData, "*.pcc", SearchOption.AllDirectories));
+                _packageFiles = Directory.GetFiles(gameData.MainData, "*.pcc", SearchOption.AllDirectories).ToList();
+                _packageFiles.AddRange(Directory.GetFiles(gameData.DLCData, "*.pcc", SearchOption.AllDirectories));
             }
             else if (_gameSelected == MeType.ME3_TYPE)
             {
-                _packageFiles = Directory.GetFiles(_gameData.MainData, "*.pcc", SearchOption.AllDirectories).ToList();
-                if (Directory.Exists(_gameData.DLCDataCache))
-                    _packageFiles.AddRange(Directory.GetFiles(_gameData.DLCDataCache, "*.pcc", SearchOption.AllDirectories));
+                _packageFiles = Directory.GetFiles(gameData.MainData, "*.pcc", SearchOption.AllDirectories).ToList();
+                if (Directory.Exists(gameData.DLCDataCache))
+                    _packageFiles.AddRange(Directory.GetFiles(gameData.DLCDataCache, "*.pcc", SearchOption.AllDirectories));
                 _packageFiles.RemoveAll(s => s.Contains("GuidCache.pcc"));
             }
 
@@ -120,7 +120,7 @@ namespace MEDataExplorer
 
         void MatchTextures(string packageFileName)
         {
-            var package = new Package(_gameSelected, packageFileName);
+            var package = new Package(packageFileName);
             package.SaveToFile();
         }
 

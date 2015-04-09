@@ -334,19 +334,19 @@ namespace MEDataExplorer
             }
         }
 
-        public Package(MeType gameType, string filename)
+        public Package( string filename)
         {
-            if (gameType == MeType.ME1_TYPE)
+            if (GameData.gameType == MeType.ME1_TYPE)
             {
                 packageHeaderSize = packageHeaderSizeME1;
                 packageFileVersion = packageFileVersionME1;
             }
-            else if (gameType == MeType.ME2_TYPE)
+            else if (GameData.gameType == MeType.ME2_TYPE)
             {
                 packageHeaderSize = packageHeaderSizeME2;
                 packageFileVersion = packageFileVersionME2;
             }
-            else if (gameType == MeType.ME3_TYPE)
+            else if (GameData.gameType == MeType.ME3_TYPE)
             {
                 packageHeaderSize = packageHeaderSizeME3;
                 packageFileVersion = packageFileVersionME3;

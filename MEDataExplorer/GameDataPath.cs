@@ -29,17 +29,17 @@ namespace MEDataExplorer
     public class GameData
     {
         private string _path = null;
-        private MeType _gameType;
+        static public MeType gameType;
         private ConfIni _configIni;
 
         public bool DLCDataCacheDone = false;
 
         public GameData(MeType type, ConfIni configIni)
         {
-            _gameType = type;
+            gameType = type;
             _configIni = configIni;
 
-            var key = "ME" + (int)_gameType;
+            var key = "ME" + (int)gameType;
             var path = configIni.Read(key, "GameDataPath");
             if (path != null && path != "")
             {
@@ -67,8 +67,8 @@ namespace MEDataExplorer
             }
 
             OpenFileDialog selectExe = new OpenFileDialog();
-            selectExe.Title = "Please select the Mass Effect " + (int)_gameType + " executable file";
-            switch (_gameType)
+            selectExe.Title = "Please select the Mass Effect " + (int)gameType + " executable file";
+            switch (gameType)
             {
                 case MeType.ME1_TYPE:
                     selectExe.Filter = "ME1 exe file|MassEffect.exe";
@@ -85,7 +85,7 @@ namespace MEDataExplorer
             }
             if (selectExe.ShowDialog() == DialogResult.OK)
             {
-                if (_gameType == MeType.ME3_TYPE)
+                if (gameType == MeType.ME3_TYPE)
                     _path = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(selectExe.FileName))) + @"\";
                 else
                     _path = Path.GetDirectoryName(Path.GetDirectoryName(selectExe.FileName)) + @"\";
@@ -108,7 +108,7 @@ namespace MEDataExplorer
             {
                 if (_path != null)
                 {
-                    switch (_gameType)
+                    switch (gameType)
                     {
                         case MeType.ME1_TYPE:
                         case MeType.ME2_TYPE:
@@ -130,7 +130,7 @@ namespace MEDataExplorer
             {
                 if (_path != null)
                 {
-                    switch (_gameType)
+                    switch (gameType)
                     {
                         case MeType.ME1_TYPE:
                             return _path + @"\DLC\";
@@ -150,8 +150,8 @@ namespace MEDataExplorer
         {
             get
             {
-                if (_gameType == MeType.ME3_TYPE)
-                    return _path + @"\BioGame\TexplorerDLCCache\";
+                if (gameType == MeType.ME3_TYPE)
+                    return _path + @"\BioGame\DLCCache\";
                 else
                     return null;
             }
@@ -161,11 +161,11 @@ namespace MEDataExplorer
         {
             get
             {
-                if (_gameType == MeType.ME1_TYPE)
+                if (gameType == MeType.ME1_TYPE)
                     return _path + @"\Binaries\MassEffect.exe";
-                else if (_gameType == MeType.ME2_TYPE)
+                else if (gameType == MeType.ME2_TYPE)
                     return _path + @"\Binaries\MassEffect2.exe";
-                else if (_gameType == MeType.ME3_TYPE)
+                else if (gameType == MeType.ME3_TYPE)
                     return _path + @"\Binaries\Win32\MassEffect3.exe";
                 else
                     return null;
@@ -178,9 +178,9 @@ namespace MEDataExplorer
             {
                 string dir = @"\BioWare\Mass Effect";
 
-                if (_gameType == MeType.ME2_TYPE)
+                if (gameType == MeType.ME2_TYPE)
                     dir += @" 2\";
-                else if (_gameType == MeType.ME3_TYPE)
+                else if (gameType == MeType.ME3_TYPE)
                     dir += @" 3\";
 
                 return Environment.GetFolderPath(Environment.SpecialFolder.Personal) + dir;
@@ -191,7 +191,7 @@ namespace MEDataExplorer
         {
             get
             {
-                if (_gameType == MeType.ME1_TYPE)
+                if (gameType == MeType.ME1_TYPE)
                     return GameUserPath + @"\Config\BIOEngine.ini";
                 else
                     return null;
