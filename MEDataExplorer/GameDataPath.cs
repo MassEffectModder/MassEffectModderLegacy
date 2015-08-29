@@ -151,7 +151,7 @@ namespace MEDataExplorer
             get
             {
                 if (gameType == MeType.ME3_TYPE)
-                    return _path + @"\BioGame\TexplorerDLCCache\";
+                    return _path + @"\BioGame\DLCCache\";
                 else
                     return null;
             }

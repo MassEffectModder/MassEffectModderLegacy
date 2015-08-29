@@ -29,31 +29,31 @@ namespace MEDataExplorer
 {
     public class Package : IDisposable
     {
-        const UInt32 packageTag = 0x9E2A83C1;
-        const UInt16 packageFileVersionME1 = 491;
-        const UInt16 packageFileVersionME2 = 512;
-        const UInt16 packageFileVersionME3 = 684;
-        const UInt32 maxBlockSize = 0x20000; // 128KB
-        const UInt32 maxChunkSize = 0x100000; // 1MB
-        const UInt32 packageHeaderSizeME1 = 121;
-        const UInt32 packageHeaderSizeME2 = 117;
-        const UInt32 packageHeaderSizeME3 = 126;
-        const Int32 sizeOfGeneration = 12;
+        const uint packageTag = 0x9E2A83C1;
+        const ushort packageFileVersionME1 = 491;
+        const ushort packageFileVersionME2 = 512;
+        const ushort packageFileVersionME3 = 684;
+        const uint maxBlockSize = 0x20000; // 128KB
+        const uint maxChunkSize = 0x100000; // 1MB
+        const uint packageHeaderSizeME1 = 121;
+        const uint packageHeaderSizeME2 = 117;
+        const uint packageHeaderSizeME3 = 126;
+        const int sizeOfGeneration = 12;
 
-        const Int32 packageHeaderTagOffset = 0;
-        const Int32 packageHeaderVersionOffset = 4;
-        const Int32 packageHeaderFirstChunkSizeOffset = 8;
-        const Int32 packageHeaderNameSizeOffset = 12;
+        const int packageHeaderTagOffset = 0;
+        const int packageHeaderVersionOffset = 4;
+        const int packageHeaderFirstChunkSizeOffset = 8;
+        const int packageHeaderNameSizeOffset = 12;
 
-        const Int32 packageHeaderNamesCountTableOffset = 0;
-        const Int32 packageHeaderNamesOffsetTabletsOffset = 4;
-        const Int32 packageHeaderExportsCountTableOffset = 8;
-        const Int32 packageHeaderExportsOffsetTableOffset = 12;
-        const Int32 packageHeaderImportsCountTableOffset = 16;
-        const Int32 packageHeaderImportsOffsetTableOffset = 20;
-        const Int32 packageHeaderDependsOffsetTableOffset = 24;
-        const Int32 packageHeaderGuidsOffsetTableOffset = 28;
-        const Int32 packageHeaderGuidsCountTableOffset = 36;
+        const int packageHeaderNamesCountTableOffset = 0;
+        const int packageHeaderNamesOffsetTabletsOffset = 4;
+        const int packageHeaderExportsCountTableOffset = 8;
+        const int packageHeaderExportsOffsetTableOffset = 12;
+        const int packageHeaderImportsCountTableOffset = 16;
+        const int packageHeaderImportsOffsetTableOffset = 20;
+        const int packageHeaderDependsOffsetTableOffset = 24;
+        const int packageHeaderGuidsOffsetTableOffset = 28;
+        const int packageHeaderGuidsCountTableOffset = 36;
 
         public enum CompressionType
         {
@@ -67,10 +67,10 @@ namespace MEDataExplorer
         }
 
         byte[] packageHeader;
-        UInt32 packageHeaderSize;
-        UInt32 packageFileVersion;
-        UInt32 numChunks;
-        UInt32 someTag;
+        uint packageHeaderSize;
+        uint packageFileVersion;
+        uint numChunks;
+        uint someTag;
         long dataOffset;
         CompressionType compressionType;
         FileStream packageFile;
@@ -79,53 +79,53 @@ namespace MEDataExplorer
         List<NameEntry> namesTable;
         List<ImportEntry> importsTable;
         List<ExportEntry> exportsTable;
-        List<Int32> dependsTable;
+        List<int> dependsTable;
         List<GuidEntry> guidsTable;
         List<string> extraNamesTable;
-        Int32 currentChunk = -1;
+        int currentChunk = -1;
         MemoryStream chunkCache;
 
         const int SizeOfChunkBlock = 8;
         public struct ChunkBlock
         {
-            public UInt32 comprSize;
-            public UInt32 uncomprSize;
+            public uint comprSize;
+            public uint uncomprSize;
         }
 
         const int SizeOfChunk = 16;
         public struct Chunk
         {
-            public UInt32 uncomprOffset;
-            public UInt32 uncomprSize;
-            public UInt32 comprOffset;
-            public UInt32 comprSize;
+            public uint uncomprOffset;
+            public uint uncomprSize;
+            public uint comprOffset;
+            public uint comprSize;
             public List<ChunkBlock> blocks;
         }
 
         public struct NameEntry
         {
             public string name;
-            public UInt64 flags;
+            public ulong flags;
         }
         public struct ImportEntry
         {
-            public Int32 packageFileId;
-            public Int32 classNameId;
-            public Int32 linkId;
-            public Int32 objectNameId;
+            public int packageFileId;
+            public int classNameId;
+            public int linkId;
+            public int objectNameId;
             public byte[] raw;
         }
         public struct ExportEntry
         {
             const int DataOffsetSize = 32;
             const int DataOffsetOffset = 36;
-            public Int32 classNameId;
-            public Int32 classParentId;
-            public Int32 linkId;
-            public Int32 objectNameId;
-            public Int32 suffixNameId;
-            public Int32 archTypeNameId;
-            public UInt32 dataSize
+            public int classNameId;
+            public int classParentId;
+            public int linkId;
+            public int objectNameId;
+            public int suffixNameId;
+            public int archTypeNameId;
+            public uint dataSize
             {
                 get
                 {
@@ -133,10 +133,10 @@ namespace MEDataExplorer
                 }
                 set
                 {
-                    Buffer.BlockCopy(BitConverter.GetBytes(value), 0, raw, DataOffsetSize, sizeof(UInt32));
+                    Buffer.BlockCopy(BitConverter.GetBytes(value), 0, raw, DataOffsetSize, sizeof(uint));
                 }
             }
-            public UInt32 dataOffset
+            public uint dataOffset
             {
                 get
                 {
@@ -144,22 +144,22 @@ namespace MEDataExplorer
                 }
                 set
                 {
-                    Buffer.BlockCopy(BitConverter.GetBytes(value), 0, raw, DataOffsetOffset, sizeof(UInt32));
+                    Buffer.BlockCopy(BitConverter.GetBytes(value), 0, raw, DataOffsetOffset, sizeof(uint));
                 }
             }
-            public UInt64 objectFlags;
-            public UInt32 exportflags;
-            public UInt32 packageflags;
+            public ulong objectFlags;
+            public uint exportflags;
+            public uint packageflags;
             public byte[] raw;
             public byte[] newData;
         }
         public struct GuidEntry
         {
             public byte[] guid;
-            public Int32 index;
+            public int index;
         }
 
-        private UInt32 tag
+        private uint tag
         {
             get
             {
@@ -167,7 +167,7 @@ namespace MEDataExplorer
             }
         }
 
-        private UInt16 version
+        private ushort version
         {
             get
             {
@@ -175,7 +175,7 @@ namespace MEDataExplorer
             }
         }
 
-        private UInt32 endOfTablesOffset
+        private uint endOfTablesOffset
         {
             get
             {
@@ -183,23 +183,23 @@ namespace MEDataExplorer
             }
             set
             {
-                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, packageHeaderFirstChunkSizeOffset, sizeof(UInt32));
+                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, packageHeaderFirstChunkSizeOffset, sizeof(uint));
             }
         }
 
-        private Int32 packageHeaderFlagsOffset
+        private int packageHeaderFlagsOffset
         {
             get
             {
-                Int32 len = BitConverter.ToInt32(packageHeader, packageHeaderNameSizeOffset);
+                int len = BitConverter.ToInt32(packageHeader, packageHeaderNameSizeOffset);
                 if (len < 0)
-                    return (len * -2) + packageHeaderNameSizeOffset + sizeof(UInt32); // Unicode name
+                    return (len * -2) + packageHeaderNameSizeOffset + sizeof(uint); // Unicode name
                 else
-                    return len + packageHeaderNameSizeOffset + sizeof(UInt32); // Ansi name
+                    return len + packageHeaderNameSizeOffset + sizeof(uint); // Ascii name
             }
         }
 
-        private UInt32 flags
+        private uint flags
         {
             get
             {
@@ -207,7 +207,7 @@ namespace MEDataExplorer
             }
             set
             {
-                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, packageHeaderFlagsOffset, sizeof(UInt32));
+                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, packageHeaderFlagsOffset, sizeof(uint));
             }
         }
 
@@ -223,22 +223,22 @@ namespace MEDataExplorer
                     flags |= (uint)PackageFlags.compressed;
                 else
                     flags &= ~(uint)PackageFlags.compressed;
-                Buffer.BlockCopy(BitConverter.GetBytes(flags), 0, packageHeader, packageHeaderFlagsOffset, sizeof(UInt32));
+                Buffer.BlockCopy(BitConverter.GetBytes(flags), 0, packageHeader, packageHeaderFlagsOffset, sizeof(uint));
             }
         }
 
-        private Int32 tablesOffset
+        private int tablesOffset
         {
             get
             {
                 if (version == packageFileVersionME3)
-                    return packageHeaderFlagsOffset + sizeof(UInt32) + sizeof(UInt32); // additional entry in header
+                    return packageHeaderFlagsOffset + sizeof(uint) + sizeof(uint); // additional entry in header
                 else
-                    return packageHeaderFlagsOffset + sizeof(UInt32);
+                    return packageHeaderFlagsOffset + sizeof(uint);
             }
         }
 
-        private UInt32 namesCount
+        private uint namesCount
         {
             get
             {
@@ -246,11 +246,11 @@ namespace MEDataExplorer
             }
             set
             {
-                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, tablesOffset + packageHeaderNamesCountTableOffset, sizeof(UInt32));
+                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, tablesOffset + packageHeaderNamesCountTableOffset, sizeof(uint));
             }
         }
 
-        private UInt32 namesOffset
+        private uint namesOffset
         {
             get
             {
@@ -258,11 +258,11 @@ namespace MEDataExplorer
             }
             set
             {
-                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, tablesOffset + packageHeaderNamesOffsetTabletsOffset, sizeof(UInt32));
+                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, tablesOffset + packageHeaderNamesOffsetTabletsOffset, sizeof(uint));
             }
         }
 
-        private UInt32 exportsCount
+        private uint exportsCount
         {
             get
             {
@@ -270,7 +270,7 @@ namespace MEDataExplorer
             }
         }
 
-        private UInt32 exportsOffset
+        private uint exportsOffset
         {
             get
             {
@@ -278,11 +278,11 @@ namespace MEDataExplorer
             }
             set
             {
-                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, tablesOffset + packageHeaderExportsOffsetTableOffset, sizeof(UInt32));
+                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, tablesOffset + packageHeaderExportsOffsetTableOffset, sizeof(uint));
             }
         }
 
-        private UInt32 importsCount
+        private uint importsCount
         {
             get
             {
@@ -290,7 +290,7 @@ namespace MEDataExplorer
             }
         }
 
-        private UInt32 importsOffset
+        private uint importsOffset
         {
             get
             {
@@ -298,11 +298,11 @@ namespace MEDataExplorer
             }
             set
             {
-                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, tablesOffset + packageHeaderImportsOffsetTableOffset, sizeof(UInt32));
+                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, tablesOffset + packageHeaderImportsOffsetTableOffset, sizeof(uint));
             }
         }
 
-        private UInt32 dependsOffset
+        private uint dependsOffset
         {
             get
             {
@@ -310,11 +310,11 @@ namespace MEDataExplorer
             }
             set
             {
-                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, tablesOffset + packageHeaderDependsOffsetTableOffset, sizeof(UInt32));
+                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, tablesOffset + packageHeaderDependsOffsetTableOffset, sizeof(uint));
             }
         }
 
-        private UInt32 guidsOffset
+        private uint guidsOffset
         {
             get
             {
@@ -322,11 +322,11 @@ namespace MEDataExplorer
             }
             set
             {
-                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, tablesOffset + packageHeaderGuidsOffsetTableOffset, sizeof(UInt32));
+                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, tablesOffset + packageHeaderGuidsOffsetTableOffset, sizeof(uint));
             }
         }
 
-        private UInt32 guidsCount
+        private uint guidsCount
         {
             get
             {
@@ -422,23 +422,23 @@ namespace MEDataExplorer
                 loadGuids(packageData);
         }
 
-        private void getData(UInt32 offset, UInt32 length, MemoryStream output)
+        private void getData(uint offset, uint length, MemoryStream output)
         {
             if (compressed)
             {
-                UInt32 bytesLeft = length;
+                uint bytesLeft = length;
                 for (int c = 0; c < chunks.Count; c++)
                 {
                     Chunk chunk = chunks[c];
                     if (chunk.uncomprOffset + chunk.uncomprSize <= offset)
                         continue;
-                    UInt32 startInChunk;
+                    uint startInChunk;
                     if (offset < chunk.uncomprOffset)
                         startInChunk = 0;
                     else
                         startInChunk = offset - chunk.uncomprOffset;
 
-                    UInt32 bytesLeftInChunk = Math.Min(chunk.uncomprSize - startInChunk, bytesLeft);
+                    uint bytesLeftInChunk = Math.Min(chunk.uncomprSize - startInChunk, bytesLeft);
                     if (currentChunk != c)
                     {
                         if (chunkCache != null)
@@ -449,18 +449,18 @@ namespace MEDataExplorer
                         chunkCache = new MemoryStream();
                         currentChunk = c;
                         packageFile.Seek(chunk.comprOffset, SeekOrigin.Begin);
-                        UInt32 blockTag = packageFile.ReadValueU32(); // block tag
+                        uint blockTag = packageFile.ReadValueU32(); // block tag
                         if (blockTag != packageTag)
                             throw new Exception("not match");
-                        UInt32 blockSize = packageFile.ReadValueU32(); // max block size
+                        uint blockSize = packageFile.ReadValueU32(); // max block size
                         if (blockSize != maxBlockSize)
                             throw new Exception("not match");
-                        UInt32 compressedChunkSize = packageFile.ReadValueU32(); // compressed chunk size
-                        UInt32 uncompressedChunkSize = packageFile.ReadValueU32();
+                        uint compressedChunkSize = packageFile.ReadValueU32(); // compressed chunk size
+                        uint uncompressedChunkSize = packageFile.ReadValueU32();
                         if (uncompressedChunkSize != chunk.uncomprSize)
                             throw new Exception("not match");
 
-                        UInt32 blocksCount = (uncompressedChunkSize + maxBlockSize - 1) / maxBlockSize;
+                        uint blocksCount = (uncompressedChunkSize + maxBlockSize - 1) / maxBlockSize;
                         if ((compressedChunkSize + SizeOfChunk + SizeOfChunkBlock * blocksCount) != chunk.comprSize)
                             throw new Exception("not match");
 
@@ -505,7 +505,7 @@ namespace MEDataExplorer
                 output.WriteFromStream(packageFile, length);
             }
         }
-        private byte[] getExportData(Int32 id)
+        private byte[] getExportData(int id)
         {
             if (exportsTable[id].newData != null)
                 return exportsTable[id].newData;
@@ -513,11 +513,11 @@ namespace MEDataExplorer
             getData(exportsTable[id].dataOffset, exportsTable[id].dataOffset, data);
             return data.ToArray();
         }
-        private void setExportData(Int32 id, byte[] data)
+        private void setExportData(int id, byte[] data)
         {
             ExportEntry export = exportsTable[id];
             export.newData = data;
-            export.dataSize = (UInt32)data.Length;
+            export.dataSize = (uint)data.Length;
             export.dataOffset = 0;
             exportsTable[id] = export;
         }
@@ -583,7 +583,7 @@ namespace MEDataExplorer
         private void loadExtraNames(Stream input)
         {
             extraNamesTable = new List<string>();
-            UInt32 extraNamesCount = input.ReadValueU32();
+            uint extraNamesCount = input.ReadValueU32();
             for (int c = 0; c < extraNamesCount; c++)
             {
                 int len = input.ReadValueS32();
@@ -636,7 +636,9 @@ namespace MEDataExplorer
         private void saveImports(Stream output)
         {
             for (int i = 0; i < importsTable.Count; i++)
+            {
                 output.WriteBytes(importsTable[i].raw);
+            }
         }
         private void loadExports(Stream input)
         {
@@ -682,7 +684,7 @@ namespace MEDataExplorer
         }
         private void loadDepends(Stream input)
         {
-            dependsTable = new List<Int32>();
+            dependsTable = new List<int>();
             input.Seek(dependsOffset, SeekOrigin.Begin);
             for (int i = 0; i < exportsCount; i++)
                 dependsTable.Add(input.ReadValueS32());
@@ -729,25 +731,25 @@ namespace MEDataExplorer
             saveExtraNames(tempOutput);
             if (dataOffset != tempOutput.Position)
                 throw new Exception("wrong");
-            namesOffset = (UInt32)tempOutput.Position;
+            namesOffset = (uint)tempOutput.Position;
             saveNames(tempOutput);
-            importsOffset = (UInt32)tempOutput.Position;
+            importsOffset = (uint)tempOutput.Position;
             saveImports(tempOutput);
-            exportsOffset = (UInt32)tempOutput.Position;
+            exportsOffset = (uint)tempOutput.Position;
             saveExports(tempOutput);
-            dependsOffset = (UInt32)tempOutput.Position;
+            dependsOffset = (uint)tempOutput.Position;
             saveDepends(tempOutput);
             if (version == packageFileVersionME3)
             {
-                guidsOffset = (UInt32)tempOutput.Position;
+                guidsOffset = (uint)tempOutput.Position;
                 saveGuids(tempOutput);
             }
-            endOfTablesOffset = (UInt32)tempOutput.Position;
+            endOfTablesOffset = (uint)tempOutput.Position;
 
             for (int i = 0; i < exportsCount; i++)
             {
                 ExportEntry export = exportsTable[i];
-                UInt32 newDataOffset = (UInt32)tempOutput.Position;
+                uint newDataOffset = (uint)tempOutput.Position;
                 if (export.newData == null)
                     getData(export.dataOffset, export.dataSize, tempOutput);
                 else
@@ -781,7 +783,7 @@ namespace MEDataExplorer
                         ExportEntry export = exportsTable[i];
                         if (chunk.uncomprSize + export.dataSize > maxChunkSize)
                         {
-                            UInt32 offset = chunk.uncomprOffset + chunk.uncomprSize;
+                            uint offset = chunk.uncomprOffset + chunk.uncomprSize;
                             chunks.Add(chunk);
                             chunk = new Chunk();
                             chunk.uncomprSize = export.dataSize;
@@ -797,7 +799,7 @@ namespace MEDataExplorer
                     fs.Write(packageHeader, 0, packageHeader.Length);
                     fs.WriteValueU32((uint)compressionType);
                     fs.WriteValueU32((uint)chunks.Count);
-                    var chunksTableOffset = (UInt32)fs.Position;
+                    var chunksTableOffset = (uint)fs.Position;
                     fs.Seek(SizeOfChunk * chunks.Count, SeekOrigin.Current); // skip chunks table - filled later
                     fs.WriteValueU32(someTag);
                     if (version == packageFileVersionME2)
@@ -807,11 +809,11 @@ namespace MEDataExplorer
                     for (int c = 0; c < chunks.Count; c++)
                     {
                         chunk = chunks[c];
-                        chunk.comprOffset = (UInt32)fs.Position;
+                        chunk.comprOffset = (uint)fs.Position;
                         chunk.comprSize = 0; // filled later
 
-                        UInt32 dataBlockLeft = chunk.uncomprSize;
-                        UInt32 newNumBlocks = (chunk.uncomprSize + maxBlockSize - 1) / maxBlockSize;
+                        uint dataBlockLeft = chunk.uncomprSize;
+                        uint newNumBlocks = (chunk.uncomprSize + maxBlockSize - 1) / maxBlockSize;
                         // skip blocks header and table - filled later
                         fs.Seek(SizeOfChunk + SizeOfChunkBlock * newNumBlocks, SeekOrigin.Current);
 
@@ -821,7 +823,7 @@ namespace MEDataExplorer
                         for (int b = 0; b < newNumBlocks; b++)
                         {
                             ChunkBlock block = new ChunkBlock();
-                            UInt32 newBlockSize = Math.Min(maxBlockSize, dataBlockLeft);
+                            uint newBlockSize = Math.Min(maxBlockSize, dataBlockLeft);
 
                             byte[] dst;
                             byte[] src = tempOutput.ReadBytes(newBlockSize);

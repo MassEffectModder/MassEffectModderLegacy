@@ -48,7 +48,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if exist $(SolutionDir)\MEDataExplorer\bin\x86\Debug\ copy $(ProjectDir)\zlibwrapper.dll $(SolutionDir)\MEDataExplorer\bin\x86\Debug\zlibwrapper.dll
+    <PostBuildEvent>if exist $(SolutionDir)\MEDataExplorer\bin\Debug\ copy $(ProjectDir)\zlibwrapper.dll $(SolutionDir)\MEDataExplorer\bin\Debug\zlibwrapper.dll
+if exist $(SolutionDir)\MEDataExplorer\bin\Release\ copy $(ProjectDir)\zlibwrapper.dll $(SolutionDir)\MEDataExplorer\bin\Release\zlibwrapper.dll
 </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

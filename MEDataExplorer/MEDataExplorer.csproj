@@ -32,7 +32,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>CODE_ANALYSIS;CODE_ANALYSIS;DEBUG;TRACE</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
@@ -42,9 +42,10 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>bin\x86\Release\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
@@ -53,6 +54,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -140,6 +142,10 @@
     <ProjectReference Include="..\Helpers\LZO2Wrapper\LZO2Helper.csproj">
       <Project>{5e10735c-e0be-4003-a085-4d51434682f4}</Project>
       <Name>LZO2Helper</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Helpers\SevenZipWrapper\SevenZipHelper.csproj">
+      <Project>{a3a102e9-e5aa-4bed-a86b-757f668ebfe5}</Project>
+      <Name>SevenZipHelper</Name>
     </ProjectReference>
     <ProjectReference Include="..\Helpers\ZlibWrapper\ZlibHelper.csproj">
       <Project>{7c8af7ae-d0d9-4355-8d1f-8420c133db31}</Project>
