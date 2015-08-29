@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Crc32.cs" />
+    <Compile Include="DLC.cs" />
     <Compile Include="GameDataPath.cs" />
     <Compile Include="IniConf.cs" />
     <Compile Include="MainWindow.cs">

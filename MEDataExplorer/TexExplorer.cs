@@ -21,13 +21,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace MEDataExplorer
@@ -103,6 +99,22 @@ namespace MEDataExplorer
             }
             else if (_gameSelected == MeType.ME3_TYPE)
             {
+                if (!Directory.Exists(gameData.DLCDataCache))
+                {
+                    Directory.CreateDirectory(gameData.DLCDataCache);
+                    List<string> sfarFiles = Directory.GetFiles(gameData.DLCData, "Default.sfar", SearchOption.AllDirectories).ToList();
+                    for (int i = 0; i < sfarFiles.Count; i++)
+                    {
+                        string DLCname = Path.GetFileName(Path.GetDirectoryName(Path.GetDirectoryName(sfarFiles[i])));
+                        string outPath = Path.Combine(gameData.DLCDataCache, DLCname);
+                        Directory.CreateDirectory(outPath);
+                        ME3DLC dlc = new ME3DLC();
+                        _mainWindow.updateStatusLabel("DLC extracting " + (i + 1) + " of " + sfarFiles.Count);
+                        Application.DoEvents();
+                        dlc.extract(sfarFiles[i], outPath, DLCname);
+                    }
+                    _mainWindow.updateStatusLabel("Done");
+                }
                 _packageFiles = Directory.GetFiles(gameData.MainData, "*.pcc", SearchOption.AllDirectories).ToList();
                 if (Directory.Exists(gameData.DLCDataCache))
                     _packageFiles.AddRange(Directory.GetFiles(gameData.DLCDataCache, "*.pcc", SearchOption.AllDirectories));
@@ -118,10 +130,30 @@ namespace MEDataExplorer
             _mainWindow.updateStatusLabel("Done");
         }
 
+        void PackME3DLC(string inPath, string DLCname)
+        {
+            string outPath = Path.Combine(gameData.DLCData, DLCname, "CookedPCConsole", "Default.sfar");
+            ME3DLC dlc = new ME3DLC();
+            dlc.pack(inPath, outPath);
+        }
+
+        void PackAllME3DLC()
+        {
+            List<string> DLCs = Directory.GetDirectories(gameData.DLCDataCache).ToList();
+            for (int i = 0; i < DLCs.Count; i++)
+            {
+                string DLCname = Path.GetFileName(DLCs[i]);
+                _mainWindow.updateStatusLabel("DLC packing " + (i + 1) + " of " + DLCs.Count);
+                Application.DoEvents();
+                PackME3DLC(DLCs[i], DLCname);
+            }
+            _mainWindow.updateStatusLabel("Done");
+        }
+
         void MatchTextures(string packageFileName)
         {
-            var package = new Package(packageFileName);
-            package.SaveToFile();
+            //var package = new Package(packageFileName);
+            //package.SaveToFile();
         }
 
         private void TexExplorer_FormClosed(object sender, FormClosedEventArgs e)
