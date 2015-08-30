@@ -25,6 +25,9 @@ using Gibbed.IO;
 using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
+using System.Net.NetworkInformation;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace MEDataExplorer
 {
@@ -115,7 +118,7 @@ namespace MEDataExplorer
                         {
                             bytes[k] = (byte)char.ToLowerInvariant(name[k]);
                         }
-                        var md5 = System.Security.Cryptography.MD5.Create();
+                        var md5 = MD5.Create();
                         var hash = md5.ComputeHash(bytes);
                         for (int l = 0; l < filesCount; l++)
                         {
@@ -194,7 +197,7 @@ namespace MEDataExplorer
             List<string> srcFilesList = Directory.GetFiles(inPath, "*.*", SearchOption.AllDirectories).ToList();
             srcFilesList.RemoveAll(s => s.EndsWith(".hash"));
 
-            List<byte []> hashList = new List<byte []>();
+            List<byte[]> hashList = new List<byte[]>();
 
             string[] filenamesArray = new string[srcFilesList.Count];
             var filenameMemStream = new MemoryStream();
@@ -216,7 +219,7 @@ namespace MEDataExplorer
                 {
                     bytes[k] = (byte)char.ToLowerInvariant(filename[k]);
                 }
-                var md5 = System.Security.Cryptography.MD5.Create();
+                var md5 = MD5.Create();
                 var fileHash = md5.ComputeHash(bytes);
 
                 if (!StructuralComparisons.StructuralEqualityComparer.Equals(fileHash, hash))
@@ -338,6 +341,132 @@ namespace MEDataExplorer
                 if (outputFile.Position != dataOffset)
                     throw new Exception("wrong");
             }
+        }
+    }
+
+    class ME2DLC
+    {
+        public void updateChecksums(GameData gameData)
+        {
+            StringWriter cacheStream = new StringWriter();
+            string user = "user"; // it's EA login
+            cacheStream.WriteLine("[Global]");
+            cacheStream.WriteLine("LastNucleusID=" + user);
+            cacheStream.WriteLine();
+            cacheStream.WriteLine("[KeyValuePair]");
+            cacheStream.WriteLine(user + ".Entitlement.ME2PCOffers.ME2_PRC_NRX_1=TRUE"); // shadow broker
+            cacheStream.WriteLine(user + ".Entitlement.ME2PCOffers.ME2_PRC_CP_4=TRUE"); // kasumi
+            cacheStream.WriteLine(user + ".Entitlement.ME2PCOffers.ME2_PRC_CP_5=TRUE"); // overlord
+            cacheStream.WriteLine(user + ".Entitlement.ME2PCOffers.ME2_PRC_CP_6=TRUE"); // arrival
+            cacheStream.WriteLine(user + ".Entitlement.ME2PCOffers.ME2_PRC_CP_7=TRUE"); // alt pack 1
+            cacheStream.WriteLine(user + ".Entitlement.ME2PCOffers.ME2_PRC_CP_8=TRUE"); // aegis pack
+            cacheStream.WriteLine(user + ".Entitlement.ME2PCOffers.ME2_PRC_CP_9=TRUE"); // firepower
+            cacheStream.WriteLine(user + ".Entitlement.ME2PCOffers.ME2_PRC_CP_10=TRUE"); // equalizer
+            cacheStream.WriteLine(user + ".Entitlement.ME2PCOffers.ME2_PRC_CP_11=TRUE"); // alt pack 2
+            cacheStream.WriteLine(user + ".Entitlement.ME2PCOffers.ME2_PRC_CP_12=TRUE"); // genesis
+            cacheStream.WriteLine(user + ".Entitlement.ME2PCOffers.ONLINE_ACCESS=TRUE"); // normandy, zaeed, cerberus, arc, firewalker
+            cacheStream.WriteLine(user + ".Entitlement.ME2PCOffers.PC_CERBERUS_NETWORK=TRUE");
+            cacheStream.WriteLine(user + ".Entitlement.ME2GenOffers.ME2_PRC_PROMO_C1=TRUE");
+            cacheStream.WriteLine(user + ".Numeric.DaysSinceReg=0");
+            cacheStream.WriteLine();
+            cacheStream.WriteLine("[Hash]");
+            foreach (string DLC in Directory.GetDirectories(gameData.DLCData))
+            {
+                uint DLCId;
+                using (FileStream mountFile = new FileStream(Path.Combine(DLC, @"CookedPC\Mount.dlc"), FileMode.Open, FileAccess.Read))
+                {
+                    mountFile.Seek(12, SeekOrigin.Begin);
+                    DLCId = mountFile.ReadValueU32();
+                }
+                List<string> dlcFiles = Directory.GetFiles(DLC, "*.pcc", SearchOption.AllDirectories).ToList();
+                dlcFiles.AddRange(Directory.GetFiles(DLC, "*.ini", SearchOption.AllDirectories));
+                dlcFiles = dlcFiles.OrderBy(s => s.ToUpperInvariant()).ToList();
+                using (SHA1 sha1 = SHA1.Create())
+                {
+                    sha1.Initialize();
+                    byte[] SHA1Buffer = new byte[0x1000];
+                    foreach (string DLCFile in dlcFiles)
+                    {
+                        // filter localized files
+                        if (DLCFile[DLCFile.Length - 8] == '_')
+                        {
+                            if (!System.Text.RegularExpressions.Regex.IsMatch(DLCFile, ".*_[0-9][0-9][0-9].pcc",
+                                    System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+                                continue;
+                        }
+
+                        using (FileStream fileToHash = new FileStream(DLCFile, FileMode.Open, FileAccess.Read))
+                        {
+                            int numBytesToHash = fileToHash.Read(SHA1Buffer, 0, 0x1000);
+                            sha1.TransformBlock(SHA1Buffer, 0, numBytesToHash, null, 0);
+                        }
+                    }
+                    sha1.TransformFinalBlock(SHA1Buffer, 0, 0);
+                    string hash = BitConverter.ToString(sha1.Hash).Replace("-", "").ToLower();
+                    cacheStream.WriteLine(user + ".Mount" + DLCId + "=" + hash);
+                }
+            }
+            byte[] buffer = Encoding.Unicode.GetBytes(cacheStream.GetStringBuilder().ToString());
+            encryptCacheDLCFile(gameData, buffer);
+        }
+
+        public byte[] decryptCacheDLCFile(GameData gameData)
+        {
+            byte[] output = null;
+            byte[] mac = getNetworkCardAddress();
+            byte[] entropy = getEntropyFromMAC(mac);
+            if (!File.Exists(gameData.EntitlementCacheIniPath))
+                return null;
+            using (FileStream cacheDLCFile = new FileStream(gameData.EntitlementCacheIniPath, FileMode.Open, FileAccess.Read))
+            {
+                int fileLength = (int)new FileInfo(gameData.EntitlementCacheIniPath).Length;
+                byte[] buffer = cacheDLCFile.ReadBytes(fileLength);
+                output = ProtectedData.Unprotect(buffer, entropy, DataProtectionScope.CurrentUser);
+                return output;
+            }
+        }
+
+        public void encryptCacheDLCFile(GameData gameData, byte[] buffer)
+        {
+            byte[] output = null;
+            byte[] mac = getNetworkCardAddress();
+            if (mac == null)
+                throw new Exception("not network cards");
+            byte[] entropy = getEntropyFromMAC(mac);
+            if (!Directory.Exists(gameData.ConfigIniPath))
+                Directory.CreateDirectory(gameData.ConfigIniPath);
+            using (FileStream cacheDLCFile = new FileStream(gameData.EntitlementCacheIniPath, FileMode.CreateNew, FileAccess.Write))
+            {
+                output = ProtectedData.Protect(buffer, entropy, DataProtectionScope.CurrentUser);
+                cacheDLCFile.WriteBytes(output);
+            }
+        }
+
+        byte[] getNetworkCardAddress()
+        {
+            NetworkInterface[] cards = NetworkInterface.GetAllNetworkInterfaces();
+            NetworkInterface foundCard = null;
+            foreach (NetworkInterface card in cards)
+            {
+                if (card.NetworkInterfaceType != NetworkInterfaceType.Loopback)
+                {
+                    foundCard = card;
+                }
+            }
+            if (foundCard != null)
+                return foundCard.GetPhysicalAddress().GetAddressBytes();
+            else
+                return null;
+        }
+
+        byte[] getEntropyFromMAC(byte[] mac)
+        {
+            byte[] key = new byte[] { 0x65, 0x6f, 0x4a, 0x00, 0x66, 0x61, 0x72, 0x47 };
+            for (int i = 0; i < 6; i++)
+            {
+                key[i] ^= mac[i];
+            }
+            return key;
         }
     }
 }

@@ -191,12 +191,38 @@ namespace MEDataExplorer
             }
         }
 
+        public string ConfigIniPath
+        {
+            get
+            {
+                if (gameType == MeType.ME1_TYPE)
+                    return Path.Combine(GameUserPath, @"Config");
+                else if (gameType == MeType.ME2_TYPE)
+                    return Path.Combine(GameUserPath, @"BioGame\Config");
+                else if (gameType == MeType.ME3_TYPE)
+                    return Path.Combine(GameUserPath, @"BioGame\Config");
+                else
+                    return null;
+            }
+        }
+
         public string EngineConfigIniPath
         {
             get
             {
                 if (gameType == MeType.ME1_TYPE)
-                    return Path.Combine(GameUserPath, @"Config\BIOEngine.ini");
+                    return Path.Combine(ConfigIniPath, @"BIOEngine.ini");
+                else
+                    return null;
+            }
+        }
+
+        public string EntitlementCacheIniPath
+        {
+            get
+            {
+                if (gameType == MeType.ME2_TYPE)
+                    return Path.Combine(ConfigIniPath, @"BioPersistentEntitlementCache.ini");
                 else
                     return null;
             }

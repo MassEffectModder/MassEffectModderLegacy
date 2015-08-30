@@ -121,6 +121,7 @@ namespace MEDataExplorer
                 _packageFiles.RemoveAll(s => s.Contains("GuidCache.pcc"));
             }
 
+            UpdateME2DLC();
             for (int i = 0; i < _packageFiles.Count; i++)
             {
                 _mainWindow.updateStatusLabel("File " + (i + 1) + " of " + _packageFiles.Count);
@@ -128,6 +129,12 @@ namespace MEDataExplorer
                 MatchTextures(_packageFiles[i]);
             }
             _mainWindow.updateStatusLabel("Done");
+        }
+
+        void UpdateME2DLC()
+        {
+            ME2DLC dlc = new ME2DLC();
+            dlc.updateChecksums(gameData);
         }
 
         void PackME3DLC(string inPath, string DLCname)
