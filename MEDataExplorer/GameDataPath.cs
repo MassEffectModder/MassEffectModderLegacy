@@ -61,7 +61,7 @@ namespace MEDataExplorer
                 path = (string)Registry.GetValue(softwareKey + key64 + gameKey, "Path", null);
             if (path != null)
             {
-                _path = path + @"\";
+                _path = path;
                 configIni.Write(key, path, "GameDataPath");
                 return;
             }
@@ -86,9 +86,9 @@ namespace MEDataExplorer
             if (selectExe.ShowDialog() == DialogResult.OK)
             {
                 if (gameType == MeType.ME3_TYPE)
-                    _path = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(selectExe.FileName))) + @"\";
+                    _path = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(selectExe.FileName)));
                 else
-                    _path = Path.GetDirectoryName(Path.GetDirectoryName(selectExe.FileName)) + @"\";
+                    _path = Path.GetDirectoryName(Path.GetDirectoryName(selectExe.FileName));
             }
             if (_path != null)
                 _configIni.Write(key, _path, "GameDataPath");
@@ -112,9 +112,9 @@ namespace MEDataExplorer
                     {
                         case MeType.ME1_TYPE:
                         case MeType.ME2_TYPE:
-                            return _path + @"\BioGame\CookedPC\";
+                            return Path.Combine(_path, @"BioGame\CookedPC");
                         case MeType.ME3_TYPE:
-                            return _path + @"\BioGame\CookedPCConsole\";
+                            return Path.Combine(_path, @"BioGame\CookedPCConsole");
                         default:
                             return null;
                     }
@@ -133,10 +133,10 @@ namespace MEDataExplorer
                     switch (gameType)
                     {
                         case MeType.ME1_TYPE:
-                            return _path + @"\DLC\";
+                            return Path.Combine(_path, @"DLC");
                         case MeType.ME2_TYPE:
                         case MeType.ME3_TYPE:
-                            return _path + @"\BioGame\DLC\";
+                            return Path.Combine(_path, @"BioGame\DLC");
                         default:
                             return null;
                     }
@@ -151,7 +151,7 @@ namespace MEDataExplorer
             get
             {
                 if (gameType == MeType.ME3_TYPE)
-                    return _path + @"\BioGame\DLCCache\";
+                    return Path.Combine(_path, @"BioGame\DLCCache");
                 else
                     return null;
             }
@@ -162,11 +162,11 @@ namespace MEDataExplorer
             get
             {
                 if (gameType == MeType.ME1_TYPE)
-                    return _path + @"\Binaries\MassEffect.exe";
+                    return Path.Combine(_path, @"Binaries\MassEffect.exe");
                 else if (gameType == MeType.ME2_TYPE)
-                    return _path + @"\Binaries\MassEffect2.exe";
+                    return Path.Combine(_path, @"Binaries\MassEffect2.exe");
                 else if (gameType == MeType.ME3_TYPE)
-                    return _path + @"\Binaries\Win32\MassEffect3.exe";
+                    return Path.Combine(_path, @"Binaries\Win32\MassEffect3.exe");
                 else
                     return null;
             }
@@ -176,14 +176,18 @@ namespace MEDataExplorer
         {
             get
             {
-                string dir = @"\BioWare\Mass Effect";
+                string dir;
 
-                if (gameType == MeType.ME2_TYPE)
-                    dir += @" 2\";
+                if (gameType == MeType.ME1_TYPE)
+                    dir = @"BioWare\Mass Effect";
+                else if (gameType == MeType.ME2_TYPE)
+                    dir = @"BioWare\Mass Effect 2";
                 else if (gameType == MeType.ME3_TYPE)
-                    dir += @" 3\";
+                    dir = @"BioWare\Mass Effect 3";
+                else
+                    return null;
 
-                return Environment.GetFolderPath(Environment.SpecialFolder.Personal) + dir;
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), dir);
             }
         }
 
@@ -192,7 +196,7 @@ namespace MEDataExplorer
             get
             {
                 if (gameType == MeType.ME1_TYPE)
-                    return GameUserPath + @"\Config\BIOEngine.ini";
+                    return Path.Combine(GameUserPath, @"Config\BIOEngine.ini");
                 else
                     return null;
             }

@@ -1,7 +1,7 @@
 ﻿/*
  * MEDataExplorer
  *
- * Copyright (C) 2014 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2014-2015 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -45,8 +45,8 @@ namespace MEDataExplorer
             if (iniPath != null)
                 _iniPath = iniPath;
             else
-                _iniPath = Path.GetDirectoryName(Application.ExecutablePath) + "\\" +
-                        Assembly.GetExecutingAssembly().GetName().Name + ".ini";
+                _iniPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath),
+                    Assembly.GetExecutingAssembly().GetName().Name + ".ini");
         }
 
         public string Read(string key, string section)
