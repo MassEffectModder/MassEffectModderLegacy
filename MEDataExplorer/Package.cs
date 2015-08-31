@@ -505,14 +505,16 @@ namespace MEDataExplorer
                 output.WriteFromStream(packageFile, length);
             }
         }
+
         private byte[] getExportData(int id)
         {
             if (exportsTable[id].newData != null)
                 return exportsTable[id].newData;
             MemoryStream data = new MemoryStream();
-            getData(exportsTable[id].dataOffset, exportsTable[id].dataOffset, data);
+            getData(exportsTable[id].dataOffset, exportsTable[id].dataSize, data);
             return data.ToArray();
         }
+
         private void setExportData(int id, byte[] data)
         {
             ExportEntry export = exportsTable[id];
@@ -657,8 +659,8 @@ namespace MEDataExplorer
                 entry.suffixNameId = input.ReadValueS32();
                 input.ReadValueS32();
                 entry.objectFlags = input.ReadValueU64();
-                var dataSize = input.ReadValueU32(); // dataSize
-                var dataOffset = input.ReadValueU32(); // dataOffset
+                entry.dataSize = input.ReadValueU32();
+                entry.dataOffset = input.ReadValueU32();
                 if (version != packageFileVersionME3)
                 {
                     count = input.ReadValueU32();
@@ -680,7 +682,11 @@ namespace MEDataExplorer
         private void saveExports(Stream output)
         {
             for (int i = 0; i < exportsTable.Count; i++)
+            {
+                Buffer.BlockCopy(BitConverter.GetBytes(exportsTable[i].dataSize), 0, exportsTable[i].raw, 64, sizeof(uint));
+                Buffer.BlockCopy(BitConverter.GetBytes(exportsTable[i].dataOffset), 0, exportsTable[i].raw, 68, sizeof(uint));
                 output.WriteBytes(exportsTable[i].raw);
+            }
         }
         private void loadDepends(Stream input)
         {
@@ -750,15 +756,17 @@ namespace MEDataExplorer
             {
                 ExportEntry export = exportsTable[i];
                 uint newDataOffset = (uint)tempOutput.Position;
-                if (export.newData == null)
-                    getData(export.dataOffset, export.dataSize, tempOutput);
-                else
+                if (export.newData != null)
                     tempOutput.WriteBytes(export.newData);
+                else
+                    getData(export.dataOffset, export.dataSize, tempOutput);
                 export.dataOffset = newDataOffset; // update
                 exportsTable[i] = export;
             }
             tempOutput.Seek(0, SeekOrigin.Begin);
             tempOutput.Write(packageHeader, 0, packageHeader.Length);
+            tempOutput.Seek(exportsOffset, SeekOrigin.Begin);
+            saveExports(tempOutput);
             packageFile.Close();
 
             string filename = packageFile.Name;
