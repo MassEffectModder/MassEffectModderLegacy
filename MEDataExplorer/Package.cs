@@ -761,8 +761,11 @@ namespace MEDataExplorer
                 export.dataOffset = newDataOffset; // update
                 exportsTable[i] = export;
             }
+            compressed = true; // override to compression
+            compressionType = CompressionType.Zlib; // overide compression type to Zlib
             tempOutput.Seek(0, SeekOrigin.Begin);
             tempOutput.Write(packageHeader, 0, packageHeader.Length);
+            tempOutput.WriteValueU32((uint)compressionType);
             tempOutput.Seek(exportsOffset, SeekOrigin.Begin);
             saveExports(tempOutput);
             packageFile.Close();
@@ -780,6 +783,8 @@ namespace MEDataExplorer
                 }
                 else
                 {
+                    if (chunks == null)
+                        chunks = new List<Chunk>();
                     chunks.Clear();
                     Chunk chunk = new Chunk();
                     chunk.uncomprSize = endOfTablesOffset - (uint)dataOffset;
