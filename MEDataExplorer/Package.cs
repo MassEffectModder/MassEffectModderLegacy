@@ -659,8 +659,8 @@ namespace MEDataExplorer
                 entry.suffixNameId = input.ReadValueS32();
                 input.ReadValueS32();
                 entry.objectFlags = input.ReadValueU64();
-                entry.dataSize = input.ReadValueU32();
-                entry.dataOffset = input.ReadValueU32();
+                input.ReadValueU32(); // dataSize
+                input.ReadValueU32(); // dataOffset
                 if (version != packageFileVersionME3)
                 {
                     count = input.ReadValueU32();
@@ -683,8 +683,6 @@ namespace MEDataExplorer
         {
             for (int i = 0; i < exportsTable.Count; i++)
             {
-                Buffer.BlockCopy(BitConverter.GetBytes(exportsTable[i].dataSize), 0, exportsTable[i].raw, 64, sizeof(uint));
-                Buffer.BlockCopy(BitConverter.GetBytes(exportsTable[i].dataOffset), 0, exportsTable[i].raw, 68, sizeof(uint));
                 output.WriteBytes(exportsTable[i].raw);
             }
         }
