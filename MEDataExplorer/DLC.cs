@@ -435,7 +435,7 @@ namespace MEDataExplorer
             byte[] entropy = getEntropyFromMAC(mac);
             if (!Directory.Exists(gameData.ConfigIniPath))
                 Directory.CreateDirectory(gameData.ConfigIniPath);
-            using (FileStream cacheDLCFile = new FileStream(gameData.EntitlementCacheIniPath, FileMode.CreateNew, FileAccess.Write))
+            using (FileStream cacheDLCFile = new FileStream(gameData.EntitlementCacheIniPath, FileMode.Create, FileAccess.Write))
             {
                 output = ProtectedData.Protect(buffer, entropy, DataProtectionScope.CurrentUser);
                 cacheDLCFile.WriteBytes(output);
