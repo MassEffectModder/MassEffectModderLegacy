@@ -472,6 +472,8 @@ namespace MEDataExplorer
                             block.uncomprSize = packageFile.ReadValueU32();
                             blocks.Add(block);
                         }
+                        chunk.blocks = blocks;
+                        chunks[c] = chunk;
 
                         for (int b = 0; b < blocks.Count; b++)
                         {
@@ -549,7 +551,7 @@ namespace MEDataExplorer
                 }
                 else
                 {
-                    entry.name = input.ReadString((uint)len);
+                    entry.name = input.ReadString(len, Encoding.ASCII);
                 }
                 entry.name = entry.name.Trim('\0');
 
@@ -561,6 +563,7 @@ namespace MEDataExplorer
                 namesTable.Add(entry);
             }
         }
+
         private void saveNames(Stream output)
         {
             for (int i = 0; i < namesTable.Count; i++)
@@ -569,12 +572,12 @@ namespace MEDataExplorer
                 if (packageFileVersion == packageFileVersionME3)
                 {
                     output.WriteValueS32((entry.name.Length + 1) * -2);
-                    output.WriteString(entry.name + '\0', Encoding.Unicode);
+                    output.WriteStringZ(entry.name, Encoding.Unicode);
                 }
                 else
                 {
                     output.WriteValueS32(entry.name.Length + 1);
-                    output.WriteString(entry.name + '\0');
+                    output.WriteStringZ(entry.name, Encoding.ASCII);
                 }
                 if (version == packageFileVersionME1)
                     output.WriteValueU64(entry.flags);
@@ -582,6 +585,7 @@ namespace MEDataExplorer
                     output.WriteValueU32((uint)entry.flags);
             }
         }
+
         private void loadExtraNames(Stream input)
         {
             extraNamesTable = new List<string>();
@@ -596,21 +600,31 @@ namespace MEDataExplorer
                 }
                 else
                 {
-                    name = input.ReadString((uint)len);
+                    name = input.ReadString(len, Encoding.ASCII);
                 }
                 name = name.Trim('\0');
                 extraNamesTable.Add(name);
             }
         }
+
         private void saveExtraNames(Stream output)
         {
             output.WriteValueS32(extraNamesTable.Count);
             for (int c = 0; c < extraNamesTable.Count; c++)
             {
-                output.WriteValueS32(extraNamesTable[c].Length + 1);
-                output.WriteString(extraNamesTable[c] + '\0', (uint)(extraNamesTable[c].Length + 1), Encoding.Unicode);
+                if (packageFileVersion == packageFileVersionME3)
+                {
+                    output.WriteValueS32((extraNamesTable[c].Length + 1) * -2);
+                    output.WriteStringZ(extraNamesTable[c], Encoding.Unicode);
+                }
+                else
+                {
+                    output.WriteValueS32(extraNamesTable[c].Length + 1);
+                    output.WriteStringZ(extraNamesTable[c], Encoding.ASCII);
+                }
             }
         }
+
         private void loadImports(Stream input)
         {
             importsTable = new List<ImportEntry>();
@@ -635,6 +649,7 @@ namespace MEDataExplorer
                 importsTable.Add(entry);
             }
         }
+
         private void saveImports(Stream output)
         {
             for (int i = 0; i < importsTable.Count; i++)
@@ -642,6 +657,7 @@ namespace MEDataExplorer
                 output.WriteBytes(importsTable[i].raw);
             }
         }
+
         private void loadExports(Stream input)
         {
             exportsTable = new List<ExportEntry>();
