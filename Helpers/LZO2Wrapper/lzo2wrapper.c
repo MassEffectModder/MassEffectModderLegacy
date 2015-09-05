@@ -64,9 +64,15 @@ LZO_EXPORT int LZOCompress(unsigned char *src, unsigned int src_len, unsigned ch
 	if (status != LZO_E_OK)
 		return status;
 
-	status = lzo1x_1_15_compress(src, src_len, dst, &len, wrkmem);
-	if (status == LZO_E_OK)
+	memset(wrkmem, 0, LZO1X_1_15_MEM_COMPRESS);
+	unsigned char *tmpBuffer = malloc(src_len + LZO1X_1_15_MEM_COMPRESS);
+	memset(tmpBuffer, 0, src_len + LZO1X_1_15_MEM_COMPRESS);
+	status = lzo1x_1_15_compress(src, src_len, tmpBuffer, &len, wrkmem);
+	if (status == LZO_E_OK) {
 		*dst_len = (unsigned int)len;
+		memcpy(dst, tmpBuffer, len);
+	}
+	free(tmpBuffer);
 
 	return status;
 }
