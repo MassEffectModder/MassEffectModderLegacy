@@ -189,7 +189,7 @@ namespace MEDataExplorer
             sfarFile.Close();
         }
 
-        public void pack(string inPath, string outPath)
+        public void pack(string inPath, string outPath, bool noCompress = false)
         {
             if (!Directory.Exists(inPath))
                 throw new Exception("Directory not found: " + inPath);
@@ -241,7 +241,7 @@ namespace MEDataExplorer
                 long sizesArrayOffset = dataOffset;
                 for (int i = 0; i < srcFilesList.Count; i++)
                 {
-                    if (srcFilesList[i].EndsWith(".bik") || srcFilesList[i].EndsWith(".afc"))
+                    if (srcFilesList[i].EndsWith(".bik") || srcFilesList[i].EndsWith(".afc") || noCompress)
                         continue;
                     ulong fileLen = (ulong)new FileInfo(srcFilesList[i]).Length;
                     long numBlocks = (long)((fileLen + MaxBlockSize - 1) / MaxBlockSize);
@@ -263,7 +263,7 @@ namespace MEDataExplorer
                         file.dataOffset = curDataOffset;
                         file.uncomprSize = fileLen;
                         file.filenameHash = hashList[i];
-                        if (srcFilesList[i].EndsWith(".bik") || srcFilesList[i].EndsWith(".afc"))
+                        if (srcFilesList[i].EndsWith(".bik") || srcFilesList[i].EndsWith(".afc") || noCompress)
                         {
                             outputFile.WriteFromStream(inputFile, fileLen);
                             file.compressedBlockSizesIndex = -1;
