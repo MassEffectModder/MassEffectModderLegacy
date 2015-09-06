@@ -736,7 +736,7 @@ namespace MEDataExplorer
             }
         }
 
-        public bool SaveToFile()
+        public bool SaveToFile(bool forceCompress = false)
         {
             if (packageFile.Length == 0)
                 return false;
@@ -777,7 +777,8 @@ namespace MEDataExplorer
                 export.dataOffset = newDataOffset; // update
                 exportsTable[i] = export;
             }
-            compressed = true; // override to compression
+            if (forceCompress) // override to compression
+                compressed = true;
             compressionType = CompressionType.Zlib; // overide compression type to Zlib
             tempOutput.Seek(0, SeekOrigin.Begin);
             tempOutput.Write(packageHeader, 0, packageHeader.Length);
