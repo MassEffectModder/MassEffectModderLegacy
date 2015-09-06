@@ -113,12 +113,24 @@ namespace MEDataExplorer
                         Application.DoEvents();
                         dlc.extract(sfarFiles[i], outPath, DLCname);
                     }
+
+                    // compress extracted PCC files
+                    List<string> packageFiles = Directory.GetFiles(gameData.DLCDataCache, "*.pcc", SearchOption.AllDirectories).ToList();
+                    packageFiles.RemoveAll(s => s.Contains("GuidCache"));
+                    for (int i = 0; i < packageFiles.Count; i++)
+                    {
+                        _mainWindow.updateStatusLabel("File " + (i + 1) + " of " + packageFiles.Count);
+                        Application.DoEvents();
+                        var package = new Package(packageFiles[i]);
+                        package.SaveToFile(true);
+                    }
                     _mainWindow.updateStatusLabel("Done");
                 }
+
                 _packageFiles = Directory.GetFiles(gameData.MainData, "*.pcc", SearchOption.AllDirectories).ToList();
                 if (Directory.Exists(gameData.DLCDataCache))
                     _packageFiles.AddRange(Directory.GetFiles(gameData.DLCDataCache, "*.pcc", SearchOption.AllDirectories));
-                _packageFiles.RemoveAll(s => s.Contains("GuidCache.pcc"));
+                _packageFiles.RemoveAll(s => s.Contains("GuidCache"));
             }
 
             for (int i = 0; i < _packageFiles.Count; i++)
