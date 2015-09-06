@@ -45,7 +45,7 @@ namespace ZlibHelper
         public unsafe static byte[] Compress(byte[] src)
         {
             uint dstLen = 0;
-            byte[] tmpbuf = new byte[src.Length * 2];
+            byte[] tmpbuf = new byte[(src.Length * 2) + 128];
 
             int status = ZlibCompress(src, (uint)src.Length, tmpbuf, ref dstLen);
             if (status != 0)
