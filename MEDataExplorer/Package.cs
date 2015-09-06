@@ -571,7 +571,7 @@ namespace MEDataExplorer
                 NameEntry entry = namesTable[i];
                 if (packageFileVersion == packageFileVersionME3)
                 {
-                    output.WriteValueS32((entry.name.Length + 1) * -2);
+                    output.WriteValueS32(-(entry.name.Length + 1));
                     output.WriteStringZ(entry.name, Encoding.Unicode);
                 }
                 else
@@ -614,7 +614,7 @@ namespace MEDataExplorer
             {
                 if (packageFileVersion == packageFileVersionME3)
                 {
-                    output.WriteValueS32((extraNamesTable[c].Length + 1) * -2);
+                    output.WriteValueS32(-(extraNamesTable[c].Length + 1));
                     output.WriteStringZ(extraNamesTable[c], Encoding.Unicode);
                 }
                 else
