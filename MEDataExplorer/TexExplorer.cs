@@ -133,16 +133,24 @@ namespace MEDataExplorer
                 _packageFiles.RemoveAll(s => s.Contains("GuidCache"));
             }
 
-            for (int i = 0; i < _packageFiles.Count; i++)
+            if (_gameSelected == MeType.ME3_TYPE)
             {
-                _mainWindow.updateStatusLabel("File " + (i + 1) + " of " + _packageFiles.Count);
-                Application.DoEvents();
-                MatchTextures(_packageFiles[i]);
+                //RepackME3();
+                PackAllME3DLC();
             }
-            _mainWindow.updateStatusLabel("Done");
 
             if (_gameSelected == MeType.ME2_TYPE)
                 UpdateME2DLC();
+        }
+
+        void RepackME12()
+        {
+            for (int i = 0; i < _packageFiles.Count; i++)
+            {
+                _mainWindow.updateStatusLabel("Repack file " + (i + 1) + " of " + _packageFiles.Count);
+                Application.DoEvents();
+                MatchTextures(_packageFiles[i]);
+            }
         }
 
         void UpdateME2DLC()
@@ -151,11 +159,31 @@ namespace MEDataExplorer
             dlc.updateChecksums(gameData);
         }
 
+        void RepackME3()
+        {
+            List<string> packageFiles = Directory.GetFiles(gameData.MainData, "*.pcc", SearchOption.AllDirectories).ToList();
+            packageFiles.RemoveAll(s => s.Contains("GuidCache"));
+            string TOCFilePath = Path.Combine(gameData.bioGamePath, "PCConsoleTOC.bin");
+            TOCBinFile tocFile = new TOCBinFile(TOCFilePath);
+            for (int i = 0; i < packageFiles.Count; i++)
+            {
+                _mainWindow.updateStatusLabel("Repack file " + (i + 1) + " of " + packageFiles.Count);
+                Application.DoEvents();
+                MatchTextures(packageFiles[i]);
+
+                int pos = _packageFiles[i].IndexOf(@"\BioGame\", StringComparison.CurrentCultureIgnoreCase);
+                string filename = packageFiles[i].Substring(pos + 1);
+                tocFile.updateFile(filename, packageFiles[i]);
+            }
+            tocFile.saveToFile(TOCFilePath);
+            _mainWindow.updateStatusLabel("Done");
+        }
+
         void PackME3DLC(string inPath, string DLCname)
         {
             string outPath = Path.Combine(gameData.DLCData, DLCname, "CookedPCConsole", "Default.sfar");
             ME3DLC dlc = new ME3DLC();
-            dlc.pack(inPath, outPath);
+            dlc.pack(inPath, outPath, true);
         }
 
         void PackAllME3DLC()
@@ -173,8 +201,8 @@ namespace MEDataExplorer
 
         void MatchTextures(string packageFileName)
         {
-            //var package = new Package(packageFileName);
-            //package.SaveToFile();
+            var package = new Package(packageFileName);
+            package.SaveToFile();
         }
 
         private void TexExplorer_FormClosed(object sender, FormClosedEventArgs e)

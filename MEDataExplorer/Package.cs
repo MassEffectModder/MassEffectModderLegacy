@@ -24,6 +24,7 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 using Gibbed.IO;
+using System.Security.Cryptography;
 
 namespace MEDataExplorer
 {
@@ -334,7 +335,7 @@ namespace MEDataExplorer
             }
         }
 
-        public Package( string filename)
+        public Package(string filename)
         {
             if (GameData.gameType == MeType.ME1_TYPE)
             {
@@ -389,7 +390,7 @@ namespace MEDataExplorer
                 packageFile.ReadValueU32(); // const 0
 
             loadExtraNames(packageFile);
-            
+
             if (compressed && packageFile.Position != chunks[0].comprOffset)
                 throw new Exception("wrong");
 
@@ -905,6 +906,148 @@ namespace MEDataExplorer
             packageData.Dispose();
             packageFile.Close();
         }
+    }
+
+    public class TOCBinFile
+    {
+        const uint TOCTag = 0x3AB70C13; // TOC tag
+        const int TOCHeaderSize = 12;
+
+        struct File
+        {
+            public ushort type;
+            public uint size;
+            public byte[] sha1;
+            public string path;
+        }
+
+        struct Block
+        {
+            public uint filesOffset;
+            public uint numFiles;
+            public List<File> filesList;
+        }
+        List<Block> blockList;
+
+        public TOCBinFile(string filename)
+        {
+            using (FileStream tocFile = new FileStream(filename, FileMode.Open, FileAccess.Read))
+            {
+                uint tag = tocFile.ReadValueU32();
+                if (tag != TOCTag)
+                    throw new Exception("Wrong TOCTag tag");
+                tocFile.ReadValueU32();
+
+                blockList = new List<Block>();
+                uint numBlocks = tocFile.ReadValueU32();
+                for (int b = 0; b < numBlocks; b++)
+                {
+                    Block block = new Block();
+                    block.filesOffset = tocFile.ReadValueU32();
+                    block.numFiles = tocFile.ReadValueU32();
+                    block.filesList = new List<File>();
+                    blockList.Add(block);
+                }
+
+                tocFile.Seek(TOCHeaderSize + (numBlocks * 8), SeekOrigin.Begin);
+                for (int b = 0; b < numBlocks; b++)
+                {
+                    Block block = blockList[b];
+                    File file = new File();
+                    for (int f = 0; f < block.numFiles; f++)
+                    {
+                        long curPos = tocFile.Position;
+                        ushort blockSize = tocFile.ReadValueU16();
+                        file.type = tocFile.ReadValueU16();
+                        if (file.type != 9 && file.type != 1)
+                            throw new Exception("wrong");
+                        file.size = tocFile.ReadValueU32();
+                        file.sha1 = tocFile.ReadBytes(20);
+                        file.path = tocFile.ReadStringZ(Encoding.ASCII);
+                        block.filesList.Add(file);
+                        tocFile.Seek(curPos + blockSize, SeekOrigin.Begin);
+                    }
+                    blockList[b] = block;
+                }
+            }
+        }
+
+        byte[] calculateSHA1(string filePath)
+        {
+            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            {
+                using (SHA1 sha1 = SHA1.Create())
+                {
+                    sha1.Initialize();
+                    return sha1.ComputeHash(fs);
+                }
+            }
+        }
+
+        public void updateFile(string filename, string filePath, bool updateSHA1 = true)
+        {
+            for (int b = 0; b < blockList.Count; b++)
+            {
+                for (int f = 0; f < blockList[b].numFiles; f++)
+                {
+                    File file = blockList[b].filesList[f];
+                    if (file.path == filename)
+                    {
+                        file.size = (uint)new FileInfo(filePath).Length;
+                        if (updateSHA1)
+                            file.sha1 = calculateSHA1(filePath);
+                        return;
+                    }
+                }
+            }
+            throw new Exception("not found");
+        }
+
+        public void saveToFile(string outPath, bool updateOffsets = false)
+        {
+            using (FileStream tocFile = new FileStream(outPath, FileMode.Create, FileAccess.Write))
+            {
+                tocFile.WriteValueU32(TOCTag);
+                tocFile.WriteValueU32(0);
+                tocFile.WriteValueU32((uint)blockList.Count);
+                tocFile.Seek(8 * blockList.Count, SeekOrigin.Current); // filled later
+
+                long lastOffset = 0;
+                for (int b = 0; b < blockList.Count; b++)
+                {
+                    Block block = blockList[b];
+                    if (updateOffsets)
+                        block.filesOffset = (uint)(tocFile.Position - TOCHeaderSize - (8 * b));
+                    for (int f = 0; f < blockList[b].numFiles; f++)
+                    {
+                        long fileOffset = lastOffset = tocFile.Position;
+                        File file = blockList[b].filesList[f];
+                        int blockSize = ((28 + (file.path.Length + 1) + 3) / 4) * 4; // align to 4
+                        tocFile.WriteValueU16((ushort)blockSize);
+                        tocFile.WriteValueU16(file.type);
+                        tocFile.WriteValueU32(file.size);
+                        tocFile.WriteBytes(file.sha1);
+                        tocFile.WriteStringZ(file.path, Encoding.ASCII);
+                        tocFile.Seek(fileOffset + blockSize - 1, SeekOrigin.Begin);
+                        tocFile.WriteByte(0); // make sure all bytes are written after seek
+                    }
+                    blockList[b] = block;
+                }
+                if (lastOffset != 0)
+                {
+                    tocFile.Seek(lastOffset, SeekOrigin.Begin);
+                    tocFile.WriteValueU16(0);
+                }
+
+                tocFile.Seek(TOCHeaderSize, SeekOrigin.Begin);
+                for (int b = 0; b < blockList.Count; b++)
+                {
+                    tocFile.WriteValueU32(blockList[b].filesOffset);
+                    tocFile.WriteValueU32(blockList[b].numFiles);
+                }
+            }
+        }
 
     }
+
 }

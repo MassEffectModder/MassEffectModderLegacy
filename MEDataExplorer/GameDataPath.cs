@@ -124,6 +124,27 @@ namespace MEDataExplorer
             }
         }
 
+        public string bioGamePath
+        {
+            get
+            {
+                if (_path != null)
+                {
+                    switch (gameType)
+                    {
+                        case MeType.ME1_TYPE:
+                        case MeType.ME2_TYPE:
+                        case MeType.ME3_TYPE:
+                            return Path.Combine(_path, @"BioGame");
+                        default:
+                            return null;
+                    }
+                }
+                else
+                    return null;
+            }
+        }
+
         public string DLCData
         {
             get

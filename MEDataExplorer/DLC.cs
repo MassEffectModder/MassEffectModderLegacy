@@ -50,6 +50,14 @@ namespace MEDataExplorer
             public long dataOffset;
         }
 
+        class FileArrayComparer : IComparer<FileEntry>
+        {
+            public int Compare(FileEntry x, FileEntry y)
+            {
+                return StructuralComparisons.StructuralComparer.Compare(x.filenameHash, y.filenameHash);
+            }
+        }
+
         public void extract(string filename, string outPath, string DLCName)
         {
             if (!File.Exists(filename))
@@ -147,11 +155,6 @@ namespace MEDataExplorer
                 Directory.CreateDirectory(outPath + dir);
                 using (FileStream outputFile = new FileStream(outPath + filenamesArray[i], FileMode.Create, FileAccess.Write))
                 {
-                    using (FileStream hashFile = new FileStream(outPath + filenamesArray[i] + ".hash", FileMode.Create, FileAccess.Write))
-                    {
-                        hashFile.WriteBytes(filesList[i].filenameHash);
-                    }
-
                     sfarFile.Seek(filesList[i].dataOffset, SeekOrigin.Begin);
                     if (filesList[i].compressedBlockSizesIndex == -1)
                     {
@@ -195,49 +198,53 @@ namespace MEDataExplorer
                 throw new Exception("Directory not found: " + inPath);
 
             List<string> srcFilesList = Directory.GetFiles(inPath, "*.*", SearchOption.AllDirectories).ToList();
-            srcFilesList.RemoveAll(s => s.EndsWith(".hash"));
 
             List<byte[]> hashList = new List<byte[]>();
 
             string[] filenamesArray = new string[srcFilesList.Count];
             var filenameMemStream = new MemoryStream();
+            int indexTOC = -1;
             for (int i = 0; i < srcFilesList.Count; i++)
             {
-                byte[] hash;
-                if (!File.Exists(srcFilesList[i] + ".hash"))
-                    throw new Exception("hash file not exist");
-                using (FileStream hashFile = new FileStream(srcFilesList[i] + ".hash", FileMode.Open, FileAccess.Read))
-                {
-                    hash = hashFile.ReadBytes(16);
-                    if (hash.Length != 16)
-                        throw new Exception("wrong hash");
-                }
                 int pos = srcFilesList[i].IndexOf("\\BIOGame\\DLC\\", StringComparison.CurrentCultureIgnoreCase);
                 string filename = srcFilesList[i].Substring(pos).Replace('\\', '/');
+                if (filename.EndsWith("PCConsoleTOC.bin"))
+                {
+                    indexTOC = i;
+                }
                 var bytes = new byte[filename.Length];
                 for (int k = 0; k < filename.Length; k++)
                 {
                     bytes[k] = (byte)char.ToLowerInvariant(filename[k]);
                 }
                 var md5 = MD5.Create();
-                var fileHash = md5.ComputeHash(bytes);
-
-                if (!StructuralComparisons.StructuralEqualityComparer.Equals(fileHash, hash))
-                    throw new Exception("wrong hash");
-
+                var hash = md5.ComputeHash(bytes);
                 hashList.Add(hash);
                 filenamesArray[i] = filename;
                 filenameMemStream.WriteString(filename + Environment.NewLine);
             }
-            byte[] filenamesEntry = SevenZipHelper.LZMA.Compress(5, filenameMemStream.ToArray());
+            byte[] filenamesEntry = SevenZipHelper.LZMA.Compress(9, filenameMemStream.ToArray());
             if (filenamesEntry.Length == 0)
                 throw new Exception("wrong");
+
+            string basePath = srcFilesList[0];
+            string path = basePath.Substring(0, basePath.IndexOf("\\BIOGame\\DLC\\", StringComparison.CurrentCultureIgnoreCase));
+            basePath = basePath.Substring(basePath.IndexOf("\\BIOGame\\DLC\\", StringComparison.CurrentCultureIgnoreCase) + "\\BIOGame\\DLC\\".Length);
+            basePath = basePath.Substring(basePath.IndexOf("\\") + 1);
+            int basePathIdx = srcFilesList[0].IndexOf(basePath);
+
+            TOCBinFile tocFile = new TOCBinFile(srcFilesList[indexTOC]);
+            for (int i = 0; i < srcFilesList.Count; i++)
+            {
+                tocFile.updateFile(srcFilesList[i].Substring(basePathIdx), srcFilesList[i]);
+            }
+            tocFile.saveToFile(srcFilesList[indexTOC]);
 
             using (FileStream outputFile = new FileStream(outPath, FileMode.Create, FileAccess.Write))
             {
                 long numBlockSizes = 1;
                 int curBlockSizesIndex = 0;
-                long dataOffset = (long)(HeaderSize + EntryHeaderSize * (srcFilesList.Count + 1));
+                long dataOffset = HeaderSize + EntryHeaderSize * (srcFilesList.Count + 1);
                 long sizesArrayOffset = dataOffset;
                 for (int i = 0; i < srcFilesList.Count; i++)
                 {
@@ -278,7 +285,7 @@ namespace MEDataExplorer
                                 if (k == (file.numBlocks - 1))
                                     uncompressedBlockSize = fileLen - (MaxBlockSize * (ulong)k);
                                 byte[] inBuf = inputFile.ReadBytes((int)uncompressedBlockSize);
-                                byte[] outBuf = SevenZipHelper.LZMA.Compress(0, inBuf);
+                                byte[] outBuf = SevenZipHelper.LZMA.Compress(9, inBuf);
                                 if (outBuf.Length == 0)
                                     throw new Exception("wrong");
                                 if (outBuf.Length >= (int)MaxBlockSize)
@@ -320,6 +327,7 @@ namespace MEDataExplorer
                 outputFile.WriteValueU32((uint)MaxBlockSize);
                 outputFile.WriteValueU32(LZMATag);
 
+                filesList.Sort(new FileArrayComparer());
                 for (int i = 0; i < filesList.Count; i++)
                 {
                     outputFile.WriteBytes(filesList[i].filenameHash);
