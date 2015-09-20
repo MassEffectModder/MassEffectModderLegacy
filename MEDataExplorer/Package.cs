@@ -737,7 +737,7 @@ namespace MEDataExplorer
             }
         }
 
-        public bool SaveToFile(bool forceCompress = false)
+        public bool SaveToFile(bool forceCompress = false, int compressionLevel = -1)
         {
             if (packageFile.Length == 0)
                 return false;
@@ -859,7 +859,7 @@ namespace MEDataExplorer
                             if (compressionType == CompressionType.LZO)
                                 dst = LZO2Helper.LZO2.Compress(src);
                             else if (compressionType == CompressionType.Zlib)
-                                dst = ZlibHelper.Zlib.Compress(src);
+                                dst = ZlibHelper.Zlib.Compress(src, compressionLevel);
                             else
                                 throw new Exception("Compression type not expected!");
                             if (dst.Length == 0)

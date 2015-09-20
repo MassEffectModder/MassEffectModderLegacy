@@ -169,7 +169,8 @@ namespace MEDataExplorer
             {
                 _mainWindow.updateStatusLabel("Repack file " + (i + 1) + " of " + packageFiles.Count);
                 Application.DoEvents();
-                MatchTextures(packageFiles[i]);
+                var package = new Package(packageFiles[i]);
+                package.SaveToFile();
 
                 int pos = _packageFiles[i].IndexOf(@"\BioGame\", StringComparison.CurrentCultureIgnoreCase);
                 string filename = packageFiles[i].Substring(pos + 1);
@@ -201,8 +202,6 @@ namespace MEDataExplorer
 
         void MatchTextures(string packageFileName)
         {
-            var package = new Package(packageFileName);
-            package.SaveToFile();
         }
 
         private void TexExplorer_FormClosed(object sender, FormClosedEventArgs e)
