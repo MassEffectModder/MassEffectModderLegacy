@@ -183,7 +183,7 @@ namespace MEDataExplorer
         {
             string outPath = Path.Combine(gameData.DLCData, DLCname, "CookedPCConsole", "Default.sfar");
             ME3DLC dlc = new ME3DLC();
-            dlc.pack(inPath, outPath, true);
+            dlc.pack(inPath, outPath, DLCname);
         }
 
         void PackAllME3DLC()
