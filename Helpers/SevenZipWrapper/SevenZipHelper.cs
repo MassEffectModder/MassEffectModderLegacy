@@ -30,7 +30,7 @@ namespace SevenZipHelper
         private static extern int SevenZipDecompress([In] byte[] srcBuf, uint srcLen, [Out] byte[] dstBuf, ref uint dstLen);
 
         [DllImport("sevenzipwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
-        private static extern int SevenZipCompress(uint compressionLevel, [In] byte[] srcBuf, uint srcLen, [Out] byte[] dstBuf, ref uint dstLen);
+        private static extern int SevenZipCompress(int compressionLevel, [In] byte[] srcBuf, uint srcLen, [Out] byte[] dstBuf, ref uint dstLen);
 
 
         public unsafe static byte[] Decompress(byte[] src, uint dstLen)
@@ -45,7 +45,7 @@ namespace SevenZipHelper
             return dst;
         }
 
-        public unsafe static byte[] Compress(uint compressionLevel, byte[] src)
+        public unsafe static byte[] Compress(byte[] src, int compressionLevel = 9)
         {
             uint dstLen = (uint)(src.Length * 2 + 8);
 			byte[] tmpbuf = new byte[dstLen];

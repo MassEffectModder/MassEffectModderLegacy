@@ -38,11 +38,11 @@ ZLIB_EXPORT int ZlibDecompress(unsigned char *src, unsigned int src_len, unsigne
 	return status;
 }
 
-ZLIB_EXPORT int ZlibCompress(unsigned char *src, unsigned int src_len, unsigned char *dst, unsigned int *dst_len)
+ZLIB_EXPORT int ZlibCompress(int compression_level, unsigned char *src, unsigned int src_len, unsigned char *dst, unsigned int *dst_len)
 {
 	uLongf len;
 
-	int status = compress((Bytef *)dst, &len, (Bytef *)src, (uLong)src_len);
+	int status = compress2((Bytef *)dst, &len, (Bytef *)src, (uLong)src_len, compression_level);
 	if (status == Z_OK)
 		*dst_len = len;
 

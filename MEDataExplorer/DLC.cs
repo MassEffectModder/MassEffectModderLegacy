@@ -264,7 +264,7 @@ namespace MEDataExplorer
                             if (k == (file.numBlocks - 1)) // last block
                                 uncompressedBlockSize = fileLen - (MaxBlockSize * k);
                             byte[] inBuf = inputFile.ReadBytes((int)uncompressedBlockSize);
-                            byte[] outBuf = SevenZipHelper.LZMA.Compress(9, inBuf);
+                            byte[] outBuf = SevenZipHelper.LZMA.Compress(inBuf);
                             if (outBuf.Length == 0)
                                 throw new Exception("wrong");
                             if (outBuf.Length >= (int)MaxBlockSize)

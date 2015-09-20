@@ -30,7 +30,7 @@ namespace ZlibHelper
         private static extern int ZlibDecompress([In] byte[] srcBuf, uint srcLen, [Out] byte[] dstBuf, ref uint dstLen);
 
         [DllImport("zlibwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
-        private static extern int ZlibCompress([In] byte[] srcBuf, uint srcLen, [Out] byte[] dstBuf, ref uint dstLen);
+        private static extern int ZlibCompress(int compressionLevel, [In] byte[] srcBuf, uint srcLen, [Out] byte[] dstBuf, ref uint dstLen);
 
 
         public unsafe static uint Decompress(byte[] src, uint srcLen, byte[] dst)
@@ -42,12 +42,12 @@ namespace ZlibHelper
             return dstLen;
         }
 
-        public unsafe static byte[] Compress(byte[] src)
+        public unsafe static byte[] Compress(byte[] src, int compressionLevel = -1)
         {
             uint dstLen = 0;
             byte[] tmpbuf = new byte[(src.Length * 2) + 128];
 
-            int status = ZlibCompress(src, (uint)src.Length, tmpbuf, ref dstLen);
+            int status = ZlibCompress(compressionLevel, src, (uint)src.Length, tmpbuf, ref dstLen);
             if (status != 0)
                 return new byte[0];
 
