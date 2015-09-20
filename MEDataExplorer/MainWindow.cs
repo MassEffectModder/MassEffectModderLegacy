@@ -42,32 +42,39 @@ namespace MEDataExplorer
             _configIni = new ConfIni();
         }
 
-        private void massEffect1ToolStripMenuItemCommon(MeType type)
+        private void massEffectToolStripMenuItemCommon()
         {
             enableGameDataMenu(false);
             toolStripMenuME1.Enabled = false;
             toolStripMenuME2.Enabled = false;
             toolStripMenuME3.Enabled = false;
-            TexExplorer explorer = new TexExplorer(this);
+        }
+
+        public TexExplorer CreateTextureExplorer(MeType type)
+        {
+            TexExplorer explorer = new TexExplorer(this, type);
             explorer.MdiParent = this;
             explorer.WindowState = FormWindowState.Maximized;
             explorer.Show();
-            explorer.Run(type);
+            return explorer;
         }
 
         private void massEffect1ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            massEffect1ToolStripMenuItemCommon(MeType.ME1_TYPE);
+            massEffectToolStripMenuItemCommon();
+            CreateTextureExplorer(MeType.ME1_TYPE).Run();
         }
 
         private void massEffect2ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            massEffect1ToolStripMenuItemCommon(MeType.ME2_TYPE);
+            massEffectToolStripMenuItemCommon();
+            CreateTextureExplorer(MeType.ME3_TYPE).Run();
         }
 
         private void massEffect3ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            massEffect1ToolStripMenuItemCommon(MeType.ME3_TYPE);
+            massEffectToolStripMenuItemCommon();
+            CreateTextureExplorer(MeType.ME3_TYPE).Run();
         }
 
         public void enableGameDataMenu(bool enable)
@@ -80,6 +87,66 @@ namespace MEDataExplorer
         public void updateStatusLabel(string text)
         {
             toolStripStatusLabel.Text = text;
+        }
+
+        private void updateME1ConfigToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            massEffectToolStripMenuItemCommon();
+            CreateTextureExplorer(MeType.ME1_TYPE).UpdateME1Config();
+        }
+
+        private void repackME1ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            massEffectToolStripMenuItemCommon();
+            CreateTextureExplorer(MeType.ME1_TYPE).RepackME12();
+        }
+
+        private void repackME2ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            massEffectToolStripMenuItemCommon();
+            CreateTextureExplorer(MeType.ME2_TYPE).RepackME12();
+        }
+
+        private void updateME2DLCCacheToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            massEffectToolStripMenuItemCommon();
+            CreateTextureExplorer(MeType.ME2_TYPE).UpdateME2DLC();
+        }
+
+        private void repackME3MainDataToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            massEffectToolStripMenuItemCommon();
+            CreateTextureExplorer(MeType.ME3_TYPE).RepackME3();
+        }
+
+        private void repackME3DLCDatauncompressedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            massEffectToolStripMenuItemCommon();
+            CreateTextureExplorer(MeType.ME3_TYPE).RepackDLCME3(false);
+        }
+
+        private void repackME3DLCDataZlibToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            massEffectToolStripMenuItemCommon();
+            CreateTextureExplorer(MeType.ME3_TYPE).RepackDLCME3(true);
+        }
+
+        private void extractME3DLCPackagesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            massEffectToolStripMenuItemCommon();
+            CreateTextureExplorer(MeType.ME3_TYPE).ExtractME3DLC();
+        }
+
+        private void packME3DLCPackagesUncompressedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            massEffectToolStripMenuItemCommon();
+            CreateTextureExplorer(MeType.ME3_TYPE).PackAllME3DLC(false);
+        }
+
+        private void packME3DLCPackagesLZMAToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            massEffectToolStripMenuItemCommon();
+            CreateTextureExplorer(MeType.ME3_TYPE).PackAllME3DLC(true);
         }
     }
 }

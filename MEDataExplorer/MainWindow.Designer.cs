@@ -58,6 +58,16 @@ namespace MEDataExplorer
             this.massEffect2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuME3 = new System.Windows.Forms.ToolStripMenuItem();
             this.massEffect3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.updateME1ConfigToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.repackME1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.repackME2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.updateME2DLCCacheToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.repackME3MainDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.repackME3DLCDatauncompressedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.repackME3DLCDataZlibToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.extractME3DLCPackagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.packME3DLCPackagesUncompressedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.packME3DLCPackagesLZMAToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuGame.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.SuspendLayout();
@@ -76,7 +86,9 @@ namespace MEDataExplorer
             // toolStripMenuME1
             // 
             this.toolStripMenuME1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.massEffect1ToolStripMenuItem});
+            this.massEffect1ToolStripMenuItem,
+            this.repackME1ToolStripMenuItem,
+            this.updateME1ConfigToolStripMenuItem});
             this.toolStripMenuME1.Name = "toolStripMenuME1";
             this.toolStripMenuME1.Size = new System.Drawing.Size(88, 20);
             this.toolStripMenuME1.Text = "Mass Effect 1";
@@ -105,7 +117,9 @@ namespace MEDataExplorer
             // toolStripMenuME2
             // 
             this.toolStripMenuME2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.massEffect2ToolStripMenuItem});
+            this.massEffect2ToolStripMenuItem,
+            this.repackME2ToolStripMenuItem,
+            this.updateME2DLCCacheToolStripMenuItem});
             this.toolStripMenuME2.Name = "toolStripMenuME2";
             this.toolStripMenuME2.Size = new System.Drawing.Size(88, 20);
             this.toolStripMenuME2.Text = "Mass Effect 2";
@@ -113,14 +127,20 @@ namespace MEDataExplorer
             // massEffect2ToolStripMenuItem
             // 
             this.massEffect2ToolStripMenuItem.Name = "massEffect2ToolStripMenuItem";
-            this.massEffect2ToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.massEffect2ToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
             this.massEffect2ToolStripMenuItem.Text = "Texture Explorer";
             this.massEffect2ToolStripMenuItem.Click += new System.EventHandler(this.massEffect2ToolStripMenuItem_Click);
             // 
             // toolStripMenuME3
             // 
             this.toolStripMenuME3.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.massEffect3ToolStripMenuItem});
+            this.massEffect3ToolStripMenuItem,
+            this.repackME3MainDataToolStripMenuItem,
+            this.repackME3DLCDatauncompressedToolStripMenuItem,
+            this.repackME3DLCDataZlibToolStripMenuItem,
+            this.extractME3DLCPackagesToolStripMenuItem,
+            this.packME3DLCPackagesUncompressedToolStripMenuItem,
+            this.packME3DLCPackagesLZMAToolStripMenuItem});
             this.toolStripMenuME3.Name = "toolStripMenuME3";
             this.toolStripMenuME3.Size = new System.Drawing.Size(88, 20);
             this.toolStripMenuME3.Text = "Mass Effect 3";
@@ -128,9 +148,79 @@ namespace MEDataExplorer
             // massEffect3ToolStripMenuItem
             // 
             this.massEffect3ToolStripMenuItem.Name = "massEffect3ToolStripMenuItem";
-            this.massEffect3ToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.massEffect3ToolStripMenuItem.Size = new System.Drawing.Size(266, 22);
             this.massEffect3ToolStripMenuItem.Text = "Texture Explorer";
             this.massEffect3ToolStripMenuItem.Click += new System.EventHandler(this.massEffect3ToolStripMenuItem_Click);
+            // 
+            // updateME1ConfigToolStripMenuItem
+            // 
+            this.updateME1ConfigToolStripMenuItem.Name = "updateME1ConfigToolStripMenuItem";
+            this.updateME1ConfigToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.updateME1ConfigToolStripMenuItem.Text = "Update Config";
+            this.updateME1ConfigToolStripMenuItem.Click += new System.EventHandler(this.updateME1ConfigToolStripMenuItem_Click);
+            // 
+            // repackME1ToolStripMenuItem
+            // 
+            this.repackME1ToolStripMenuItem.Name = "repackME1ToolStripMenuItem";
+            this.repackME1ToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.repackME1ToolStripMenuItem.Text = "Repack (Zlib)";
+            this.repackME1ToolStripMenuItem.Click += new System.EventHandler(this.repackME1ToolStripMenuItem_Click);
+            // 
+            // repackME2ToolStripMenuItem
+            // 
+            this.repackME2ToolStripMenuItem.Name = "repackME2ToolStripMenuItem";
+            this.repackME2ToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.repackME2ToolStripMenuItem.Text = "Repack (Zlib)";
+            this.repackME2ToolStripMenuItem.Click += new System.EventHandler(this.repackME2ToolStripMenuItem_Click);
+            // 
+            // updateME2DLCCacheToolStripMenuItem
+            // 
+            this.updateME2DLCCacheToolStripMenuItem.Name = "updateME2DLCCacheToolStripMenuItem";
+            this.updateME2DLCCacheToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.updateME2DLCCacheToolStripMenuItem.Text = "Update DLC Cache";
+            this.updateME2DLCCacheToolStripMenuItem.Click += new System.EventHandler(this.updateME2DLCCacheToolStripMenuItem_Click);
+            // 
+            // repackME3MainDataToolStripMenuItem
+            // 
+            this.repackME3MainDataToolStripMenuItem.Name = "repackME3MainDataToolStripMenuItem";
+            this.repackME3MainDataToolStripMenuItem.Size = new System.Drawing.Size(266, 22);
+            this.repackME3MainDataToolStripMenuItem.Text = "Repack Main Data";
+            this.repackME3MainDataToolStripMenuItem.Click += new System.EventHandler(this.repackME3MainDataToolStripMenuItem_Click);
+            // 
+            // repackME3DLCDatauncompressedToolStripMenuItem
+            // 
+            this.repackME3DLCDatauncompressedToolStripMenuItem.Name = "repackME3DLCDatauncompressedToolStripMenuItem";
+            this.repackME3DLCDatauncompressedToolStripMenuItem.Size = new System.Drawing.Size(266, 22);
+            this.repackME3DLCDatauncompressedToolStripMenuItem.Text = "Repack DLC Data (uncompressed)";
+            this.repackME3DLCDatauncompressedToolStripMenuItem.Click += new System.EventHandler(this.repackME3DLCDatauncompressedToolStripMenuItem_Click);
+            // 
+            // repackME3DLCDataZlibToolStripMenuItem
+            // 
+            this.repackME3DLCDataZlibToolStripMenuItem.Name = "repackME3DLCDataZlibToolStripMenuItem";
+            this.repackME3DLCDataZlibToolStripMenuItem.Size = new System.Drawing.Size(266, 22);
+            this.repackME3DLCDataZlibToolStripMenuItem.Text = "Repack DLC Data (Zlib)";
+            this.repackME3DLCDataZlibToolStripMenuItem.Click += new System.EventHandler(this.repackME3DLCDataZlibToolStripMenuItem_Click);
+            // 
+            // extractME3DLCPackagesToolStripMenuItem
+            // 
+            this.extractME3DLCPackagesToolStripMenuItem.Name = "extractME3DLCPackagesToolStripMenuItem";
+            this.extractME3DLCPackagesToolStripMenuItem.Size = new System.Drawing.Size(266, 22);
+            this.extractME3DLCPackagesToolStripMenuItem.Text = "Extract DLC Packages";
+            this.extractME3DLCPackagesToolStripMenuItem.Click += new System.EventHandler(this.extractME3DLCPackagesToolStripMenuItem_Click);
+            // 
+            // packME3DLCPackagesUncompressedToolStripMenuItem
+            // 
+            this.packME3DLCPackagesUncompressedToolStripMenuItem.Name = "packME3DLCPackagesUncompressedToolStripMenuItem";
+            this.packME3DLCPackagesUncompressedToolStripMenuItem.Size = new System.Drawing.Size(266, 22);
+            this.packME3DLCPackagesUncompressedToolStripMenuItem.Text = "Pack DLC Packages (Uncompressed)";
+            this.packME3DLCPackagesUncompressedToolStripMenuItem.Click += new System.EventHandler(this.packME3DLCPackagesUncompressedToolStripMenuItem_Click);
+            // 
+            // packME3DLCPackagesLZMAToolStripMenuItem
+            // 
+            this.packME3DLCPackagesLZMAToolStripMenuItem.Name = "packME3DLCPackagesLZMAToolStripMenuItem";
+            this.packME3DLCPackagesLZMAToolStripMenuItem.Size = new System.Drawing.Size(266, 22);
+            this.packME3DLCPackagesLZMAToolStripMenuItem.Text = "Pack DLC Packages (LZMA)";
+            this.packME3DLCPackagesLZMAToolStripMenuItem.Click += new System.EventHandler(this.packME3DLCPackagesLZMAToolStripMenuItem_Click);
             // 
             // MainWindow
             // 
@@ -163,6 +253,16 @@ namespace MEDataExplorer
         private System.Windows.Forms.ToolStripMenuItem massEffect2ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuME3;
         private System.Windows.Forms.ToolStripMenuItem massEffect3ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem updateME1ConfigToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem repackME1ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem repackME2ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem updateME2DLCCacheToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem repackME3MainDataToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem repackME3DLCDatauncompressedToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem repackME3DLCDataZlibToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem extractME3DLCPackagesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem packME3DLCPackagesUncompressedToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem packME3DLCPackagesLZMAToolStripMenuItem;
     }
 }
 
