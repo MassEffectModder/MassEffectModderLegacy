@@ -45,7 +45,9 @@ namespace MEDataExplorer
         private void massEffect1ToolStripMenuItemCommon(MeType type)
         {
             enableGameDataMenu(false);
-            toolStripMenuGame.Enabled = false;
+            toolStripMenuME1.Enabled = false;
+            toolStripMenuME2.Enabled = false;
+            toolStripMenuME3.Enabled = false;
             TexExplorer explorer = new TexExplorer(this);
             explorer.MdiParent = this;
             explorer.WindowState = FormWindowState.Maximized;
@@ -70,7 +72,9 @@ namespace MEDataExplorer
 
         public void enableGameDataMenu(bool enable)
         {
-            toolStripMenuGame.Enabled = enable;
+            toolStripMenuME1.Enabled = enable;
+            toolStripMenuME2.Enabled = enable;
+            toolStripMenuME3.Enabled = enable;
         }
 
         public void updateStatusLabel(string text)

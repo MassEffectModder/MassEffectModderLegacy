@@ -50,12 +50,14 @@ namespace MEDataExplorer
         private void InitializeComponent()
         {
             this.menuGame = new System.Windows.Forms.MenuStrip();
-            this.toolStripMenuGame = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuME1 = new System.Windows.Forms.ToolStripMenuItem();
             this.massEffect1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.massEffect2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.massEffect3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripMenuME2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.massEffect2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuME3 = new System.Windows.Forms.ToolStripMenuItem();
+            this.massEffect3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuGame.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.SuspendLayout();
@@ -63,42 +65,28 @@ namespace MEDataExplorer
             // menuGame
             // 
             this.menuGame.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuGame});
+            this.toolStripMenuME1,
+            this.toolStripMenuME2,
+            this.toolStripMenuME3});
             this.menuGame.Location = new System.Drawing.Point(0, 0);
             this.menuGame.Name = "menuGame";
             this.menuGame.Size = new System.Drawing.Size(796, 24);
             this.menuGame.TabIndex = 0;
             // 
-            // toolStripMenuGame
+            // toolStripMenuME1
             // 
-            this.toolStripMenuGame.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.massEffect1ToolStripMenuItem,
-            this.massEffect2ToolStripMenuItem,
-            this.massEffect3ToolStripMenuItem});
-            this.toolStripMenuGame.Name = "toolStripMenuGame";
-            this.toolStripMenuGame.Size = new System.Drawing.Size(137, 20);
-            this.toolStripMenuGame.Text = "Game Texture Explorer";
+            this.toolStripMenuME1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.massEffect1ToolStripMenuItem});
+            this.toolStripMenuME1.Name = "toolStripMenuME1";
+            this.toolStripMenuME1.Size = new System.Drawing.Size(88, 20);
+            this.toolStripMenuME1.Text = "Mass Effect 1";
             // 
             // massEffect1ToolStripMenuItem
             // 
             this.massEffect1ToolStripMenuItem.Name = "massEffect1ToolStripMenuItem";
-            this.massEffect1ToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
-            this.massEffect1ToolStripMenuItem.Text = "Mass Effect 1";
+            this.massEffect1ToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.massEffect1ToolStripMenuItem.Text = "Texture Explorer";
             this.massEffect1ToolStripMenuItem.Click += new System.EventHandler(this.massEffect1ToolStripMenuItem_Click);
-            // 
-            // massEffect2ToolStripMenuItem
-            // 
-            this.massEffect2ToolStripMenuItem.Name = "massEffect2ToolStripMenuItem";
-            this.massEffect2ToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
-            this.massEffect2ToolStripMenuItem.Text = "Mass Effect 2";
-            this.massEffect2ToolStripMenuItem.Click += new System.EventHandler(this.massEffect2ToolStripMenuItem_Click);
-            // 
-            // massEffect3ToolStripMenuItem
-            // 
-            this.massEffect3ToolStripMenuItem.Name = "massEffect3ToolStripMenuItem";
-            this.massEffect3ToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
-            this.massEffect3ToolStripMenuItem.Text = "Mass Effect 3";
-            this.massEffect3ToolStripMenuItem.Click += new System.EventHandler(this.massEffect3ToolStripMenuItem_Click);
             // 
             // statusStrip
             // 
@@ -113,6 +101,36 @@ namespace MEDataExplorer
             // 
             this.toolStripStatusLabel.Name = "toolStripStatusLabel";
             this.toolStripStatusLabel.Size = new System.Drawing.Size(0, 17);
+            // 
+            // toolStripMenuME2
+            // 
+            this.toolStripMenuME2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.massEffect2ToolStripMenuItem});
+            this.toolStripMenuME2.Name = "toolStripMenuME2";
+            this.toolStripMenuME2.Size = new System.Drawing.Size(88, 20);
+            this.toolStripMenuME2.Text = "Mass Effect 2";
+            // 
+            // massEffect2ToolStripMenuItem
+            // 
+            this.massEffect2ToolStripMenuItem.Name = "massEffect2ToolStripMenuItem";
+            this.massEffect2ToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.massEffect2ToolStripMenuItem.Text = "Texture Explorer";
+            this.massEffect2ToolStripMenuItem.Click += new System.EventHandler(this.massEffect2ToolStripMenuItem_Click);
+            // 
+            // toolStripMenuME3
+            // 
+            this.toolStripMenuME3.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.massEffect3ToolStripMenuItem});
+            this.toolStripMenuME3.Name = "toolStripMenuME3";
+            this.toolStripMenuME3.Size = new System.Drawing.Size(88, 20);
+            this.toolStripMenuME3.Text = "Mass Effect 3";
+            // 
+            // massEffect3ToolStripMenuItem
+            // 
+            this.massEffect3ToolStripMenuItem.Name = "massEffect3ToolStripMenuItem";
+            this.massEffect3ToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.massEffect3ToolStripMenuItem.Text = "Texture Explorer";
+            this.massEffect3ToolStripMenuItem.Click += new System.EventHandler(this.massEffect3ToolStripMenuItem_Click);
             // 
             // MainWindow
             // 
@@ -138,11 +156,13 @@ namespace MEDataExplorer
 
         private System.Windows.Forms.MenuStrip menuGame;
         private System.Windows.Forms.StatusStrip statusStrip;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuGame;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuME1;
         private System.Windows.Forms.ToolStripMenuItem massEffect1ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem massEffect2ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem massEffect3ToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuME2;
+        private System.Windows.Forms.ToolStripMenuItem massEffect2ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuME3;
+        private System.Windows.Forms.ToolStripMenuItem massEffect3ToolStripMenuItem;
     }
 }
 
