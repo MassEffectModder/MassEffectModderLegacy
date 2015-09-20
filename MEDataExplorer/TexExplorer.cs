@@ -51,26 +51,11 @@ namespace MEDataExplorer
             if (_gameSelected == MeType.ME1_TYPE)
             {
                 UpdateME1Config();
-
-                if (!File.Exists(gameData.GameExePath))
-                    throw new FileNotFoundException("Game exe not found: " + gameData.GameExePath);
-
-                using (FileStream fs = new FileStream(gameData.GameExePath, FileMode.Open, FileAccess.Read))
-                {
-                    fs.Seek(0x146, SeekOrigin.Begin); // offset to byte with LAA flag
-                    var flag = fs.ReadByte();
-                    if (flag == 0x02)
-                        MessageBox.Show("Warning: Large Aware Address flag is not enabled in MassEffect.exe file.");
-                    else if (flag == 0x22)
-                    {
-                        ; // LAA flag enabled
-                    }
-                    else
-                        throw new Exception("Not expected flags in exe file");
-                }
+                VerifyME1Exe();
             }
 
             GetPackages(_gameSelected);
+
         }
 
         public void GetPackages(MeType gameType)
@@ -121,6 +106,26 @@ namespace MEDataExplorer
                 engineConf.Write("TEXTUREGROUP_Character_Diff", "(MinLODSize=512,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
                 engineConf.Write("TEXTUREGROUP_Character_Norm", "(MinLODSize=512,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
                 engineConf.Write("TEXTUREGROUP_Character_Spec", "(MinLODSize=256,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
+            }
+        }
+
+        void VerifyME1Exe()
+        {
+            if (!File.Exists(gameData.GameExePath))
+                throw new FileNotFoundException("Game exe not found: " + gameData.GameExePath);
+
+            using (FileStream fs = new FileStream(gameData.GameExePath, FileMode.Open, FileAccess.Read))
+            {
+                fs.Seek(0x146, SeekOrigin.Begin); // offset to byte with LAA flag
+                var flag = fs.ReadByte();
+                if (flag == 0x02)
+                    MessageBox.Show("Warning: Large Aware Address flag is not enabled in MassEffect.exe file.");
+                else if (flag == 0x22)
+                {
+                    ; // LAA flag enabled
+                }
+                else
+                    throw new Exception("Not expected flags in exe file");
             }
         }
 
