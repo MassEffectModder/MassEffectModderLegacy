@@ -423,12 +423,12 @@ namespace MEDataExplorer
             loadExtraNames(packageFile);
 
             if (compressed && packageFile.Position != chunks[0].comprOffset)
-                throw new Exception("wrong");
+                throw new Exception();
 
             dataOffset += packageFile.Position - filePos;
 
             if (compressed && dataOffset != chunks[0].uncomprOffset)
-                throw new Exception("wrong");
+                throw new Exception();
 
             uint length = endOfTablesOffset - (uint)dataOffset;
             packageData.Seek(dataOffset, SeekOrigin.Begin);
@@ -440,7 +440,7 @@ namespace MEDataExplorer
             if (endOfTablesOffset < namesOffset)
             {
                 if (compressed) // allowed only uncompressed
-                    throw new Exception("wrong");
+                    throw new Exception();
                 loadNames(packageFile);
             }
             else
@@ -586,7 +586,7 @@ namespace MEDataExplorer
         public string getName(int id)
         {
             if (id >= namesTable.Count)
-                throw new Exception("wrong");
+                throw new Exception();
             return namesTable[id].name;
         }
 
@@ -842,7 +842,7 @@ namespace MEDataExplorer
                 tempOutput.WriteValueU32(0); // const 0
             saveExtraNames(tempOutput);
             if (dataOffset != tempOutput.Position)
-                throw new Exception("wrong");
+                throw new Exception();
             namesOffset = (uint)tempOutput.Position;
             saveNames(tempOutput);
             importsOffset = (uint)tempOutput.Position;
@@ -1051,7 +1051,7 @@ namespace MEDataExplorer
                         ushort blockSize = tocFile.ReadValueU16();
                         file.type = tocFile.ReadValueU16();
                         if (file.type != 9 && file.type != 1)
-                            throw new Exception("wrong");
+                            throw new Exception();
                         file.size = tocFile.ReadValueU32();
                         file.sha1 = tocFile.ReadBytes(20);
                         file.path = tocFile.ReadStringZ(Encoding.ASCII);

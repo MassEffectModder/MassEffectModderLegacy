@@ -116,7 +116,7 @@ namespace MEDataExplorer
                     byte[] inBuf = sfarFile.ReadBytes(compressedBlockSize);
                     byte[] outBuf = SevenZipHelper.LZMA.Decompress(inBuf, (uint)filesList[i].uncomprSize);
                     if (outBuf.Length == 0)
-                        throw new Exception("wrong");
+                        throw new Exception();
                     using (FileStream outputFile = new FileStream(outPath + @"\TOC", FileMode.Create, FileAccess.Write))
                     {
                         var filenamesStream = new StreamReader(new MemoryStream(outBuf));
@@ -178,7 +178,7 @@ namespace MEDataExplorer
                                 byte[] inBuf = sfarFile.ReadBytes(compressedBlockSize);
                                 byte[] outBuf = SevenZipHelper.LZMA.Decompress(inBuf, (uint)uncompressedBlockSize);
                                 if (outBuf.Length == 0)
-                                    throw new Exception("wrong");
+                                    throw new Exception();
                                 outputFile.WriteBytes(outBuf);
                             }
                             bytesLeft -= uncompressedBlockSize;
@@ -266,7 +266,7 @@ namespace MEDataExplorer
                             byte[] inBuf = inputFile.ReadBytes((int)uncompressedBlockSize);
                             byte[] outBuf = SevenZipHelper.LZMA.Compress(inBuf);
                             if (outBuf.Length == 0)
-                                throw new Exception("wrong");
+                                throw new Exception();
                             if (outBuf.Length >= (int)MaxBlockSize)
                             {
                                 outputFile.WriteBytes(inBuf);
@@ -289,7 +289,7 @@ namespace MEDataExplorer
                 }
 
                 if (blockSizes.Count() != curBlockSizesIndex)
-                    throw new Exception("wrong");
+                    throw new Exception();
 
                 outputFile.Seek(0, SeekOrigin.Begin);
                 outputFile.WriteValueU32(SfarTag);
@@ -313,7 +313,7 @@ namespace MEDataExplorer
                 }
 
                 if (outputFile.Position != sizesArrayOffset)
-                    throw new Exception("wrong");
+                    throw new Exception();
 
                 for (int i = 0; i < blockSizes.Count(); i++)
                 {
@@ -321,7 +321,7 @@ namespace MEDataExplorer
                 }
 
                 if (outputFile.Position != dataOffset)
-                    throw new Exception("wrong");
+                    throw new Exception();
             }
         }
     }
