@@ -1,4 +1,4 @@
-This program use Gibbed.IO and CRC32 source code which is covered by
+This program use Gibbed.IO source code which is covered by
 the following license.
 
 Copyright (c) 2012 Rick (rick 'at' gibbed 'dot' us)
