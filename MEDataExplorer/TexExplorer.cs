@@ -58,7 +58,7 @@ namespace MEDataExplorer
 
         }
 
-        public void GetPackages(MeType gameType)
+        public bool GetPackages(MeType gameType)
         {
             if (_gameSelected == MeType.ME1_TYPE)
             {
@@ -84,13 +84,14 @@ namespace MEDataExplorer
                 if (!Directory.Exists(gameData.DLCDataCache))
                 {
                     MessageBox.Show("DLCCache directory is missing, you need exract DLC packages first.");
-                    return;
+                    return false;
                 }
                 _packageFiles = Directory.GetFiles(gameData.MainData, "*.pcc", SearchOption.AllDirectories).ToList();
                 if (Directory.Exists(gameData.DLCDataCache))
                     _packageFiles.AddRange(Directory.GetFiles(gameData.DLCDataCache, "*.pcc", SearchOption.AllDirectories));
                 _packageFiles.RemoveAll(s => s.Contains("GuidCache"));
             }
+            return true;
         }
 
         public void UpdateME1Config()
@@ -139,12 +140,14 @@ namespace MEDataExplorer
                 var package = new Package(_packageFiles[i]);
                 package.SaveToFile(true);
             }
+            _mainWindow.updateStatusLabel("Done");
         }
 
         public void UpdateME2DLC()
         {
             ME2DLC dlc = new ME2DLC();
             dlc.updateChecksums(gameData);
+            _mainWindow.updateStatusLabel("Done");
         }
 
         public void RepackME3()
@@ -208,7 +211,7 @@ namespace MEDataExplorer
             _mainWindow.updateStatusLabel("Done");
         }
 
-        void PackME3DLC(string inPath, string DLCname, bool compressed)
+        private void PackME3DLC(string inPath, string DLCname, bool compressed)
         {
             string outPath = Path.Combine(gameData.DLCData, DLCname, "CookedPCConsole", "Default.sfar");
             ME3DLC dlc = new ME3DLC();

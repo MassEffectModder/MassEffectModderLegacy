@@ -42,12 +42,16 @@ namespace MEDataExplorer
             _configIni = new ConfIni();
         }
 
-        private void massEffectToolStripMenuItemCommon()
+        public void enableGameDataMenu(bool enable)
         {
-            enableGameDataMenu(false);
-            toolStripMenuME1.Enabled = false;
-            toolStripMenuME2.Enabled = false;
-            toolStripMenuME3.Enabled = false;
+            toolStripMenuME1.Enabled = enable;
+            toolStripMenuME2.Enabled = enable;
+            toolStripMenuME3.Enabled = enable;
+        }
+
+        public void updateStatusLabel(string text)
+        {
+            toolStripStatusLabel.Text = text;
         }
 
         public TexExplorer CreateTextureExplorer(MeType type)
@@ -61,92 +65,93 @@ namespace MEDataExplorer
 
         private void massEffect1ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            massEffectToolStripMenuItemCommon();
+            enableGameDataMenu(false);
             CreateTextureExplorer(MeType.ME1_TYPE).Run();
+            enableGameDataMenu(true);
         }
 
         private void massEffect2ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            massEffectToolStripMenuItemCommon();
-            CreateTextureExplorer(MeType.ME3_TYPE).Run();
+            enableGameDataMenu(false);
+            CreateTextureExplorer(MeType.ME2_TYPE).Run();
+            enableGameDataMenu(true);
         }
 
         private void massEffect3ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            massEffectToolStripMenuItemCommon();
+            enableGameDataMenu(false);
             CreateTextureExplorer(MeType.ME3_TYPE).Run();
-        }
-
-        public void enableGameDataMenu(bool enable)
-        {
-            toolStripMenuME1.Enabled = enable;
-            toolStripMenuME2.Enabled = enable;
-            toolStripMenuME3.Enabled = enable;
-        }
-
-        public void updateStatusLabel(string text)
-        {
-            toolStripStatusLabel.Text = text;
+            enableGameDataMenu(true);
         }
 
         private void updateME1ConfigToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            massEffectToolStripMenuItemCommon();
+            enableGameDataMenu(false);
             CreateTextureExplorer(MeType.ME1_TYPE).UpdateME1Config();
+            enableGameDataMenu(true);
         }
 
         private void repackME1ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            massEffectToolStripMenuItemCommon();
+            enableGameDataMenu(false);
             CreateTextureExplorer(MeType.ME1_TYPE).RepackME12();
+            enableGameDataMenu(true);
         }
 
         private void repackME2ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            massEffectToolStripMenuItemCommon();
+            enableGameDataMenu(false);
             CreateTextureExplorer(MeType.ME2_TYPE).RepackME12();
+            enableGameDataMenu(true);
         }
 
         private void updateME2DLCCacheToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            massEffectToolStripMenuItemCommon();
+            enableGameDataMenu(false);
             CreateTextureExplorer(MeType.ME2_TYPE).UpdateME2DLC();
+            enableGameDataMenu(true);
         }
 
         private void repackME3MainDataToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            massEffectToolStripMenuItemCommon();
+            enableGameDataMenu(false);
             CreateTextureExplorer(MeType.ME3_TYPE).RepackME3();
+            enableGameDataMenu(true);
         }
 
         private void repackME3DLCDatauncompressedToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            massEffectToolStripMenuItemCommon();
+            enableGameDataMenu(false);
             CreateTextureExplorer(MeType.ME3_TYPE).RepackDLCME3(false);
+            enableGameDataMenu(true);
         }
 
         private void repackME3DLCDataZlibToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            massEffectToolStripMenuItemCommon();
+            enableGameDataMenu(false);
             CreateTextureExplorer(MeType.ME3_TYPE).RepackDLCME3(true);
+            enableGameDataMenu(true);
         }
 
         private void extractME3DLCPackagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            massEffectToolStripMenuItemCommon();
+            enableGameDataMenu(false);
             CreateTextureExplorer(MeType.ME3_TYPE).ExtractME3DLC();
+            enableGameDataMenu(true);
         }
 
         private void packME3DLCPackagesUncompressedToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            massEffectToolStripMenuItemCommon();
+            enableGameDataMenu(false);
             CreateTextureExplorer(MeType.ME3_TYPE).PackAllME3DLC(false);
+            enableGameDataMenu(true);
         }
 
         private void packME3DLCPackagesLZMAToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            massEffectToolStripMenuItemCommon();
+            enableGameDataMenu(false);
             CreateTextureExplorer(MeType.ME3_TYPE).PackAllME3DLC(true);
+            enableGameDataMenu(true);
         }
     }
 }

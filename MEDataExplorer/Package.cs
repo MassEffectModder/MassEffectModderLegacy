@@ -79,7 +79,7 @@ namespace MEDataExplorer
         List<Chunk> chunks;
         List<NameEntry> namesTable;
         List<ImportEntry> importsTable;
-        List<ExportEntry> exportsTable;
+        public List<ExportEntry> exportsTable;
         List<int> dependsTable;
         List<GuidEntry> guidsTable;
         List<string> extraNamesTable;
@@ -111,7 +111,8 @@ namespace MEDataExplorer
         public struct ImportEntry
         {
             public int packageFileId;
-            public int classNameId;
+            public string packageFile;
+            public int classId;
             public int linkId;
             public int objectNameId;
             public byte[] raw;
@@ -120,7 +121,7 @@ namespace MEDataExplorer
         {
             const int DataOffsetSize = 32;
             const int DataOffsetOffset = 36;
-            public int classNameId;
+            public int classId;
             public int classParentId;
             public int linkId;
             public int objectNameId;
@@ -509,7 +510,7 @@ namespace MEDataExplorer
             }
         }
 
-        private byte[] getExportData(int id)
+        public byte[] getExportData(int id)
         {
             if (exportsTable[id].newData != null)
                 return exportsTable[id].newData;
@@ -518,7 +519,7 @@ namespace MEDataExplorer
             return data.ToArray();
         }
 
-        private void setExportData(int id, byte[] data)
+        public void setExportData(int id, byte[] data)
         {
             ExportEntry export = exportsTable[id];
             export.newData = data;
@@ -637,7 +638,7 @@ namespace MEDataExplorer
                 var start = input.Position;
                 entry.packageFileId = input.ReadValueS32();
                 input.ReadValueS32(); // const 0
-                entry.classNameId = input.ReadValueS32();
+                entry.classId = input.ReadValueS32();
                 input.ReadValueS32(); // const 0
                 entry.linkId = input.ReadValueS32();
                 entry.objectNameId = input.ReadValueS32();
@@ -669,7 +670,7 @@ namespace MEDataExplorer
                 ExportEntry entry = new ExportEntry();
 
                 var start = input.Position;
-                entry.classNameId = input.ReadValueS32();
+                entry.classId = input.ReadValueS32();
                 entry.classParentId = input.ReadValueS32();
                 entry.linkId = input.ReadValueS32();
                 entry.objectNameId = input.ReadValueS32();
@@ -780,7 +781,7 @@ namespace MEDataExplorer
             }
             if (forceCompress) // override to compression
                 compressed = true;
-            compressionType = CompressionType.Zlib; // overide compression type to Zlib
+            compressionType = CompressionType.Zlib; // override compression type to Zlib
             tempOutput.Seek(0, SeekOrigin.Begin);
             tempOutput.Write(packageHeader, 0, packageHeader.Length);
             tempOutput.WriteValueU32((uint)compressionType);
