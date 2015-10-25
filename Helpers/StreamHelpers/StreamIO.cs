@@ -126,7 +126,7 @@ namespace StreamHelpers
 
         public static Int64 ReadInt64(this Stream stream)
         {
-            return (Int64)stream.ReadInt64();
+            return (Int64)stream.ReadUInt64();
         }
 
         public static void WriteUInt64(this Stream stream, UInt64 data)
@@ -149,7 +149,7 @@ namespace StreamHelpers
 
         public static Int32 ReadInt32(this Stream stream)
         {
-            return (Int32)stream.ReadInt32();
+            return (Int32)stream.ReadUInt32();
         }
 
         public static void WriteUInt32(this Stream stream, UInt32 data)
@@ -172,7 +172,7 @@ namespace StreamHelpers
 
         public static Int16 ReadInt16(this Stream stream)
         {
-            return (Int16)stream.ReadInt16();
+            return (Int16)stream.ReadUInt16();
         }
 
         public static void WriteUInt16(this Stream stream, UInt16 data)

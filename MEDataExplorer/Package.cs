@@ -619,11 +619,11 @@ namespace MEDataExplorer
                 }
                 entry.name = entry.name.Trim('\0');
 
-                if (nameIdTexture2D != -1 && entry.name == "Texture2D")
+                if (nameIdTexture2D == -1 && entry.name == "Texture2D")
                     nameIdTexture2D = i;
-                else if (nameIdLightMapTexture2D != -1 && entry.name == "LightMapTexture2D")
+                else if (nameIdLightMapTexture2D == -1 && entry.name == "LightMapTexture2D")
                     nameIdLightMapTexture2D = i;
-                else if (nameIdTextureFlipBook != -1 && entry.name == "TextureFlipBook")
+                else if (nameIdTextureFlipBook == -1 && entry.name == "TextureFlipBook")
                     nameIdTextureFlipBook = i;
 
                 if (version == packageFileVersionME1)
