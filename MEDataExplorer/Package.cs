@@ -113,8 +113,10 @@ namespace MEDataExplorer
             public int packageFileId;
             public string packageFile;
             public int classId;
+            public string className;
             public int linkId;
             public int objectNameId;
+            public string objectName;
             public byte[] raw;
         }
         public struct ExportEntry
@@ -122,9 +124,11 @@ namespace MEDataExplorer
             const int DataOffsetSize = 32;
             const int DataOffsetOffset = 36;
             public int classId;
+            public string className;
             public int classParentId;
             public int linkId;
             public int objectNameId;
+            public string objectName;
             public int suffixNameId;
             public int archTypeNameId;
             public uint dataSize
@@ -336,6 +340,29 @@ namespace MEDataExplorer
             }
         }
 
+        public bool isName(int id)
+        {
+            return id >= 0 && id < namesTable.Count;
+        }
+
+        private string getClassName(int id)
+        {
+            if (id > 0 && id < exportsTable.Count)
+                return exportsTable[id - 1].objectName;
+            if (id < 0 && -id < importsTable.Count)
+                return importsTable[-id - 1].objectName;
+            return "Class";
+        }
+
+        public int getClassNameId(int id)
+        {
+            if (id > 0 && id < exportsTable.Count)
+                return exportsTable[id - 1].objectNameId;
+            if (id < 0 && -id < importsTable.Count)
+                return importsTable[-id - 1].objectNameId;
+            return 0;
+        }
+
         public Package(string filename)
         {
             if (GameData.gameType == MeType.ME1_TYPE)
@@ -422,6 +449,8 @@ namespace MEDataExplorer
             loadDepends(packageData);
             if (version == packageFileVersionME3)
                 loadGuids(packageData);
+            loadImportsNames();
+            loadExportsNames();
         }
 
         private void getData(uint offset, uint length, MemoryStream output)
@@ -526,6 +555,36 @@ namespace MEDataExplorer
             export.dataSize = (uint)data.Length;
             export.dataOffset = 0;
             exportsTable[id] = export;
+        }
+
+        public int getNameId(string name)
+        {
+            for (int i = 0; i < namesCount; i++)
+            {
+                if (namesTable[i].name == name)
+                    return i;
+            }
+            return addName(name);
+        }
+
+        public int addName(string name)
+        {
+            NameEntry entry = new NameEntry();
+            entry.name = name;
+            if (version == packageFileVersionME1)
+                entry.flags = 0x0007001000000000;
+            if (version == packageFileVersionME2)
+                entry.flags = 0xfffffff2;
+            namesTable.Add(entry);
+            namesCount = (uint)namesTable.Count;
+            return namesTable.Count - 1;
+        }
+
+        public string getName(int id)
+        {
+            if (id >= namesTable.Count)
+                throw new Exception("wrong");
+            return namesTable[id].name;
         }
 
         private void loadNames(Stream input)
@@ -637,11 +696,13 @@ namespace MEDataExplorer
 
                 var start = input.Position;
                 entry.packageFileId = input.ReadValueS32();
+                entry.packageFile = namesTable[entry.packageFileId].name;
                 input.ReadValueS32(); // const 0
                 entry.classId = input.ReadValueS32();
                 input.ReadValueS32(); // const 0
                 entry.linkId = input.ReadValueS32();
                 entry.objectNameId = input.ReadValueS32();
+                entry.objectName = namesTable[entry.objectNameId].name;
                 input.ReadValueS32();
 
                 var len = input.Position - start;
@@ -649,6 +710,15 @@ namespace MEDataExplorer
                 entry.raw = input.ReadBytes((int)len);
 
                 importsTable.Add(entry);
+            }
+        }
+        private void loadImportsNames()
+        {
+            for (int i = 0; i < importsCount; i++)
+            {
+                ImportEntry entry = importsTable[i];
+                entry.className = getClassName(entry.classId);
+                importsTable[i] = entry;
             }
         }
 
@@ -674,6 +744,7 @@ namespace MEDataExplorer
                 entry.classParentId = input.ReadValueS32();
                 entry.linkId = input.ReadValueS32();
                 entry.objectNameId = input.ReadValueS32();
+                entry.objectName = namesTable[entry.objectNameId].name;
                 entry.suffixNameId = input.ReadValueS32();
                 input.ReadValueS32();
                 entry.objectFlags = input.ReadValueU64();
@@ -695,6 +766,15 @@ namespace MEDataExplorer
                 entry.raw = input.ReadBytes((int)len);
 
                 exportsTable.Add(entry);
+            }
+        }
+        private void loadExportsNames()
+        {
+            for (int i = 0; i < exportsCount; i++)
+            {
+                ExportEntry entry = exportsTable[i];
+                entry.className = getClassName(entry.classId);
+                exportsTable[i] = entry;
             }
         }
         private void saveExports(Stream output)
