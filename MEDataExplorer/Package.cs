@@ -85,6 +85,9 @@ namespace MEDataExplorer
         List<string> extraNamesTable;
         int currentChunk = -1;
         MemoryStream chunkCache;
+        public int nameIdTexture2D = -1;
+        public int nameIdLightMapTexture2D = -1;
+        public int nameIdTextureFlipBook = -1;
 
         const int SizeOfChunkBlock = 8;
         public struct ChunkBlock
@@ -615,6 +618,13 @@ namespace MEDataExplorer
                     entry.name = input.ReadString(len, Encoding.ASCII);
                 }
                 entry.name = entry.name.Trim('\0');
+
+                if (nameIdTexture2D != -1 && entry.name == "Texture2D")
+                    nameIdTexture2D = i;
+                else if (nameIdLightMapTexture2D != -1 && entry.name == "LightMapTexture2D")
+                    nameIdLightMapTexture2D = i;
+                else if (nameIdTextureFlipBook != -1 && entry.name == "TextureFlipBook")
+                    nameIdTextureFlipBook = i;
 
                 if (version == packageFileVersionME1)
                     entry.flags = input.ReadValueU64(); // 0x0007001000000000 will be default for new
