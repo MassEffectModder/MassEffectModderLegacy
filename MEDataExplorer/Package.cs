@@ -23,8 +23,8 @@ using System;
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
-using Gibbed.IO;
 using System.Security.Cryptography;
+using StreamHelpers;
 
 namespace MEDataExplorer
 {
@@ -389,15 +389,15 @@ namespace MEDataExplorer
 
             packageData = new MemoryTributary();
             packageFile = new FileStream(filename, FileMode.Open, FileAccess.Read);
-            packageHeader = packageFile.ReadBytes(packageHeaderSize);
+            packageHeader = packageFile.ReadToBuffer(packageHeaderSize);
             if (tag != packageTag)
                 throw new Exception("Wrong PCC tag");
 
             if (version != packageFileVersion)
                 throw new Exception("Wrong PCC version");
 
-            compressionType = (CompressionType)packageFile.ReadValueU32();
-            numChunks = packageFile.ReadValueU32();
+            compressionType = (CompressionType)packageFile.ReadUInt32();
+            numChunks = packageFile.ReadUInt32();
 
             dataOffset = packageFile.Position;
 
@@ -407,18 +407,18 @@ namespace MEDataExplorer
                 for (int i = 0; i < numChunks; i++)
                 {
                     Chunk chunk = new Chunk();
-                    chunk.uncomprOffset = packageFile.ReadValueU32();
-                    chunk.uncomprSize = packageFile.ReadValueU32();
-                    chunk.comprOffset = packageFile.ReadValueU32();
-                    chunk.comprSize = packageFile.ReadValueU32();
+                    chunk.uncomprOffset = packageFile.ReadUInt32();
+                    chunk.uncomprSize = packageFile.ReadUInt32();
+                    chunk.comprOffset = packageFile.ReadUInt32();
+                    chunk.comprSize = packageFile.ReadUInt32();
                     chunks.Add(chunk);
                 }
             }
 
             var filePos = packageFile.Position;
-            someTag = packageFile.ReadValueU32();
+            someTag = packageFile.ReadUInt32();
             if (version == packageFileVersionME2)
-                packageFile.ReadValueU32(); // const 0
+                packageFile.ReadUInt32(); // const 0
 
             loadExtraNames(packageFile);
 
@@ -483,14 +483,14 @@ namespace MEDataExplorer
                         chunkCache = new MemoryStream();
                         currentChunk = c;
                         packageFile.Seek(chunk.comprOffset, SeekOrigin.Begin);
-                        uint blockTag = packageFile.ReadValueU32(); // block tag
+                        uint blockTag = packageFile.ReadUInt32(); // block tag
                         if (blockTag != packageTag)
                             throw new Exception("not match");
-                        uint blockSize = packageFile.ReadValueU32(); // max block size
+                        uint blockSize = packageFile.ReadUInt32(); // max block size
                         if (blockSize != maxBlockSize)
                             throw new Exception("not match");
-                        uint compressedChunkSize = packageFile.ReadValueU32(); // compressed chunk size
-                        uint uncompressedChunkSize = packageFile.ReadValueU32();
+                        uint compressedChunkSize = packageFile.ReadUInt32(); // compressed chunk size
+                        uint uncompressedChunkSize = packageFile.ReadUInt32();
                         if (uncompressedChunkSize != chunk.uncomprSize)
                             throw new Exception("not match");
 
@@ -502,8 +502,8 @@ namespace MEDataExplorer
                         for (uint b = 0; b < blocksCount; b++)
                         {
                             ChunkBlock block = new ChunkBlock();
-                            block.comprSize = packageFile.ReadValueU32();
-                            block.uncomprSize = packageFile.ReadValueU32();
+                            block.comprSize = packageFile.ReadUInt32();
+                            block.uncomprSize = packageFile.ReadUInt32();
                             blocks.Add(block);
                         }
                         chunk.blocks = blocks;
@@ -513,7 +513,7 @@ namespace MEDataExplorer
                         {
                             ChunkBlock block = blocks[b];
                             byte[] dst = new byte[block.uncomprSize];
-                            byte[] src = packageFile.ReadBytes(block.comprSize);
+                            byte[] src = packageFile.ReadToBuffer(block.comprSize);
                             uint dstLen;
                             if (compressionType == CompressionType.LZO)
                                 dstLen = LZO2Helper.LZO2.Decompress(src, block.comprSize, dst);
@@ -525,7 +525,7 @@ namespace MEDataExplorer
                             if (dstLen != block.uncomprSize)
                                 throw new Exception("Decompressed data size not expected!");
 
-                            chunkCache.WriteBytes(dst);
+                            chunkCache.WriteFromBuffer(dst);
                         }
                     }
                     chunkCache.Seek(startInChunk, SeekOrigin.Begin);
@@ -597,10 +597,10 @@ namespace MEDataExplorer
             for (int i = 0; i < namesCount; i++)
             {
                 NameEntry entry = new NameEntry();
-                int len = input.ReadValueS32();
+                int len = input.ReadInt32();
                 if (len < 0) // unicode
                 {
-                    var str = input.ReadBytes(-len * 2);
+                    var str = input.ReadToBuffer(-len * 2);
                     if (version == packageFileVersionME3)
                     {
                         entry.name = Encoding.Unicode.GetString(str);
@@ -615,7 +615,7 @@ namespace MEDataExplorer
                 }
                 else
                 {
-                    entry.name = input.ReadString(len, Encoding.ASCII);
+                    entry.name = input.ReadStringASCII(len);
                 }
                 entry.name = entry.name.Trim('\0');
 
@@ -627,9 +627,9 @@ namespace MEDataExplorer
                     nameIdTextureFlipBook = i;
 
                 if (version == packageFileVersionME1)
-                    entry.flags = input.ReadValueU64(); // 0x0007001000000000 will be default for new
+                    entry.flags = input.ReadUInt64(); // 0x0007001000000000 will be default for new
                 if (version == packageFileVersionME2)
-                    entry.flags = input.ReadValueU32(); // 0xfffffff2 will be default for new
+                    entry.flags = input.ReadUInt32(); // 0xfffffff2 will be default for new
 
                 namesTable.Add(entry);
             }
@@ -642,36 +642,36 @@ namespace MEDataExplorer
                 NameEntry entry = namesTable[i];
                 if (packageFileVersion == packageFileVersionME3)
                 {
-                    output.WriteValueS32(-(entry.name.Length + 1));
-                    output.WriteStringZ(entry.name, Encoding.Unicode);
+                    output.WriteInt32(-(entry.name.Length + 1));
+                    output.WriteStringUnicodeNull(entry.name);
                 }
                 else
                 {
-                    output.WriteValueS32(entry.name.Length + 1);
-                    output.WriteStringZ(entry.name, Encoding.ASCII);
+                    output.WriteInt32(entry.name.Length + 1);
+                    output.WriteStringASCIINull(entry.name);
                 }
                 if (version == packageFileVersionME1)
-                    output.WriteValueU64(entry.flags);
+                    output.WriteUInt64(entry.flags);
                 if (version == packageFileVersionME2)
-                    output.WriteValueU32((uint)entry.flags);
+                    output.WriteUInt32((uint)entry.flags);
             }
         }
 
         private void loadExtraNames(Stream input)
         {
             extraNamesTable = new List<string>();
-            uint extraNamesCount = input.ReadValueU32();
+            uint extraNamesCount = input.ReadUInt32();
             for (int c = 0; c < extraNamesCount; c++)
             {
-                int len = input.ReadValueS32();
+                int len = input.ReadInt32();
                 string name;
                 if (len < 0)
                 {
-                    name = input.ReadString(-len * 2, Encoding.Unicode);
+                    name = input.ReadStringUnicode(-len * 2);
                 }
                 else
                 {
-                    name = input.ReadString(len, Encoding.ASCII);
+                    name = input.ReadStringASCII(len);
                 }
                 name = name.Trim('\0');
                 extraNamesTable.Add(name);
@@ -680,18 +680,18 @@ namespace MEDataExplorer
 
         private void saveExtraNames(Stream output)
         {
-            output.WriteValueS32(extraNamesTable.Count);
+            output.WriteInt32(extraNamesTable.Count);
             for (int c = 0; c < extraNamesTable.Count; c++)
             {
                 if (packageFileVersion == packageFileVersionME3)
                 {
-                    output.WriteValueS32(-(extraNamesTable[c].Length + 1));
-                    output.WriteStringZ(extraNamesTable[c], Encoding.Unicode);
+                    output.WriteInt32(-(extraNamesTable[c].Length + 1));
+                    output.WriteStringUnicodeNull(extraNamesTable[c]);
                 }
                 else
                 {
-                    output.WriteValueS32(extraNamesTable[c].Length + 1);
-                    output.WriteStringZ(extraNamesTable[c], Encoding.ASCII);
+                    output.WriteInt32(extraNamesTable[c].Length + 1);
+                    output.WriteStringASCIINull(extraNamesTable[c]);
                 }
             }
         }
@@ -705,19 +705,19 @@ namespace MEDataExplorer
                 ImportEntry entry = new ImportEntry();
 
                 var start = input.Position;
-                entry.packageFileId = input.ReadValueS32();
+                entry.packageFileId = input.ReadInt32();
                 entry.packageFile = namesTable[entry.packageFileId].name;
-                input.ReadValueS32(); // const 0
-                entry.classId = input.ReadValueS32();
-                input.ReadValueS32(); // const 0
-                entry.linkId = input.ReadValueS32();
-                entry.objectNameId = input.ReadValueS32();
+                input.ReadInt32(); // const 0
+                entry.classId = input.ReadInt32();
+                input.ReadInt32(); // const 0
+                entry.linkId = input.ReadInt32();
+                entry.objectNameId = input.ReadInt32();
                 entry.objectName = namesTable[entry.objectNameId].name;
-                input.ReadValueS32();
+                input.ReadInt32();
 
                 var len = input.Position - start;
                 input.Seek(start, SeekOrigin.Begin);
-                entry.raw = input.ReadBytes((int)len);
+                entry.raw = input.ReadToBuffer((int)len);
 
                 importsTable.Add(entry);
             }
@@ -736,7 +736,7 @@ namespace MEDataExplorer
         {
             for (int i = 0; i < importsTable.Count; i++)
             {
-                output.WriteBytes(importsTable[i].raw);
+                output.WriteFromBuffer(importsTable[i].raw);
             }
         }
 
@@ -750,30 +750,30 @@ namespace MEDataExplorer
                 ExportEntry entry = new ExportEntry();
 
                 var start = input.Position;
-                entry.classId = input.ReadValueS32();
-                entry.classParentId = input.ReadValueS32();
-                entry.linkId = input.ReadValueS32();
-                entry.objectNameId = input.ReadValueS32();
+                entry.classId = input.ReadInt32();
+                entry.classParentId = input.ReadInt32();
+                entry.linkId = input.ReadInt32();
+                entry.objectNameId = input.ReadInt32();
                 entry.objectName = namesTable[entry.objectNameId].name;
-                entry.suffixNameId = input.ReadValueS32();
-                input.ReadValueS32();
-                entry.objectFlags = input.ReadValueU64();
-                input.ReadValueU32(); // dataSize
-                input.ReadValueU32(); // dataOffset
+                entry.suffixNameId = input.ReadInt32();
+                input.ReadInt32();
+                entry.objectFlags = input.ReadUInt64();
+                input.ReadUInt32(); // dataSize
+                input.ReadUInt32(); // dataOffset
                 if (version != packageFileVersionME3)
                 {
-                    count = input.ReadValueU32();
+                    count = input.ReadUInt32();
                     input.Seek(count * 12, SeekOrigin.Current); // skip entries
                 }
-                input.ReadValueU32();
-                count = input.ReadValueU32();
+                input.ReadUInt32();
+                count = input.ReadUInt32();
                 input.Seek(count * 4, SeekOrigin.Current); // skip entries
                 input.Seek(16, SeekOrigin.Current); // skip guid
-                input.ReadValueU32();
+                input.ReadUInt32();
 
                 var len = input.Position - start;
                 input.Seek(start, SeekOrigin.Begin);
-                entry.raw = input.ReadBytes((int)len);
+                entry.raw = input.ReadToBuffer((int)len);
 
                 exportsTable.Add(entry);
             }
@@ -791,7 +791,7 @@ namespace MEDataExplorer
         {
             for (int i = 0; i < exportsTable.Count; i++)
             {
-                output.WriteBytes(exportsTable[i].raw);
+                output.WriteFromBuffer(exportsTable[i].raw);
             }
         }
         private void loadDepends(Stream input)
@@ -799,12 +799,12 @@ namespace MEDataExplorer
             dependsTable = new List<int>();
             input.Seek(dependsOffset, SeekOrigin.Begin);
             for (int i = 0; i < exportsCount; i++)
-                dependsTable.Add(input.ReadValueS32());
+                dependsTable.Add(input.ReadInt32());
         }
         private void saveDepends(Stream output)
         {
             for (int i = 0; i < exportsTable.Count; i++)
-                output.WriteValueS32(dependsTable[i]);
+                output.WriteInt32(dependsTable[i]);
         }
         private void loadGuids(Stream input)
         {
@@ -813,8 +813,8 @@ namespace MEDataExplorer
             for (int i = 0; i < guidsCount; i++)
             {
                 GuidEntry entry = new GuidEntry();
-                entry.guid = input.ReadBytes(16);
-                entry.index = input.ReadValueS32();
+                entry.guid = input.ReadToBuffer(16);
+                entry.index = input.ReadInt32();
                 guidsTable.Add(entry);
             }
         }
@@ -823,8 +823,8 @@ namespace MEDataExplorer
             for (int i = 0; i < guidsTable.Count; i++)
             {
                 GuidEntry entry = guidsTable[i];
-                output.WriteBytes(entry.guid);
-                output.WriteValueS32(entry.index);
+                output.WriteFromBuffer(entry.guid);
+                output.WriteInt32(entry.index);
             }
         }
 
@@ -835,11 +835,11 @@ namespace MEDataExplorer
 
             MemoryStream tempOutput = new MemoryStream();
             tempOutput.Write(packageHeader, 0, packageHeader.Length); // updated later
-            tempOutput.WriteValueU32((uint)compressionType);
-            tempOutput.WriteValueU32(0); // number of chunks
-            tempOutput.WriteValueU32(someTag);
+            tempOutput.WriteUInt32((uint)compressionType);
+            tempOutput.WriteUInt32(0); // number of chunks
+            tempOutput.WriteUInt32(someTag);
             if (version == packageFileVersionME2)
-                tempOutput.WriteValueU32(0); // const 0
+                tempOutput.WriteUInt32(0); // const 0
             saveExtraNames(tempOutput);
             if (dataOffset != tempOutput.Position)
                 throw new Exception();
@@ -863,7 +863,7 @@ namespace MEDataExplorer
                 ExportEntry export = exportsTable[i];
                 uint newDataOffset = (uint)tempOutput.Position;
                 if (export.newData != null)
-                    tempOutput.WriteBytes(export.newData);
+                    tempOutput.WriteFromBuffer(export.newData);
                 else
                     getData(export.dataOffset, export.dataSize, tempOutput);
                 export.dataOffset = newDataOffset; // update
@@ -874,7 +874,7 @@ namespace MEDataExplorer
             compressionType = CompressionType.Zlib; // override compression type to Zlib
             tempOutput.Seek(0, SeekOrigin.Begin);
             tempOutput.Write(packageHeader, 0, packageHeader.Length);
-            tempOutput.WriteValueU32((uint)compressionType);
+            tempOutput.WriteUInt32((uint)compressionType);
             tempOutput.Seek(exportsOffset, SeekOrigin.Begin);
             saveExports(tempOutput);
             packageFile.Close();
@@ -917,13 +917,13 @@ namespace MEDataExplorer
                     chunks.Add(chunk);
 
                     fs.Write(packageHeader, 0, packageHeader.Length);
-                    fs.WriteValueU32((uint)compressionType);
-                    fs.WriteValueU32((uint)chunks.Count);
+                    fs.WriteUInt32((uint)compressionType);
+                    fs.WriteUInt32((uint)chunks.Count);
                     var chunksTableOffset = (uint)fs.Position;
                     fs.Seek(SizeOfChunk * chunks.Count, SeekOrigin.Current); // skip chunks table - filled later
-                    fs.WriteValueU32(someTag);
+                    fs.WriteUInt32(someTag);
                     if (version == packageFileVersionME2)
-                        fs.WriteValueU32(0); // const 0
+                        fs.WriteUInt32(0); // const 0
                     saveExtraNames(fs);
 
                     for (int c = 0; c < chunks.Count; c++)
@@ -946,7 +946,7 @@ namespace MEDataExplorer
                             uint newBlockSize = Math.Min(maxBlockSize, dataBlockLeft);
 
                             byte[] dst;
-                            byte[] src = tempOutput.ReadBytes(newBlockSize);
+                            byte[] src = tempOutput.ReadToBuffer(newBlockSize);
                             if (compressionType == CompressionType.LZO)
                                 dst = LZO2Helper.LZO2.Compress(src);
                             else if (compressionType == CompressionType.Zlib)
@@ -970,19 +970,19 @@ namespace MEDataExplorer
                     {
                         chunk = chunks[c];
                         fs.Seek(chunksTableOffset + c * SizeOfChunk, SeekOrigin.Begin); // seek to chunks table
-                        fs.WriteValueU32(chunk.uncomprOffset);
-                        fs.WriteValueU32(chunk.uncomprSize);
-                        fs.WriteValueU32(chunk.comprOffset);
-                        fs.WriteValueU32(chunk.comprSize + SizeOfChunk + SizeOfChunkBlock * (uint)chunk.blocks.Count);
+                        fs.WriteUInt32(chunk.uncomprOffset);
+                        fs.WriteUInt32(chunk.uncomprSize);
+                        fs.WriteUInt32(chunk.comprOffset);
+                        fs.WriteUInt32(chunk.comprSize + SizeOfChunk + SizeOfChunkBlock * (uint)chunk.blocks.Count);
                         fs.Seek(chunk.comprOffset, SeekOrigin.Begin); // seek to blocks header
-                        fs.WriteValueU32(packageTag);
-                        fs.WriteValueU32(maxBlockSize);
-                        fs.WriteValueU32(chunk.comprSize);
-                        fs.WriteValueU32(chunk.uncomprSize);
+                        fs.WriteUInt32(packageTag);
+                        fs.WriteUInt32(maxBlockSize);
+                        fs.WriteUInt32(chunk.comprSize);
+                        fs.WriteUInt32(chunk.uncomprSize);
                         foreach (ChunkBlock block in chunk.blocks)
                         {
-                            fs.WriteValueU32(block.comprSize);
-                            fs.WriteValueU32(block.uncomprSize);
+                            fs.WriteUInt32(block.comprSize);
+                            fs.WriteUInt32(block.uncomprSize);
                         }
                     }
                 }
@@ -1024,18 +1024,18 @@ namespace MEDataExplorer
         {
             using (FileStream tocFile = new FileStream(filename, FileMode.Open, FileAccess.Read))
             {
-                uint tag = tocFile.ReadValueU32();
+                uint tag = tocFile.ReadUInt32();
                 if (tag != TOCTag)
                     throw new Exception("Wrong TOCTag tag");
-                tocFile.ReadValueU32();
+                tocFile.ReadUInt32();
 
                 blockList = new List<Block>();
-                uint numBlocks = tocFile.ReadValueU32();
+                uint numBlocks = tocFile.ReadUInt32();
                 for (int b = 0; b < numBlocks; b++)
                 {
                     Block block = new Block();
-                    block.filesOffset = tocFile.ReadValueU32();
-                    block.numFiles = tocFile.ReadValueU32();
+                    block.filesOffset = tocFile.ReadUInt32();
+                    block.numFiles = tocFile.ReadUInt32();
                     block.filesList = new List<File>();
                     blockList.Add(block);
                 }
@@ -1048,13 +1048,13 @@ namespace MEDataExplorer
                     for (int f = 0; f < block.numFiles; f++)
                     {
                         long curPos = tocFile.Position;
-                        ushort blockSize = tocFile.ReadValueU16();
-                        file.type = tocFile.ReadValueU16();
+                        ushort blockSize = tocFile.ReadUInt16();
+                        file.type = tocFile.ReadUInt16();
                         if (file.type != 9 && file.type != 1)
                             throw new Exception();
-                        file.size = tocFile.ReadValueU32();
-                        file.sha1 = tocFile.ReadBytes(20);
-                        file.path = tocFile.ReadStringZ(Encoding.ASCII);
+                        file.size = tocFile.ReadUInt32();
+                        file.sha1 = tocFile.ReadToBuffer(20);
+                        file.path = tocFile.ReadStringASCIINull();
                         block.filesList.Add(file);
                         tocFile.Seek(curPos + blockSize, SeekOrigin.Begin);
                     }
@@ -1098,9 +1098,9 @@ namespace MEDataExplorer
         {
             using (FileStream tocFile = new FileStream(outPath, FileMode.Create, FileAccess.Write))
             {
-                tocFile.WriteValueU32(TOCTag);
-                tocFile.WriteValueU32(0);
-                tocFile.WriteValueU32((uint)blockList.Count);
+                tocFile.WriteUInt32(TOCTag);
+                tocFile.WriteUInt32(0);
+                tocFile.WriteUInt32((uint)blockList.Count);
                 tocFile.Seek(8 * blockList.Count, SeekOrigin.Current); // filled later
 
                 long lastOffset = 0;
@@ -1114,11 +1114,11 @@ namespace MEDataExplorer
                         long fileOffset = lastOffset = tocFile.Position;
                         File file = blockList[b].filesList[f];
                         int blockSize = ((28 + (file.path.Length + 1) + 3) / 4) * 4; // align to 4
-                        tocFile.WriteValueU16((ushort)blockSize);
-                        tocFile.WriteValueU16(file.type);
-                        tocFile.WriteValueU32(file.size);
-                        tocFile.WriteBytes(file.sha1);
-                        tocFile.WriteStringZ(file.path, Encoding.ASCII);
+                        tocFile.WriteUInt16((ushort)blockSize);
+                        tocFile.WriteUInt16(file.type);
+                        tocFile.WriteUInt32(file.size);
+                        tocFile.WriteFromBuffer(file.sha1);
+                        tocFile.WriteStringASCIINull(file.path);
                         tocFile.Seek(fileOffset + blockSize - 1, SeekOrigin.Begin);
                         tocFile.WriteByte(0); // make sure all bytes are written after seek
                     }
@@ -1127,14 +1127,14 @@ namespace MEDataExplorer
                 if (lastOffset != 0)
                 {
                     tocFile.Seek(lastOffset, SeekOrigin.Begin);
-                    tocFile.WriteValueU16(0);
+                    tocFile.WriteUInt16(0);
                 }
 
                 tocFile.Seek(TOCHeaderSize, SeekOrigin.Begin);
                 for (int b = 0; b < blockList.Count; b++)
                 {
-                    tocFile.WriteValueU32(blockList[b].filesOffset);
-                    tocFile.WriteValueU32(blockList[b].numFiles);
+                    tocFile.WriteUInt32(blockList[b].filesOffset);
+                    tocFile.WriteUInt32(blockList[b].numFiles);
                 }
             }
         }

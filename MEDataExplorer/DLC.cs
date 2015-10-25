@@ -21,13 +21,13 @@
 
 using System;
 using System.IO;
-using Gibbed.IO;
 using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Security.Cryptography;
 using System.Text;
+using StreamHelpers;
 
 namespace MEDataExplorer
 {
@@ -64,19 +64,19 @@ namespace MEDataExplorer
                 throw new Exception("File not found: " + filename);
 
             FileStream sfarFile = new FileStream(filename, FileMode.Open, FileAccess.Read);
-            uint tag = sfarFile.ReadValueU32();
+            uint tag = sfarFile.ReadUInt32();
             if (tag != SfarTag)
                 throw new Exception("Wrong SFAR tag");
-            uint sfarVersion = sfarFile.ReadValueU32();
+            uint sfarVersion = sfarFile.ReadUInt32();
             if (sfarVersion != SfarVersion)
                 throw new Exception("Wrong SFAR version");
 
-            var dataOffset = sfarFile.ReadValueU32();
-            var entriesOffset = sfarFile.ReadValueU32();
-            var filesCount = sfarFile.ReadValueU32();
-            var sizesArrayOffset = sfarFile.ReadValueU32();
-            var maxBlockSize = sfarFile.ReadValueU32();
-            var compressionTag = sfarFile.ReadValueU32();
+            var dataOffset = sfarFile.ReadUInt32();
+            var entriesOffset = sfarFile.ReadUInt32();
+            var filesCount = sfarFile.ReadUInt32();
+            var sizesArrayOffset = sfarFile.ReadUInt32();
+            var maxBlockSize = sfarFile.ReadUInt32();
+            var compressionTag = sfarFile.ReadUInt32();
             if (compressionTag != LZMATag)
                 throw new Exception("Not LZMA compression for SFAR file");
 
@@ -84,12 +84,12 @@ namespace MEDataExplorer
             for (int i = 0; i < filesCount; i++)
             {
                 FileEntry file = new FileEntry();
-                file.filenameHash = sfarFile.ReadBytes(16);
-                file.compressedBlockSizesIndex = sfarFile.ReadValueS32();
-                file.uncomprSize = sfarFile.ReadValueU32();
-                file.uncomprSize |= (long)sfarFile.ReadValueU8() << 32;
-                file.dataOffset = sfarFile.ReadValueU32();
-                file.dataOffset |= (long)sfarFile.ReadValueU8() << 32;
+                file.filenameHash = sfarFile.ReadToBuffer(16);
+                file.compressedBlockSizesIndex = sfarFile.ReadInt32();
+                file.uncomprSize = sfarFile.ReadUInt32();
+                file.uncomprSize |= (long)sfarFile.ReadByte() << 32;
+                file.dataOffset = sfarFile.ReadUInt32();
+                file.dataOffset |= (long)sfarFile.ReadByte() << 32;
                 file.numBlocks = (int)((file.uncomprSize + maxBlockSize - 1) / maxBlockSize);
                 filesList.Add(file);
             }
@@ -100,7 +100,7 @@ namespace MEDataExplorer
             ushort[] blockSizes = new ushort[numBlockSizes];
             for (int i = 0; i < numBlockSizes; i++)
             {
-                blockSizes[i] = sfarFile.ReadValueU16();
+                blockSizes[i] = sfarFile.ReadUInt16();
             }
             if (sfarFile.Position != dataOffset)
                 throw new Exception("not expected file position");
@@ -113,7 +113,7 @@ namespace MEDataExplorer
                 {
                     sfarFile.Seek(filesList[i].dataOffset, SeekOrigin.Begin);
                     int compressedBlockSize = blockSizes[filesList[i].compressedBlockSizesIndex];
-                    byte[] inBuf = sfarFile.ReadBytes(compressedBlockSize);
+                    byte[] inBuf = sfarFile.ReadToBuffer(compressedBlockSize);
                     byte[] outBuf = SevenZipHelper.LZMA.Decompress(inBuf, (uint)filesList[i].uncomprSize);
                     if (outBuf.Length == 0)
                         throw new Exception();
@@ -131,7 +131,7 @@ namespace MEDataExplorer
                                     filenamesArray[l] = name.Replace('/', '\\');
                                 }
                             }
-                            outputFile.WriteString(name + Environment.NewLine);
+                            outputFile.WriteStringASCII(name + Environment.NewLine);
                         }
                     }
                     filenamesIndex = i;
@@ -175,11 +175,11 @@ namespace MEDataExplorer
                             }
                             else
                             {
-                                byte[] inBuf = sfarFile.ReadBytes(compressedBlockSize);
+                                byte[] inBuf = sfarFile.ReadToBuffer(compressedBlockSize);
                                 byte[] outBuf = SevenZipHelper.LZMA.Decompress(inBuf, (uint)uncompressedBlockSize);
                                 if (outBuf.Length == 0)
                                     throw new Exception();
-                                outputFile.WriteBytes(outBuf);
+                                outputFile.WriteFromBuffer(outBuf);
                             }
                             bytesLeft -= uncompressedBlockSize;
                         }
@@ -263,23 +263,23 @@ namespace MEDataExplorer
                             long uncompressedBlockSize = MaxBlockSize;
                             if (k == (file.numBlocks - 1)) // last block
                                 uncompressedBlockSize = fileLen - (MaxBlockSize * k);
-                            byte[] inBuf = inputFile.ReadBytes((int)uncompressedBlockSize);
+                            byte[] inBuf = inputFile.ReadToBuffer((int)uncompressedBlockSize);
                             byte[] outBuf = SevenZipHelper.LZMA.Compress(inBuf);
                             if (outBuf.Length == 0)
                                 throw new Exception();
                             if (outBuf.Length >= (int)MaxBlockSize)
                             {
-                                outputFile.WriteBytes(inBuf);
+                                outputFile.WriteFromBuffer(inBuf);
                                 blockSizes[curBlockSizesIndex] = 0;
                             }
                             else if (outBuf.Length >= inBuf.Length)
                             {
-                                outputFile.WriteBytes(inBuf);
+                                outputFile.WriteFromBuffer(inBuf);
                                 blockSizes[curBlockSizesIndex] = (ushort)inBuf.Length;
                             }
                             else
                             {
-                                outputFile.WriteBytes(outBuf);
+                                outputFile.WriteFromBuffer(outBuf);
                                 blockSizes[curBlockSizesIndex] = (ushort)outBuf.Length;
                             }
                         }
@@ -292,24 +292,24 @@ namespace MEDataExplorer
                     throw new Exception();
 
                 outputFile.Seek(0, SeekOrigin.Begin);
-                outputFile.WriteValueU32(SfarTag);
-                outputFile.WriteValueU32(SfarVersion);
-                outputFile.WriteValueU32((uint)dataOffset);
-                outputFile.WriteValueU32(HeaderSize);
-                outputFile.WriteValueU32((uint)filesList.Count);
-                outputFile.WriteValueU32((uint)sizesArrayOffset);
-                outputFile.WriteValueU32((uint)MaxBlockSize);
-                outputFile.WriteValueU32(LZMATag);
+                outputFile.WriteUInt32(SfarTag);
+                outputFile.WriteUInt32(SfarVersion);
+                outputFile.WriteUInt32((uint)dataOffset);
+                outputFile.WriteUInt32(HeaderSize);
+                outputFile.WriteUInt32((uint)filesList.Count);
+                outputFile.WriteUInt32((uint)sizesArrayOffset);
+                outputFile.WriteUInt32((uint)MaxBlockSize);
+                outputFile.WriteUInt32(LZMATag);
 
                 filesList.Sort(new FileArrayComparer());
                 for (int i = 0; i < filesList.Count; i++)
                 {
-                    outputFile.WriteBytes(filesList[i].filenameHash);
-                    outputFile.WriteValueS32(filesList[i].compressedBlockSizesIndex);
-                    outputFile.WriteValueU32((uint)filesList[i].uncomprSize);
-                    outputFile.WriteValueU8((byte)(filesList[i].uncomprSize >> 32));
-                    outputFile.WriteValueU32((uint)filesList[i].dataOffset);
-                    outputFile.WriteValueU8((byte)(filesList[i].dataOffset >> 32));
+                    outputFile.WriteFromBuffer(filesList[i].filenameHash);
+                    outputFile.WriteInt32(filesList[i].compressedBlockSizesIndex);
+                    outputFile.WriteUInt32((uint)filesList[i].uncomprSize);
+                    outputFile.WriteByte((byte)(filesList[i].uncomprSize >> 32));
+                    outputFile.WriteUInt32((uint)filesList[i].dataOffset);
+                    outputFile.WriteByte((byte)(filesList[i].dataOffset >> 32));
                 }
 
                 if (outputFile.Position != sizesArrayOffset)
@@ -317,7 +317,7 @@ namespace MEDataExplorer
 
                 for (int i = 0; i < blockSizes.Count(); i++)
                 {
-                    outputFile.WriteValueU16(blockSizes[i]);
+                    outputFile.WriteUInt16(blockSizes[i]);
                 }
 
                 if (outputFile.Position != dataOffset)
@@ -358,7 +358,7 @@ namespace MEDataExplorer
                 using (FileStream mountFile = new FileStream(Path.Combine(DLC, @"CookedPC\Mount.dlc"), FileMode.Open, FileAccess.Read))
                 {
                     mountFile.Seek(12, SeekOrigin.Begin);
-                    DLCId = mountFile.ReadValueU32();
+                    DLCId = mountFile.ReadUInt32();
                 }
                 List<string> dlcFiles = Directory.GetFiles(DLC, "*.pcc", SearchOption.AllDirectories).ToList();
                 dlcFiles.AddRange(Directory.GetFiles(DLC, "*.ini", SearchOption.AllDirectories));
@@ -402,7 +402,7 @@ namespace MEDataExplorer
             using (FileStream cacheDLCFile = new FileStream(gameData.EntitlementCacheIniPath, FileMode.Open, FileAccess.Read))
             {
                 int fileLength = (int)new FileInfo(gameData.EntitlementCacheIniPath).Length;
-                byte[] buffer = cacheDLCFile.ReadBytes(fileLength);
+                byte[] buffer = cacheDLCFile.ReadToBuffer(fileLength);
                 output = ProtectedData.Unprotect(buffer, entropy, DataProtectionScope.CurrentUser);
                 return output;
             }
@@ -420,7 +420,7 @@ namespace MEDataExplorer
             using (FileStream cacheDLCFile = new FileStream(gameData.EntitlementCacheIniPath, FileMode.Create, FileAccess.Write))
             {
                 output = ProtectedData.Protect(buffer, entropy, DataProtectionScope.CurrentUser);
-                cacheDLCFile.WriteBytes(output);
+                cacheDLCFile.WriteFromBuffer(output);
             }
         }
 
