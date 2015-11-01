@@ -35,6 +35,7 @@ namespace MEDataExplorer
         ConfIni _configIni;
         public static GameData gameData;
         List<string> _packageFiles;
+        List<Texture> _textureList;
 
         public TexExplorer(MainWindow main, MeType gameType)
         {
@@ -54,7 +55,31 @@ namespace MEDataExplorer
                 VerifyME1Exe();
             }
 
-            GetPackages(_gameSelected);
+            if (GetPackages(_gameSelected))
+            {
+                _textureList = new List<Texture>();
+                for (int i = 0; i < _packageFiles.Count; i++)
+                {
+                    _mainWindow.updateStatusLabel("Find textures in package " + (i + 1) + " of " + _packageFiles.Count);
+                    Application.DoEvents();
+                    FindTextures(_packageFiles[i]);
+                }
+                _mainWindow.updateStatusLabel("Done");
+            }
+
+        }
+
+        public void FindTextures(string packagePath)
+        {
+            var package = new Package(packagePath);
+            for (int i = 0; i < package.exportsTable.Count; i++)
+            {
+                int id = package.getClassNameId(package.exportsTable[i].classId);
+                if (id == package.nameIdTexture2D || id == package.nameIdLightMapTexture2D || id == package.nameIdTextureFlipBook)
+                {
+                    Texture texture = new Texture(package, i);
+                }
+            }
 
         }
 
