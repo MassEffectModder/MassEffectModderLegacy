@@ -233,6 +233,10 @@ namespace METexturesExplorer
             {
                 if (gameType == MeType.ME1_TYPE)
                     return Path.Combine(ConfigIniPath, @"BIOEngine.ini");
+                else if (gameType == MeType.ME2_TYPE)
+                    return Path.Combine(ConfigIniPath, @"GamerSettings.ini");
+                else if (gameType == MeType.ME3_TYPE)
+                    return Path.Combine(ConfigIniPath, @"GamerSettings.ini");
                 else
                     return null;
             }

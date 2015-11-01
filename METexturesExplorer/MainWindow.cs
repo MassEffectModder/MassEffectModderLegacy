@@ -112,6 +112,13 @@ namespace METexturesExplorer
             enableGameDataMenu(true);
         }
 
+        private void updateME2ConfigToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            enableGameDataMenu(false);
+            CreateTextureExplorer(MeType.ME2_TYPE).UpdateME2Config();
+            enableGameDataMenu(true);
+        }
+
         private void repackME3MainDataToolStripMenuItem_Click(object sender, EventArgs e)
         {
             enableGameDataMenu(false);
@@ -151,6 +158,13 @@ namespace METexturesExplorer
         {
             enableGameDataMenu(false);
             CreateTextureExplorer(MeType.ME3_TYPE).PackAllME3DLC(true);
+            enableGameDataMenu(true);
+        }
+
+        private void updateME3ConfigToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            enableGameDataMenu(false);
+            CreateTextureExplorer(MeType.ME3_TYPE).UpdateME3Config();
             enableGameDataMenu(true);
         }
     }
