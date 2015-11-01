@@ -154,6 +154,7 @@ namespace MEDataExplorer
                 default:
                     throw new Exception();
             }
+            texPropertyList[texPropertyList.FindIndex(s => s.name == name)] = texProperty;
         }
 
         public void setIntValue(string name, int value)
@@ -163,6 +164,7 @@ namespace MEDataExplorer
                 throw new Exception();
             Buffer.BlockCopy(BitConverter.GetBytes(value), 0, texProperty.valueRaw, 0, sizeof(int));
             texProperty.valueInt = value;
+            texPropertyList[texPropertyList.FindIndex(s => s.name == name)] = texProperty;
         }
 
         public void setFloatValue(string name, float value)
@@ -172,6 +174,7 @@ namespace MEDataExplorer
                 throw new Exception();
             Buffer.BlockCopy(BitConverter.GetBytes(value), 0, texProperty.valueRaw, 0, sizeof(float));
             texProperty.valueFloat = value;
+            texPropertyList[texPropertyList.FindIndex(s => s.name == name)] = texProperty;
         }
 
         public void setByteValue(string name, string valueName, int valueInt = 0)
@@ -191,6 +194,7 @@ namespace MEDataExplorer
             }
             texProperty.valueName = valueName;
             texProperty.valueInt = valueInt;
+            texPropertyList[texPropertyList.FindIndex(s => s.name == name)] = texProperty;
         }
 
         public void setBoolValue(string name, bool value)
@@ -203,6 +207,7 @@ namespace MEDataExplorer
             else
                 texProperty.valueRaw[0] = 0;
             texProperty.valueBool = value;
+            texPropertyList[texPropertyList.FindIndex(s => s.name == name)] = texProperty;
         }
 
         public void setNameValue(string name, string valueName, int valueInt = 0)
@@ -214,6 +219,7 @@ namespace MEDataExplorer
             Buffer.BlockCopy(BitConverter.GetBytes(valueInt), 0, texProperty.valueRaw, 4, sizeof(int));
             texProperty.valueName = valueName;
             texProperty.valueInt = valueInt;
+            texPropertyList[texPropertyList.FindIndex(s => s.name == name)] = texProperty;
         }
 
         public void setStructValue(string name, string valueName, byte[] valueStruct)
@@ -225,6 +231,7 @@ namespace MEDataExplorer
             Buffer.BlockCopy(valueStruct, 0, texProperty.valueRaw, 8, valueStruct.Length);
             texProperty.valueName = valueName;
             Buffer.BlockCopy(valueStruct, 0, texProperty.valueStruct, 8, valueStruct.Length);
+            texPropertyList[texPropertyList.FindIndex(s => s.name == name)] = texProperty;
         }
 
         public byte[] toArray()
