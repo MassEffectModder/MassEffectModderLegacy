@@ -28,6 +28,13 @@ using System.Windows.Forms;
 
 namespace METexturesExplorer
 {
+    public enum MeType
+    {
+        ME1_TYPE = 1,
+        ME2_TYPE,
+        ME3_TYPE
+    }
+
     public partial class TexExplorer : Form
     {
         MeType _gameSelected;
