@@ -185,12 +185,37 @@ namespace StreamHelpers
             stream.Write(BitConverter.GetBytes(data), 0, sizeof(Int16));
         }
 
+        public static void Begin(this Stream stream)
+        {
+            stream.Seek(0, SeekOrigin.Begin);
+        }
+
+        public static void JumpTo(this Stream stream, int offset)
+        {
+            stream.Seek(offset, SeekOrigin.Begin);
+        }
+
+        public static void JumpTo(this Stream stream, uint offset)
+        {
+            stream.Seek(offset, SeekOrigin.Begin);
+        }
+
+        public static void JumpTo(this Stream stream, long offset)
+        {
+            stream.Seek(offset, SeekOrigin.Begin);
+        }
+
         public static void Skip(this Stream stream, int count)
         {
             stream.Seek(count, SeekOrigin.Current);
         }
 
         public static void Skip(this Stream stream, uint count)
+        {
+            stream.Seek(count, SeekOrigin.Current);
+        }
+
+        public static void Skip(this Stream stream, long count)
         {
             stream.Seek(count, SeekOrigin.Current);
         }
