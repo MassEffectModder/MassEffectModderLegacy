@@ -57,10 +57,7 @@ namespace METexturesExplorer
         {
             _mainWindow.updateStatusLabel("");
             if (_gameSelected == MeType.ME1_TYPE)
-            {
-                UpdateME1Config();
                 VerifyME1Exe();
-            }
 
             if (GetPackages(_gameSelected))
             {
@@ -133,13 +130,9 @@ namespace METexturesExplorer
             if (!exist)
                 return;
             ConfIni engineConf = new ConfIni(path);
-            var str = engineConf.Read("TEXTUREGROUP_Character_Diff", "TextureLODSettings");
-            if (str != "(MinLODSize=512,MaxLODSize=4096,LODBias=0)")
-            {
                 engineConf.Write("TEXTUREGROUP_Character_Diff", "(MinLODSize=512,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
                 engineConf.Write("TEXTUREGROUP_Character_Norm", "(MinLODSize=512,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
                 engineConf.Write("TEXTUREGROUP_Character_Spec", "(MinLODSize=256,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
-            }
         }
 
         void VerifyME1Exe()
