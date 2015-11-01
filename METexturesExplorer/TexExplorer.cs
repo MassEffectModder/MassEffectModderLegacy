@@ -1,5 +1,5 @@
 ﻿/*
- * MEDataExplorer
+ * METexturesExplorer
  *
  * Copyright (C) 2014-2015 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
@@ -26,7 +26,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace MEDataExplorer
+namespace METexturesExplorer
 {
     public partial class TexExplorer : Form
     {

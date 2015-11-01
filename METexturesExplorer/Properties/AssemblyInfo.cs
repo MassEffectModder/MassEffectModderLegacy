@@ -1,5 +1,5 @@
 ﻿/*
- * MEDataExplorer
+ * METexturesExplorer
  *
  * Copyright (C) 2014 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
@@ -26,11 +26,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("MEDataExplorer")]
+[assembly: AssemblyTitle("METexturesExplorer")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("MEDataExplorer")]
+[assembly: AssemblyProduct("METexturesExplorer")]
 [assembly: AssemblyCopyright("Copyright © 2014-2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

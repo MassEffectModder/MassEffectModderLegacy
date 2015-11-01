@@ -1,5 +1,5 @@
 ﻿/*
- * MEDataExplorer
+ * METexturesExplorer
  *
  * Copyright (C) 2015 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
@@ -29,7 +29,7 @@ using System.Security.Cryptography;
 using System.Text;
 using StreamHelpers;
 
-namespace MEDataExplorer
+namespace METexturesExplorer
 {
     class ME3DLC
     {

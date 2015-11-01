@@ -1,5 +1,5 @@
 ﻿/*
- * MEDataExplorer
+ * METexturesExplorer
  *
  * Copyright (C) 2015 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
@@ -25,7 +25,7 @@ using System.Collections.Generic;
 using System.IO;
 using StreamHelpers;
 
-namespace MEDataExplorer
+namespace METexturesExplorer
 {
     class TexProperty
     {

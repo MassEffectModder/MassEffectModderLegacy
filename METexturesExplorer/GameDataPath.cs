@@ -1,5 +1,5 @@
 ﻿/*
- * MEDataExplorer
+ * METexturesExplorer
  *
  * Copyright (C) 2014-2015 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
@@ -24,7 +24,7 @@ using System;
 using System.IO;
 using System.Windows.Forms;
 
-namespace MEDataExplorer
+namespace METexturesExplorer
 {
     public class GameData
     {

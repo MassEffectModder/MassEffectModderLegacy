@@ -1,5 +1,5 @@
 ﻿/*
- * MEDataExplorer
+ * METexturesExplorer
  *
  * Copyright (C) 2014 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
@@ -19,7 +19,7 @@
  *
  */
 
-namespace MEDataExplorer
+namespace METexturesExplorer
 {
     partial class MainWindow
     {
@@ -232,7 +232,7 @@ namespace MEDataExplorer
             this.IsMdiContainer = true;
             this.MainMenuStrip = this.menuGame;
             this.Name = "MainWindow";
-            this.Text = "MEDataExplorer";
+            this.Text = "METexturesExplorer";
             this.menuGame.ResumeLayout(false);
             this.menuGame.PerformLayout();
             this.statusStrip.ResumeLayout(false);

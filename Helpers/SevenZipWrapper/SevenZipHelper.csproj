@@ -44,8 +44,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if exist $(SolutionDir)\MEDataExplorer\bin\Debug\ copy $(ProjectDir)\sevenzipwrapper.dll $(SolutionDir)\MEDataExplorer\bin\Debug\sevenzipwrapper.dll
-if exist $(SolutionDir)\MEDataExplorer\bin\Release\ copy $(ProjectDir)\sevenzipwrapper.dll $(SolutionDir)\MEDataExplorer\bin\Release\sevenzipwrapper.dll
+    <PostBuildEvent>if exist $(SolutionDir)\METexturesExplorer\bin\Debug\ copy $(ProjectDir)\sevenzipwrapper.dll $(SolutionDir)\METexturesExplorer\bin\Debug\sevenzipwrapper.dll
+if exist $(SolutionDir)\METexturesExplorer\bin\Release\ copy $(ProjectDir)\sevenzipwrapper.dll $(SolutionDir)\METexturesExplorer\bin\Release\sevenzipwrapper.dll
 </PostBuildEvent>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <TargetFrameworkProfile />

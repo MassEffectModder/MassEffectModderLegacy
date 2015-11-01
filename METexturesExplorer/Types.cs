@@ -1,5 +1,5 @@
 ﻿/*
- * MEDataExplorer
+ * METexturesExplorer
  *
  * Copyright (C) 2014 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
@@ -19,7 +19,7 @@
  *
  */
 
-namespace MEDataExplorer
+namespace METexturesExplorer
 {
     public enum MeType
     {

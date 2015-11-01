@@ -1,5 +1,5 @@
 ﻿/*
- * MEDataExplorer
+ * METexturesExplorer
  *
  * Copyright (C) 2014-2015 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
@@ -26,7 +26,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using StreamHelpers;
 
-namespace MEDataExplorer
+namespace METexturesExplorer
 {
     public class Package : IDisposable
     {

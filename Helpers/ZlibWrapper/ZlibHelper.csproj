@@ -45,8 +45,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if exist $(SolutionDir)\MEDataExplorer\bin\Debug\ copy $(ProjectDir)\zlibwrapper.dll $(SolutionDir)\MEDataExplorer\bin\Debug\zlibwrapper.dll
-if exist $(SolutionDir)\MEDataExplorer\bin\Release\ copy $(ProjectDir)\zlibwrapper.dll $(SolutionDir)\MEDataExplorer\bin\Release\zlibwrapper.dll
+    <PostBuildEvent>if exist $(SolutionDir)\METexturesExplorer\bin\Debug\ copy $(ProjectDir)\zlibwrapper.dll $(SolutionDir)\METexturesExplorer\bin\Debug\zlibwrapper.dll
+if exist $(SolutionDir)\METexturesExplorer\bin\Release\ copy $(ProjectDir)\zlibwrapper.dll $(SolutionDir)\METexturesExplorer\bin\Release\zlibwrapper.dll
 </PostBuildEvent>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <TargetFrameworkProfile />
