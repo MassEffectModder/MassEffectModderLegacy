@@ -111,7 +111,7 @@ namespace MEDataExplorer
             {
                 if (StructuralComparisons.StructuralEqualityComparer.Equals(filesList[i].filenameHash, FileListHash))
                 {
-                    sfarFile.Seek(filesList[i].dataOffset, SeekOrigin.Begin);
+                    sfarFile.JumpTo(filesList[i].dataOffset);
                     int compressedBlockSize = blockSizes[filesList[i].compressedBlockSizesIndex];
                     byte[] inBuf = sfarFile.ReadToBuffer(compressedBlockSize);
                     byte[] outBuf = SevenZipHelper.LZMA.Decompress(inBuf, (uint)filesList[i].uncomprSize);
@@ -152,7 +152,7 @@ namespace MEDataExplorer
                 Directory.CreateDirectory(outPath + dir);
                 using (FileStream outputFile = new FileStream(outPath + filenamesArray[i], FileMode.Create, FileAccess.Write))
                 {
-                    sfarFile.Seek(filesList[i].dataOffset, SeekOrigin.Begin);
+                    sfarFile.JumpTo(filesList[i].dataOffset);
                     if (filesList[i].compressedBlockSizesIndex == -1)
                     {
                         outputFile.WriteFromStream(sfarFile, filesList[i].uncomprSize);
@@ -240,7 +240,7 @@ namespace MEDataExplorer
                 List<FileEntry> filesList = new List<FileEntry>();
                 ushort[] blockSizes = new ushort[numBlockSizes];
                 long curDataOffset = dataOffset;
-                outputFile.Seek(dataOffset, SeekOrigin.Begin);
+                outputFile.JumpTo(dataOffset);
                 for (int i = 0; i < srcFilesList.Count(); i++)
                 {
                     FileEntry file = new FileEntry();
@@ -291,7 +291,7 @@ namespace MEDataExplorer
                 if (blockSizes.Count() != curBlockSizesIndex)
                     throw new Exception();
 
-                outputFile.Seek(0, SeekOrigin.Begin);
+                outputFile.Begin();
                 outputFile.WriteUInt32(SfarTag);
                 outputFile.WriteUInt32(SfarVersion);
                 outputFile.WriteUInt32((uint)dataOffset);

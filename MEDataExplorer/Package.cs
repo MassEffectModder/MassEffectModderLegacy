@@ -418,7 +418,7 @@ namespace MEDataExplorer
             var filePos = packageFile.Position;
             someTag = packageFile.ReadUInt32();
             if (version == packageFileVersionME2)
-                packageFile.ReadUInt32(); // const 0
+                packageFile.SkipInt32(); // const 0
 
             loadExtraNames(packageFile);
 
@@ -431,10 +431,10 @@ namespace MEDataExplorer
                 throw new Exception();
 
             uint length = endOfTablesOffset - (uint)dataOffset;
-            packageData.Seek(dataOffset, SeekOrigin.Begin);
+            packageData.JumpTo(dataOffset);
             MemoryStream data = new MemoryStream();
             getData((uint)dataOffset, length, data);
-            data.Seek(0, SeekOrigin.Begin);
+            data.Begin();
             packageData.WriteFromStream(data, data.Length);
 
             if (endOfTablesOffset < namesOffset)
@@ -482,7 +482,7 @@ namespace MEDataExplorer
                         }
                         chunkCache = new MemoryStream();
                         currentChunk = c;
-                        packageFile.Seek(chunk.comprOffset, SeekOrigin.Begin);
+                        packageFile.JumpTo(chunk.comprOffset);
                         uint blockTag = packageFile.ReadUInt32(); // block tag
                         if (blockTag != packageTag)
                             throw new Exception("not match");
@@ -528,7 +528,7 @@ namespace MEDataExplorer
                             chunkCache.WriteFromBuffer(dst);
                         }
                     }
-                    chunkCache.Seek(startInChunk, SeekOrigin.Begin);
+                    chunkCache.JumpTo(startInChunk);
                     output.WriteFromStream(chunkCache, bytesLeftInChunk);
                     bytesLeft -= bytesLeftInChunk;
                     if (bytesLeft == 0)
@@ -537,7 +537,7 @@ namespace MEDataExplorer
             }
             else
             {
-                packageFile.Seek(offset, SeekOrigin.Begin);
+                packageFile.JumpTo(offset);
                 output.WriteFromStream(packageFile, length);
             }
         }
@@ -593,7 +593,7 @@ namespace MEDataExplorer
         private void loadNames(Stream input)
         {
             namesTable = new List<NameEntry>();
-            input.Seek(namesOffset, SeekOrigin.Begin);
+            input.JumpTo(namesOffset);
             for (int i = 0; i < namesCount; i++)
             {
                 NameEntry entry = new NameEntry();
@@ -699,7 +699,7 @@ namespace MEDataExplorer
         private void loadImports(Stream input)
         {
             importsTable = new List<ImportEntry>();
-            input.Seek(importsOffset, SeekOrigin.Begin);
+            input.JumpTo(importsOffset);
             for (int i = 0; i < importsCount; i++)
             {
                 ImportEntry entry = new ImportEntry();
@@ -707,16 +707,16 @@ namespace MEDataExplorer
                 var start = input.Position;
                 entry.packageFileId = input.ReadInt32();
                 entry.packageFile = namesTable[entry.packageFileId].name;
-                input.ReadInt32(); // const 0
+                input.SkipInt32(); // const 0
                 entry.classId = input.ReadInt32();
-                input.ReadInt32(); // const 0
+                input.SkipInt32(); // const 0
                 entry.linkId = input.ReadInt32();
                 entry.objectNameId = input.ReadInt32();
                 entry.objectName = namesTable[entry.objectNameId].name;
-                input.ReadInt32();
+                input.SkipInt32();
 
                 var len = input.Position - start;
-                input.Seek(start, SeekOrigin.Begin);
+                input.JumpTo(start);
                 entry.raw = input.ReadToBuffer((int)len);
 
                 importsTable.Add(entry);
@@ -743,7 +743,7 @@ namespace MEDataExplorer
         private void loadExports(Stream input)
         {
             exportsTable = new List<ExportEntry>();
-            input.Seek(exportsOffset, SeekOrigin.Begin);
+            input.JumpTo(exportsOffset);
             for (int i = 0; i < exportsCount; i++)
             {
                 uint count;
@@ -756,23 +756,23 @@ namespace MEDataExplorer
                 entry.objectNameId = input.ReadInt32();
                 entry.objectName = namesTable[entry.objectNameId].name;
                 entry.suffixNameId = input.ReadInt32();
-                input.ReadInt32();
+                input.SkipInt32();
                 entry.objectFlags = input.ReadUInt64();
-                input.ReadUInt32(); // dataSize
-                input.ReadUInt32(); // dataOffset
+                input.SkipInt32(); // dataSize
+                input.SkipInt32(); // dataOffset
                 if (version != packageFileVersionME3)
                 {
                     count = input.ReadUInt32();
-                    input.Seek(count * 12, SeekOrigin.Current); // skip entries
+                    input.Skip(count * 12); // skip entries
                 }
                 input.ReadUInt32();
                 count = input.ReadUInt32();
-                input.Seek(count * 4, SeekOrigin.Current); // skip entries
-                input.Seek(16, SeekOrigin.Current); // skip guid
-                input.ReadUInt32();
+                input.Skip(count * 4); // skip entries
+                input.Skip(16); // skip guid
+                input.SkipInt32();
 
                 var len = input.Position - start;
-                input.Seek(start, SeekOrigin.Begin);
+                input.JumpTo(start);
                 entry.raw = input.ReadToBuffer((int)len);
 
                 exportsTable.Add(entry);
@@ -797,7 +797,7 @@ namespace MEDataExplorer
         private void loadDepends(Stream input)
         {
             dependsTable = new List<int>();
-            input.Seek(dependsOffset, SeekOrigin.Begin);
+            input.JumpTo(dependsOffset);
             for (int i = 0; i < exportsCount; i++)
                 dependsTable.Add(input.ReadInt32());
         }
@@ -809,7 +809,7 @@ namespace MEDataExplorer
         private void loadGuids(Stream input)
         {
             guidsTable = new List<GuidEntry>();
-            input.Seek(guidsOffset, SeekOrigin.Begin);
+            input.JumpTo(guidsOffset);
             for (int i = 0; i < guidsCount; i++)
             {
                 GuidEntry entry = new GuidEntry();
@@ -872,10 +872,10 @@ namespace MEDataExplorer
             if (forceCompress) // override to compression
                 compressed = true;
             compressionType = CompressionType.Zlib; // override compression type to Zlib
-            tempOutput.Seek(0, SeekOrigin.Begin);
+            tempOutput.Begin();
             tempOutput.Write(packageHeader, 0, packageHeader.Length);
             tempOutput.WriteUInt32((uint)compressionType);
-            tempOutput.Seek(exportsOffset, SeekOrigin.Begin);
+            tempOutput.JumpTo(exportsOffset);
             saveExports(tempOutput);
             packageFile.Close();
 
@@ -887,7 +887,7 @@ namespace MEDataExplorer
 
                 if (!compressed)
                 {
-                    tempOutput.Seek(0, SeekOrigin.Begin);
+                    tempOutput.Begin();
                     fs.WriteFromStream(tempOutput, tempOutput.Length);
                 }
                 else
@@ -920,7 +920,7 @@ namespace MEDataExplorer
                     fs.WriteUInt32((uint)compressionType);
                     fs.WriteUInt32((uint)chunks.Count);
                     var chunksTableOffset = (uint)fs.Position;
-                    fs.Seek(SizeOfChunk * chunks.Count, SeekOrigin.Current); // skip chunks table - filled later
+                    fs.Skip(SizeOfChunk * chunks.Count); // skip chunks table - filled later
                     fs.WriteUInt32(someTag);
                     if (version == packageFileVersionME2)
                         fs.WriteUInt32(0); // const 0
@@ -937,7 +937,7 @@ namespace MEDataExplorer
                         // skip blocks header and table - filled later
                         fs.Seek(SizeOfChunk + SizeOfChunkBlock * newNumBlocks, SeekOrigin.Current);
 
-                        tempOutput.Seek(chunk.uncomprOffset, SeekOrigin.Begin);
+                        tempOutput.JumpTo(chunk.uncomprOffset);
 
                         chunk.blocks = new List<ChunkBlock>();
                         for (int b = 0; b < newNumBlocks; b++)
@@ -969,12 +969,12 @@ namespace MEDataExplorer
                     for (int c = 0; c < chunks.Count; c++)
                     {
                         chunk = chunks[c];
-                        fs.Seek(chunksTableOffset + c * SizeOfChunk, SeekOrigin.Begin); // seek to chunks table
+                        fs.JumpTo(chunksTableOffset + c * SizeOfChunk); // jump to chunks table
                         fs.WriteUInt32(chunk.uncomprOffset);
                         fs.WriteUInt32(chunk.uncomprSize);
                         fs.WriteUInt32(chunk.comprOffset);
                         fs.WriteUInt32(chunk.comprSize + SizeOfChunk + SizeOfChunkBlock * (uint)chunk.blocks.Count);
-                        fs.Seek(chunk.comprOffset, SeekOrigin.Begin); // seek to blocks header
+                        fs.JumpTo(chunk.comprOffset); // jump to blocks header
                         fs.WriteUInt32(packageTag);
                         fs.WriteUInt32(maxBlockSize);
                         fs.WriteUInt32(chunk.comprSize);
@@ -1027,7 +1027,7 @@ namespace MEDataExplorer
                 uint tag = tocFile.ReadUInt32();
                 if (tag != TOCTag)
                     throw new Exception("Wrong TOCTag tag");
-                tocFile.ReadUInt32();
+                tocFile.SkipInt32();
 
                 blockList = new List<Block>();
                 uint numBlocks = tocFile.ReadUInt32();
@@ -1040,7 +1040,7 @@ namespace MEDataExplorer
                     blockList.Add(block);
                 }
 
-                tocFile.Seek(TOCHeaderSize + (numBlocks * 8), SeekOrigin.Begin);
+                tocFile.JumpTo(TOCHeaderSize + (numBlocks * 8));
                 for (int b = 0; b < numBlocks; b++)
                 {
                     Block block = blockList[b];
@@ -1056,7 +1056,7 @@ namespace MEDataExplorer
                         file.sha1 = tocFile.ReadToBuffer(20);
                         file.path = tocFile.ReadStringASCIINull();
                         block.filesList.Add(file);
-                        tocFile.Seek(curPos + blockSize, SeekOrigin.Begin);
+                        tocFile.JumpTo(curPos + blockSize);
                     }
                     blockList[b] = block;
                 }
@@ -1101,7 +1101,7 @@ namespace MEDataExplorer
                 tocFile.WriteUInt32(TOCTag);
                 tocFile.WriteUInt32(0);
                 tocFile.WriteUInt32((uint)blockList.Count);
-                tocFile.Seek(8 * blockList.Count, SeekOrigin.Current); // filled later
+                tocFile.Skip(8 * blockList.Count); // filled later
 
                 long lastOffset = 0;
                 for (int b = 0; b < blockList.Count; b++)
@@ -1119,18 +1119,18 @@ namespace MEDataExplorer
                         tocFile.WriteUInt32(file.size);
                         tocFile.WriteFromBuffer(file.sha1);
                         tocFile.WriteStringASCIINull(file.path);
-                        tocFile.Seek(fileOffset + blockSize - 1, SeekOrigin.Begin);
+                        tocFile.JumpTo(fileOffset + blockSize - 1);
                         tocFile.WriteByte(0); // make sure all bytes are written after seek
                     }
                     blockList[b] = block;
                 }
                 if (lastOffset != 0)
                 {
-                    tocFile.Seek(lastOffset, SeekOrigin.Begin);
+                    tocFile.JumpTo(lastOffset);
                     tocFile.WriteUInt16(0);
                 }
 
-                tocFile.Seek(TOCHeaderSize, SeekOrigin.Begin);
+                tocFile.JumpTo(TOCHeaderSize);
                 for (int b = 0; b < blockList.Count; b++)
                 {
                     tocFile.WriteUInt32(blockList[b].filesOffset);
