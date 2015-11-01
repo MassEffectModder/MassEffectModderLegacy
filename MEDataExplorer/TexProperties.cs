@@ -22,6 +22,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using StreamHelpers;
 
 namespace MEDataExplorer
 {
@@ -41,6 +43,7 @@ namespace MEDataExplorer
         }
         public List<TexPropertyEntry> texPropertyList;
         int propertyEndOffset;
+        uint headerData = 0;
         Package package;
 
         public TexProperty(Package pkg, int exportId)
@@ -48,6 +51,7 @@ namespace MEDataExplorer
             package = pkg;
             texPropertyList = new List<TexPropertyEntry>();
             byte[] data = package.getExportData(exportId);
+            Buffer.BlockCopy(data, 0, BitConverter.GetBytes(headerData), 0, sizeof(uint));
             getProperty(data, 4);
         }
 
@@ -221,6 +225,40 @@ namespace MEDataExplorer
             Buffer.BlockCopy(valueStruct, 0, texProperty.valueRaw, 8, valueStruct.Length);
             texProperty.valueName = valueName;
             Buffer.BlockCopy(valueStruct, 0, texProperty.valueStruct, 8, valueStruct.Length);
+        }
+
+        public byte[] toArray()
+        {
+            MemoryStream mem = new MemoryStream();
+            mem.WriteUInt32(headerData);
+            for (int i = 0; i < texPropertyList.Count; i++)
+            {
+                mem.WriteInt32(package.getNameId(texPropertyList[i].name));
+                mem.SkipInt32();
+                if (texPropertyList[i].name == "None")
+                    break;
+                mem.WriteInt32(package.getNameId(texPropertyList[i].type));
+                mem.SkipInt32();
+                int size = texPropertyList[i].valueRaw.Length;
+                switch (texPropertyList[i].type)
+                {
+                    case "StructProperty":
+                        size -= 8;
+                        break;
+                    case "ByteProperty":
+                        if (GameData.gameType == MeType.ME3_TYPE)
+                            size -= 8;
+                        break;
+                    case "BoolProperty":
+                        size = 0;
+                        break;
+                }
+                mem.WriteInt32(size);
+                mem.WriteInt32(texPropertyList[i].index);
+                mem.Write(texPropertyList[i].valueRaw, 0, texPropertyList[i].valueRaw.Length);
+            }
+
+            return mem.ToArray();
         }
     }
 }
