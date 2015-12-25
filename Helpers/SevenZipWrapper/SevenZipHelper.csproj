@@ -47,7 +47,7 @@
     <PostBuildEvent>if exist $(SolutionDir)\METexturesExplorer\bin\Debug\ copy $(ProjectDir)\sevenzipwrapper.dll $(SolutionDir)\METexturesExplorer\bin\Debug\sevenzipwrapper.dll
 if exist $(SolutionDir)\METexturesExplorer\bin\Release\ copy $(ProjectDir)\sevenzipwrapper.dll $(SolutionDir)\METexturesExplorer\bin\Release\sevenzipwrapper.dll
 </PostBuildEvent>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <TargetFrameworkProfile />
     <ProjectGuid>{A3A102E9-E5AA-4BED-A86B-757F668EBFE5}</ProjectGuid>
   </PropertyGroup>

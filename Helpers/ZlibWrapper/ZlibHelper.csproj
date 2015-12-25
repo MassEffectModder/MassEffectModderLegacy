@@ -48,7 +48,7 @@
     <PostBuildEvent>if exist $(SolutionDir)\METexturesExplorer\bin\Debug\ copy $(ProjectDir)\zlibwrapper.dll $(SolutionDir)\METexturesExplorer\bin\Debug\zlibwrapper.dll
 if exist $(SolutionDir)\METexturesExplorer\bin\Release\ copy $(ProjectDir)\zlibwrapper.dll $(SolutionDir)\METexturesExplorer\bin\Release\zlibwrapper.dll
 </PostBuildEvent>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <TargetFrameworkProfile />
     <ProjectGuid>{7C8AF7AE-D0D9-4355-8D1F-8420C133DB31}</ProjectGuid>
   </PropertyGroup>

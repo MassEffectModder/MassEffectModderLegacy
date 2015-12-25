@@ -47,7 +47,7 @@
     <PostBuildEvent>if exist $(SolutionDir)\METexturesExplorer\bin\Debug\ copy $(ProjectDir)\lzo2wrapper.dll $(SolutionDir)\METexturesExplorer\bin\Debug\lzo2wrapper.dll
 if exist $(SolutionDir)\METexturesExplorer\bin\Release\ copy $(ProjectDir)\lzo2wrapper.dll $(SolutionDir)\METexturesExplorer\bin\Release\lzo2wrapper.dll
 </PostBuildEvent>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <TargetFrameworkProfile />
     <ProjectGuid>{5E10735C-E0BE-4003-A085-4D51434682F4}</ProjectGuid>
   </PropertyGroup>
