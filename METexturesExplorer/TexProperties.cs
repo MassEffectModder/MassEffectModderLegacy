@@ -42,15 +42,14 @@ namespace METexturesExplorer
             public int index;
         }
         public List<TexPropertyEntry> texPropertyList;
-        int propertyEndOffset;
+        public int propertyEndOffset;
         uint headerData = 0;
         Package package;
 
-        public TexProperty(Package pkg, int exportId)
+        public TexProperty(Package pkg, byte[] data)
         {
             package = pkg;
             texPropertyList = new List<TexPropertyEntry>();
-            byte[] data = package.getExportData(exportId);
             Buffer.BlockCopy(data, 0, BitConverter.GetBytes(headerData), 0, sizeof(uint));
             getProperty(data, 4);
         }

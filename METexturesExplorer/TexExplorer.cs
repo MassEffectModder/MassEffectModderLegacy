@@ -81,7 +81,8 @@ namespace METexturesExplorer
                 int id = package.getClassNameId(package.exportsTable[i].classId);
                 if (id == package.nameIdTexture2D || id == package.nameIdLightMapTexture2D || id == package.nameIdTextureFlipBook)
                 {
-                    Texture texture = new Texture(package, i);
+                    byte[] data = package.getExportData(i);
+                    Texture texture = new Texture(package, i, data, this);
                 }
             }
 

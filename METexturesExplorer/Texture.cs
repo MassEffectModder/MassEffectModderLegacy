@@ -27,9 +27,9 @@ namespace METexturesExplorer
 {
     class Texture
     {
-        public Texture(Package package, int exportId)
+        public Texture(Package package, int exportId, byte[] data, TexExplorer tex)
         {
-            TexProperty properties = new TexProperty(package, exportId);
+            TexProperty properties = new TexProperty(package, data);
             foreach (TexProperty.TexPropertyEntry prop in properties.texPropertyList)
             {
                 if (prop.name == "None")
