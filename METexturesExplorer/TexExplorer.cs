@@ -239,7 +239,7 @@ namespace METexturesExplorer
                 _mainWindow.updateStatusLabel("Repack file " + (i + 1) + " of " + _packageFiles.Count);
                 Application.DoEvents();
                 var package = new Package(_packageFiles[i]);
-                package.SaveToFile(true);
+                package.SaveToFile();
             }
             _mainWindow.updateStatusLabel("Done");
         }
