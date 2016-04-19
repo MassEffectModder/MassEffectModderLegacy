@@ -119,27 +119,6 @@ namespace METexturesExplorer
             enableGameDataMenu(true);
         }
 
-        private void repackME3MainDataToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            enableGameDataMenu(false);
-            CreateTextureExplorer(MeType.ME3_TYPE).RepackME3();
-            enableGameDataMenu(true);
-        }
-
-        private void repackME3DLCDatauncompressedToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            enableGameDataMenu(false);
-            CreateTextureExplorer(MeType.ME3_TYPE).RepackDLCME3(false);
-            enableGameDataMenu(true);
-        }
-
-        private void repackME3DLCDataZlibToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            enableGameDataMenu(false);
-            CreateTextureExplorer(MeType.ME3_TYPE).RepackDLCME3(true);
-            enableGameDataMenu(true);
-        }
-
         private void extractME3DLCPackagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             enableGameDataMenu(false);

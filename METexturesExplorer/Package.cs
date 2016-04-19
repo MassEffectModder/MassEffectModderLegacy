@@ -80,8 +80,6 @@ namespace METexturesExplorer
         List<NameEntry> namesTable;
         List<ImportEntry> importsTable;
         public List<ExportEntry> exportsTable;
-        List<int> dependsTable;
-        List<GuidEntry> guidsTable;
         List<string> extraNamesTable;
         int currentChunk = -1;
         MemoryStream chunkCache;
@@ -140,20 +138,12 @@ namespace METexturesExplorer
                 {
                     return BitConverter.ToUInt32(raw, DataOffsetSize);
                 }
-                set
-                {
-                    Buffer.BlockCopy(BitConverter.GetBytes(value), 0, raw, DataOffsetSize, sizeof(uint));
-                }
             }
             public uint dataOffset
             {
                 get
                 {
                     return BitConverter.ToUInt32(raw, DataOffsetOffset);
-                }
-                set
-                {
-                    Buffer.BlockCopy(BitConverter.GetBytes(value), 0, raw, DataOffsetOffset, sizeof(uint));
                 }
             }
             public ulong objectFlags;
@@ -190,10 +180,6 @@ namespace METexturesExplorer
             {
                 return BitConverter.ToUInt32(packageHeader, packageHeaderFirstChunkSizeOffset);
             }
-            set
-            {
-                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, packageHeaderFirstChunkSizeOffset, sizeof(uint));
-            }
         }
 
         private int packageHeaderFlagsOffset
@@ -214,10 +200,6 @@ namespace METexturesExplorer
             {
                 return BitConverter.ToUInt32(packageHeader, packageHeaderFlagsOffset);
             }
-            set
-            {
-                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, packageHeaderFlagsOffset, sizeof(uint));
-            }
         }
 
         private bool compressed
@@ -225,14 +207,6 @@ namespace METexturesExplorer
             get
             {
                 return (flags & (uint)PackageFlags.compressed) != 0;
-            }
-            set
-            {
-                if (value)
-                    flags |= (uint)PackageFlags.compressed;
-                else
-                    flags &= ~(uint)PackageFlags.compressed;
-                Buffer.BlockCopy(BitConverter.GetBytes(flags), 0, packageHeader, packageHeaderFlagsOffset, sizeof(uint));
             }
         }
 
@@ -253,10 +227,6 @@ namespace METexturesExplorer
             {
                 return BitConverter.ToUInt32(packageHeader, tablesOffset + packageHeaderNamesCountTableOffset);
             }
-            set
-            {
-                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, tablesOffset + packageHeaderNamesCountTableOffset, sizeof(uint));
-            }
         }
 
         private uint namesOffset
@@ -264,10 +234,6 @@ namespace METexturesExplorer
             get
             {
                 return BitConverter.ToUInt32(packageHeader, tablesOffset + packageHeaderNamesOffsetTabletsOffset);
-            }
-            set
-            {
-                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, tablesOffset + packageHeaderNamesOffsetTabletsOffset, sizeof(uint));
             }
         }
 
@@ -285,10 +251,6 @@ namespace METexturesExplorer
             {
                 return BitConverter.ToUInt32(packageHeader, tablesOffset + packageHeaderExportsOffsetTableOffset);
             }
-            set
-            {
-                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, tablesOffset + packageHeaderExportsOffsetTableOffset, sizeof(uint));
-            }
         }
 
         private uint importsCount
@@ -305,10 +267,6 @@ namespace METexturesExplorer
             {
                 return BitConverter.ToUInt32(packageHeader, tablesOffset + packageHeaderImportsOffsetTableOffset);
             }
-            set
-            {
-                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, tablesOffset + packageHeaderImportsOffsetTableOffset, sizeof(uint));
-            }
         }
 
         private uint dependsOffset
@@ -317,10 +275,6 @@ namespace METexturesExplorer
             {
                 return BitConverter.ToUInt32(packageHeader, tablesOffset + packageHeaderDependsOffsetTableOffset);
             }
-            set
-            {
-                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, tablesOffset + packageHeaderDependsOffsetTableOffset, sizeof(uint));
-            }
         }
 
         private uint guidsOffset
@@ -328,10 +282,6 @@ namespace METexturesExplorer
             get
             {
                 return BitConverter.ToUInt32(packageHeader, tablesOffset + packageHeaderGuidsOffsetTableOffset);
-            }
-            set
-            {
-                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, tablesOffset + packageHeaderGuidsOffsetTableOffset, sizeof(uint));
             }
         }
 
@@ -449,9 +399,6 @@ namespace METexturesExplorer
             }
             loadImports(packageData);
             loadExports(packageData);
-            loadDepends(packageData);
-            if (version == packageFileVersionME3)
-                loadGuids(packageData);
             loadImportsNames();
             loadExportsNames();
         }
@@ -554,33 +501,19 @@ namespace METexturesExplorer
         public void setExportData(int id, byte[] data)
         {
             ExportEntry export = exportsTable[id];
+            if (export.dataSize != (uint)data.Length)
+                throw new Exception();
             export.newData = data;
-            export.dataSize = (uint)data.Length;
-            export.dataOffset = 0;
             exportsTable[id] = export;
         }
 
         public int getNameId(string name)
         {
-            for (int i = 0; i < namesCount; i++)
-            {
+            for (int i = 0; i < namesTable.Count; i++)
                 if (namesTable[i].name == name)
                     return i;
-            }
-            return addName(name);
-        }
 
-        public int addName(string name)
-        {
-            NameEntry entry = new NameEntry();
-            entry.name = name;
-            if (version == packageFileVersionME1)
-                entry.flags = 0x0007001000000000;
-            if (version == packageFileVersionME2)
-                entry.flags = 0xfffffff2;
-            namesTable.Add(entry);
-            namesCount = (uint)namesTable.Count;
-            return namesTable.Count - 1;
+            throw new Exception();
         }
 
         public string getName(int id)
@@ -732,14 +665,6 @@ namespace METexturesExplorer
             }
         }
 
-        private void saveImports(Stream output)
-        {
-            for (int i = 0; i < importsTable.Count; i++)
-            {
-                output.WriteFromBuffer(importsTable[i].raw);
-            }
-        }
-
         private void loadExports(Stream input)
         {
             exportsTable = new List<ExportEntry>();
@@ -794,90 +719,39 @@ namespace METexturesExplorer
                 output.WriteFromBuffer(exportsTable[i].raw);
             }
         }
-        private void loadDepends(Stream input)
-        {
-            dependsTable = new List<int>();
-            input.JumpTo(dependsOffset);
-            for (int i = 0; i < exportsCount; i++)
-                dependsTable.Add(input.ReadInt32());
-        }
-        private void saveDepends(Stream output)
-        {
-            for (int i = 0; i < exportsTable.Count; i++)
-                output.WriteInt32(dependsTable[i]);
-        }
-        private void loadGuids(Stream input)
-        {
-            guidsTable = new List<GuidEntry>();
-            input.JumpTo(guidsOffset);
-            for (int i = 0; i < guidsCount; i++)
-            {
-                GuidEntry entry = new GuidEntry();
-                entry.guid = input.ReadToBuffer(16);
-                entry.index = input.ReadInt32();
-                guidsTable.Add(entry);
-            }
-        }
-        private void saveGuids(Stream output)
-        {
-            for (int i = 0; i < guidsTable.Count; i++)
-            {
-                GuidEntry entry = guidsTable[i];
-                output.WriteFromBuffer(entry.guid);
-                output.WriteInt32(entry.index);
-            }
-        }
 
-        public bool SaveToFile(bool forceCompress = false, int compressionLevel = -1)
+        public bool SaveToFile(int compressionLevel = -1)
         {
             if (packageFile.Length == 0)
                 return false;
 
             MemoryStream tempOutput = new MemoryStream();
-            tempOutput.Write(packageHeader, 0, packageHeader.Length); // updated later
-            tempOutput.WriteUInt32((uint)compressionType);
-            tempOutput.WriteUInt32(0); // number of chunks
-            tempOutput.WriteUInt32(someTag);
-            if (version == packageFileVersionME2)
-                tempOutput.WriteUInt32(0); // const 0
-            saveExtraNames(tempOutput);
-            if (dataOffset != tempOutput.Position)
-                throw new Exception();
-            namesOffset = (uint)tempOutput.Position;
-            saveNames(tempOutput);
-            importsOffset = (uint)tempOutput.Position;
-            saveImports(tempOutput);
-            exportsOffset = (uint)tempOutput.Position;
-            saveExports(tempOutput);
-            dependsOffset = (uint)tempOutput.Position;
-            saveDepends(tempOutput);
-            if (version == packageFileVersionME3)
-            {
-                guidsOffset = (uint)tempOutput.Position;
-                saveGuids(tempOutput);
-            }
-            endOfTablesOffset = (uint)tempOutput.Position;
+            packageFile.Begin();
+            tempOutput.WriteFromStream(packageFile, endOfTablesOffset);
 
             for (int i = 0; i < exportsCount; i++)
             {
                 ExportEntry export = exportsTable[i];
-                uint newDataOffset = (uint)tempOutput.Position;
                 if (export.newData != null)
                     tempOutput.WriteFromBuffer(export.newData);
                 else
                     getData(export.dataOffset, export.dataSize, tempOutput);
-                export.dataOffset = newDataOffset; // update
-                exportsTable[i] = export;
             }
-            if (forceCompress) // override to compression
-                compressed = true;
+
+            if (endOfTablesOffset < namesOffset)
+            {
+                if (compressed) // allowed only uncompressed
+                    throw new Exception();
+                saveNames(tempOutput);
+            }
+
             compressionType = CompressionType.Zlib; // override compression type to Zlib
-            tempOutput.Begin();
-            tempOutput.Write(packageHeader, 0, packageHeader.Length);
+            tempOutput.JumpTo(packageHeader.Length);
             tempOutput.WriteUInt32((uint)compressionType);
             tempOutput.JumpTo(exportsOffset);
             saveExports(tempOutput);
             packageFile.Close();
+
 
             string filename = packageFile.Name;
             using (FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write))

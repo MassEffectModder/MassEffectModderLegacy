@@ -251,46 +251,6 @@ namespace METexturesExplorer
             _mainWindow.updateStatusLabel("Done");
         }
 
-        public void RepackME3()
-        {
-            List<string> packageFiles = Directory.GetFiles(gameData.MainData, "*.pcc", SearchOption.AllDirectories).ToList();
-            packageFiles.RemoveAll(s => s.Contains("GuidCache"));
-            string TOCFilePath = Path.Combine(gameData.bioGamePath, "PCConsoleTOC.bin");
-            TOCBinFile tocFile = new TOCBinFile(TOCFilePath);
-            for (int i = 0; i < packageFiles.Count; i++)
-            {
-                _mainWindow.updateStatusLabel("Repack file " + (i + 1) + " of " + packageFiles.Count);
-                Application.DoEvents();
-                var package = new Package(packageFiles[i]);
-                package.SaveToFile();
-
-                int pos = packageFiles[i].IndexOf(@"\BioGame\", StringComparison.CurrentCultureIgnoreCase);
-                string filename = packageFiles[i].Substring(pos + 1);
-                tocFile.updateFile(filename, packageFiles[i]);
-            }
-            tocFile.saveToFile(TOCFilePath);
-            _mainWindow.updateStatusLabel("Done");
-        }
-
-        public void RepackDLCME3(bool forceCompress)
-        {
-            if (!Directory.Exists(gameData.DLCDataCache))
-            {
-                MessageBox.Show("DLCCache directory is missing, you need exract DLC packages first.");
-                return;
-            }
-            List<string> packageFiles = Directory.GetFiles(gameData.DLCDataCache, "*.pcc", SearchOption.AllDirectories).ToList();
-            packageFiles.RemoveAll(s => s.Contains("GuidCache"));
-            for (int i = 0; i < packageFiles.Count; i++)
-            {
-                _mainWindow.updateStatusLabel("File " + (i + 1) + " of " + packageFiles.Count);
-                Application.DoEvents();
-                var package = new Package(packageFiles[i]);
-                package.SaveToFile(forceCompress);
-            }
-            _mainWindow.updateStatusLabel("Done");
-        }
-
         public void ExtractME3DLC()
         {
             if (Directory.Exists(gameData.DLCDataCache))

@@ -58,18 +58,15 @@ namespace METexturesExplorer
             this.massEffect2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.repackME2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updateME2DLCCacheToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.updateME2ConfigToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuME3 = new System.Windows.Forms.ToolStripMenuItem();
             this.massEffect3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.repackME3MainDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.repackME3DLCDatauncompressedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.repackME3DLCDataZlibToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extractME3DLCPackagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.packME3DLCPackagesUncompressedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.packME3DLCPackagesLZMAToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.updateME3ConfigToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.updateME2ConfigToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.updateME3ConfigToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuGame.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.SuspendLayout();
@@ -98,14 +95,14 @@ namespace METexturesExplorer
             // massEffect1ToolStripMenuItem
             // 
             this.massEffect1ToolStripMenuItem.Name = "massEffect1ToolStripMenuItem";
-            this.massEffect1ToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.massEffect1ToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.massEffect1ToolStripMenuItem.Text = "Texture Explorer";
             this.massEffect1ToolStripMenuItem.Click += new System.EventHandler(this.massEffect1ToolStripMenuItem_Click);
             // 
             // repackME1ToolStripMenuItem
             // 
             this.repackME1ToolStripMenuItem.Name = "repackME1ToolStripMenuItem";
-            this.repackME1ToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.repackME1ToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.repackME1ToolStripMenuItem.Text = "Repack (Zlib)";
             this.repackME1ToolStripMenuItem.Click += new System.EventHandler(this.repackME1ToolStripMenuItem_Click);
             // 
@@ -130,31 +127,35 @@ namespace METexturesExplorer
             // massEffect2ToolStripMenuItem
             // 
             this.massEffect2ToolStripMenuItem.Name = "massEffect2ToolStripMenuItem";
-            this.massEffect2ToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.massEffect2ToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.massEffect2ToolStripMenuItem.Text = "Texture Explorer";
             this.massEffect2ToolStripMenuItem.Click += new System.EventHandler(this.massEffect2ToolStripMenuItem_Click);
             // 
             // repackME2ToolStripMenuItem
             // 
             this.repackME2ToolStripMenuItem.Name = "repackME2ToolStripMenuItem";
-            this.repackME2ToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.repackME2ToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.repackME2ToolStripMenuItem.Text = "Repack (Zlib)";
             this.repackME2ToolStripMenuItem.Click += new System.EventHandler(this.repackME2ToolStripMenuItem_Click);
             // 
             // updateME2DLCCacheToolStripMenuItem
             // 
             this.updateME2DLCCacheToolStripMenuItem.Name = "updateME2DLCCacheToolStripMenuItem";
-            this.updateME2DLCCacheToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.updateME2DLCCacheToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.updateME2DLCCacheToolStripMenuItem.Text = "Update DLC Cache";
             this.updateME2DLCCacheToolStripMenuItem.Click += new System.EventHandler(this.updateME2DLCCacheToolStripMenuItem_Click);
+            // 
+            // updateME2ConfigToolStripMenuItem
+            // 
+            this.updateME2ConfigToolStripMenuItem.Name = "updateME2ConfigToolStripMenuItem";
+            this.updateME2ConfigToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.updateME2ConfigToolStripMenuItem.Text = "Update LOD Settings";
+            this.updateME2ConfigToolStripMenuItem.Click += new System.EventHandler(this.updateME2ConfigToolStripMenuItem_Click);
             // 
             // toolStripMenuME3
             // 
             this.toolStripMenuME3.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.massEffect3ToolStripMenuItem,
-            this.repackME3MainDataToolStripMenuItem,
-            this.repackME3DLCDatauncompressedToolStripMenuItem,
-            this.repackME3DLCDataZlibToolStripMenuItem,
             this.extractME3DLCPackagesToolStripMenuItem,
             this.packME3DLCPackagesUncompressedToolStripMenuItem,
             this.packME3DLCPackagesLZMAToolStripMenuItem,
@@ -169,27 +170,6 @@ namespace METexturesExplorer
             this.massEffect3ToolStripMenuItem.Size = new System.Drawing.Size(266, 22);
             this.massEffect3ToolStripMenuItem.Text = "Texture Explorer";
             this.massEffect3ToolStripMenuItem.Click += new System.EventHandler(this.massEffect3ToolStripMenuItem_Click);
-            // 
-            // repackME3MainDataToolStripMenuItem
-            // 
-            this.repackME3MainDataToolStripMenuItem.Name = "repackME3MainDataToolStripMenuItem";
-            this.repackME3MainDataToolStripMenuItem.Size = new System.Drawing.Size(266, 22);
-            this.repackME3MainDataToolStripMenuItem.Text = "Repack Main Data";
-            this.repackME3MainDataToolStripMenuItem.Click += new System.EventHandler(this.repackME3MainDataToolStripMenuItem_Click);
-            // 
-            // repackME3DLCDatauncompressedToolStripMenuItem
-            // 
-            this.repackME3DLCDatauncompressedToolStripMenuItem.Name = "repackME3DLCDatauncompressedToolStripMenuItem";
-            this.repackME3DLCDatauncompressedToolStripMenuItem.Size = new System.Drawing.Size(266, 22);
-            this.repackME3DLCDatauncompressedToolStripMenuItem.Text = "Repack DLC Data (uncompressed)";
-            this.repackME3DLCDatauncompressedToolStripMenuItem.Click += new System.EventHandler(this.repackME3DLCDatauncompressedToolStripMenuItem_Click);
-            // 
-            // repackME3DLCDataZlibToolStripMenuItem
-            // 
-            this.repackME3DLCDataZlibToolStripMenuItem.Name = "repackME3DLCDataZlibToolStripMenuItem";
-            this.repackME3DLCDataZlibToolStripMenuItem.Size = new System.Drawing.Size(266, 22);
-            this.repackME3DLCDataZlibToolStripMenuItem.Text = "Repack DLC Data (Zlib)";
-            this.repackME3DLCDataZlibToolStripMenuItem.Click += new System.EventHandler(this.repackME3DLCDataZlibToolStripMenuItem_Click);
             // 
             // extractME3DLCPackagesToolStripMenuItem
             // 
@@ -212,6 +192,13 @@ namespace METexturesExplorer
             this.packME3DLCPackagesLZMAToolStripMenuItem.Text = "Pack DLC Packages (LZMA)";
             this.packME3DLCPackagesLZMAToolStripMenuItem.Click += new System.EventHandler(this.packME3DLCPackagesLZMAToolStripMenuItem_Click);
             // 
+            // updateME3ConfigToolStripMenuItem
+            // 
+            this.updateME3ConfigToolStripMenuItem.Name = "updateME3ConfigToolStripMenuItem";
+            this.updateME3ConfigToolStripMenuItem.Size = new System.Drawing.Size(266, 22);
+            this.updateME3ConfigToolStripMenuItem.Text = "Update LOD Settings";
+            this.updateME3ConfigToolStripMenuItem.Click += new System.EventHandler(this.updateME3ConfigToolStripMenuItem_Click);
+            // 
             // statusStrip
             // 
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -225,20 +212,6 @@ namespace METexturesExplorer
             // 
             this.toolStripStatusLabel.Name = "toolStripStatusLabel";
             this.toolStripStatusLabel.Size = new System.Drawing.Size(0, 17);
-            // 
-            // updateME2ConfigToolStripMenuItem
-            // 
-            this.updateME2ConfigToolStripMenuItem.Name = "updateME2ConfigToolStripMenuItem";
-            this.updateME2ConfigToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
-            this.updateME2ConfigToolStripMenuItem.Text = "Update LOD Settings";
-            this.updateME2ConfigToolStripMenuItem.Click += new System.EventHandler(this.updateME2ConfigToolStripMenuItem_Click);
-            // 
-            // updateME3ConfigToolStripMenuItem
-            // 
-            this.updateME3ConfigToolStripMenuItem.Name = "updateME3ConfigToolStripMenuItem";
-            this.updateME3ConfigToolStripMenuItem.Size = new System.Drawing.Size(266, 22);
-            this.updateME3ConfigToolStripMenuItem.Text = "Update LOD Settings";
-            this.updateME3ConfigToolStripMenuItem.Click += new System.EventHandler(this.updateME3ConfigToolStripMenuItem_Click);
             // 
             // MainWindow
             // 
@@ -275,9 +248,6 @@ namespace METexturesExplorer
         private System.Windows.Forms.ToolStripMenuItem repackME1ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem repackME2ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem updateME2DLCCacheToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem repackME3MainDataToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem repackME3DLCDatauncompressedToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem repackME3DLCDataZlibToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem extractME3DLCPackagesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem packME3DLCPackagesUncompressedToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem packME3DLCPackagesLZMAToolStripMenuItem;
