@@ -40,6 +40,7 @@ namespace METexturesExplorer
             public byte[] valueRaw;
             public byte[] valueStruct;
             public int index;
+            public bool fetched;
         }
         public List<TexPropertyEntry> texPropertyList;
         public int propertyEndOffset;
@@ -112,9 +113,17 @@ namespace METexturesExplorer
             return texPropertyList.Exists(s => s.name == name);
         }
 
+        public TexPropertyEntry getProperty(string name)
+        {
+            fetchValue(name);
+            return texPropertyList.Find(s => s.name == name);
+        }
+
         public void fetchValue(string name)
         {
             TexPropertyEntry texProperty = texPropertyList.Find(s => s.name == name);
+            if (texProperty.fetched)
+                return;
             switch (texProperty.type)
             {
                 case "IntProperty":
@@ -153,6 +162,7 @@ namespace METexturesExplorer
                 default:
                     throw new Exception();
             }
+            texProperty.fetched = true;
             texPropertyList[texPropertyList.FindIndex(s => s.name == name)] = texProperty;
         }
 
