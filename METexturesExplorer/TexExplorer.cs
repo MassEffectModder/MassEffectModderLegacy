@@ -42,6 +42,7 @@ namespace METexturesExplorer
         ConfIni _configIni;
         public static GameData gameData;
         List<string> _packageFiles;
+        TOCBinFile _tocFile;
         List<Texture> _textureList;
 
         public TexExplorer(MainWindow main, MeType gameType)
@@ -120,8 +121,33 @@ namespace METexturesExplorer
                 if (Directory.Exists(gameData.DLCDataCache))
                     _packageFiles.AddRange(Directory.GetFiles(gameData.DLCDataCache, "*.pcc", SearchOption.AllDirectories));
                 _packageFiles.RemoveAll(s => s.Contains("GuidCache"));
+
+                _tocFile = new TOCBinFile(Path.Combine(gameData.bioGamePath, @"PCConsoleTOC.bin"));
             }
             return true;
+        }
+
+        public void updateTOCBinEntry(string filePath)
+        {
+            if (!filePath.Contains(gameData.MainData))
+                return;
+            int pos = (Path.Combine(Path.GetDirectoryName(gameData.GamePath + @"\"))).Length;
+            string filename = filePath.Substring(pos + 1);
+            _tocFile.updateFile(filename, filePath, false);
+        }
+
+        public void updateAllTOCBinEntries()
+        {
+            for (int i = 0; i < _packageFiles.Count; i++)
+            {
+                updateTOCBinEntry(_packageFiles[i]);
+            }
+            saveTOCBin();
+        }
+
+        public void saveTOCBin()
+        {
+            _tocFile.saveToFile(Path.Combine(gameData.bioGamePath, @"PCConsoleTOC.bin"));
         }
 
         public void UpdateME1Config()
