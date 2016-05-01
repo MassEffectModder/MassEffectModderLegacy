@@ -25,6 +25,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using StreamHelpers;
 
 namespace METexturesExplorer
 {
@@ -246,14 +247,19 @@ namespace METexturesExplorer
             if (!File.Exists(gameData.GameExePath))
                 throw new FileNotFoundException("Game exe not found: " + gameData.GameExePath);
 
-            using (FileStream fs = new FileStream(gameData.GameExePath, FileMode.Open, FileAccess.Read))
+            using (FileStream fs = new FileStream(gameData.GameExePath, FileMode.Open, FileAccess.ReadWrite))
             {
-                fs.Seek(0x146, SeekOrigin.Begin); // offset to byte with LAA flag
-                var flag = fs.ReadByte();
-                if (flag == 0x02)
-                    MessageBox.Show("Warning: Large Aware Address flag is not enabled in MassEffect.exe file.");
-                else if (flag != 0x22)
-                    throw new Exception("Not expected flags in exe file");
+                fs.JumpTo(0x3C); // jump to offset of COFF header
+                UInt32 offset = fs.ReadUInt32() + 4; // skip PE signature too
+                fs.JumpTo(offset + 0x12); // jump to flags entry
+                ushort flag = fs.ReadUInt16(); // read flags
+                if ((flag & 0x20) != 0x20) // check for LAA flag
+                {
+                    MessageBox.Show("Large Aware Address flag is not enabled in MassEffect.exe file. Correcting...");
+                    flag |= 0x20;
+                    fs.Skip(-2);
+                    fs.WriteUInt16(flag); // write LAA flag
+                }
             }
         }
 
