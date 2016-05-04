@@ -34,7 +34,7 @@ namespace METexturesExplorer
             pccCpr = 0x10,
             extUnc = 0x1,
             extCpr = 0x11,
-            empty = 0x21,
+            arcCpr = 0x3,
         }
 
         int numMipMaps;
