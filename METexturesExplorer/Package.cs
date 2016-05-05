@@ -152,11 +152,6 @@ namespace METexturesExplorer
             public byte[] raw;
             public byte[] newData;
         }
-        public struct GuidEntry
-        {
-            public byte[] guid;
-            public int index;
-        }
 
         private uint tag
         {
