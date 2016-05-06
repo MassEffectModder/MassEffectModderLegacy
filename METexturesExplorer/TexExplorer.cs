@@ -26,6 +26,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using StreamHelpers;
+using CRC32;
 
 namespace METexturesExplorer
 {
@@ -85,6 +86,11 @@ namespace METexturesExplorer
                 {
                     byte[] data = package.getExportData(i);
                     Texture texture = new Texture(package, i, data, this);
+                    byte[] textureBitmapData = texture.getImageData();
+                    if (textureBitmapData != null)
+                    {
+                        int crc = ~ParallelCRC.Compute(textureBitmapData);
+                    }
                 }
             }
 

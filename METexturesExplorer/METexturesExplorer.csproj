@@ -82,6 +82,7 @@
     </Compile>
     <Compile Include="MemoryTributary.cs" />
     <Compile Include="Package.cs" />
+    <Compile Include="ParallelCRC.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TexExplorer.cs">
