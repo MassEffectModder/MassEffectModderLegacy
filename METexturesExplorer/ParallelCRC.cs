@@ -24,7 +24,9 @@
 */
 
 using System;
+using System.IO;
 using System.Threading;
+using System.Collections.Generic;
 
 namespace CRC32
 {
@@ -34,17 +36,15 @@ namespace CRC32
         private const uint kInitial = 0xFFFFFFFF;
         private const int CRC_NUM_TABLES = 8;
         private static readonly uint[] Table;
-        private static bool tableCalculated = false;
 
         private const int ThreadCost = 256 << 10;
         private static readonly int ProcessorCount = Environment.ProcessorCount;
+
 
         static ParallelCRC()
         {
             unchecked
             {
-                if (tableCalculated)
-                    return;
                 Table = new uint[256 * CRC_NUM_TABLES];
                 int i;
                 for (i = 0; i < 256; i++)
@@ -59,7 +59,6 @@ namespace CRC32
                     uint r = Table[i - 256];
                     Table[i] = Table[r & 0xFF] ^ (r >> 8);
                 }
-                tableCalculated = true;
             }
         }
 
