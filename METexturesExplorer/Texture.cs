@@ -24,17 +24,18 @@ using StreamHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CRC32;
 
 namespace METexturesExplorer
 {
-    class Texture : IDisposable
+    public class Texture : IDisposable
     {
         const uint textureTag = 0x9E2A83C1;
         const uint maxBlockSize = 0x20000; // 128KB
         const int SizeOfChunkBlock = 8;
         const int SizeOfChunk = 16;
 
-        enum StorageTypes
+        public enum StorageTypes
         {
             pccUnc = 0x0,
             pccCpr = 0x10,
@@ -44,25 +45,29 @@ namespace METexturesExplorer
             empty = 0x21,
         }
 
-        struct Bitmap
+        public struct MipMap
         {
             public StorageTypes storageType;
             public int uncompressedSize;
             public int compressedSize;
             public int dataOffset;
+            public int internalOffset;
             public int width;
             public int height;
         }
-        List<Bitmap> mipMapsList;
+        public List<MipMap> mipMapsList;
         MemoryStream textureData;
+        public TexProperty properties;
+        byte[] mipMapData = null;
+        public string packageName;
 
         public Texture(Package package, int exportId, byte[] data, TexExplorer tex)
         {
-            TexProperty properties = new TexProperty(package, data);
+            properties = new TexProperty(package, data);
 #if false // dump properties info
             using (FileStream file = new FileStream("Textures.txt", FileMode.Append))
             {
-                file.WriteStringASCII("---Package---\n");
+                file.WriteStringASCII("---Package---" + package.packageFile.Name + " export data offset: " + package.exportsTable[exportId].dataOffset + "\n");
                 for (int i = 0; i < properties.texPropertyList.Count; i++)
                 {
                     if (properties.texPropertyList[i].name == "None")
@@ -72,8 +77,6 @@ namespace METexturesExplorer
                 foreach (TexProperty.TexPropertyEntry prop in properties.texPropertyList)
                 {
                     if (prop.name == "None")
-                        continue;
-                    if (!tex.textures.Contains(package.exportsTable[exportId].objectName))
                         continue;
                     file.WriteStringASCII("Texture: " + package.exportsTable[exportId].objectName + ", Name: " + prop.name + ", Type: " + prop.type + ", ");
                     switch (prop.type)
@@ -106,6 +109,14 @@ namespace METexturesExplorer
             if (data.Length == properties.propertyEndOffset)
                 return;
 
+            packageName = Path.GetFileNameWithoutExtension(package.packageFile.Name).ToUpper();
+            if (GameData.gameType == MeType.ME1_TYPE && package.compressed)
+            {
+                string basePkg = package.resolvePackagePath(package.exportsTable[exportId].linkId).Split('.')[0].ToUpper();
+                if (basePkg != "")
+                    packageName = basePkg;
+            }
+ 
             textureData = new MemoryStream(data, properties.propertyEndOffset, data.Length - properties.propertyEndOffset);
             if (GameData.gameType != MeType.ME3_TYPE)
             {
@@ -113,28 +124,28 @@ namespace METexturesExplorer
                 textureData.SkipInt32(); // position in the package
             }
 
-            mipMapsList = new List<Bitmap>();
+            mipMapsList = new List<MipMap>();
             int numMipMaps = textureData.ReadInt32();
             for (int l = 0; l < numMipMaps; l++)
             {
-                Bitmap bmp = new Bitmap();
-                bmp.storageType = (StorageTypes)textureData.ReadInt32();
-                bmp.uncompressedSize = textureData.ReadInt32();
-                bmp.compressedSize = textureData.ReadInt32();
-                bmp.dataOffset = textureData.ReadInt32();
-                if (bmp.storageType == StorageTypes.pccUnc)
+                MipMap mipmap = new MipMap();
+                mipmap.storageType = (StorageTypes)textureData.ReadInt32();
+                mipmap.uncompressedSize = textureData.ReadInt32();
+                mipmap.compressedSize = textureData.ReadInt32();
+                mipmap.dataOffset = textureData.ReadInt32();
+                if (mipmap.storageType == StorageTypes.pccUnc)
                 {
-                    bmp.dataOffset = (int)textureData.Position;
-                    textureData.Skip(bmp.uncompressedSize);
+                    mipmap.internalOffset = (int)textureData.Position; //bmp.dataOffset = (int)textureData.Position + (int)package.exportsTable[exportId].dataOffset + properties.propertyEndOffset;
+                    textureData.Skip(mipmap.uncompressedSize);
                 }
-                if (bmp.storageType == StorageTypes.pccCpr)
+                if (mipmap.storageType == StorageTypes.pccCpr)
                 {
-                    bmp.dataOffset = (int)textureData.Position;
-                    textureData.Skip(bmp.compressedSize);
+                    mipmap.internalOffset = (int)textureData.Position; //bmp.dataOffset = (int)textureData.Position + (int)package.exportsTable[exportId].dataOffset + properties.propertyEndOffset;
+                    textureData.Skip(mipmap.compressedSize);
                 }
-                bmp.width = textureData.ReadInt32();
-                bmp.height = textureData.ReadInt32();
-                mipMapsList.Add(bmp);
+                mipmap.width = textureData.ReadInt32();
+                mipmap.height = textureData.ReadInt32();
+                mipMapsList.Add(mipmap);
             }
 #if false // dump mipmaps info
             using (FileStream file = new FileStream("Textures.txt", FileMode.Append))
@@ -142,7 +153,18 @@ namespace METexturesExplorer
                 for (int l = 0; l < numMipMaps; l++)
                 {
                     file.WriteStringASCII("MipMap: " + l + ", Width: " + mipMapsList[l].width + ", Height: " + mipMapsList[l].height);
-                    file.WriteStringASCII("StorageType: " + mipMapsList[l].storageType + "\n");
+                    file.WriteStringASCII(" StorageType: " + mipMapsList[l].storageType);
+                    file.WriteStringASCII(" uncompressedSize: " + mipMapsList[l].uncompressedSize);
+                    file.WriteStringASCII(" compressedSize: " + mipMapsList[l].compressedSize);
+                    if (mipMapsList[l].storageType == StorageTypes.pccCpr ||
+                        mipMapsList[l].storageType == StorageTypes.pccUnc)
+                    {
+                        file.WriteStringASCII(" dataOffset: " + (mipMapsList[l].dataOffset + (int)package.exportsTable[exportId].dataOffset + properties.propertyEndOffset) + "\n");
+                    }
+                    else
+                    {
+                        file.WriteStringASCII(" dataOffset: " + mipMapsList[l].dataOffset + "\n");
+                    }
                 }
             }
 #endif
@@ -197,30 +219,82 @@ namespace METexturesExplorer
             return data;
         }
 
+        public UInt32 getCrcMipmap()
+        {
+            byte[] data = getImageData();
+            if (properties.getProperty("Format").valueName == "PF_NormalMap_HQ") // only ME1 and ME2
+                return (UInt32)~ParallelCRC.Compute(data, 0, data.Length / 2);
+            else
+                return (UInt32)~ParallelCRC.Compute(data);
+        }
+
+        public MipMap getTopMipmap()
+        {
+            return mipMapsList.First(b => b.storageType != StorageTypes.empty);
+        }
+
+        public bool hasImageData()
+        {
+            if (textureData == null || mipMapsList.Count == 0)
+                return false;
+            return true;
+        }
+
         public byte[] getImageData()
         {
             if (textureData == null || mipMapsList.Count == 0)
                 return null;
 
-            Bitmap bmp = mipMapsList.First(b => b.storageType != StorageTypes.empty);
-            byte[] bmpData = null;
+            if (mipMapData != null)
+                return mipMapData;
 
-            switch (bmp.storageType)
+            MipMap mipmap = getTopMipmap();
+            switch (mipmap.storageType)
             {
                 case StorageTypes.pccUnc:
                     {
-                        textureData.JumpTo(bmp.dataOffset);
-                        bmpData = textureData.ReadToBuffer(bmp.uncompressedSize);
+                        textureData.JumpTo(mipmap.internalOffset);
+                        mipMapData = textureData.ReadToBuffer(mipmap.uncompressedSize);
                         break;
                     }
                 case StorageTypes.pccCpr:
                     {
-                        textureData.JumpTo(bmp.dataOffset);
-                        bmpData = decompressTexture(textureData, bmp.uncompressedSize, bmp.compressedSize);
+                        textureData.JumpTo(mipmap.internalOffset);
+                        mipMapData = decompressTexture(textureData, mipmap.uncompressedSize, mipmap.compressedSize);
+                        break;
+                    }
+                case StorageTypes.extUnc:
+                case StorageTypes.extCpr:
+                case StorageTypes.arcCpr:
+                    {
+                        string filename;
+                        if (GameData.gameType == MeType.ME1_TYPE)
+                        {
+                            filename = GameData.packageFiles.Find(s => Path.GetFileNameWithoutExtension(s).Equals(packageName, StringComparison.OrdinalIgnoreCase));
+                        }
+                        else
+                        {
+                            string archive = properties.getProperty("TextureFileCacheName").valueName + ".tfc";
+                            filename = Directory.GetFiles(GameData.GamePath, archive, SearchOption.AllDirectories)[0];
+                        }
+
+                        using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
+                        {
+                            fs.JumpTo(mipmap.dataOffset);
+                            if (mipmap.storageType == StorageTypes.extCpr || mipmap.storageType == StorageTypes.arcCpr)
+                            {
+                                mipMapData = decompressTexture(new MemoryStream(fs.ReadToBuffer(mipmap.compressedSize)),
+                                    mipmap.uncompressedSize, mipmap.compressedSize);
+                            }
+                            else
+                            {
+                                mipMapData = fs.ReadToBuffer(mipmap.uncompressedSize);
+                            }
+                        }
                         break;
                     }
             }
-            return bmpData;
+            return mipMapData;
         }
 
         public void Dispose()

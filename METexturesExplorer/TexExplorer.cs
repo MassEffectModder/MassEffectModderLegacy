@@ -37,6 +37,21 @@ namespace METexturesExplorer
         ME3_TYPE
     }
 
+    public struct MatchedTexture
+    {
+        public string path;
+        public int exportID;
+    }
+
+    public struct FoundTexture
+    {
+        public string name;
+        public UInt32 crc;
+        public int mipmapOffset;
+        public string packageName;
+        public List<MatchedTexture> list;
+    }
+
     public partial class TexExplorer : Form
     {
         MeType _gameSelected;
@@ -45,7 +60,7 @@ namespace METexturesExplorer
         public static GameData gameData;
         List<string> _packageFiles;
         TOCBinFile _tocFile;
-        List<Texture> _textureList;
+        List<FoundTexture> _textures;
 
         public TexExplorer(MainWindow main, MeType gameType)
         {
@@ -64,16 +79,35 @@ namespace METexturesExplorer
 
             if (GetPackages(_gameSelected))
             {
-                _textureList = new List<Texture>();
+                if (_gameSelected == MeType.ME1_TYPE)
+                    sortPackagesME1();
+                _textures = new List<FoundTexture>();
                 for (int i = 0; i < _packageFiles.Count; i++)
                 {
                     _mainWindow.updateStatusLabel("Find textures in package " + (i + 1) + " of " + _packageFiles.Count);
-                    Application.DoEvents();
                     FindTextures(_packageFiles[i]);
                 }
                 _mainWindow.updateStatusLabel("Done");
             }
+        }
 
+        void sortPackagesME1()
+        {
+            _mainWindow.updateStatusLabel("Sorting packages...");
+            List<string> sortedList = new List<string>();
+            List<string> restList = new List<string>();
+            for (int i = 0; i < _packageFiles.Count; i++)
+            {
+                var package = new Package(_packageFiles[i], true);
+                if (!package.compressed)
+                    sortedList.Add(_packageFiles[i]);
+                else
+                    restList.Add(_packageFiles[i]);
+                _mainWindow.updateStatusLabel("Sorting packages... " + (i + 1) + " of " + _packageFiles.Count);
+            }
+            sortedList.AddRange(restList);
+            _packageFiles = sortedList;
+            _mainWindow.updateStatusLabel("Done.");
         }
 
         public void FindTextures(string packagePath)
@@ -82,55 +116,87 @@ namespace METexturesExplorer
             for (int i = 0; i < package.exportsTable.Count; i++)
             {
                 int id = package.getClassNameId(package.exportsTable[i].classId);
-                if (id == package.nameIdTexture2D || id == package.nameIdLightMapTexture2D || id == package.nameIdTextureFlipBook)
+                if (id == package.nameIdTexture2D || 
+                    id == package.nameIdLightMapTexture2D || 
+                    id == package.nameIdTextureFlipBook)
                 {
-                    byte[] data = package.getExportData(i);
-                    Texture texture = new Texture(package, i, data, this);
-                    byte[] textureBitmapData = texture.getImageData();
-                    if (textureBitmapData != null)
+                    Texture texture = new Texture(package, i, package.getExportData(i), this);
+                    if (!texture.hasImageData())
+                        continue;
+
+                    Texture.MipMap mipmap = texture.getTopMipmap();
+                    string name = package.exportsTable[i].objectName;
+                    MatchedTexture matchTexture = new MatchedTexture();
+                    matchTexture.exportID = i;
+                    matchTexture.path = packagePath;
+
+                    if (_gameSelected == MeType.ME1_TYPE)
                     {
-                        int crc = ~ParallelCRC.Compute(textureBitmapData);
+                        if (mipmap.storageType == Texture.StorageTypes.pccUnc || 
+                            mipmap.storageType == Texture.StorageTypes.pccCpr)
+                        {
+                            uint crc = texture.getCrcMipmap();
+                            FoundTexture foundTexName = _textures.Find(s => s.crc == crc);
+                            if (foundTexName.name != null && 
+                                package.compressed)
+                            {
+                                foundTexName.list.Add(matchTexture);
+                            }
+                            else
+                            {
+                                FoundTexture foundTex = new FoundTexture();
+                                foundTex.list = new List<MatchedTexture>();
+                                foundTex.list.Add(matchTexture);
+                                foundTex.name = name;
+                                foundTex.crc = crc;
+                                foundTex.packageName = texture.packageName;
+                                foundTex.mipmapOffset = mipmap.dataOffset;
+                                _textures.Add(foundTex);
+                            }
+                        }
+                        else
+                        {
+                            FoundTexture foundTexName = _textures.Find(s => s.name == name && s.packageName == texture.packageName);
+                            foundTexName.list.Add(matchTexture);
+                        }
+                    }
+                    else
+                    {
+                        uint crc = texture.getCrcMipmap();
+                        FoundTexture foundTexName = _textures.Find(s => s.crc == crc);
+                        if (foundTexName.crc != 0)
+                        {
+                            foundTexName.list.Add(matchTexture);
+                        }
+                        else
+                        {
+                            FoundTexture foundTex = new FoundTexture();
+                            foundTex.list = new List<MatchedTexture>();
+                            foundTex.list.Add(matchTexture);
+                            foundTex.name = name;
+                            foundTex.crc = crc;
+                            foundTex.packageName = texture.packageName;
+                            foundTex.mipmapOffset = mipmap.dataOffset;
+                            _textures.Add(foundTex);
+                        }
                     }
                 }
             }
-
         }
 
         public bool GetPackages(MeType gameType)
         {
-            if (_gameSelected == MeType.ME1_TYPE)
-            {
-                _packageFiles = Directory.GetFiles(gameData.MainData, "*.*",
-                SearchOption.AllDirectories).Where(s => s.EndsWith(".upk",
-                    StringComparison.OrdinalIgnoreCase) ||
-                    s.EndsWith(".u", StringComparison.OrdinalIgnoreCase) ||
-                    s.EndsWith(".sfm", StringComparison.OrdinalIgnoreCase)).ToList();
-                _packageFiles.AddRange(Directory.GetFiles(gameData.DLCData, "*.*",
-                    SearchOption.AllDirectories).Where(s => s.EndsWith(".upk",
-                        StringComparison.OrdinalIgnoreCase) ||
-                        s.EndsWith(".u", StringComparison.OrdinalIgnoreCase) ||
-                        s.EndsWith(".sfm", StringComparison.OrdinalIgnoreCase)));
-                _packageFiles.RemoveAll(s => s.Contains("RefShaderCache-PC-D3D-SM3.upk"));
-            }
-            else if (_gameSelected == MeType.ME2_TYPE)
-            {
-                _packageFiles = Directory.GetFiles(gameData.MainData, "*.pcc", SearchOption.AllDirectories).ToList();
-                _packageFiles.AddRange(Directory.GetFiles(gameData.DLCData, "*.pcc", SearchOption.AllDirectories));
-            }
-            else if (_gameSelected == MeType.ME3_TYPE)
-            {
-                if (!Directory.Exists(gameData.DLCDataCache))
-                {
-                    MessageBox.Show("DLCCache directory is missing, you need exract DLC packages first.");
-                    return false;
-                }
-                _packageFiles = Directory.GetFiles(gameData.MainData, "*.pcc", SearchOption.AllDirectories).ToList();
-                if (Directory.Exists(gameData.DLCDataCache))
-                    _packageFiles.AddRange(Directory.GetFiles(gameData.DLCDataCache, "*.pcc", SearchOption.AllDirectories));
-                _packageFiles.RemoveAll(s => s.Contains("GuidCache"));
-
+            if (_gameSelected == MeType.ME3_TYPE)
                 _tocFile = new TOCBinFile(Path.Combine(gameData.bioGamePath, @"PCConsoleTOC.bin"));
+            _mainWindow.updateStatusLabel("Finding packages in game data...");
+            if (!gameData.getPackages())
+            {
+                MessageBox.Show("Unable get packages from game data.");
+                _mainWindow.updateStatusLabel("");
+                return false;
             }
+            _packageFiles = GameData.packageFiles;
+            _mainWindow.updateStatusLabel("Done.");
             return true;
         }
 
@@ -138,7 +204,7 @@ namespace METexturesExplorer
         {
             if (!filePath.Contains(gameData.MainData))
                 return;
-            int pos = (Path.Combine(Path.GetDirectoryName(gameData.GamePath + @"\"))).Length;
+            int pos = (Path.Combine(Path.GetDirectoryName(GameData.GamePath + @"\"))).Length;
             string filename = filePath.Substring(pos + 1);
             _tocFile.updateFile(filename, filePath, false);
         }
@@ -277,7 +343,8 @@ namespace METexturesExplorer
                 _mainWindow.updateStatusLabel("Repack file " + (i + 1) + " of " + _packageFiles.Count);
                 Application.DoEvents();
                 var package = new Package(_packageFiles[i]);
-                package.SaveToFile();
+                if (package.compressed && package.compressionType != Package.CompressionType.Zlib)
+                    package.SaveToFile();
             }
             _mainWindow.updateStatusLabel("Done");
         }

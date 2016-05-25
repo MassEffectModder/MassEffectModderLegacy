@@ -21,16 +21,19 @@
 
 using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace METexturesExplorer
 {
     public class GameData
     {
-        private string _path = null;
+        static private string _path = null;
         static public MeType gameType;
         private ConfIni _configIni;
+        static public List<string> packageFiles;
 
         public bool DLCDataCacheDone = false;
 
@@ -94,7 +97,7 @@ namespace METexturesExplorer
                 _configIni.Write(key, _path, "GameDataPath");
         }
 
-        public string GamePath
+        static public string GamePath
         {
             get
             {
@@ -251,6 +254,45 @@ namespace METexturesExplorer
                 else
                     return null;
             }
+        }
+
+        public bool getPackages()
+        {
+            if (packageFiles != null)
+                return true;
+
+            if (gameType == MeType.ME1_TYPE)
+            {
+                packageFiles = Directory.GetFiles(MainData, "*.*",
+                SearchOption.AllDirectories).Where(s => s.EndsWith(".upk",
+                    StringComparison.OrdinalIgnoreCase) ||
+                    s.EndsWith(".u", StringComparison.OrdinalIgnoreCase) ||
+                    s.EndsWith(".sfm", StringComparison.OrdinalIgnoreCase)).ToList();
+                packageFiles.AddRange(Directory.GetFiles(DLCData, "*.*",
+                    SearchOption.AllDirectories).Where(s => s.EndsWith(".upk",
+                        StringComparison.OrdinalIgnoreCase) ||
+                        s.EndsWith(".u", StringComparison.OrdinalIgnoreCase) ||
+                        s.EndsWith(".sfm", StringComparison.OrdinalIgnoreCase)));
+                packageFiles.RemoveAll(s => s.Contains("RefShaderCache-PC-D3D-SM3.upk"));
+            }
+            else if (gameType == MeType.ME2_TYPE)
+            {
+                packageFiles = Directory.GetFiles(MainData, "*.pcc", SearchOption.AllDirectories).ToList();
+                packageFiles.AddRange(Directory.GetFiles(DLCData, "*.pcc", SearchOption.AllDirectories));
+            }
+            else if (gameType == MeType.ME3_TYPE)
+            {
+                if (!Directory.Exists(DLCDataCache))
+                {
+                    MessageBox.Show("DLCCache directory is missing, you need exract DLC packages first.");
+                    return false;
+                }
+                packageFiles = Directory.GetFiles(MainData, "*.pcc", SearchOption.AllDirectories).ToList();
+                if (Directory.Exists(DLCDataCache))
+                    packageFiles.AddRange(Directory.GetFiles(DLCDataCache, "*.pcc", SearchOption.AllDirectories));
+                packageFiles.RemoveAll(s => s.Contains("GuidCache"));
+            }
+            return true;
         }
     }
 }

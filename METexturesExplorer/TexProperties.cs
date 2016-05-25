@@ -27,7 +27,7 @@ using StreamHelpers;
 
 namespace METexturesExplorer
 {
-    class TexProperty
+    public class TexProperty
     {
         public struct TexPropertyEntry
         {

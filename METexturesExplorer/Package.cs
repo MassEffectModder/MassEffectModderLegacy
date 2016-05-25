@@ -73,8 +73,8 @@ namespace METexturesExplorer
         uint numChunks;
         uint someTag;
         long dataOffset;
-        CompressionType compressionType;
-        FileStream packageFile;
+        public CompressionType compressionType;
+        public FileStream packageFile;
         MemoryTributary packageData;
         List<Chunk> chunks;
         List<NameEntry> namesTable;
@@ -122,8 +122,6 @@ namespace METexturesExplorer
         }
         public struct ExportEntry
         {
-            const int DataOffsetSize = 32;
-            const int DataOffsetOffset = 36;
             public int classId;
             public string className;
             public int classParentId;
@@ -132,20 +130,8 @@ namespace METexturesExplorer
             public string objectName;
             public int suffixNameId;
             public int archTypeNameId;
-            public uint dataSize
-            {
-                get
-                {
-                    return BitConverter.ToUInt32(raw, DataOffsetSize);
-                }
-            }
-            public uint dataOffset
-            {
-                get
-                {
-                    return BitConverter.ToUInt32(raw, DataOffsetOffset);
-                }
-            }
+            public uint dataSize;
+            public uint dataOffset;
             public ulong objectFlags;
             public uint exportflags;
             public uint packageflags;
@@ -197,7 +183,7 @@ namespace METexturesExplorer
             }
         }
 
-        private bool compressed
+        public bool compressed
         {
             get
             {
@@ -311,7 +297,27 @@ namespace METexturesExplorer
             return 0;
         }
 
-        public Package(string filename)
+        public string resolvePackagePath(int id)
+        {
+            string s = "";
+            if (id > 0 && id < exportsTable.Count)
+            {
+                s += resolvePackagePath(exportsTable[id - 1].linkId);
+                if (s != "")
+                    s += ".";
+                s += exportsTable[id - 1].objectName;
+            }
+            if (id < 0 && -id < importsTable.Count)
+            {
+                s += resolvePackagePath(importsTable[-id - 1].linkId);
+                if (s != "")
+                    s += ".";
+                s += importsTable[-id - 1].objectName;
+            }
+            return s;
+        }
+
+        public Package(string filename, bool headerOnly = false)
         {
             if (GameData.gameType == MeType.ME1_TYPE)
             {
@@ -341,7 +347,11 @@ namespace METexturesExplorer
             if (version != packageFileVersion)
                 throw new Exception("Wrong PCC version");
 
+            if (headerOnly)
+                return;
+
             compressionType = (CompressionType)packageFile.ReadUInt32();
+
             numChunks = packageFile.ReadUInt32();
 
             dataOffset = packageFile.Position;
@@ -359,7 +369,6 @@ namespace METexturesExplorer
                     chunks.Add(chunk);
                 }
             }
-
             var filePos = packageFile.Position;
             someTag = packageFile.ReadUInt32();
             if (version == packageFileVersionME2)
@@ -678,8 +687,8 @@ namespace METexturesExplorer
                 entry.suffixNameId = input.ReadInt32();
                 input.SkipInt32();
                 entry.objectFlags = input.ReadUInt64();
-                input.SkipInt32(); // dataSize
-                input.SkipInt32(); // dataOffset
+                entry.dataSize = input.ReadUInt32();
+                entry.dataOffset = input.ReadUInt32();
                 if (version != packageFileVersionME3)
                 {
                     count = input.ReadUInt32();
