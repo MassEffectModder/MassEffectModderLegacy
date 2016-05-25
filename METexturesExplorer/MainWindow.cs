@@ -52,6 +52,7 @@ namespace METexturesExplorer
         public void updateStatusLabel(string text)
         {
             toolStripStatusLabel.Text = text;
+            Application.DoEvents();
         }
 
         public TexExplorer CreateTextureExplorer(MeType type)
