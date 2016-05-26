@@ -118,16 +118,22 @@ namespace METexturesExplorer
                 }
                 else
                 {
+                    DialogResult result = MessageBox.Show("Replacing textures and creating mods require textures mapping.\n" +
+                        "It's one time only process but can be very long.\n\n" +
+                        "Are you sure to proceed?", "Textures mapping", MessageBoxButtons.YesNo);
+                    if (result == DialogResult.No)
+                        return;
+
                     if (_gameSelected == MeType.ME1_TYPE)
                         sortPackagesME1();
+                    for (int i = 0; i < _packageFiles.Count; i++)
+                    {
+                        _mainWindow.updateStatusLabel("Find textures in package " + (i + 1) + " of " + _packageFiles.Count);
+                        FindTextures(_packageFiles[i]);
+                    }
+
                     using (FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
                     {
-                        for (int i = 0; i < _packageFiles.Count; i++)
-                        {
-                            _mainWindow.updateStatusLabel("Find textures in package " + (i + 1) + " of " + _packageFiles.Count);
-                            FindTextures(_packageFiles[i]);
-                        }
-
                         fs.WriteUInt32(textureMapBinTag);
                         fs.WriteUInt32(textureMapBinVersion);
                         fs.WriteInt32(_textures.Count);
@@ -142,9 +148,8 @@ namespace METexturesExplorer
                                 fs.WriteStringASCIINull(_textures[i].list[k].path);
                             }
                         }
-
-                        _mainWindow.updateStatusLabel("Done.");
                     }
+                    _mainWindow.updateStatusLabel("Done.");
                 }
             }
         }
