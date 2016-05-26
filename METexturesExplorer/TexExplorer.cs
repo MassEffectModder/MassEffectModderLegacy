@@ -54,6 +54,9 @@ namespace METexturesExplorer
 
     public partial class TexExplorer : Form
     {
+        const UInt32 textureMapBinTag = 0x4D455450;
+        const UInt32 textureMapBinVersion = 1;
+
         MeType _gameSelected;
         MainWindow _mainWindow;
         ConfIni _configIni;
@@ -79,15 +82,70 @@ namespace METexturesExplorer
 
             if (GetPackages(_gameSelected))
             {
-                if (_gameSelected == MeType.ME1_TYPE)
-                    sortPackagesME1();
                 _textures = new List<FoundTexture>();
-                for (int i = 0; i < _packageFiles.Count; i++)
+                string filename = "me" + (int)_gameSelected + "map.bin";
+                if (File.Exists(filename))
                 {
-                    _mainWindow.updateStatusLabel("Find textures in package " + (i + 1) + " of " + _packageFiles.Count);
-                    FindTextures(_packageFiles[i]);
+                    using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
+                    {
+                        UInt32 tag = fs.ReadUInt32();
+                        UInt32 version = fs.ReadUInt32();
+                        if (tag != textureMapBinTag || version != textureMapBinVersion)
+                        {
+                            MessageBox.Show("Abort! Wrong " + filename + " file!");
+                            _mainWindow.updateStatusLabel("");
+                            return;
+                        }
+
+                        UInt32 countTexture = fs.ReadUInt32();
+                        for (int i = 0; i < countTexture; i++)
+                        {
+                            FoundTexture texture = new FoundTexture();
+                            texture.name = fs.ReadStringASCIINull();
+                            texture.crc = fs.ReadUInt32();
+                            UInt32 countPackages = fs.ReadUInt32();
+                            for (int k = 0; k < countPackages; k++)
+                            {
+                                MatchedTexture matched = new MatchedTexture();
+                                matched.exportID = fs.ReadInt32();
+                                matched.path = fs.ReadStringASCIINull();
+                                texture.list = new List<MatchedTexture>();
+                                texture.list.Add(matched);
+                            }
+                            _textures.Add(texture);
+                        }
+                    }
                 }
-                _mainWindow.updateStatusLabel("Done");
+                else
+                {
+                    if (_gameSelected == MeType.ME1_TYPE)
+                        sortPackagesME1();
+                    using (FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
+                    {
+                        for (int i = 0; i < _packageFiles.Count; i++)
+                        {
+                            _mainWindow.updateStatusLabel("Find textures in package " + (i + 1) + " of " + _packageFiles.Count);
+                            FindTextures(_packageFiles[i]);
+                        }
+
+                        fs.WriteUInt32(textureMapBinTag);
+                        fs.WriteUInt32(textureMapBinVersion);
+                        fs.WriteInt32(_textures.Count);
+                        for (int i = 0; i < _textures.Count; i++)
+                        {
+                            fs.WriteStringASCIINull(_textures[i].name);
+                            fs.WriteUInt32(_textures[i].crc);
+                            fs.WriteInt32(_textures[i].list.Count);
+                            for (int k = 0; k < _textures[i].list.Count; k++)
+                            {
+                                fs.WriteInt32(_textures[i].list[k].exportID);
+                                fs.WriteStringASCIINull(_textures[i].list[k].path);
+                            }
+                        }
+
+                        _mainWindow.updateStatusLabel("Done.");
+                    }
+                }
             }
         }
 
