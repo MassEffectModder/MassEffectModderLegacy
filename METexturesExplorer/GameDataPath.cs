@@ -266,7 +266,7 @@ namespace METexturesExplorer
 
         public bool getPackages()
         {
-            if (packageFiles != null)
+            if (packageFiles != null && packageFiles.Count != 0)
                 return true;
 
             if (gameType == MeType.ME1_TYPE)

@@ -153,6 +153,7 @@ namespace METexturesExplorer
                     _mainWindow.updateStatusLabel("Done.");
                 }
             }
+            _packageFiles.Clear();
         }
 
         void sortPackagesME1()
