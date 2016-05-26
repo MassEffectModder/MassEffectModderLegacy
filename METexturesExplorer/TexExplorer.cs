@@ -128,7 +128,7 @@ namespace METexturesExplorer
                     string name = package.exportsTable[i].objectName;
                     MatchedTexture matchTexture = new MatchedTexture();
                     matchTexture.exportID = i;
-                    matchTexture.path = packagePath;
+                    matchTexture.path = GameData.RelativeGameData(packagePath);
 
                     if (_gameSelected == MeType.ME1_TYPE)
                     {

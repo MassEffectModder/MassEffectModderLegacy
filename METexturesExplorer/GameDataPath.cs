@@ -148,6 +148,14 @@ namespace METexturesExplorer
             }
         }
 
+        static public string RelativeGameData(string path)
+        {
+            if (_path != null || !path.Contains(_path))
+                return null;
+            else
+                return path.Substring(_path.Length);
+        }
+
         public string DLCData
         {
             get
