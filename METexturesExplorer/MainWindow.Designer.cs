@@ -79,7 +79,7 @@ namespace METexturesExplorer
             this.toolStripMenuME3});
             this.menuGame.Location = new System.Drawing.Point(0, 0);
             this.menuGame.Name = "menuGame";
-            this.menuGame.Size = new System.Drawing.Size(796, 24);
+            this.menuGame.Size = new System.Drawing.Size(1062, 24);
             this.menuGame.TabIndex = 0;
             // 
             // toolStripMenuME1
@@ -203,9 +203,9 @@ namespace METexturesExplorer
             // 
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel});
-            this.statusStrip.Location = new System.Drawing.Point(0, 271);
+            this.statusStrip.Location = new System.Drawing.Point(0, 464);
             this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Size = new System.Drawing.Size(796, 22);
+            this.statusStrip.Size = new System.Drawing.Size(1062, 22);
             this.statusStrip.TabIndex = 1;
             // 
             // toolStripStatusLabel
@@ -217,7 +217,7 @@ namespace METexturesExplorer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(796, 293);
+            this.ClientSize = new System.Drawing.Size(1062, 486);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.menuGame);
             this.IsMdiContainer = true;
