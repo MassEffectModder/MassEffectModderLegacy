@@ -92,6 +92,7 @@ namespace METexturesExplorer
                         {
                             MessageBox.Show("Abort! Wrong " + filename + " file!");
                             _mainWindow.updateStatusLabel("");
+                            Close();
                             return;
                         }
 
@@ -121,7 +122,10 @@ namespace METexturesExplorer
                         "IMPORTANT! Make sure game data is not modified.\n\n" +
                         "Are you sure to proceed?", "Textures mapping", MessageBoxButtons.YesNo);
                     if (result == DialogResult.No)
+                    {
+                        Close();
                         return;
+                    }
 
                     if (_gameSelected == MeType.ME1_TYPE)
                         sortPackagesME1();
@@ -151,7 +155,10 @@ namespace METexturesExplorer
                     _mainWindow.updateStatusLabel("Done.");
                 }
             }
-            _packageFiles.Clear();
+
+
+
+            Close();
         }
 
         void sortPackagesME1()
