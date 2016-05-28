@@ -46,7 +46,7 @@ namespace METexturesExplorer
             var path = configIni.Read(key, "GameDataPath");
             if (path != null && path != "")
             {
-                _path = path;
+                _path = path.TrimEnd(Path.DirectorySeparatorChar);
                 return;
             }
 
@@ -64,8 +64,8 @@ namespace METexturesExplorer
                 path = (string)Registry.GetValue(softwareKey + key64 + gameKey, "Path", null);
             if (path != null)
             {
-                _path = path;
-                configIni.Write(key, path, "GameDataPath");
+                _path = path.TrimEnd(Path.DirectorySeparatorChar);
+                configIni.Write(key, _path, "GameDataPath");
                 return;
             }
 
