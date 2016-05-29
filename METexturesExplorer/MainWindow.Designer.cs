@@ -65,8 +65,8 @@ namespace MassEffectModder
             this.packME3DLCPackagesUncompressedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.packME3DLCPackagesLZMAToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updateME3ConfigToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.menuGame.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.SuspendLayout();
@@ -79,7 +79,7 @@ namespace MassEffectModder
             this.toolStripMenuME3});
             this.menuGame.Location = new System.Drawing.Point(0, 0);
             this.menuGame.Name = "menuGame";
-            this.menuGame.Size = new System.Drawing.Size(1062, 24);
+            this.menuGame.Size = new System.Drawing.Size(1177, 24);
             this.menuGame.TabIndex = 0;
             // 
             // toolStripMenuME1
@@ -199,29 +199,30 @@ namespace MassEffectModder
             this.updateME3ConfigToolStripMenuItem.Text = "Update LOD Settings";
             this.updateME3ConfigToolStripMenuItem.Click += new System.EventHandler(this.updateME3ConfigToolStripMenuItem_Click);
             // 
-            // statusStrip
-            // 
-            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel});
-            this.statusStrip.Location = new System.Drawing.Point(0, 464);
-            this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Size = new System.Drawing.Size(1062, 22);
-            this.statusStrip.TabIndex = 1;
-            // 
             // toolStripStatusLabel
             // 
             this.toolStripStatusLabel.Name = "toolStripStatusLabel";
             this.toolStripStatusLabel.Size = new System.Drawing.Size(0, 17);
             // 
+            // statusStrip
+            // 
+            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel});
+            this.statusStrip.Location = new System.Drawing.Point(0, 489);
+            this.statusStrip.Name = "statusStrip";
+            this.statusStrip.Size = new System.Drawing.Size(1177, 22);
+            this.statusStrip.TabIndex = 1;
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1062, 486);
+            this.ClientSize = new System.Drawing.Size(1177, 511);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.menuGame);
             this.IsMdiContainer = true;
             this.MainMenuStrip = this.menuGame;
+            this.MinimumSize = new System.Drawing.Size(1080, 550);
             this.Name = "MainWindow";
             this.Text = "MassEffectModder";
             this.menuGame.ResumeLayout(false);
@@ -236,10 +237,8 @@ namespace MassEffectModder
         #endregion
 
         private System.Windows.Forms.MenuStrip menuGame;
-        private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuME1;
         private System.Windows.Forms.ToolStripMenuItem massEffect1ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuME2;
         private System.Windows.Forms.ToolStripMenuItem massEffect2ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuME3;
@@ -253,6 +252,8 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripMenuItem packME3DLCPackagesLZMAToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem updateME2ConfigToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem updateME3ConfigToolStripMenuItem;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel;
+        private System.Windows.Forms.StatusStrip statusStrip;
     }
 }
 

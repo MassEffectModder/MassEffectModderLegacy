@@ -105,7 +105,7 @@ namespace MassEffectModder
             }
         }
 
-        public string MainData
+        static public string MainData
         {
             get
             {
@@ -127,7 +127,7 @@ namespace MassEffectModder
             }
         }
 
-        public string bioGamePath
+        static public string bioGamePath
         {
             get
             {

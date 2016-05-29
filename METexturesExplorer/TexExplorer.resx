@@ -117,4 +117,96 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <metadata name="contextMenuStripTextures.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>127, 17</value>
+  </metadata>
+  <metadata name="imageListPackages.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>322, 17</value>
+  </metadata>
+  <data name="imageListPackages.ImageStream" mimetype="application/x-microsoft.net.object.binary.base64">
+    <value>
+        AAEAAAD/////AQAAAAAAAAAMAgAAAFdTeXN0ZW0uV2luZG93cy5Gb3JtcywgVmVyc2lvbj00LjAuMC4w
+        LCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI3N2E1YzU2MTkzNGUwODkFAQAAACZTeXN0
+        ZW0uV2luZG93cy5Gb3Jtcy5JbWFnZUxpc3RTdHJlYW1lcgEAAAAERGF0YQcCAgAAAAkDAAAADwMAAAB2
+        CwAAAk1TRnQBSQFMAgEBAgEAAQgBAAEIAQABEAEAARABAAT/ASEBAAj/AUIBTQE2BwABNgMAASgDAAFA
+        AwABEAMAAQEBAAEgBgABEP8AEwADAwEEAiUBJgE6AS8CMgFXAS8CMgFXAS8CMgFXAS8CMgFXAS8CMgFX
+        AS8CMgFXAS8CMgFXAS8CMgFXAS8CMgFXAS8CMgFXAS8CMgFXAS8CMgFXASQCJQE5AwMBBAMIAQsDIQEy
+        AyUBOgMlAToDJQE6AyUBOgMlAToDJQE6AyUBOgMlAToDJQE6AyUBOgMlAToDJQE7AyABMQMHAQqAAAMi
+        ATUBFQFhAXsB4gEAAZMBwwH+AQEBkwHAAf0BAQGTAcAB/QEBAZMBwAH9AQEBkwHAAf0BAQGTAcAB/QEB
+        AZMBwAH9AQEBkwHAAf0BAQGTAcAB/QEBAZMBwAH9AQEBkwHAAf0BAAGTAcMB/gEWAV8BdwHgAyABMAE0
+        ATsBPQF6AQ0BaAGIAe4BCAF7AaIB9AEJAXoBoAHzAQkBegGgAfMBCQF6AaAB8wEJAXoBoAHzAQkBegGg
+        AfMBCQF6AaAB8wEJAXoBoAHzAQkBegGgAfMBCQF6AaAB8wEJAXoBoAHzAQgBewGiAfQBDQFoAYcB7QE0
+        ATsBPQF4gAABMwE4AToBbAEBAZ0BwwH8AQABzwL/AQABzQL/AQABzQL/AQABzQL/AQABzQL/AQABzQL/
+        AQABzQL/AQABzQL/AQABzQL/AQABzQL/AQABzQL/AQAB0AL/AQYBkgG0AfcBLwIxAVUBLQFGAU0BrQEA
+        AbAB5QH/AQABxQL/AQABxAL/AQABxAL/AQABxAL/AQABxAL/AQABxAL/AQABxAL/AQABxAL/AQABxAL/
+        AQABxAL/AQABxAL/AQABxQL/AQABrwHkAf8BLgFFAUwBqoAAATABSAFNAaIBAAG9AeMB/wEAAdUC/wEA
+        AdQC/wEAAdQC/wEAAdQC/wEAAdQC/wEAAdQC/wEAAdQC/wEAAdQC/wEAAdQC/wEAAdQC/wEAAdQC/wEA
+        AdYC/wEAAa4B0QH+ATQBPgFAAX4BLQFIAU4BrgEAAbcB5gH/AQABzAL/AQABywL/AQABywL/AQABywL/
+        AQABywL/AQABywL/AQABywL/AQABywL/AQABywL/AQABywL/AQABywL/AQABzAL/AQABtgHkAf8BLgFH
+        AU0BqoAAAR0BXAFlAdQBAAHVAfYB/wEAAd4C/wEAAd0C/wEAAd0C/wEAAd0C/wEAAd0C/wEAAd0C/wEA
+        Ad0C/wEAAd0C/wEAAd0C/wEAAd0C/wEAAd0C/wEAAd4C/wEAAckB5wH/AS4BTAFQAaoBLQFIAU4BrgEA
+        AbwB5gH/AQAB0QL/AQAB0AL/AQAB0AL/AQAB0AL/AQAB0AL/AQAB0AL/AQAB0AL/AQAB0AL/AQAB0AL/
+        AQAB0AL/AQAB0AL/AQAB0gL/AQABuwHkAf8BLgFHAU0BqoAAAQYBeAGDAfYBAAHnAv8BAAHnAv8BAAHo
+        Av8BAAHoAv8BAAHoAv8BAAHnAv8BAAHnAv8BAAHnAv8BAAHnAv8BAAHnAv8BAAHnAv8BAAHnAv8BAAHn
+        Av8BAAHfAfYB/wEdAWEBZwHVAS0BSQFOAa4BAAHBAeYB/wEAAdcC/wEAAdYC/wEAAdYC/wEAAdYC/wEA
+        AdYC/wEAAdYC/wEAAdYC/wEAAdYC/wEAAdYC/wEAAdYC/wEAAdYC/wEAAdcC/wEAAcAB5AH/AS4BSAFN
+        AaqAAAEkAUwBUgHFAQEBkAG/AfwBAAGuAfEB/wEAAbEB8AH/AQABtAHyAf8BAAG2AfMB/wEAAbUB9AH/
+        AQABwAH2Af8BAAHoAf0B/wEAAe0B/gH/AQAB7QH+Af8BAAHsAf4B/wEAAewB/gH/AQAB7AH+Af8BAAHr
+        Af0B/wEGAXcBfwH2AS0BSgFOAa4BAAHGAeYB/wEAAd0C/wEAAdwC/wEAAdwC/wEAAdwC/wEAAdwC/wEA
+        AdwC/wEAAdwC/wEAAdwC/wEAAdwC/wEAAdwC/wEAAdwC/wEAAd0C/wEAAcUB5AH/AS4BSAFNAaqAAAMo
+        AUIBDAFrAZoB7wEAAakB+gH/AQABqAH4Af8BAAGqAfkB/wEAAasB+QH/AQABrQH6Af8BAAGtAfkB/wEA
+        AbgB9gH/AQABvAH3Af8BAAG9AfgB/wEAAb4B+QH/AQABvwH5Af8BAAHCAf0B/wECAZQBuQH7AS0BRQFI
+        Aa0BLQFKAU4BrgEAAcsB5gH/AQAB4gL/AQAB4QL/AQAB4QL/AQAB4QL/AQAB4QL/AQAB4QL/AQAB4QL/
+        AQAB4QL/AQAB4QL/AQAB4QL/AQAB4QL/AQAB4wL/AQABygHkAf8BLgFJAU0BqoAAAyUBOgENAYMBoAHu
+        AQABzgL/AQABzAL/AQABzAL/AQABzAL/AQABywL/AQABywL/AQABxwH9Af8BAAHGAf0B/wEAAccB/QH/
+        AQAByAH+Af8BAAHJAf4B/wEAAcwC/wENAX8BnQHuAyYBPQEtAUsBTgGuAQAB0QHmAf8BAAHpAv8BAAHo
+        Av8BAAHoAv8BAAHoAv8BAAHoAv8BAAHnAv8BAAHnAv8BAAHnAv8BAAHnAv8BAAHnAv8BAAHnAv8BAAHo
+        Av8BAAHPAeQB/wEuAUkBTQGqgAADJQE7AQ0BjQGgAe4BAAHhAv8BAAHeAv8BAAHeAv8BAAHeAv8BAAHe
+        Av8BAAHeAv8BAAHhAv8BAAHhAv8BAAHhAv8BAAHhAv8BAAHhAv8BAAHkAv8BDQGLAZ0B7gMlAToBLQFI
+        AU4BrgEAAcMB4wH/AQAB3wH9Af8BAAHfAfwB/wEAAeAB/AH/AQAB4AH8Af8BAAHfAfwB/wEAAeMB/QH/
+        AQAB7AL/AQAB7QL/AQAB7QL/AQAB7QL/AQAB7QL/AQAB7gL/AQAB1AHkAf8BLgFLAU0BqoAAAyUBOwEN
+        AZYBoAHuAQAB8gL/AQAB7wL/AQAB7wL/AQAB7wL/AQAB7wL/AQAB5wH4Af8BBQGiAbUB+AELAY8BogHw
+        AQsBkAGkAfEBCwGQAaQB8QELAZABpAHxAQoBjwGkAfIBIwFZAWIBxwMXASEBLQFFAU0BrgEAAaoB3gH/
+        AQABvwH4Af8BAAG/AfYB/wEAAb8B9gH/AQABvwH2Af8BAAG/AfYB/wEAAccB9wH/AQAB7QH+Af8BAAHx
+        Av8BAAHxAv8BAAHwAv8BAAHwAv8BAAHxAv8BAAHTAeEB/wEvAUkBSwGogAADHwEvARMBeAF/AeQBAAHN
+        AdkB/wEAAc0B2AH/AQABzgHYAf8BAAHNAdgB/wEAAc4B2gH/AQEBqAGxAf0BNAE+AT8BhAMhATMDIwE2
+        AyMBNgMjATYDIwE2AxUBHgMAAQEBLQFKAU4BrgEAAckB5gH/AQAB4AL/AQAB3gL/AQAB3gL/AQAB3gL/
+        AQAB3wL/AQAB0gHyAf8BDAGAAZEB7wEXAW8BfAHeARcBbwF9Ad4BFwFtAX0B3gEXAWwBfQHeARYBbAF+
+        Ad8BHQFdAWsB1QEyATUBNgFhgAADBAEGAS0CMAFQATQBPwFBAXkBNAJAAXgBNAJAAXgBNAJAAXgBNAFA
+        AUEBeQEyAjkBZwMPARUcAAEzAUEBQwGQAQABnAGrAf4BAAG7AckB/wEAAbsByAH/AQABvAHIAf8BAAG7
+        AcgB/wEAAbwBygH/AQIBkgGdAfsBNAI6AXQDEwEaAxUBHQMVAR0DFQEdAxUBHQMRARcDAgEDwAADEwEa
+        ATABMwE0AVsBMgI4AWYBMgE3ATgBZQEyATcBOAFlATIBNwE4AWUBMgI4AWYBLwIxAVUDCwEP/wCdAAFC
+        AU0BPgcAAT4DAAEoAwABQAMAARADAAEBAQABAQUAAYAXAAP/AQAE/2UAAX8GAAL/AQABfwQABP8EAAs=
+</value>
+  </data>
+  <metadata name="splitContainer1.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="treeViewPackages.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="splitContainer2.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="listViewTextures.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="pictureBoxPreview.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="richTextBoxInfo.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="menuStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>11, 13</value>
+  </metadata>
+  <metadata name="menuStrip.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="$this.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>47</value>
+  </metadata>
 </root>

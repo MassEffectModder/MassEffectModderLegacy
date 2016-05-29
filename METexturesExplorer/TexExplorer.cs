@@ -47,6 +47,7 @@ namespace MassEffectModder
         public UInt32 crc;
         public int mipmapOffset;
         public string packageName;
+        public string displayName;
         public List<MatchedTexture> list;
     }
 
@@ -60,8 +61,25 @@ namespace MassEffectModder
         ConfIni _configIni;
         public static GameData gameData;
         List<string> _packageFiles;
-        TOCBinFile _tocFile;
         List<FoundTexture> _textures;
+
+        public class PackageTreeNode : TreeNode
+        {
+            public List<FoundTexture> textures;
+
+            public PackageTreeNode()
+                : base()
+            {
+                textures = new List<FoundTexture>();
+            }
+            public PackageTreeNode(string name)
+                : base()
+            {
+                this.Name = this.Text = name;
+                textures = new List<FoundTexture>();
+            }
+        };
+        List<PackageTreeNode> nodeList;
 
         public TexExplorer(MainWindow main, MeType gameType)
         {
@@ -75,11 +93,20 @@ namespace MassEffectModder
         public void Run()
         {
             _mainWindow.updateStatusLabel("");
+            sTARTModdingToolStripMenuItem.Enabled = false;
+            eNDModdingToolStripMenuItem.Enabled = false;
+
             if (_gameSelected == MeType.ME1_TYPE)
                 VerifyME1Exe();
 
-            if (GetPackages(_gameSelected))
+            if (!_mainWindow.GetPackages(gameData))
             {
+                Close();
+                return;
+            }
+            else
+            {
+                _packageFiles = GameData.packageFiles;
                 _textures = new List<FoundTexture>();
                 string filename = "me" + (int)_gameSelected + "map.bin";
                 if (File.Exists(filename))
@@ -102,6 +129,7 @@ namespace MassEffectModder
                             FoundTexture texture = new FoundTexture();
                             texture.name = fs.ReadStringASCIINull();
                             texture.crc = fs.ReadUInt32();
+                            texture.packageName = fs.ReadStringASCIINull();
                             UInt32 countPackages = fs.ReadUInt32();
                             for (int k = 0; k < countPackages; k++)
                             {
@@ -144,6 +172,7 @@ namespace MassEffectModder
                         {
                             fs.WriteStringASCIINull(_textures[i].name);
                             fs.WriteUInt32(_textures[i].crc);
+                            fs.WriteStringASCIINull(_textures[i].packageName);
                             fs.WriteInt32(_textures[i].list.Count);
                             for (int k = 0; k < _textures[i].list.Count; k++)
                             {
@@ -156,9 +185,52 @@ namespace MassEffectModder
                 }
             }
 
+            listViewTextures.Clear();
+            richTextBoxInfo.Clear();
+            if (pictureBoxPreview.Image != null)
+                pictureBoxPreview.Image.Dispose();
 
+            nodeList = new List<PackageTreeNode>();
+            PackageTreeNode rootNode = new PackageTreeNode("All Packages");
+            for (int l = 0; l < _textures.Count; l++)
+            {
+                string displayName = _textures[l].name;
+                FoundTexture texture = _textures[l];
+                texture.displayName = displayName;
+                _textures[l] = texture;
+                bool found = false;
+                for (int i = 0; i < nodeList.Count; i++)
+                {
+                    if (nodeList[i].Name == _textures[l].packageName)
+                    {
+                        for (int j = 0; j < nodeList[i].textures.Count; j++)
+                        {
+                            if (nodeList[i].textures[j].name == nodeList[i].Name)
+                                displayName = nodeList[i].textures[j].name + "!" + nodeList[i].textures.Count;
+                        }
+                        texture.displayName = displayName;
+                        _textures[l] = texture;
+                        nodeList[i].textures.Add(_textures[l]);
+                        found = true;
+                    }
+                }
+                if (!found)
+                {
+                    PackageTreeNode treeNode = new PackageTreeNode(_textures[l].packageName);
+                    treeNode.textures.Add(_textures[l]);
+                    rootNode.Nodes.Add(treeNode);
+                    nodeList.Add(treeNode);
+                }
+            }
 
-            Close();
+            treeViewPackages.Nodes.Clear();
+            treeViewPackages.BeginUpdate();
+            treeViewPackages.Sort();
+            treeViewPackages.Nodes.Add(rootNode);
+            treeViewPackages.EndUpdate();
+            treeViewPackages.Nodes[0].Expand();
+
+            sTARTModdingToolStripMenuItem.Enabled = true;
         }
 
         void sortPackagesME1()
@@ -254,136 +326,6 @@ namespace MassEffectModder
             }
         }
 
-        public bool GetPackages(MeType gameType)
-        {
-            if (_gameSelected == MeType.ME3_TYPE)
-                _tocFile = new TOCBinFile(Path.Combine(gameData.bioGamePath, @"PCConsoleTOC.bin"));
-            _mainWindow.updateStatusLabel("Finding packages in game data...");
-            if (!gameData.getPackages())
-            {
-                MessageBox.Show("Unable get packages from game data.");
-                _mainWindow.updateStatusLabel("");
-                return false;
-            }
-            _packageFiles = GameData.packageFiles;
-            _mainWindow.updateStatusLabel("Done.");
-            return true;
-        }
-
-        public void updateTOCBinEntry(string filePath)
-        {
-            if (!filePath.Contains(gameData.MainData))
-                return;
-            int pos = (Path.Combine(Path.GetDirectoryName(GameData.GamePath + @"\"))).Length;
-            string filename = filePath.Substring(pos + 1);
-            _tocFile.updateFile(filename, filePath, false);
-        }
-
-        public void updateAllTOCBinEntries()
-        {
-            for (int i = 0; i < _packageFiles.Count; i++)
-            {
-                updateTOCBinEntry(_packageFiles[i]);
-            }
-            saveTOCBin();
-        }
-
-        public void saveTOCBin()
-        {
-            _tocFile.saveToFile(Path.Combine(gameData.bioGamePath, @"PCConsoleTOC.bin"));
-        }
-
-        public void UpdateME1Config()
-        {
-            var path = gameData.EngineConfigIniPath;
-            var exist = File.Exists(path);
-            if (!exist)
-                return;
-            ConfIni engineConf = new ConfIni(path);
-            engineConf.Write("TEXTUREGROUP_LightAndShadowMap", "(MinLODSize=1024,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
-            engineConf.Write("TEXTUREGROUP_Environment_64", "(MinLODSize=128,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
-            engineConf.Write("TEXTUREGROUP_Environment_128", "(MinLODSize=256,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
-            engineConf.Write("TEXTUREGROUP_Environment_256", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
-            engineConf.Write("TEXTUREGROUP_Environment_512", "(MinLODSize=1024,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
-            engineConf.Write("TEXTUREGROUP_Environment_1024", "(MinLODSize=2048,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
-            engineConf.Write("TEXTUREGROUP_VFX_64", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
-            engineConf.Write("TEXTUREGROUP_VFX_128", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
-            engineConf.Write("TEXTUREGROUP_VFX_256", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
-            engineConf.Write("TEXTUREGROUP_VFX_512", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
-            engineConf.Write("TEXTUREGROUP_VFX_1024", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
-            engineConf.Write("TEXTUREGROUP_APL_128", "(MinLODSize=256,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
-            engineConf.Write("TEXTUREGROUP_APL_256", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
-            engineConf.Write("TEXTUREGROUP_APL_512", "(MinLODSize=1024,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
-            engineConf.Write("TEXTUREGROUP_APL_1024", "(MinLODSize=2048,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
-            engineConf.Write("TEXTUREGROUP_GUI", "(MinLODSize=64,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
-            engineConf.Write("TEXTUREGROUP_Promotional", "(MinLODSize=256,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
-            engineConf.Write("TEXTUREGROUP_Character_1024", "(MinLODSize=2048,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
-            engineConf.Write("TEXTUREGROUP_Character_Diff", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
-            engineConf.Write("TEXTUREGROUP_Character_Norm", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
-            engineConf.Write("TEXTUREGROUP_Character_Spec", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
-        }
-
-        public void UpdateME2Config()
-        {
-            var path = gameData.EngineConfigIniPath;
-            var exist = File.Exists(path);
-            if (!exist)
-                return;
-            ConfIni engineConf = new ConfIni(path);
-            engineConf.Write("TEXTUREGROUP_LightAndShadowMap", "(MinLODSize=1024,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_RenderTarget", "(MinLODSize=2048,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_Environment_64", "(MinLODSize=128,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_Environment_128", "(MinLODSize=256,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_Environment_256", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_Environment_512", "(MinLODSize=1024,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_Environment_1024", "(MinLODSize=2048,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_VFX_64", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_VFX_128", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_VFX_256", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_VFX_512", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_VFX_1024", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_APL_128", "(MinLODSize=256,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_APL_256", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_APL_512", "(MinLODSize=1024,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_APL_1024", "(MinLODSize=2048,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_UI", "(MinLODSize=64,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_Promotional", "(MinLODSize=256,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_Character_1024", "(MinLODSize=2048,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_Character_Diff", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_Character_Norm", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_Character_Spec", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-        }
-
-        public void UpdateME3Config()
-        {
-            var path = gameData.EngineConfigIniPath;
-            var exist = File.Exists(path);
-            if (!exist)
-                return;
-            ConfIni engineConf = new ConfIni(path);
-            engineConf.Write("TEXTUREGROUP_LightAndShadowMap", "(MinLODSize=1024,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_Environment_64", "(MinLODSize=128,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_Environment_128", "(MinLODSize=256,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_Environment_256", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_Environment_512", "(MinLODSize=1024,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_Environment_1024", "(MinLODSize=2048,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_VFX_64", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_VFX_128", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_VFX_256", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_VFX_512", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_VFX_1024", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_APL_128", "(MinLODSize=256,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_APL_256", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_APL_512", "(MinLODSize=1024,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_APL_1024", "(MinLODSize=2048,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_UI", "(MinLODSize=64,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_Promotional", "(MinLODSize=256,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_Character_1024", "(MinLODSize=2048,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_Character_Diff", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_Character_Norm", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-            engineConf.Write("TEXTUREGROUP_Character_Spec", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-        }
-
         void VerifyME1Exe()
         {
             if (!File.Exists(gameData.GameExePath))
@@ -403,73 +345,6 @@ namespace MassEffectModder
                     fs.WriteUInt16(flag); // write LAA flag
                 }
             }
-        }
-
-        public void RepackME12()
-        {
-            GetPackages(_gameSelected);
-            for (int i = 0; i < _packageFiles.Count; i++)
-            {
-                _mainWindow.updateStatusLabel("Repack file " + (i + 1) + " of " + _packageFiles.Count);
-                Application.DoEvents();
-                var package = new Package(_packageFiles[i]);
-                if (package.compressed && package.compressionType != Package.CompressionType.Zlib)
-                    package.SaveToFile();
-            }
-            _mainWindow.updateStatusLabel("Done");
-        }
-
-        public void UpdateME2DLC()
-        {
-            ME2DLC dlc = new ME2DLC();
-            dlc.updateChecksums(gameData);
-            _mainWindow.updateStatusLabel("Done");
-        }
-
-        public void ExtractME3DLC()
-        {
-            if (Directory.Exists(gameData.DLCDataCache))
-            {
-                Directory.Delete(gameData.DLCDataCache, true);
-            }
-            Directory.CreateDirectory(gameData.DLCDataCache);
-            List<string> sfarFiles = Directory.GetFiles(gameData.DLCData, "Default.sfar", SearchOption.AllDirectories).ToList();
-            for (int i = 0; i < sfarFiles.Count; i++)
-            {
-                string DLCname = Path.GetFileName(Path.GetDirectoryName(Path.GetDirectoryName(sfarFiles[i])));
-                string outPath = Path.Combine(gameData.DLCDataCache, DLCname);
-                Directory.CreateDirectory(outPath);
-                ME3DLC dlc = new ME3DLC();
-                _mainWindow.updateStatusLabel("DLC extracting " + (i + 1) + " of " + sfarFiles.Count);
-                Application.DoEvents();
-                dlc.extract(sfarFiles[i], outPath, DLCname);
-            }
-            _mainWindow.updateStatusLabel("Done");
-        }
-
-        private void PackME3DLC(string inPath, string DLCname, bool compressed)
-        {
-            string outPath = Path.Combine(gameData.DLCData, DLCname, "CookedPCConsole", "Default.sfar");
-            ME3DLC dlc = new ME3DLC();
-            dlc.pack(inPath, outPath, DLCname, !compressed);
-        }
-
-        public void PackAllME3DLC(bool compressed)
-        {
-            if (!Directory.Exists(gameData.DLCDataCache))
-            {
-                MessageBox.Show("DLCCache directory is missing, you need exract DLC packages first.");
-                return;
-            }
-            List<string> DLCs = Directory.GetDirectories(gameData.DLCDataCache).ToList();
-            for (int i = 0; i < DLCs.Count; i++)
-            {
-                string DLCname = Path.GetFileName(DLCs[i]);
-                _mainWindow.updateStatusLabel("DLC packing " + (i + 1) + " of " + DLCs.Count);
-                Application.DoEvents();
-                PackME3DLC(DLCs[i], DLCname, compressed);
-            }
-            _mainWindow.updateStatusLabel("Done");
         }
 
         private void TexExplorer_FormClosed(object sender, FormClosedEventArgs e)
