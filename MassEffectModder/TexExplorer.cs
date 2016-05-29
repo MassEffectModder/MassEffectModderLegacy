@@ -22,7 +22,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Windows.Forms;
 using StreamHelpers;
 
@@ -97,7 +96,7 @@ namespace MassEffectModder
             eNDModdingToolStripMenuItem.Enabled = false;
 
             if (_gameSelected == MeType.ME1_TYPE)
-                VerifyME1Exe();
+                _mainWindow.VerifyME1Exe(gameData);
 
             if (!_mainWindow.GetPackages(gameData))
             {
@@ -326,25 +325,8 @@ namespace MassEffectModder
             }
         }
 
-        void VerifyME1Exe()
         {
-            if (!File.Exists(gameData.GameExePath))
-                throw new FileNotFoundException("Game exe not found: " + gameData.GameExePath);
 
-            using (FileStream fs = new FileStream(gameData.GameExePath, FileMode.Open, FileAccess.ReadWrite))
-            {
-                fs.JumpTo(0x3C); // jump to offset of COFF header
-                UInt32 offset = fs.ReadUInt32() + 4; // skip PE signature too
-                fs.JumpTo(offset + 0x12); // jump to flags entry
-                ushort flag = fs.ReadUInt16(); // read flags
-                if ((flag & 0x20) != 0x20) // check for LAA flag
-                {
-                    MessageBox.Show("Large Aware Address flag is not enabled in MassEffect.exe file. Correcting...");
-                    flag |= 0x20;
-                    fs.Skip(-2);
-                    fs.WriteUInt16(flag); // write LAA flag
-                }
-            }
         }
 
         private void TexExplorer_FormClosed(object sender, FormClosedEventArgs e)

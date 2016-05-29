@@ -19,6 +19,7 @@
  *
  */
 
+using StreamHelpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -110,6 +111,27 @@ namespace MassEffectModder
             engineConf.Write("TEXTUREGROUP_Character_Norm", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
             engineConf.Write("TEXTUREGROUP_Character_Spec", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
             enableGameDataMenu(true);
+        }
+
+        public void VerifyME1Exe(GameData gameData)
+        {
+            if (!File.Exists(gameData.GameExePath))
+                throw new FileNotFoundException("Game exe not found: " + gameData.GameExePath);
+
+            using (FileStream fs = new FileStream(gameData.GameExePath, FileMode.Open, FileAccess.ReadWrite))
+            {
+                fs.JumpTo(0x3C); // jump to offset of COFF header
+                UInt32 offset = fs.ReadUInt32() + 4; // skip PE signature too
+                fs.JumpTo(offset + 0x12); // jump to flags entry
+                ushort flag = fs.ReadUInt16(); // read flags
+                if ((flag & 0x20) != 0x20) // check for LAA flag
+                {
+                    MessageBox.Show("Large Aware Address flag is not enabled in MassEffect.exe file. Correcting...");
+                    flag |= 0x20;
+                    fs.Skip(-2);
+                    fs.WriteUInt16(flag); // write LAA flag
+                }
+            }
         }
 
         public bool GetPackages(GameData gameData)
