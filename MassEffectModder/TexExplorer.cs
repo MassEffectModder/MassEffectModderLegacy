@@ -204,7 +204,7 @@ namespace MassEffectModder
                     {
                         for (int j = 0; j < nodeList[i].textures.Count; j++)
                         {
-                            if (nodeList[i].textures[j].name == nodeList[i].Name)
+                            if (nodeList[i].textures[j].name == _textures[l].name)
                                 displayName = nodeList[i].textures[j].name + "!" + nodeList[i].textures.Count;
                         }
                         texture.displayName = displayName;
