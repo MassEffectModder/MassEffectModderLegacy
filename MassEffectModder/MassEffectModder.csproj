@@ -7,8 +7,8 @@
     <ProjectGuid>{760B5271-57E4-4DE5-8B63-ADDBBF7B6EC7}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>METexturesExplorer</RootNamespace>
-    <AssemblyName>METexturesExplorer</AssemblyName>
+    <RootNamespace>MassEffectModder</RootNamespace>
+    <AssemblyName>MassEffectModder</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
@@ -29,7 +29,7 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>METexturesExplorer.Program</StartupObject>
+    <StartupObject>MassEffectModder.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>

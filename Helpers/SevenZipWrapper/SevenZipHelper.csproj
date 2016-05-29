@@ -44,8 +44,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if exist $(SolutionDir)\METexturesExplorer\bin\Debug\ copy $(ProjectDir)\sevenzipwrapper.dll $(SolutionDir)\METexturesExplorer\bin\Debug\sevenzipwrapper.dll
-if exist $(SolutionDir)\METexturesExplorer\bin\Release\ copy $(ProjectDir)\sevenzipwrapper.dll $(SolutionDir)\METexturesExplorer\bin\Release\sevenzipwrapper.dll
+    <PostBuildEvent>if exist $(SolutionDir)\MassEffectModder\bin\Debug\ copy $(ProjectDir)\sevenzipwrapper.dll $(SolutionDir)\MassEffectModder\bin\Debug\sevenzipwrapper.dll
+if exist $(SolutionDir)\MassEffectModder\bin\Release\ copy $(ProjectDir)\sevenzipwrapper.dll $(SolutionDir)\MassEffectModder\bin\Release\sevenzipwrapper.dll
 </PostBuildEvent>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <TargetFrameworkProfile />
