@@ -55,14 +55,14 @@ namespace MassEffectModder
             this.replaceTextureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageListPackages = new System.Windows.Forms.ImageList(this.components);
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.treeViewPackages = new System.Windows.Forms.TreeView();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.listViewTextures = new System.Windows.Forms.ListView();
+            this.pictureBoxPreview = new System.Windows.Forms.PictureBox();
+            this.richTextBoxInfo = new System.Windows.Forms.RichTextBox();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.sTARTModdingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eNDModdingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.treeViewPackages = new System.Windows.Forms.TreeView();
-            this.listViewTextures = new System.Windows.Forms.ListView();
-            this.richTextBoxInfo = new System.Windows.Forms.RichTextBox();
-            this.pictureBoxPreview = new System.Windows.Forms.PictureBox();
             this.contextMenuStripTextures.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -72,8 +72,8 @@ namespace MassEffectModder
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
-            this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPreview)).BeginInit();
+            this.menuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // contextMenuStripTextures
@@ -113,6 +113,19 @@ namespace MassEffectModder
             this.splitContainer1.SplitterDistance = 338;
             this.splitContainer1.TabIndex = 4;
             // 
+            // treeViewPackages
+            // 
+            this.treeViewPackages.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.treeViewPackages.ImageKey = "Folder Open.png";
+            this.treeViewPackages.ImageList = this.imageListPackages;
+            this.treeViewPackages.Location = new System.Drawing.Point(0, 28);
+            this.treeViewPackages.Name = "treeViewPackages";
+            this.treeViewPackages.SelectedImageIndex = 0;
+            this.treeViewPackages.Size = new System.Drawing.Size(336, 431);
+            this.treeViewPackages.TabIndex = 0;
+            // 
             // splitContainer2
             // 
             this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -130,6 +143,41 @@ namespace MassEffectModder
             this.splitContainer2.Size = new System.Drawing.Size(798, 462);
             this.splitContainer2.SplitterDistance = 334;
             this.splitContainer2.TabIndex = 0;
+            // 
+            // listViewTextures
+            // 
+            this.listViewTextures.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.listViewTextures.Location = new System.Drawing.Point(3, 28);
+            this.listViewTextures.Name = "listViewTextures";
+            this.listViewTextures.Size = new System.Drawing.Size(328, 431);
+            this.listViewTextures.TabIndex = 0;
+            this.listViewTextures.UseCompatibleStateImageBehavior = false;
+            // 
+            // pictureBoxPreview
+            // 
+            this.pictureBoxPreview.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pictureBoxPreview.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.pictureBoxPreview.Location = new System.Drawing.Point(3, 30);
+            this.pictureBoxPreview.Name = "pictureBoxPreview";
+            this.pictureBoxPreview.Size = new System.Drawing.Size(457, 429);
+            this.pictureBoxPreview.TabIndex = 1;
+            this.pictureBoxPreview.TabStop = false;
+            // 
+            // richTextBoxInfo
+            // 
+            this.richTextBoxInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.richTextBoxInfo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.richTextBoxInfo.Location = new System.Drawing.Point(3, 28);
+            this.richTextBoxInfo.Name = "richTextBoxInfo";
+            this.richTextBoxInfo.Size = new System.Drawing.Size(457, 432);
+            this.richTextBoxInfo.TabIndex = 0;
+            this.richTextBoxInfo.Text = "";
             // 
             // menuStrip
             // 
@@ -154,54 +202,6 @@ namespace MassEffectModder
             this.eNDModdingToolStripMenuItem.Size = new System.Drawing.Size(94, 20);
             this.eNDModdingToolStripMenuItem.Text = "END Modding";
             // 
-            // treeViewPackages
-            // 
-            this.treeViewPackages.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.treeViewPackages.ImageKey = "Folder-Open.ico";
-            this.treeViewPackages.ImageList = this.imageListPackages;
-            this.treeViewPackages.Location = new System.Drawing.Point(0, 28);
-            this.treeViewPackages.Name = "treeViewPackages";
-            this.treeViewPackages.SelectedImageIndex = 0;
-            this.treeViewPackages.Size = new System.Drawing.Size(336, 431);
-            this.treeViewPackages.TabIndex = 0;
-            // 
-            // listViewTextures
-            // 
-            this.listViewTextures.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.listViewTextures.Location = new System.Drawing.Point(3, 28);
-            this.listViewTextures.Name = "listViewTextures";
-            this.listViewTextures.Size = new System.Drawing.Size(328, 431);
-            this.listViewTextures.TabIndex = 0;
-            this.listViewTextures.UseCompatibleStateImageBehavior = false;
-            // 
-            // richTextBoxInfo
-            // 
-            this.richTextBoxInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.richTextBoxInfo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.richTextBoxInfo.Location = new System.Drawing.Point(3, 28);
-            this.richTextBoxInfo.Name = "richTextBoxInfo";
-            this.richTextBoxInfo.Size = new System.Drawing.Size(457, 432);
-            this.richTextBoxInfo.TabIndex = 0;
-            this.richTextBoxInfo.Text = "";
-            // 
-            // pictureBoxPreview
-            // 
-            this.pictureBoxPreview.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBoxPreview.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.pictureBoxPreview.Location = new System.Drawing.Point(3, 30);
-            this.pictureBoxPreview.Name = "pictureBoxPreview";
-            this.pictureBoxPreview.Size = new System.Drawing.Size(457, 429);
-            this.pictureBoxPreview.TabIndex = 1;
-            this.pictureBoxPreview.TabStop = false;
-            // 
             // TexExplorer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -222,9 +222,9 @@ namespace MassEffectModder
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPreview)).EndInit();
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPreview)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
