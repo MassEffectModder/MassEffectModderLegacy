@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "METexturesExplorer", "METexturesExplorer\METexturesExplorer.csproj", "{760B5271-57E4-4DE5-8B63-ADDBBF7B6EC7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassEffectModder", "METexturesExplorer\MassEffectModder.csproj", "{760B5271-57E4-4DE5-8B63-ADDBBF7B6EC7}"
 	ProjectSection(ProjectDependencies) = postProject
 		{7C8AF7AE-D0D9-4355-8D1F-8420C133DB31} = {7C8AF7AE-D0D9-4355-8D1F-8420C133DB31}
 		{8EE302B7-4989-47D3-870C-BF38C88B1F38} = {8EE302B7-4989-47D3-870C-BF38C88B1F38}

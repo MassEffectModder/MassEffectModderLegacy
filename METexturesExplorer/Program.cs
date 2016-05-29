@@ -1,5 +1,5 @@
 ﻿/*
- * METexturesExplorer
+ * MassEffectModder
  *
  * Copyright (C) 2014 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
@@ -25,7 +25,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace METexturesExplorer
+namespace MassEffectModder
 {
     static class Program
     {

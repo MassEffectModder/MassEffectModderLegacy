@@ -1,5 +1,5 @@
 ﻿/*
- * METexturesExplorer
+ * MassEffectModder
  *
  * Copyright (C) 2014-2016 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
@@ -26,7 +26,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace METexturesExplorer
+namespace MassEffectModder
 {
     public class GameData
     {

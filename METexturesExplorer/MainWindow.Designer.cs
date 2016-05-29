@@ -1,5 +1,5 @@
 ﻿/*
- * METexturesExplorer
+ * MassEffectModder
  *
  * Copyright (C) 2014-2016 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
@@ -19,7 +19,7 @@
  *
  */
 
-namespace METexturesExplorer
+namespace MassEffectModder
 {
     partial class MainWindow
     {
@@ -223,7 +223,7 @@ namespace METexturesExplorer
             this.IsMdiContainer = true;
             this.MainMenuStrip = this.menuGame;
             this.Name = "MainWindow";
-            this.Text = "METexturesExplorer";
+            this.Text = "MassEffectModder";
             this.menuGame.ResumeLayout(false);
             this.menuGame.PerformLayout();
             this.statusStrip.ResumeLayout(false);

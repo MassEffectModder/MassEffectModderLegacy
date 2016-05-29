@@ -1,5 +1,5 @@
 ﻿/*
- * METexturesExplorer
+ * MassEffectModder
  *
  * Copyright (C) 2015 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
@@ -29,7 +29,7 @@ using System.Security.Cryptography;
 using System.Text;
 using StreamHelpers;
 
-namespace METexturesExplorer
+namespace MassEffectModder
 {
     class ME3DLC
     {

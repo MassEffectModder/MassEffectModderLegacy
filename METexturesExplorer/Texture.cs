@@ -1,5 +1,5 @@
 ﻿/*
- * METexturesExplorer
+ * MassEffectModder
  *
  * Copyright (C) 2015-2016 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
@@ -26,7 +26,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CRC32;
 
-namespace METexturesExplorer
+namespace MassEffectModder
 {
     public class Texture : IDisposable
     {

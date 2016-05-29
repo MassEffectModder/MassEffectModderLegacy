@@ -1,5 +1,5 @@
 ﻿/*
- * METexturesExplorer
+ * MassEffectModder
  *
  * Copyright (C) 2014 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
@@ -19,7 +19,7 @@
  *
  */
 
-namespace METexturesExplorer
+namespace MassEffectModder
 {
     partial class TexExplorer
     {
