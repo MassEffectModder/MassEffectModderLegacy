@@ -53,9 +53,10 @@ namespace MassEffectModder
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TexExplorer));
             this.contextMenuStripTextures = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.replaceTextureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.imageListPackages = new System.Windows.Forms.ImageList(this.components);
+            this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.treeViewPackages = new System.Windows.Forms.TreeView();
+            this.listViewResults = new System.Windows.Forms.ListView();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.listViewTextures = new System.Windows.Forms.ListView();
             this.pictureBoxPreview = new System.Windows.Forms.PictureBox();
@@ -89,12 +90,12 @@ namespace MassEffectModder
             this.replaceTextureToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.replaceTextureToolStripMenuItem.Text = "Replace Texture";
             // 
-            // imageListPackages
+            // imageList
             // 
-            this.imageListPackages.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListPackages.ImageStream")));
-            this.imageListPackages.TransparentColor = System.Drawing.Color.Transparent;
-            this.imageListPackages.Images.SetKeyName(0, "Folder Open.png");
-            this.imageListPackages.Images.SetKeyName(1, "Folder.png");
+            this.imageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList.ImageStream")));
+            this.imageList.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageList.Images.SetKeyName(0, "Folder.png");
+            this.imageList.Images.SetKeyName(1, "Folder Open.png");
             // 
             // splitContainer1
             // 
@@ -105,6 +106,7 @@ namespace MassEffectModder
             // splitContainer1.Panel1
             // 
             this.splitContainer1.Panel1.Controls.Add(this.treeViewPackages);
+            this.splitContainer1.Panel1.Controls.Add(this.listViewResults);
             // 
             // splitContainer1.Panel2
             // 
@@ -118,13 +120,27 @@ namespace MassEffectModder
             this.treeViewPackages.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.treeViewPackages.ImageKey = "Folder Open.png";
-            this.treeViewPackages.ImageList = this.imageListPackages;
+            this.treeViewPackages.ImageKey = "Folder.png";
+            this.treeViewPackages.ImageList = this.imageList;
             this.treeViewPackages.Location = new System.Drawing.Point(0, 28);
             this.treeViewPackages.Name = "treeViewPackages";
-            this.treeViewPackages.SelectedImageIndex = 0;
+            this.treeViewPackages.SelectedImageIndex = 1;
             this.treeViewPackages.Size = new System.Drawing.Size(336, 431);
             this.treeViewPackages.TabIndex = 0;
+            this.treeViewPackages.AfterCollapse += new System.Windows.Forms.TreeViewEventHandler(this.treeViewPackages_AfterCollapse);
+            this.treeViewPackages.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.treeViewPackages_AfterExpand);
+            this.treeViewPackages.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewPackages_AfterSelect);
+            // 
+            // listViewResults
+            // 
+            this.listViewResults.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.listViewResults.Location = new System.Drawing.Point(0, 28);
+            this.listViewResults.Name = "listViewResults";
+            this.listViewResults.Size = new System.Drawing.Size(338, 431);
+            this.listViewResults.TabIndex = 1;
+            this.listViewResults.UseCompatibleStateImageBehavior = false;
             // 
             // splitContainer2
             // 
@@ -150,10 +166,12 @@ namespace MassEffectModder
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.listViewTextures.Location = new System.Drawing.Point(3, 28);
+            this.listViewTextures.MultiSelect = false;
             this.listViewTextures.Name = "listViewTextures";
             this.listViewTextures.Size = new System.Drawing.Size(328, 431);
             this.listViewTextures.TabIndex = 0;
             this.listViewTextures.UseCompatibleStateImageBehavior = false;
+            this.listViewTextures.View = System.Windows.Forms.View.List;
             // 
             // pictureBoxPreview
             // 
@@ -233,15 +251,16 @@ namespace MassEffectModder
         #endregion
         private System.Windows.Forms.ContextMenuStrip contextMenuStripTextures;
         private System.Windows.Forms.ToolStripMenuItem replaceTextureToolStripMenuItem;
-        private System.Windows.Forms.ImageList imageListPackages;
+        private System.Windows.Forms.ImageList imageList;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.MenuStrip menuStrip;
         private System.Windows.Forms.ToolStripMenuItem sTARTModdingToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem eNDModdingToolStripMenuItem;
-        private System.Windows.Forms.TreeView treeViewPackages;
         private System.Windows.Forms.ListView listViewTextures;
         private System.Windows.Forms.RichTextBox richTextBoxInfo;
         private System.Windows.Forms.PictureBox pictureBoxPreview;
+        public System.Windows.Forms.TreeView treeViewPackages;
+        private System.Windows.Forms.ListView listViewResults;
     }
 }

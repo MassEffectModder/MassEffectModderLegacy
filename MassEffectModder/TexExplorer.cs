@@ -94,6 +94,9 @@ namespace MassEffectModder
             _mainWindow.updateStatusLabel("");
             sTARTModdingToolStripMenuItem.Enabled = false;
             eNDModdingToolStripMenuItem.Enabled = false;
+            listViewResults.Hide();
+            listViewTextures.Clear();
+            richTextBoxInfo.Clear();
 
             if (_gameSelected == MeType.ME1_TYPE)
                 _mainWindow.VerifyME1Exe(gameData);
@@ -183,11 +186,6 @@ namespace MassEffectModder
                     _mainWindow.updateStatusLabel("Done.");
                 }
             }
-
-            listViewTextures.Clear();
-            richTextBoxInfo.Clear();
-            if (pictureBoxPreview.Image != null)
-                pictureBoxPreview.Image.Dispose();
 
             nodeList = new List<PackageTreeNode>();
             PackageTreeNode rootNode = new PackageTreeNode("All Packages");
@@ -325,13 +323,36 @@ namespace MassEffectModder
             }
         }
 
-        {
-
-        }
-
         private void TexExplorer_FormClosed(object sender, FormClosedEventArgs e)
         {
             _mainWindow.enableGameDataMenu(true);
+        }
+
+        private void treeViewPackages_AfterCollapse(object sender, TreeViewEventArgs e)
+        {
+            e.Node.ImageIndex = 0;
+        }
+
+        private void treeViewPackages_AfterExpand(object sender, TreeViewEventArgs e)
+        {
+            e.Node.ImageIndex = 1;
+        }
+
+        private void treeViewPackages_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            listViewTextures.BeginUpdate();
+            listViewTextures.Clear();
+            listViewTextures.Sort();
+            PackageTreeNode node = (PackageTreeNode)e.Node;
+            foreach (FoundTexture texture in node.textures)
+            {
+                ListViewItem item = new ListViewItem();
+                item.Name = texture.name;
+                item.Text = texture.displayName;
+                listViewTextures.Items.Add(item);
+            }
+            listViewTextures.EndUpdate();
+            listViewTextures.Refresh();
         }
     }
 }
