@@ -61,6 +61,7 @@ namespace MassEffectModder
         public static GameData gameData;
         List<string> _packageFiles;
         List<FoundTexture> _textures;
+        bool previewShow = true;
 
         public class PackageTreeNode : TreeNode
         {
@@ -94,6 +95,7 @@ namespace MassEffectModder
             _mainWindow.updateStatusLabel("");
             sTARTModdingToolStripMenuItem.Enabled = false;
             eNDModdingToolStripMenuItem.Enabled = false;
+            searchToolStripMenuItem.Enabled = false;
             listViewResults.Hide();
             listViewTextures.Clear();
             richTextBoxInfo.Clear();
@@ -133,12 +135,12 @@ namespace MassEffectModder
                             texture.crc = fs.ReadUInt32();
                             texture.packageName = fs.ReadStringASCIINull();
                             UInt32 countPackages = fs.ReadUInt32();
+                            texture.list = new List<MatchedTexture>();
                             for (int k = 0; k < countPackages; k++)
                             {
                                 MatchedTexture matched = new MatchedTexture();
                                 matched.exportID = fs.ReadInt32();
                                 matched.path = fs.ReadStringASCIINull();
-                                texture.list = new List<MatchedTexture>();
                                 texture.list.Add(matched);
                             }
                             _textures.Add(texture);
@@ -228,6 +230,7 @@ namespace MassEffectModder
             treeViewPackages.Nodes[0].Expand();
 
             sTARTModdingToolStripMenuItem.Enabled = true;
+            searchToolStripMenuItem.Enabled = true;
         }
 
         void sortPackagesME1()
@@ -255,8 +258,8 @@ namespace MassEffectModder
             for (int i = 0; i < package.exportsTable.Count; i++)
             {
                 int id = package.getClassNameId(package.exportsTable[i].classId);
-                if (id == package.nameIdTexture2D || 
-                    id == package.nameIdLightMapTexture2D || 
+                if (id == package.nameIdTexture2D ||
+                    id == package.nameIdLightMapTexture2D ||
                     id == package.nameIdTextureFlipBook)
                 {
                     Texture texture = new Texture(package, i, package.getExportData(i), this);
@@ -271,12 +274,12 @@ namespace MassEffectModder
 
                     if (_gameSelected == MeType.ME1_TYPE)
                     {
-                        if (mipmap.storageType == Texture.StorageTypes.pccUnc || 
+                        if (mipmap.storageType == Texture.StorageTypes.pccUnc ||
                             mipmap.storageType == Texture.StorageTypes.pccCpr)
                         {
                             uint crc = texture.getCrcMipmap();
                             FoundTexture foundTexName = _textures.Find(s => s.crc == crc);
-                            if (foundTexName.name != null && 
+                            if (foundTexName.name != null &&
                                 package.compressed)
                             {
                                 foundTexName.list.Add(matchTexture);
@@ -338,21 +341,174 @@ namespace MassEffectModder
             e.Node.ImageIndex = 1;
         }
 
-        private void treeViewPackages_AfterSelect(object sender, TreeViewEventArgs e)
+        private void updateListViewTextures(PackageTreeNode node)
         {
             listViewTextures.BeginUpdate();
             listViewTextures.Clear();
             listViewTextures.Sort();
-            PackageTreeNode node = (PackageTreeNode)e.Node;
-            foreach (FoundTexture texture in node.textures)
+            for (int i = 0; i < node.textures.Count; i++)
             {
+                FoundTexture texture = node.textures[i];
                 ListViewItem item = new ListViewItem();
-                item.Name = texture.name;
+                item.Name = i.ToString();
                 item.Text = texture.displayName;
                 listViewTextures.Items.Add(item);
             }
             listViewTextures.EndUpdate();
             listViewTextures.Refresh();
+        }
+
+        private void treeViewPackages_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            updateListViewTextures((PackageTreeNode)e.Node);
+            updateViewFromListView();
+        }
+
+        private void updateViewFromListView()
+        {
+            if (listViewTextures.SelectedItems.Count == 0)
+            {
+                richTextBoxInfo.Clear();
+                if (pictureBoxPreview.Image != null)
+                {
+                    pictureBoxPreview.Image.Dispose();
+                    pictureBoxPreview.Image = null;
+                }
+                return;
+            }
+
+            ListViewItem item = listViewTextures.FocusedItem;
+            int index = Convert.ToInt32(item.Name);
+            PackageTreeNode node = (PackageTreeNode)treeViewPackages.SelectedNode;
+            MatchedTexture nodeTexture = node.textures[index].list[0];
+            Package package = new Package(GameData.GamePath + nodeTexture.path);
+            byte[] data = package.getExportData(nodeTexture.exportID);
+            Texture texture = new Texture(package, nodeTexture.exportID, data, this);
+            if (previewShow)
+            {
+            }
+            else
+            {
+                richTextBoxInfo.Text += "Texture name:  " + node.textures[index].name + "\n";
+                richTextBoxInfo.Text += "Node name:     " + node.textures[index].displayName + "\n";
+                richTextBoxInfo.Text += "Package name:  " + node.textures[index].packageName + "\n";
+                richTextBoxInfo.Text += "Packages:\n";
+                for (int l = 0; l < node.textures[index].list.Count; l++)
+                {
+                    richTextBoxInfo.Text += "  Export Id:     " + node.textures[index].list[l].exportID + "\n";
+                    richTextBoxInfo.Text += "  Package path:  " + node.textures[index].list[l].path + "\n";
+                }
+                richTextBoxInfo.Text += "Texture properties:\n";
+                for (int l = 0; l < texture.properties.texPropertyList.Count; l++)
+                {
+                    richTextBoxInfo.Text += texture.properties.getDisplayString(l);
+                }
+                for (int l = 0; l < texture.mipMapsList.Count; l++)
+                {
+                    richTextBoxInfo.Text += "MipMap:        " + l + "\n";
+                    richTextBoxInfo.Text += "  StorageType: " + texture.mipMapsList[l].storageType + "\n";
+                    richTextBoxInfo.Text += "  CompSize:    " + texture.mipMapsList[l].compressedSize + "\n";
+                    richTextBoxInfo.Text += "  UnCompSize:  " + texture.mipMapsList[l].uncompressedSize + "\n";
+                }
+            }
+        }
+
+        private void searchTexture(string name, UInt32 crc)
+        {
+            listViewResults.Clear();
+
+            for (int l = 0; l < _textures.Count; l++)
+            {
+                FoundTexture foundTexture = _textures[l];
+                if ((name != null && foundTexture.name == name) ||
+                    (crc != 0 && foundTexture.crc == crc))
+                {
+                    ListViewItem item = new ListViewItem(foundTexture.displayName + " (" + foundTexture.packageName + ")");
+                    item.Name = l.ToString();
+                    listViewResults.Items.Add(item);
+                }
+            }
+            if (listViewResults.Items.Count > 0)
+            {
+                listViewResults.BringToFront();
+                listViewResults.Show();
+                listViewTextures.Clear();
+                richTextBoxInfo.Clear();
+                if (pictureBoxPreview.Image != null)
+                {
+                    pictureBoxPreview.Image.Dispose();
+                    pictureBoxPreview.Image = null;
+                }
+            }
+        }
+
+        private void infoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            richTextBoxInfo.BringToFront();
+            previewShow = false;
+            updateViewFromListView();
+        }
+
+        private void previewToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            pictureBoxPreview.BringToFront();
+            previewShow = true;
+            updateViewFromListView();
+        }
+
+        private void listViewTextures_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            updateViewFromListView();
+        }
+
+        private void byNameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string name = Microsoft.VisualBasic.Interaction.InputBox("Please enter texture name", "", "", 0, 0);
+            if (String.IsNullOrEmpty(name))
+                return;
+
+            name = name.Split('.')[0]; // in case filename
+            searchTexture(name, 0);
+        }
+
+        private void byCRCToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string crc = Microsoft.VisualBasic.Interaction.InputBox("Please enter texture CRC", "", "", 0, 0);
+            if (String.IsNullOrEmpty(crc))
+                return;
+
+            searchTexture(null, UInt32.Parse(crc, System.Globalization.NumberStyles.AllowHexSpecifier));
+        }
+
+        private void listViewResults_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (listViewResults.Items.Count == 0)
+                return;
+            ListViewItem item = listViewResults.SelectedItems[0];
+            int pos1 = item.Text.IndexOf('(');
+            int pos2 = item.Text.IndexOf(')');
+            string packageName = item.Text.Substring(pos1 + 1, pos2 - pos1 - 1);
+            listViewResults.Hide();
+            for (int l = 0; l < treeViewPackages.Nodes[0].Nodes.Count; l++)
+            {
+                PackageTreeNode node = (PackageTreeNode)treeViewPackages.Nodes[0].Nodes[l];
+                if (node.Name == packageName)
+                {
+                    treeViewPackages.SelectedNode = node;
+                    updateListViewTextures(node);
+                    for (int i = 0; i < node.textures.Count; i++)
+                    {
+                        FoundTexture texture = node.textures[i];
+                        if (texture.name == item.Text.Split(' ')[0])
+                        {
+                            listViewTextures.FocusedItem = listViewTextures.Items[i];
+                            listViewTextures.Items[i].Selected = true;
+                            updateViewFromListView();
+                            return;
+                        }
+                    }
+                }
+            }
         }
     }
 }

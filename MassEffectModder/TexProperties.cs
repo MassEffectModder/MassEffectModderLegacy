@@ -120,8 +120,15 @@ namespace MassEffectModder
 
         public void fetchValue(string name)
         {
-            TexPropertyEntry texProperty = texPropertyList.Find(s => s.name == name);
-            if (texProperty.fetched)
+            fetchValue(texPropertyList.Find(s => s.name == name).index);
+        }
+
+        public void fetchValue(int index)
+        {
+            if (index < 0 || index >= texPropertyList.Count)
+                new Exception("");
+            TexPropertyEntry texProperty = texPropertyList[index];
+            if (texProperty.fetched || texProperty.type == null)
                 return;
             switch (texProperty.type)
             {
@@ -162,7 +169,52 @@ namespace MassEffectModder
                     throw new Exception();
             }
             texProperty.fetched = true;
-            texPropertyList[texPropertyList.FindIndex(s => s.name == name)] = texProperty;
+            texPropertyList[index] = texProperty;
+        }
+
+        public string getDisplayString(int index)
+        {
+            string result = "";
+            if (index < 0 || index >= texPropertyList.Count)
+                new Exception("");
+
+            fetchValue(index);
+            TexPropertyEntry texProperty = texPropertyList[index];
+            if (texProperty.type == null)
+                return result;
+
+            result = "  " + texProperty.name + ": ";
+            switch (texProperty.type)
+            {
+                case "IntProperty":
+                    result += texProperty.valueInt + "\n";
+                    break;
+                case "ByteProperty":
+                    result += texProperty.valueName + ": ";
+                    result += texProperty.valueInt + "\n";
+                    break;
+                case "BoolProperty":
+                    result += texProperty.valueBool + "\n";
+                    break;
+                case "StrProperty":
+                    result += "\n";
+                    break;
+                case "FloatProperty":
+                    result += texProperty.valueFloat + "\n";
+                    break;
+                case "NameProperty":
+                    result += texProperty.valueName + ": ";
+                    result += texProperty.valueInt + "\n";
+                    break;
+                case "StructProperty":
+                    result += texProperty.valueName + ": ";
+                    result += texProperty.valueInt + "\n";
+                    break;
+                default:
+                    throw new Exception();
+            }
+
+            return result;
         }
 
         public void setIntValue(string name, int value)
