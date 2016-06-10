@@ -120,7 +120,7 @@ namespace MassEffectModder
 
         public void fetchValue(string name)
         {
-            fetchValue(texPropertyList.Find(s => s.name == name).index);
+            fetchValue(texPropertyList.IndexOf(texPropertyList.Find(s => s.name == name)));
         }
 
         public void fetchValue(int index)

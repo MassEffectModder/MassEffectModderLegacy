@@ -1,9 +1,8 @@
-This program use MemoryTributary code which is covered by the following
-license.
+This program use MemoryTributary code which is covered by the MIT license.
+Copyright (c) 2012 Sebastian Friston
+
 
 The MIT License
-
-Copyright (c) 2012 Sebastian Friston
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

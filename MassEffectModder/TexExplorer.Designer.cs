@@ -60,6 +60,7 @@ namespace MassEffectModder
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.treeViewPackages = new System.Windows.Forms.TreeView();
             this.listViewResults = new System.Windows.Forms.ListView();
+            this.columnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.listViewTextures = new System.Windows.Forms.ListView();
             this.pictureBoxPreview = new System.Windows.Forms.PictureBox();
@@ -70,7 +71,6 @@ namespace MassEffectModder
             this.searchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.byNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.byCRCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.columnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contextMenuStripTextures.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -180,6 +180,10 @@ namespace MassEffectModder
             this.listViewResults.View = System.Windows.Forms.View.List;
             this.listViewResults.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listViewResults_MouseDoubleClick);
             // 
+            // columnHeader
+            // 
+            this.columnHeader.Width = 500;
+            // 
             // splitContainer2
             // 
             this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -223,6 +227,7 @@ namespace MassEffectModder
             this.pictureBoxPreview.Location = new System.Drawing.Point(3, 30);
             this.pictureBoxPreview.Name = "pictureBoxPreview";
             this.pictureBoxPreview.Size = new System.Drawing.Size(457, 429);
+            this.pictureBoxPreview.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.pictureBoxPreview.TabIndex = 1;
             this.pictureBoxPreview.TabStop = false;
             // 
@@ -275,20 +280,16 @@ namespace MassEffectModder
             // byNameToolStripMenuItem
             // 
             this.byNameToolStripMenuItem.Name = "byNameToolStripMenuItem";
-            this.byNameToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.byNameToolStripMenuItem.Size = new System.Drawing.Size(120, 22);
             this.byNameToolStripMenuItem.Text = "By name";
             this.byNameToolStripMenuItem.Click += new System.EventHandler(this.byNameToolStripMenuItem_Click);
             // 
             // byCRCToolStripMenuItem
             // 
             this.byCRCToolStripMenuItem.Name = "byCRCToolStripMenuItem";
-            this.byCRCToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.byCRCToolStripMenuItem.Size = new System.Drawing.Size(120, 22);
             this.byCRCToolStripMenuItem.Text = "By CRC";
             this.byCRCToolStripMenuItem.Click += new System.EventHandler(this.byCRCToolStripMenuItem_Click);
-            // 
-            // columnHeader
-            // 
-            this.columnHeader.Width = 500;
             // 
             // TexExplorer
             // 
@@ -308,6 +309,7 @@ namespace MassEffectModder
             this.splitContainer1.ResumeLayout(false);
             this.splitContainer2.Panel1.ResumeLayout(false);
             this.splitContainer2.Panel2.ResumeLayout(false);
+            this.splitContainer2.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPreview)).EndInit();
