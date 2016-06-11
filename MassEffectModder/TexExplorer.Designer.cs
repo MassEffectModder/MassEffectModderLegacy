@@ -90,13 +90,14 @@ namespace MassEffectModder
             this.replaceTextureToolStripMenuItem,
             this.viewToolStripMenuItem});
             this.contextMenuStripTextures.Name = "contextMenuStripTextures";
-            this.contextMenuStripTextures.Size = new System.Drawing.Size(157, 48);
+            this.contextMenuStripTextures.Size = new System.Drawing.Size(157, 70);
             // 
             // replaceTextureToolStripMenuItem
             // 
             this.replaceTextureToolStripMenuItem.Name = "replaceTextureToolStripMenuItem";
             this.replaceTextureToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.replaceTextureToolStripMenuItem.Text = "Replace Texture";
+            this.replaceTextureToolStripMenuItem.Click += new System.EventHandler(this.replaceTextureToolStripMenuItem_Click);
             // 
             // viewToolStripMenuItem
             // 

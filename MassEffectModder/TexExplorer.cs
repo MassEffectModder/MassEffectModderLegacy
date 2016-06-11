@@ -24,9 +24,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using StreamHelpers;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
 using AmaroK86.ImageFormat;
 
 namespace MassEffectModder
@@ -540,6 +537,30 @@ namespace MassEffectModder
                     }
                 }
             }
+        }
+
+        private void replaceTextureToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listViewTextures.SelectedItems.Count == 0)
+                return;
+
+            OpenFileDialog selectDDS = new OpenFileDialog();
+            selectDDS.Title = "Please select DDS texture file";
+            selectDDS.Filter = "DDS file|*.dds";
+            if (selectDDS.ShowDialog() != DialogResult.OK)
+                return;
+
+            string filename = selectDDS.FileName;
+            DDSImage image = new DDSImage(filename);
+
+            ListViewItem item = listViewTextures.FocusedItem;
+            int index = Convert.ToInt32(item.Name);
+            PackageTreeNode node = (PackageTreeNode)treeViewPackages.SelectedNode;
+            MatchedTexture nodeTexture = node.textures[index].list[0];
+            Package package = new Package(GameData.GamePath + nodeTexture.path);
+            byte[] data = package.getExportData(nodeTexture.exportID);
+            Texture texture = new Texture(package, nodeTexture.exportID, data, this);
+
         }
     }
 }
