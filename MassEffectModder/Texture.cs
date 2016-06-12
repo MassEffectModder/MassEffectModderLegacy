@@ -61,7 +61,7 @@ namespace MassEffectModder
         byte[] mipMapData = null;
         public string packageName;
 
-        public Texture(Package package, int exportId, byte[] data, TexExplorer tex)
+        public Texture(Package package, int exportId, byte[] data)
         {
             properties = new TexProperty(package, data);
 #if false // dump properties info

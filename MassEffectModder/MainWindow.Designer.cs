@@ -95,21 +95,21 @@ namespace MassEffectModder
             // massEffect1ToolStripMenuItem
             // 
             this.massEffect1ToolStripMenuItem.Name = "massEffect1ToolStripMenuItem";
-            this.massEffect1ToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.massEffect1ToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.massEffect1ToolStripMenuItem.Text = "Texture Explorer";
             this.massEffect1ToolStripMenuItem.Click += new System.EventHandler(this.massEffect1ToolStripMenuItem_Click);
             // 
             // repackME1ToolStripMenuItem
             // 
             this.repackME1ToolStripMenuItem.Name = "repackME1ToolStripMenuItem";
-            this.repackME1ToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.repackME1ToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.repackME1ToolStripMenuItem.Text = "Repack (Zlib)";
             this.repackME1ToolStripMenuItem.Click += new System.EventHandler(this.repackME1ToolStripMenuItem_Click);
             // 
             // updateME1ConfigToolStripMenuItem
             // 
             this.updateME1ConfigToolStripMenuItem.Name = "updateME1ConfigToolStripMenuItem";
-            this.updateME1ConfigToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.updateME1ConfigToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.updateME1ConfigToolStripMenuItem.Text = "Update LOD Settings";
             this.updateME1ConfigToolStripMenuItem.Click += new System.EventHandler(this.updateME1ConfigToolStripMenuItem_Click);
             // 
@@ -127,28 +127,28 @@ namespace MassEffectModder
             // massEffect2ToolStripMenuItem
             // 
             this.massEffect2ToolStripMenuItem.Name = "massEffect2ToolStripMenuItem";
-            this.massEffect2ToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.massEffect2ToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.massEffect2ToolStripMenuItem.Text = "Texture Explorer";
             this.massEffect2ToolStripMenuItem.Click += new System.EventHandler(this.massEffect2ToolStripMenuItem_Click);
             // 
             // repackME2ToolStripMenuItem
             // 
             this.repackME2ToolStripMenuItem.Name = "repackME2ToolStripMenuItem";
-            this.repackME2ToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.repackME2ToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.repackME2ToolStripMenuItem.Text = "Repack (Zlib)";
             this.repackME2ToolStripMenuItem.Click += new System.EventHandler(this.repackME2ToolStripMenuItem_Click);
             // 
             // updateME2DLCCacheToolStripMenuItem
             // 
             this.updateME2DLCCacheToolStripMenuItem.Name = "updateME2DLCCacheToolStripMenuItem";
-            this.updateME2DLCCacheToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.updateME2DLCCacheToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.updateME2DLCCacheToolStripMenuItem.Text = "Update DLC Cache";
             this.updateME2DLCCacheToolStripMenuItem.Click += new System.EventHandler(this.updateME2DLCCacheToolStripMenuItem_Click);
             // 
             // updateME2ConfigToolStripMenuItem
             // 
             this.updateME2ConfigToolStripMenuItem.Name = "updateME2ConfigToolStripMenuItem";
-            this.updateME2ConfigToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.updateME2ConfigToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.updateME2ConfigToolStripMenuItem.Text = "Update LOD Settings";
             this.updateME2ConfigToolStripMenuItem.Click += new System.EventHandler(this.updateME2ConfigToolStripMenuItem_Click);
             // 

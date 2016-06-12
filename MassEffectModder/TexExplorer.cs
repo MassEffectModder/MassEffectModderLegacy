@@ -25,6 +25,7 @@ using System.IO;
 using System.Windows.Forms;
 using StreamHelpers;
 using AmaroK86.ImageFormat;
+using System.Linq;
 
 namespace MassEffectModder
 {
@@ -97,6 +98,7 @@ namespace MassEffectModder
             sTARTModdingToolStripMenuItem.Enabled = false;
             eNDModdingToolStripMenuItem.Enabled = false;
             searchToolStripMenuItem.Enabled = false;
+            removeEmptyMipmapsToolStripMenuItem.Enabled = false;
             listViewResults.Hide();
             listViewTextures.Clear();
             richTextBoxInfo.Clear();
@@ -232,6 +234,7 @@ namespace MassEffectModder
 
             sTARTModdingToolStripMenuItem.Enabled = true;
             searchToolStripMenuItem.Enabled = true;
+            removeEmptyMipmapsToolStripMenuItem.Enabled = true;
         }
 
         void sortPackagesME1()
@@ -263,7 +266,7 @@ namespace MassEffectModder
                     id == package.nameIdLightMapTexture2D ||
                     id == package.nameIdTextureFlipBook)
                 {
-                    Texture texture = new Texture(package, i, package.getExportData(i), this);
+                    Texture texture = new Texture(package, i, package.getExportData(i));
                     if (!texture.hasImageData())
                         continue;
 
@@ -384,7 +387,7 @@ namespace MassEffectModder
             MatchedTexture nodeTexture = node.textures[index].list[0];
             Package package = new Package(GameData.GamePath + nodeTexture.path);
             byte[] data = package.getExportData(nodeTexture.exportID);
-            Texture texture = new Texture(package, nodeTexture.exportID, data, this);
+            Texture texture = new Texture(package, nodeTexture.exportID, data);
             if (previewShow)
             {
                 byte[] textureData = texture.getImageData();
@@ -559,8 +562,50 @@ namespace MassEffectModder
             MatchedTexture nodeTexture = node.textures[index].list[0];
             Package package = new Package(GameData.GamePath + nodeTexture.path);
             byte[] data = package.getExportData(nodeTexture.exportID);
-            Texture texture = new Texture(package, nodeTexture.exportID, data, this);
+            Texture texture = new Texture(package, nodeTexture.exportID, data);
 
+        }
+
+        private void removeEmptyMipmapsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show("Are you sure to proceed?", "Remove empty mipmaps", MessageBoxButtons.YesNo);
+            if (result == DialogResult.No)
+                return;
+
+            _mainWindow.GetPackages(gameData);
+            for (int i = 0; i < _packageFiles.Count; i++)
+            {
+                _mainWindow.updateStatusLabel("Remove empty mipmaps, file " + (i + 1) + " of " + _packageFiles.Count);
+                var package = new Package(_packageFiles[i]);
+                for (int l = 0; l < package.exportsTable.Count; l++)
+                {
+                    int id = package.getClassNameId(package.exportsTable[l].classId);
+                    if (id == package.nameIdTexture2D ||
+                        id == package.nameIdLightMapTexture2D ||
+                        id == package.nameIdTextureFlipBook)
+                    {
+                        Texture texture = new Texture(package, l, package.getExportData(l));
+                        if (!texture.hasImageData() ||
+                            !texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty))
+                        {
+                            continue;
+                        }
+                        do
+                        {
+                            texture.mipMapsList.Remove(texture.mipMapsList.First(s => s.storageType == Texture.StorageTypes.empty));
+                        } while (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty));
+                        texture.properties.setIntValue("SizeX", texture.mipMapsList.First().width);
+                        texture.properties.setIntValue("SizeY", texture.mipMapsList.First().height);
+                        texture.properties.setIntValue("MipTailBaseIdx", texture.mipMapsList.Count() - 1);
+                        byte[] exportData = new byte[package.getExportData(l).Length];
+                        byte[] propData = texture.properties.toArray();
+                        Buffer.BlockCopy(propData, 0, exportData, 0, propData.Length);
+
+                    }
+                }
+                //package.SaveToFile();
+            }
+            _mainWindow.updateStatusLabel("Done");
         }
     }
 }
