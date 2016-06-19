@@ -590,7 +590,8 @@ namespace MassEffectModder
                         id == package.nameIdLightMapTexture2D ||
                         id == package.nameIdTextureFlipBook)
                     {
-                        Texture texture = new Texture(package, l, package.getExportData(l));
+                        byte[] origData = package.getExportData(l);
+                        Texture texture = new Texture(package, l, origData);
                         if (!texture.hasImageData() ||
                             !texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty))
                         {
@@ -603,9 +604,9 @@ namespace MassEffectModder
                         texture.properties.setIntValue("SizeX", texture.mipMapsList.First().width);
                         texture.properties.setIntValue("SizeY", texture.mipMapsList.First().height);
                         texture.properties.setIntValue("MipTailBaseIdx", texture.mipMapsList.Count() - 1);
-                        byte[] exportData = new byte[package.getExportData(l).Length];
+                        byte[] newData = new byte[origData.Length];
                         byte[] propData = texture.properties.toArray();
-                        Buffer.BlockCopy(propData, 0, exportData, 0, propData.Length);
+                        Buffer.BlockCopy(propData, 0, newData, 0, propData.Length);
 
                     }
                 }
