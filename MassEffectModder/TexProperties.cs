@@ -50,7 +50,7 @@ namespace MassEffectModder
         {
             package = pkg;
             texPropertyList = new List<TexPropertyEntry>();
-            Buffer.BlockCopy(data, 0, BitConverter.GetBytes(headerData), 0, sizeof(uint));
+            headerData = BitConverter.ToUInt32(data, 0);
             getProperty(data, 4);
         }
 
