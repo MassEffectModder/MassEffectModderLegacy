@@ -92,13 +92,18 @@ namespace MassEffectModder
             gameData = new GameData(_gameSelected, _configIni);
         }
 
+        public void EnableMenuOptions(bool enable)
+        {
+            sTARTModdingToolStripMenuItem.Enabled = enable;
+            eNDModdingToolStripMenuItem.Enabled = enable;
+            searchToolStripMenuItem.Enabled = enable;
+            removeEmptyMipmapsToolStripMenuItem.Enabled = enable;
+        }
+
         public void Run()
         {
             _mainWindow.updateStatusLabel("");
-            sTARTModdingToolStripMenuItem.Enabled = false;
-            eNDModdingToolStripMenuItem.Enabled = false;
-            searchToolStripMenuItem.Enabled = false;
-            removeEmptyMipmapsToolStripMenuItem.Enabled = false;
+            EnableMenuOptions(false);
             listViewResults.Hide();
             listViewTextures.Clear();
             richTextBoxInfo.Clear();
@@ -232,9 +237,8 @@ namespace MassEffectModder
             treeViewPackages.EndUpdate();
             treeViewPackages.Nodes[0].Expand();
 
-            sTARTModdingToolStripMenuItem.Enabled = true;
-            searchToolStripMenuItem.Enabled = true;
-            removeEmptyMipmapsToolStripMenuItem.Enabled = true;
+            EnableMenuOptions(true);
+            eNDModdingToolStripMenuItem.Enabled = false;
         }
 
         void sortPackagesME1()
@@ -572,6 +576,8 @@ namespace MassEffectModder
             if (result == DialogResult.No)
                 return;
 
+            EnableMenuOptions(false);
+
             _mainWindow.GetPackages(gameData);
             for (int i = 0; i < _packageFiles.Count; i++)
             {
@@ -605,6 +611,8 @@ namespace MassEffectModder
                 }
                 //package.SaveToFile();
             }
+            EnableMenuOptions(true);
+            eNDModdingToolStripMenuItem.Enabled = false;
             _mainWindow.updateStatusLabel("Done");
         }
     }
