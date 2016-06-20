@@ -607,9 +607,16 @@ namespace MassEffectModder
                         texture.properties.setIntValue("SizeX", texture.mipMapsList.First().width);
                         texture.properties.setIntValue("SizeY", texture.mipMapsList.First().height);
                         texture.properties.setIntValue("MipTailBaseIdx", texture.mipMapsList.Count() - 1);
-                        byte[] newData = new byte[origData.Length];
+
+                        MemoryStream newData = new MemoryStream();
                         byte[] propData = texture.properties.toArray();
-                        Buffer.BlockCopy(propData, 0, newData, 0, propData.Length);
+                        newData.WriteFromBuffer(propData);
+                        if (GameData.gameType != MeType.ME3_TYPE)
+                        {
+                            for (int r = 0; r < 12; r++)
+                                newData.WriteByte(0);
+                            newData.WriteUInt32(package.exportsTable[l].dataOffset + (uint)texture.properties.propertyEndOffset + 12 + 4);
+                        }
 
                     }
                 }
