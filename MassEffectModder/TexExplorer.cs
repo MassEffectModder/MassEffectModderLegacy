@@ -98,6 +98,9 @@ namespace MassEffectModder
             eNDModdingToolStripMenuItem.Enabled = enable;
             searchToolStripMenuItem.Enabled = enable;
             removeEmptyMipmapsToolStripMenuItem.Enabled = enable;
+            treeViewPackages.Enabled = enable;
+            listViewResults.Enabled = enable;
+            listViewTextures.Enabled = enable;
         }
 
         public void Run()
