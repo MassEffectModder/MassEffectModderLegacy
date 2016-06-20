@@ -301,11 +301,11 @@ namespace MassEffectModder
             for (int i = 0; i < texPropertyList.Count; i++)
             {
                 mem.WriteInt32(package.getNameId(texPropertyList[i].name));
-                mem.SkipInt32();
+                mem.WriteInt32(0); // skip
                 if (texPropertyList[i].name == "None")
                     break;
                 mem.WriteInt32(package.getNameId(texPropertyList[i].type));
-                mem.SkipInt32();
+                mem.WriteInt32(0); // skip
                 int size = texPropertyList[i].valueRaw.Length;
                 switch (texPropertyList[i].type)
                 {
