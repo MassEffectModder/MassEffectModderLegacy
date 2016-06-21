@@ -610,14 +610,8 @@ namespace MassEffectModder
                         texture.properties.setIntValue("MipTailBaseIdx", texture.mipMapsList.Count() - 1);
 
                         MemoryStream newData = new MemoryStream();
-                        byte[] propData = texture.properties.toArray();
-                        newData.WriteFromBuffer(propData);
-                        if (GameData.gameType != MeType.ME3_TYPE)
-                        {
-                            for (int r = 0; r < 12; r++)
-                                newData.WriteByte(0);
-                            newData.WriteUInt32(package.exportsTable[l].dataOffset + (uint)texture.properties.propertyEndOffset + 12 + 4);
-                        }
+                        newData.WriteFromBuffer(texture.properties.toArray());
+                        newData.WriteFromBuffer(texture.toArray(package.exportsTable[l].dataOffset + (uint)newData.Position));
 
                     }
                 }
