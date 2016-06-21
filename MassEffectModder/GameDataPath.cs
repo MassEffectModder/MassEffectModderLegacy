@@ -302,5 +302,10 @@ namespace MassEffectModder
             }
             return true;
         }
+
+        void ClosePackagesList()
+        {
+            packageFiles.Clear();
+        }
     }
 }

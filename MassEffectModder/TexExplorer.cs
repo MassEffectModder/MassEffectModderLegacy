@@ -339,6 +339,7 @@ namespace MassEffectModder
 
         private void TexExplorer_FormClosed(object sender, FormClosedEventArgs e)
         {
+            _packageFiles.Clear();
             _mainWindow.enableGameDataMenu(true);
         }
 
