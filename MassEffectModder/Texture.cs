@@ -50,7 +50,7 @@ namespace MassEffectModder
             public StorageTypes storageType;
             public int uncompressedSize;
             public int compressedSize;
-            public int dataOffset;
+            public uint dataOffset;
             public int internalOffset;
             public int width;
             public int height;
@@ -132,7 +132,7 @@ namespace MassEffectModder
                 mipmap.storageType = (StorageTypes)textureData.ReadInt32();
                 mipmap.uncompressedSize = textureData.ReadInt32();
                 mipmap.compressedSize = textureData.ReadInt32();
-                mipmap.dataOffset = textureData.ReadInt32();
+                mipmap.dataOffset = textureData.ReadUInt32();
                 if (mipmap.storageType == StorageTypes.pccUnc)
                 {
                     mipmap.internalOffset = (int)textureData.Position; //bmp.dataOffset = (int)textureData.Position + (int)package.exportsTable[exportId].dataOffset + properties.propertyEndOffset;
@@ -295,6 +295,46 @@ namespace MassEffectModder
                     }
             }
             return mipMapData;
+        }
+        public byte[] toArray(uint pccTextureDataOffset)
+        {
+            MemoryStream newData = new MemoryStream();
+            if (GameData.gameType != MeType.ME3_TYPE)
+            {
+                for (int r = 0; r < 12; r++)
+                    newData.WriteByte(0);
+                newData.WriteUInt32(pccTextureDataOffset + 12 + 4);
+            }
+            newData.WriteInt32(mipMapsList.Count());
+            for (int l = 0; l < mipMapsList.Count(); l++)
+            {
+                MipMap mipmap = mipMapsList[l];
+                newData.WriteInt32((int)mipmap.storageType);
+                newData.WriteInt32(mipmap.uncompressedSize);
+                newData.WriteInt32(mipmap.compressedSize);
+                if (mipmap.storageType == StorageTypes.pccUnc)
+                {
+                    mipmap.dataOffset = (uint)newData.Position + pccTextureDataOffset + 4;
+                    newData.WriteUInt32(mipmap.dataOffset);
+                    textureData.JumpTo(mipmap.internalOffset);
+                    newData.WriteFromBuffer(textureData.ReadToBuffer(mipmap.uncompressedSize));
+                }
+                else if (mipmap.storageType == StorageTypes.pccCpr)
+                {
+                    mipmap.dataOffset = (uint)newData.Position + pccTextureDataOffset + 4;
+                    newData.WriteUInt32(mipmap.dataOffset);
+                    textureData.JumpTo(mipmap.internalOffset);
+                    newData.WriteFromBuffer(textureData.ReadToBuffer(mipmap.compressedSize));
+                }
+                else
+                {
+                    newData.WriteUInt32(mipmap.dataOffset);
+                }
+                newData.WriteInt32(mipmap.width);
+                newData.WriteInt32(mipmap.height);
+            }
+
+            return newData.ToArray();
         }
 
         public void Dispose()
