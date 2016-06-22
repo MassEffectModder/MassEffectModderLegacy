@@ -612,7 +612,12 @@ namespace MassEffectModder
                         MemoryStream newData = new MemoryStream();
                         newData.WriteFromBuffer(texture.properties.toArray());
                         newData.WriteFromBuffer(texture.toArray(package.exportsTable[l].dataOffset + (uint)newData.Position));
-
+                        uint restCount = (uint)(origData.Length - newData.Length);
+                        for (int r = 0; r < restCount; r++)
+                        {
+                            newData.WriteByte(0); // fill rest export data with 0
+                        }
+                        package.setExportData(l, newData.ToArray());
                     }
                 }
                 //package.SaveToFile();
