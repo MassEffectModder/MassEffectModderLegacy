@@ -51,7 +51,7 @@ namespace MassEffectModder
             public int uncompressedSize;
             public int compressedSize;
             public uint dataOffset;
-            public int internalOffset;
+            public uint internalOffset;
             public int width;
             public int height;
         }
@@ -135,12 +135,12 @@ namespace MassEffectModder
                 mipmap.dataOffset = textureData.ReadUInt32();
                 if (mipmap.storageType == StorageTypes.pccUnc)
                 {
-                    mipmap.internalOffset = (int)textureData.Position; //bmp.dataOffset = (int)textureData.Position + (int)package.exportsTable[exportId].dataOffset + properties.propertyEndOffset;
+                    mipmap.internalOffset = (uint)textureData.Position;
                     textureData.Skip(mipmap.uncompressedSize);
                 }
                 if (mipmap.storageType == StorageTypes.pccCpr)
                 {
-                    mipmap.internalOffset = (int)textureData.Position; //bmp.dataOffset = (int)textureData.Position + (int)package.exportsTable[exportId].dataOffset + properties.propertyEndOffset;
+                    mipmap.internalOffset = (uint)textureData.Position;
                     textureData.Skip(mipmap.compressedSize);
                 }
                 mipmap.width = textureData.ReadInt32();
