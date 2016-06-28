@@ -1,7 +1,7 @@
 ﻿/*
  * C# Stream Helpers
  *
- * Copyright (C) 2015 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2015-2016 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -183,6 +183,17 @@ namespace StreamHelpers
         public static void WriteInt16(this Stream stream, Int16 data)
         {
             stream.Write(BitConverter.GetBytes(data), 0, sizeof(Int16));
+        }
+
+        public static void WriteZeros(this Stream stream, uint count)
+        {
+            for (int i = 0; i < count; i++)
+                stream.WriteByte(0);
+        }
+
+        public static void WriteZeros(this Stream stream, int count)
+        {
+            WriteZeros(stream, (uint)count);
         }
 
         public static void Begin(this Stream stream)
