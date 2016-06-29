@@ -88,12 +88,12 @@ namespace StreamHelpers
         public static string ReadStringUnicode(this Stream stream, int count)
         {
             var buffer = stream.ReadToBuffer(count);
-            return Encoding.ASCII.GetString(buffer);
+            return Encoding.Unicode.GetString(buffer);
         }
 
         public static string ReadStringUnicodeNull(this Stream stream, int count)
         {
-            return stream.ReadStringASCII(count).Trim('\0');
+            return stream.ReadStringUnicode(count).Trim('\0');
         }
 
         public static void WriteStringASCII(this Stream stream, string str)
