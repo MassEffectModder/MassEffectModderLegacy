@@ -584,15 +584,17 @@ namespace MassEffectModder
             EnableMenuOptions(false);
 
             _mainWindow.GetPackages(gameData);
+            if (_gameSelected == MeType.ME1_TYPE)
+                sortPackagesME1();
+
             for (int i = 0; i < _packageFiles.Count; i++)
             {
-                _mainWindow.updateStatusLabel("Remove empty mipmaps, file " + (i + 1) + " of " + _packageFiles.Count);
+                _mainWindow.updateStatusLabel("Remove empty mipmaps, package " + (i + 1) + " of " + _packageFiles.Count);
                 var package = new Package(_packageFiles[i]);
                 for (int l = 0; l < package.exportsTable.Count; l++)
                 {
                     int id = package.getClassNameId(package.exportsTable[l].classId);
                     if (id == package.nameIdTexture2D ||
-                        id == package.nameIdLightMapTexture2D ||
                         id == package.nameIdTextureFlipBook)
                     {
                         byte[] origData = package.getExportData(l);
@@ -610,19 +612,45 @@ namespace MassEffectModder
                         texture.properties.setIntValue("SizeY", texture.mipMapsList.First().height);
                         texture.properties.setIntValue("MipTailBaseIdx", texture.mipMapsList.Count() - 1);
 
+                        if (_gameSelected == MeType.ME1_TYPE && package.compressed)
+                        {
+                            if (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extCpr) ||
+                                texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extUnc))
+                            {
+                                string textureName = package.exportsTable[l].objectName;
+                                FoundTexture foundTexName = _textures.Find(s => s.name == textureName && s.packageName == texture.packageName);
+                                Package refPkg = new Package(GameData.GamePath + foundTexName.list[0].path);
+                                int refExportId = foundTexName.list[0].exportID;
+                                byte[] refData = refPkg.getExportData(refExportId);
+                                Texture refTexture = new Texture(refPkg, refExportId, refData);
+
+                                if (texture.mipMapsList.Count != refTexture.mipMapsList.Count)
+                                    throw new Exception("");
+                                for (int t = 0; t < texture.mipMapsList.Count; t++)
+                                {
+                                    Texture.MipMap mipmap = texture.mipMapsList[t];
+                                    if (mipmap.storageType == Texture.StorageTypes.extCpr ||
+                                        mipmap.storageType == Texture.StorageTypes.extUnc)
+                                    {
+                                        mipmap.dataOffset = refPkg.exportsTable[refExportId].dataOffset + (uint)refTexture.properties.propertyEndOffset + refTexture.mipMapsList[t].internalOffset;
+                                        texture.mipMapsList[t] = mipmap;
+                                    }
+                                }
+                            }
+                        }
+
                         MemoryStream newData = new MemoryStream();
                         newData.WriteFromBuffer(texture.properties.toArray());
                         newData.WriteFromBuffer(texture.toArray(package.exportsTable[l].dataOffset + (uint)newData.Position));
-                        uint restCount = (uint)(origData.Length - newData.Length);
-                        for (int r = 0; r < restCount; r++)
-                        {
-                            newData.WriteByte(0); // fill rest export data with 0
-                        }
                         package.setExportData(l, newData.ToArray());
                     }
                 }
-                //package.SaveToFile();
+                package.SaveToFile();
             }
+
+            if (_gameSelected == MeType.ME3_TYPE)
+                _mainWindow.updateAllTOCBinEntries();
+
             EnableMenuOptions(true);
             eNDModdingToolStripMenuItem.Enabled = false;
             _mainWindow.updateStatusLabel("Done");
