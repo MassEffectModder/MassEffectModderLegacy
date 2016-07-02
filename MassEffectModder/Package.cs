@@ -25,6 +25,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using StreamHelpers;
+using System.Linq;
 
 namespace MassEffectModder
 {
@@ -73,9 +74,10 @@ namespace MassEffectModder
         uint numChunks;
         uint someTag;
         long dataOffset;
+        uint exportsEndOffset = 0;
         public CompressionType compressionType;
         public FileStream packageFile;
-        MemoryTributary packageData;
+        MemoryStream packageData;
         List<Chunk> chunks;
         List<NameEntry> namesTable;
         List<ImportEntry> importsTable;
@@ -122,6 +124,8 @@ namespace MassEffectModder
         }
         public struct ExportEntry
         {
+            const int DataOffsetSize = 32;
+            const int DataOffsetOffset = 36;
             public int classId;
             public string className;
             public int classParentId;
@@ -130,8 +134,28 @@ namespace MassEffectModder
             public string objectName;
             public int suffixNameId;
             public int archTypeNameId;
-            public uint dataSize;
-            public uint dataOffset;
+            public uint dataSize
+            {
+                get
+                {
+                    return BitConverter.ToUInt32(raw, DataOffsetSize);
+                }
+                set
+                {
+                    Buffer.BlockCopy(BitConverter.GetBytes(value), 0, raw, DataOffsetSize, sizeof(uint));
+                }
+            }
+            public uint dataOffset
+            {
+                get
+                {
+                    return BitConverter.ToUInt32(raw, DataOffsetOffset);
+                }
+                set
+                {
+                    Buffer.BlockCopy(BitConverter.GetBytes(value), 0, raw, DataOffsetOffset, sizeof(uint));
+                }
+            }
             public ulong objectFlags;
             public uint exportflags;
             public uint packageflags;
@@ -338,7 +362,7 @@ namespace MassEffectModder
             if (!File.Exists(filename))
                 throw new Exception("File not found: " + filename);
 
-            packageData = new MemoryTributary();
+            packageData = new MemoryStream();
             packageFile = new FileStream(filename, FileMode.Open, FileAccess.Read);
             packageHeader = packageFile.ReadToBuffer(packageHeaderSize);
             if (tag != packageTag)
@@ -386,21 +410,9 @@ namespace MassEffectModder
 
             uint length = endOfTablesOffset - (uint)dataOffset;
             packageData.JumpTo(dataOffset);
-            MemoryStream data = new MemoryStream();
-            getData((uint)dataOffset, length, data);
-            data.Begin();
-            packageData.WriteFromStream(data, data.Length);
+            getData((uint)dataOffset, length, packageData);
 
-            if (endOfTablesOffset < namesOffset)
-            {
-                if (compressed) // allowed only uncompressed
-                    throw new Exception();
-                loadNames(packageFile);
-            }
-            else
-            {
-                loadNames(packageData);
-            }
+            loadNames(packageData);
             loadImports(packageData);
             loadExports(packageData);
             loadImportsNames();
@@ -505,8 +517,12 @@ namespace MassEffectModder
         public void setExportData(int id, byte[] data)
         {
             ExportEntry export = exportsTable[id];
-            if (export.dataSize != (uint)data.Length)
-                throw new Exception();
+            if (data.Length > export.dataSize)
+            {
+                export.dataOffset = exportsEndOffset;
+                exportsEndOffset = export.dataOffset + (uint)data.Length;
+            }
+            export.dataSize = (uint)data.Length;
             export.newData = data;
             exportsTable[id] = export;
         }
@@ -687,8 +703,8 @@ namespace MassEffectModder
                 entry.suffixNameId = input.ReadInt32();
                 input.SkipInt32();
                 entry.objectFlags = input.ReadUInt64();
-                entry.dataSize = input.ReadUInt32();
-                entry.dataOffset = input.ReadUInt32();
+                input.SkipInt32(); // dataSize
+                input.SkipInt32(); // dataOffset
                 if (version != packageFileVersionME3)
                 {
                     count = input.ReadUInt32();
@@ -703,6 +719,9 @@ namespace MassEffectModder
                 var len = input.Position - start;
                 input.JumpTo(start);
                 entry.raw = input.ReadToBuffer((int)len);
+
+                if ((entry.dataOffset + entry.dataSize) > exportsEndOffset)
+                    exportsEndOffset = entry.dataOffset + entry.dataSize;
 
                 exportsTable.Add(entry);
             }
@@ -730,32 +749,39 @@ namespace MassEffectModder
                 return false;
 
             MemoryStream tempOutput = new MemoryStream();
-            packageFile.Begin();
-            tempOutput.WriteFromStream(packageFile, endOfTablesOffset);
+
+            if (!compressed)
+            {
+                packageFile.Begin();
+                tempOutput.WriteFromStream(packageFile, endOfTablesOffset);
+            }
+            else
+            {
+                packageData.Begin();
+                tempOutput.WriteFromStream(packageData, packageData.Length);
+            }
+
+            List<ExportEntry> sortedExports = exportsTable.OrderBy(s => s.dataOffset).ToList();
 
             for (int i = 0; i < exportsCount; i++)
             {
-                ExportEntry export = exportsTable[i];
+                ExportEntry export = sortedExports[i];
+                uint dataLeft;
+                tempOutput.JumpTo(export.dataOffset);
+                if (i + 1 == exportsCount)
+                    dataLeft = exportsEndOffset - export.dataOffset - export.dataSize;
+                else
+                    dataLeft = sortedExports[i + 1].dataOffset - export.dataOffset - export.dataSize;
                 if (export.newData != null)
                     tempOutput.WriteFromBuffer(export.newData);
                 else
                     getData(export.dataOffset, export.dataSize, tempOutput);
+                tempOutput.WriteZeros(dataLeft);
             }
 
-            if (endOfTablesOffset < namesOffset)
-            {
-                if (compressed) // allowed only uncompressed
-                    throw new Exception();
-                saveNames(tempOutput);
-            }
-
-            compressionType = CompressionType.Zlib; // override compression type to Zlib
-            tempOutput.JumpTo(packageHeader.Length);
-            tempOutput.WriteUInt32((uint)compressionType);
             tempOutput.JumpTo(exportsOffset);
             saveExports(tempOutput);
             packageFile.Close();
-
 
             string filename = packageFile.Name;
             using (FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
@@ -778,22 +804,28 @@ namespace MassEffectModder
                     chunk.uncomprOffset = (uint)dataOffset;
                     for (int i = 0; i < exportsCount; i++)
                     {
-                        ExportEntry export = exportsTable[i];
-                        if (chunk.uncomprSize + export.dataSize > maxChunkSize)
+                        ExportEntry export = sortedExports[i];
+                        uint dataSize;
+                        if (i + 1 == exportsCount)
+                            dataSize = exportsEndOffset - export.dataOffset;
+                        else
+                            dataSize = sortedExports[i + 1].dataOffset - export.dataOffset;
+                        if (chunk.uncomprSize + dataSize > maxChunkSize)
                         {
                             uint offset = chunk.uncomprOffset + chunk.uncomprSize;
                             chunks.Add(chunk);
                             chunk = new Chunk();
-                            chunk.uncomprSize = export.dataSize;
+                            chunk.uncomprSize = dataSize;
                             chunk.uncomprOffset = offset;
                         }
                         else
                         {
-                            chunk.uncomprSize += export.dataSize;
+                            chunk.uncomprSize += dataSize;
                         }
                     }
                     chunks.Add(chunk);
 
+                    compressionType = CompressionType.Zlib; // override compression type to Zlib
                     fs.Write(packageHeader, 0, packageHeader.Length);
                     fs.WriteUInt32((uint)compressionType);
                     fs.WriteUInt32((uint)chunks.Count);
