@@ -230,7 +230,7 @@ namespace MassEffectModder
                 long sizesArrayOffset = dataOffset;
                 for (int i = 0; i < srcFilesList.Count(); i++)
                 {
-                    if (srcFilesList[i].EndsWith(".bik") || srcFilesList[i].EndsWith(".afc") || noCompress)
+                    if (srcFilesList[i].EndsWith(".bik") || srcFilesList[i].EndsWith(".afc"))
                         continue;
                     long fileLen = new FileInfo(srcFilesList[i]).Length;
                     long numBlocks = (fileLen + MaxBlockSize - 1) / MaxBlockSize;
@@ -250,7 +250,7 @@ namespace MassEffectModder
                     file.dataOffset = curDataOffset;
                     file.uncomprSize = fileLen;
                     file.filenameHash = hashList[i];
-                    if (srcFilesList[i].EndsWith(".bik") || srcFilesList[i].EndsWith(".afc") || noCompress)
+                    if (srcFilesList[i].EndsWith(".bik") || srcFilesList[i].EndsWith(".afc"))
                     {
                         outputFile.WriteFromStream(inputFile, fileLen);
                         file.compressedBlockSizesIndex = -1;
@@ -265,7 +265,7 @@ namespace MassEffectModder
                             if (k == (file.numBlocks - 1)) // last block
                                 uncompressedBlockSize = fileLen - (MaxBlockSize * k);
                             byte[] inBuf = inputFile.ReadToBuffer((int)uncompressedBlockSize);
-                            byte[] outBuf = SevenZipHelper.LZMA.Compress(inBuf);
+                            byte[] outBuf = SevenZipHelper.LZMA.Compress(inBuf, noCompress ? 0 : 9);
                             if (outBuf.Length == 0)
                                 throw new Exception();
                             if (outBuf.Length >= (int)MaxBlockSize)
