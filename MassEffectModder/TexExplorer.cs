@@ -271,6 +271,7 @@ namespace MassEffectModder
                 int id = package.getClassNameId(package.exportsTable[i].classId);
                 if (id == package.nameIdTexture2D ||
                     id == package.nameIdLightMapTexture2D ||
+                    id == package.nameIdShadowMapTexture2D ||
                     id == package.nameIdTextureFlipBook)
                 {
                     Texture texture = new Texture(package, i, package.getExportData(i));

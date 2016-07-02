@@ -87,6 +87,7 @@ namespace MassEffectModder
         MemoryStream chunkCache;
         public int nameIdTexture2D = -1;
         public int nameIdLightMapTexture2D = -1;
+        public int nameIdShadowMapTexture2D = -1;
         public int nameIdTextureFlipBook = -1;
 
         const int SizeOfChunkBlock = 8;
@@ -576,6 +577,8 @@ namespace MassEffectModder
                     nameIdTexture2D = i;
                 else if (nameIdLightMapTexture2D == -1 && entry.name == "LightMapTexture2D")
                     nameIdLightMapTexture2D = i;
+                else if (nameIdShadowMapTexture2D == -1 && entry.name == "ShadowMapTexture2D")
+                    nameIdShadowMapTexture2D = i;
                 else if (nameIdTextureFlipBook == -1 && entry.name == "TextureFlipBook")
                     nameIdTextureFlipBook = i;
 
