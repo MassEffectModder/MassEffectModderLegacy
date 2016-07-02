@@ -301,8 +301,7 @@ namespace MassEffectModder
             MemoryStream newData = new MemoryStream();
             if (GameData.gameType != MeType.ME3_TYPE)
             {
-                for (int r = 0; r < 12; r++)
-                    newData.WriteByte(0);
+                newData.WriteZeros(12);
                 newData.WriteUInt32(pccTextureDataOffset + 12 + 4);
             }
             newData.WriteInt32(mipMapsList.Count());
