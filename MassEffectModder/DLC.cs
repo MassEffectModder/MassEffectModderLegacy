@@ -221,6 +221,7 @@ namespace MassEffectModder
             }
             tocFile.saveToFile(srcFilesList[indexTOC]);
 
+            Directory.CreateDirectory(Path.GetDirectoryName(outPath));
             using (FileStream outputFile = new FileStream(outPath, FileMode.Create, FileAccess.Write))
             {
                 long numBlockSizes = 0;
