@@ -60,6 +60,7 @@ namespace MassEffectModder
         public TexProperty properties;
         byte[] mipMapData = null;
         public string packageName;
+        byte[] restOfData;
 
         public Texture(Package package, int exportId, byte[] data)
         {
@@ -146,6 +147,12 @@ namespace MassEffectModder
                 mipmap.width = textureData.ReadInt32();
                 mipmap.height = textureData.ReadInt32();
                 mipMapsList.Add(mipmap);
+            }
+
+            if (GameData.gameType == MeType.ME1_TYPE)
+            {
+                textureData.Seek(-4, SeekOrigin.End);
+                restOfData = textureData.ReadToBuffer(4);
             }
 #if false // dump mipmaps info
             using (FileStream file = new FileStream("Textures.txt", FileMode.Append))
@@ -331,6 +338,11 @@ namespace MassEffectModder
                 }
                 newData.WriteInt32(mipmap.width);
                 newData.WriteInt32(mipmap.height);
+            }
+
+            if (GameData.gameType == MeType.ME1_TYPE)
+            {
+                newData.WriteFromBuffer(restOfData);
             }
 
             return newData.ToArray();
