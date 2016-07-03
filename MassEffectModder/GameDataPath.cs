@@ -281,6 +281,7 @@ namespace MassEffectModder
                         StringComparison.OrdinalIgnoreCase) ||
                         s.EndsWith(".u", StringComparison.OrdinalIgnoreCase) ||
                         s.EndsWith(".sfm", StringComparison.OrdinalIgnoreCase)));
+                packageFiles.RemoveAll(s => s.Contains("LocalShaderCache-PC-D3D-SM3.upk"));
                 packageFiles.RemoveAll(s => s.Contains("RefShaderCache-PC-D3D-SM3.upk"));
             }
             else if (gameType == MeType.ME2_TYPE)
