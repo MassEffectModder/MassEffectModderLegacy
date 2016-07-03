@@ -174,7 +174,7 @@ namespace MassEffectModder
         private void repackME2ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             enableGameDataMenu(false);
-            repackME12(MeType.ME1_TYPE);
+            repackME12(MeType.ME2_TYPE);
             enableGameDataMenu(true);
         }
 
