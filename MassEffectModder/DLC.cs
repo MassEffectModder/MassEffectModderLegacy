@@ -217,7 +217,7 @@ namespace MassEffectModder
             for (int i = 0; i < srcFilesOrg.Count(); i++)
             {
                 string filename = srcFilesOrg[i].Substring(pos).Replace('/', '\\');
-                tocFile.updateFile(filename, srcFilesList[i]);
+                tocFile.updateFile(filename, srcFilesList[i], false);
             }
             tocFile.saveToFile(srcFilesList[indexTOC]);
 
