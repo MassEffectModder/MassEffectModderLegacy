@@ -57,7 +57,6 @@ namespace MassEffectModder
             this.toolStripMenuME2 = new System.Windows.Forms.ToolStripMenuItem();
             this.massEffect2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.repackME2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.updateME2DLCCacheToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updateME2ConfigToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuME3 = new System.Windows.Forms.ToolStripMenuItem();
             this.massEffect3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -118,7 +117,6 @@ namespace MassEffectModder
             this.toolStripMenuME2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.massEffect2ToolStripMenuItem,
             this.repackME2ToolStripMenuItem,
-            this.updateME2DLCCacheToolStripMenuItem,
             this.updateME2ConfigToolStripMenuItem});
             this.toolStripMenuME2.Name = "toolStripMenuME2";
             this.toolStripMenuME2.Size = new System.Drawing.Size(88, 20);
@@ -137,13 +135,6 @@ namespace MassEffectModder
             this.repackME2ToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.repackME2ToolStripMenuItem.Text = "Repack (Zlib)";
             this.repackME2ToolStripMenuItem.Click += new System.EventHandler(this.repackME2ToolStripMenuItem_Click);
-            // 
-            // updateME2DLCCacheToolStripMenuItem
-            // 
-            this.updateME2DLCCacheToolStripMenuItem.Name = "updateME2DLCCacheToolStripMenuItem";
-            this.updateME2DLCCacheToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
-            this.updateME2DLCCacheToolStripMenuItem.Text = "Update DLC Cache";
-            this.updateME2DLCCacheToolStripMenuItem.Click += new System.EventHandler(this.updateME2DLCCacheToolStripMenuItem_Click);
             // 
             // updateME2ConfigToolStripMenuItem
             // 
@@ -246,7 +237,6 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripMenuItem updateME1ConfigToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem repackME1ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem repackME2ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem updateME2DLCCacheToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem extractME3DLCPackagesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem packME3DLCPackagesUncompressedToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem packME3DLCPackagesLZMAToolStripMenuItem;

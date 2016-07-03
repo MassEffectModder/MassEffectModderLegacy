@@ -177,17 +177,6 @@ namespace MassEffectModder
             repackME12(MeType.ME2_TYPE);
             enableGameDataMenu(true);
         }
-
-        private void updateME2DLCCacheToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            enableGameDataMenu(false);
-            GameData gameData = new GameData(MeType.ME2_TYPE, _configIni);
-            ME2DLC dlc = new ME2DLC();
-            dlc.updateChecksums(gameData);
-            updateStatusLabel("Done");
-            enableGameDataMenu(true);
-        }
-
         private void updateME2ConfigToolStripMenuItem_Click(object sender, EventArgs e)
         {
             enableGameDataMenu(false);
