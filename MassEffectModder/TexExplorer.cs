@@ -500,7 +500,6 @@ namespace MassEffectModder
         {
             updateViewFromListView();
         }
-
         private void byNameToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string name = Microsoft.VisualBasic.Interaction.InputBox("Please enter texture name", "", "", 0, 0);

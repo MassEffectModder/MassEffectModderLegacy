@@ -229,7 +229,7 @@ namespace MassEffectModder
                 ME3DLC dlc = new ME3DLC();
                 updateStatusLabel("SFAR unpacking " + (i + 1) + " of " + sfarFiles.Count);
                 Application.DoEvents();
-                dlc.extract(sfarFiles[i], outPath, DLCname);
+                dlc.extract(sfarFiles[i], outPath);
             }
             updateStatusLabel("Done");
             enableGameDataMenu(true);

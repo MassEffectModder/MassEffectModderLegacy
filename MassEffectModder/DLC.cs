@@ -58,7 +58,7 @@ namespace MassEffectModder
             }
         }
 
-        public void extract(string filename, string outPath, string DLCName)
+        public void extract(string filename, string outPath)
         {
             if (!File.Exists(filename))
                 throw new Exception("File not found: " + filename);
