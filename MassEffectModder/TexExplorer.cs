@@ -589,6 +589,7 @@ namespace MassEffectModder
 
             for (int i = 0; i < _packageFiles.Count; i++)
             {
+                bool modified = false;
                 _mainWindow.updateStatusLabel("Remove empty mipmaps, package " + (i + 1) + " of " + _packageFiles.Count);
                 var package = new Package(_packageFiles[i]);
                 for (int l = 0; l < package.exportsTable.Count; l++)
@@ -643,13 +644,13 @@ namespace MassEffectModder
                         newData.WriteFromBuffer(texture.properties.toArray());
                         newData.WriteFromBuffer(texture.toArray(package.exportsTable[l].dataOffset + (uint)newData.Position));
                         package.setExportData(l, newData.ToArray());
+                        modified = true;
                     }
                 }
+                if (_gameSelected == MeType.ME3_TYPE && !modified)
+                    continue;
                 package.SaveToFile();
             }
-
-            if (_gameSelected == MeType.ME3_TYPE)
-                _mainWindow.updateAllTOCBinEntries();
 
             EnableMenuOptions(true);
             eNDModdingToolStripMenuItem.Enabled = false;

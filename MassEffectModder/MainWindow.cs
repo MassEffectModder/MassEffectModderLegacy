@@ -238,7 +238,7 @@ namespace MassEffectModder
                 string outPath = Path.Combine(gameData.DLCDataCache, DLCname);
                 Directory.CreateDirectory(outPath);
                 ME3DLC dlc = new ME3DLC();
-                updateStatusLabel("DLC extracting " + (i + 1) + " of " + sfarFiles.Count);
+                updateStatusLabel("SFAR unpacking " + (i + 1) + " of " + sfarFiles.Count);
                 Application.DoEvents();
                 dlc.extract(sfarFiles[i], outPath, DLCname);
             }
@@ -254,22 +254,13 @@ namespace MassEffectModder
             dlc.pack(inPath, outPath, DLCname, !compressed);
         }
 
-        public void updateTOCBinEntry(string filePath)
+        public void updateTOCBinEntry(string filePath, bool updateSHA1 = false)
         {
             if (!filePath.Contains(GameData.MainData))
                 return;
             int pos = (Path.Combine(Path.GetDirectoryName(GameData.GamePath + @"\"))).Length;
             string filename = filePath.Substring(pos + 1);
-            _tocFile.updateFile(filename, filePath, false);
-        }
-
-        public void updateAllTOCBinEntries()
-        {
-            for (int i = 0; i < _packageFiles.Count; i++)
-            {
-                updateTOCBinEntry(_packageFiles[i]);
-            }
-            saveTOCBin();
+            _tocFile.updateFile(filename, filePath, updateSHA1);
         }
 
         public void saveTOCBin()
@@ -282,14 +273,14 @@ namespace MassEffectModder
             GameData gameData = new GameData(MeType.ME3_TYPE, _configIni);
             if (!Directory.Exists(gameData.DLCDataCache))
             {
-                MessageBox.Show("DLCCache directory is missing, you need exract DLC packages first.");
+                MessageBox.Show("DLCCache directory is missing, you need unpack SFAR files first.");
                 return;
             }
             List<string> DLCs = Directory.GetDirectories(gameData.DLCDataCache).ToList();
             for (int i = 0; i < DLCs.Count; i++)
             {
                 string DLCname = Path.GetFileName(DLCs[i]);
-                updateStatusLabel("DLC packing " + (i + 1) + " of " + DLCs.Count);
+                updateStatusLabel("SFAR packing " + (i + 1) + " of " + DLCs.Count);
                 Application.DoEvents();
                 PackME3DLC(DLCs[i], DLCname, compressed);
             }
