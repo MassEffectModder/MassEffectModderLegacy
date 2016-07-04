@@ -583,9 +583,9 @@ namespace MassEffectModder
                     nameIdTextureFlipBook = i;
 
                 if (version == packageFileVersionME1)
-                    entry.flags = input.ReadUInt64(); // 0x0007001000000000 will be default for new
+                    entry.flags = input.ReadUInt64();
                 if (version == packageFileVersionME2)
-                    entry.flags = input.ReadUInt32(); // 0xfffffff2 will be default for new
+                    entry.flags = input.ReadUInt32();
 
                 namesTable.Add(entry);
             }
