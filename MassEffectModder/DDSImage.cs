@@ -1,5 +1,5 @@
 /*  Copyright (C) 2013 AmaroK86 (marcidm 'at' hotmail 'dot' com)
- *  Copyright (C) 2013 saltisgood 
+ *  Copyright (C) 2013 saltisgood
  *  Copyright (C) 2013-2014 KFreon
  *  Copyright (C) 2016 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
@@ -21,14 +21,14 @@
  * This is a heavy modification of
  * original project took from:
  * http://code.google.com/p/kprojects/
- * 
+ *
  * Kons 2012-12-03 Version .1
  * Supported features:
  * - DXT1
  * - DXT5
  * - V8U8 (by AmaroK86)
  * - LinearImage (untested)
- * 
+ *
  * contact: kons.snok<at>gmail.com
  */
 
