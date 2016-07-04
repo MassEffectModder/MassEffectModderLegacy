@@ -82,7 +82,6 @@
     <Compile Include="MainWindow.Designer.cs">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="MemoryTributary.cs" />
     <Compile Include="Package.cs" />
     <Compile Include="ParallelCRC.cs" />
     <Compile Include="Program.cs" />
