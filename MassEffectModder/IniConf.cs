@@ -56,7 +56,7 @@ namespace MassEffectModder
 
             var str = new StringBuilder(256);
             GetPrivateProfileString(section, key, "", str, str.MaxCapacity, _iniPath);
-            return str.ToString();            
+            return str.ToString();
         }
 
         public bool Write(string key, string value, string section)
