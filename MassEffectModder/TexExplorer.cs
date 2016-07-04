@@ -556,22 +556,43 @@ namespace MassEffectModder
                 return;
 
             OpenFileDialog selectDDS = new OpenFileDialog();
-            selectDDS.Title = "Please select DDS texture file";
+            selectDDS.Title = "Please select DDS file";
             selectDDS.Filter = "DDS file|*.dds";
             if (selectDDS.ShowDialog() != DialogResult.OK)
                 return;
 
-            string filename = selectDDS.FileName;
-            DDSImage image = new DDSImage(filename);
+            bool startMod = sTARTModdingToolStripMenuItem.Enabled;
+            bool endMod = eNDModdingToolStripMenuItem.Enabled;
+            EnableMenuOptions(false);
 
+            DDSImage image = new DDSImage(selectDDS.FileName);
             ListViewItem item = listViewTextures.FocusedItem;
             int index = Convert.ToInt32(item.Name);
             PackageTreeNode node = (PackageTreeNode)treeViewPackages.SelectedNode;
-            MatchedTexture nodeTexture = node.textures[index].list[0];
-            Package package = new Package(GameData.GamePath + nodeTexture.path);
-            byte[] data = package.getExportData(nodeTexture.exportID);
-            Texture texture = new Texture(package, nodeTexture.exportID, data);
 
+            for (int i = 0; i < node.textures[index].list.Count; i++)
+            {
+                MatchedTexture nodeTexture = node.textures[index].list[i];
+                Package package = new Package(GameData.GamePath + nodeTexture.path);
+                byte[] data = package.getExportData(nodeTexture.exportID);
+                Texture texture = new Texture(package, nodeTexture.exportID, data);
+                do
+                {
+                    texture.mipMapsList.Remove(texture.mipMapsList.First(s => s.storageType == Texture.StorageTypes.empty));
+                } while (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty));
+
+                if (_gameSelected == MeType.ME1_TYPE)
+                {
+                }
+                else
+                {
+
+                }
+            }
+
+            EnableMenuOptions(true);
+            sTARTModdingToolStripMenuItem.Enabled = startMod;
+            eNDModdingToolStripMenuItem.Enabled = endMod;
         }
 
         private void removeEmptyMipmapsToolStripMenuItem_Click(object sender, EventArgs e)
