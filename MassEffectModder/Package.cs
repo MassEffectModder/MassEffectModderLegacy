@@ -739,6 +739,7 @@ namespace MassEffectModder
                 exportsTable[i] = entry;
             }
         }
+
         private void saveExports(Stream output)
         {
             for (int i = 0; i < exportsTable.Count; i++)

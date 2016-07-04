@@ -117,7 +117,7 @@ namespace MassEffectModder
                 if (basePkg != "")
                     packageName = basePkg;
             }
- 
+
             textureData = new MemoryStream(data, properties.propertyEndOffset, data.Length - properties.propertyEndOffset);
             if (GameData.gameType != MeType.ME3_TYPE)
             {
