@@ -678,6 +678,7 @@ namespace MassEffectModder
                 importsTable.Add(entry);
             }
         }
+
         private void loadImportsNames()
         {
             for (int i = 0; i < importsCount; i++)
