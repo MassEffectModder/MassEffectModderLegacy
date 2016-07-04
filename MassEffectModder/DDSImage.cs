@@ -1,4 +1,4 @@
-﻿/*  Copyright (C) 2013 AmaroK86 (marcidm 'at' hotmail 'dot' com)
+/*  Copyright (C) 2013 AmaroK86 (marcidm 'at' hotmail 'dot' com)
  *  Copyright (C) 2013 saltisgood 
  *  Copyright (C) 2013-2014 KFreon
  *  Copyright (C) 2016 Pawel Kolodziejski <aquadran at users.sourceforge.net>
