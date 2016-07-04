@@ -1,4 +1,4 @@
-﻿/*
+/*
  * C# Stream Helpers
  *
  * Copyright (C) 2015-2016 Pawel Kolodziejski <aquadran at users.sourceforge.net>

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * SevenZip Helper
  *
  * Copyright (C) 2015 Pawel Kolodziejski <aquadran at users.sourceforge.net>

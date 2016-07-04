@@ -1,4 +1,4 @@
-﻿/*
+/*
  * C# LZO2 Helper for wrapper
  *
  * Copyright (C) 2014-2015 Pawel Kolodziejski <aquadran at users.sourceforge.net>
