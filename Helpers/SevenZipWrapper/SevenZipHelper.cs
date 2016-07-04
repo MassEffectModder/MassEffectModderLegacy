@@ -48,7 +48,7 @@ namespace SevenZipHelper
         public unsafe static byte[] Compress(byte[] src, int compressionLevel = 9)
         {
             uint dstLen = (uint)(src.Length * 2 + 8);
-			byte[] tmpbuf = new byte[dstLen];
+            byte[] tmpbuf = new byte[dstLen];
 
             int status = SevenZipCompress(compressionLevel, src, (uint)src.Length, tmpbuf, ref dstLen);
             if (status != 0)
