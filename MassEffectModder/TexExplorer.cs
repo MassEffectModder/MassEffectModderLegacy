@@ -581,12 +581,17 @@ namespace MassEffectModder
                     texture.mipMapsList.Remove(texture.mipMapsList.First(s => s.storageType == Texture.StorageTypes.empty));
                 } while (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty));
 
-                if (_gameSelected == MeType.ME1_TYPE)
-                {
-                }
-                else
-                {
+                List<Texture.MipMap> mipmaps = new List<Texture.MipMap>();
 
+                for (int m = 0; m < image.mipMaps.Count(); m++)
+                {
+                    Texture.MipMap mipmap = new Texture.MipMap();
+                    mipmap.width = image.mipMaps[m].width;
+                    mipmap.height = image.mipMaps[m].height;
+                    mipmap.storageType = texture.mipMapsList[m].storageType;
+                    mipmaps.Add(mipmap);
+                    if (texture.mipMapsList.Count() == 1) 
+                        break;
                 }
             }
 

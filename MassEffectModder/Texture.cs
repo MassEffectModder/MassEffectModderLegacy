@@ -240,6 +240,11 @@ namespace MassEffectModder
             return mipMapsList.First(b => b.storageType != StorageTypes.empty);
         }
 
+        public MipMap getMipmap(int width, int height)
+        {
+            return mipMapsList.First(b => b.width == width && b.height == height);
+        }
+
         public bool hasImageData()
         {
             if (textureData == null || mipMapsList.Count == 0)
