@@ -175,12 +175,25 @@ namespace AmaroK86.ImageFormat
                 case FOURCC_DXT1: return DDSFormat.DXT1;
                 case FOURCC_DXT5: return DDSFormat.DXT5;
                 case FOURCC_ATI2: return DDSFormat.ATI2;
-                case 0: if (header.ddspf.dwRGBBitCount == 0x10 &&
+                case 0:
+                    if (header.ddspf.dwRGBBitCount == 0x10 &&
                            header.ddspf.dwRBitMask == 0xFF &&
                            header.ddspf.dwGBitMask == 0xFF00 &&
                            header.ddspf.dwBBitMask == 0x00 &&
                            header.ddspf.dwABitMask == 0x00)
                         return DDSFormat.V8U8;
+                    if (header.ddspf.dwRGBBitCount == 0x8 &&
+                           header.ddspf.dwRBitMask == 0xFF &&
+                           header.ddspf.dwGBitMask == 0x00 &&
+                           header.ddspf.dwBBitMask == 0x00 &&
+                           header.ddspf.dwABitMask == 0x00)
+                        return DDSFormat.G8;
+                    if (header.ddspf.dwRGBBitCount == 0x20 &&
+                           header.ddspf.dwRBitMask == 0xFF0000 &&
+                           header.ddspf.dwGBitMask == 0xFF00 &&
+                           header.ddspf.dwBBitMask == 0xFF &&
+                           header.ddspf.dwABitMask == 0xFF000000)
+                        return DDSFormat.ARGB;
                     break;
                 default: break;
             }
@@ -193,8 +206,10 @@ namespace AmaroK86.ImageFormat
             {
                 case DDSFormat.DXT1: return 0.5;
                 case DDSFormat.DXT5:
-                case DDSFormat.ATI2: return 1;
+                case DDSFormat.ATI2:
+                case DDSFormat.G8: return 1;
                 case DDSFormat.V8U8: return 2;
+                case DDSFormat.ARGB: return 4;
             }
             throw new Exception("invalid texture format");
         }
@@ -205,8 +220,8 @@ namespace AmaroK86.ImageFormat
             {
                 case DDSFormat.DXT1: return UncompressDXT1(imgData, w, h);
                 case DDSFormat.DXT5: return UncompressDXT5(imgData, w, h);
-                case DDSFormat.V8U8: return UncompressV8U8(imgData, w, h);
                 case DDSFormat.ATI2: return UncompressATI2(imgData, w, h);
+                case DDSFormat.V8U8: return UncompressV8U8(imgData, w, h);
                 case DDSFormat.G8: return ViewG8(imgData, w, h);
                 case DDSFormat.ARGB: return View32Bit(imgData, w, h);
             }
