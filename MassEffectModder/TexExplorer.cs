@@ -560,10 +560,11 @@ namespace MassEffectModder
             DDSImage image = new DDSImage(selectDDS.FileName);
             int index = Convert.ToInt32(listViewTextures.FocusedItem.Name);
             PackageTreeNode node = (PackageTreeNode)treeViewPackages.SelectedNode;
+            Texture firstTexture = null;
 
-            for (int i = 0; i < node.textures[index].list.Count; i++)
+            for (int n = 0; n < node.textures[index].list.Count; n++)
             {
-                MatchedTexture nodeTexture = node.textures[index].list[i];
+                MatchedTexture nodeTexture = node.textures[index].list[n];
                 Package package = new Package(GameData.GamePath + nodeTexture.path);
                 Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
                 do
@@ -571,18 +572,81 @@ namespace MassEffectModder
                     texture.mipMapsList.Remove(texture.mipMapsList.First(s => s.storageType == Texture.StorageTypes.empty));
                 } while (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty));
 
-                List<Texture.MipMap> mipmaps = new List<Texture.MipMap>();
+                if (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1)
+                {
+                    MessageBox.Show("DDS file must have mipmaps!");
+                    break;
+                }
 
+                DDSFormat ddsFormat = DDSImage.convertFormat(texture.properties.getProperty("Format").valueName);
+                if (image.ddsFormat != ddsFormat)
+                {
+                    MessageBox.Show("DDS file not match texture format!");
+                    break;
+                }
+
+                List<Texture.MipMap> mipmaps = new List<Texture.MipMap>();
                 for (int m = 0; m < image.mipMaps.Count(); m++)
                 {
                     Texture.MipMap mipmap = new Texture.MipMap();
+                    mipmap.storageType = texture.getStorageType(mipmap.width, mipmap.height);
+                    mipmap.uncompressedSize = image.mipMaps[m].data.Length;
+                    if (mipmap.storageType == Texture.StorageTypes.pccCpr ||
+                        mipmap.storageType == Texture.StorageTypes.arcCpr ||
+                        (mipmap.storageType == Texture.StorageTypes.extCpr && _gameSelected != MeType.ME1_TYPE))
+                    {
+                        byte[] compressedData = texture.compressTexture(mipmap.newData);
+                        mipmap.compressedSize = compressedData.Length;
+                        mipmap.newData = texture.compressTexture(image.mipMaps[m].data);
+                    }
+                    if (mipmap.storageType == Texture.StorageTypes.pccUnc ||
+                        mipmap.storageType == Texture.StorageTypes.extUnc)
+                    {
+                        mipmap.compressedSize = mipmap.uncompressedSize;
+                        mipmap.newData = image.mipMaps[m].data;
+                    }
+                    if (mipmap.storageType == Texture.StorageTypes.extCpr && _gameSelected == MeType.ME1_TYPE)
+                    {
+                        mipmap.compressedSize = firstTexture.mipMapsList[m].compressedSize;
+                    }
+                    if (_gameSelected == MeType.ME2_TYPE ||
+                        _gameSelected == MeType.ME3_TYPE)
+                    {
+                        if (n == 0)
+                        {
+                            string archive = texture.properties.getProperty("TextureFileCacheName").valueName + ".tfc";
+                            string filename = Directory.GetFiles(GameData.GamePath, archive, SearchOption.AllDirectories)[0];
+                            using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Write))
+                            {
+                                mipmap.dataOffset = (uint)fs.Length;
+                                fs.Seek(0, SeekOrigin.End);
+                                fs.WriteFromBuffer(mipmap.newData);
+                            }
+                        }
+                        else
+                        {
+                            mipmap.dataOffset = firstTexture.mipMapsList[m].dataOffset;
+                        }
+                    }
+                    if (_gameSelected == MeType.ME1_TYPE && n > 0)
+                    {
+                        mipmap.dataOffset = firstTexture.mipMapsList[m].dataOffset;
+                    }
+
                     mipmap.width = image.mipMaps[m].width;
                     mipmap.height = image.mipMaps[m].height;
-                    mipmap.storageType = texture.mipMapsList[m].storageType;
                     mipmaps.Add(mipmap);
-                    if (texture.mipMapsList.Count() == 1) 
+                    if (texture.mipMapsList.Count() == 1)
                         break;
+                    firstTexture = texture;
                 }
+                texture.replaceMipMaps(mipmaps);
+
+                MemoryStream newData = new MemoryStream();
+                newData.WriteFromBuffer(texture.properties.toArray());
+                newData.WriteFromBuffer(texture.toArray(package.exportsTable[nodeTexture.exportID].dataOffset + (uint)newData.Position));
+                package.setExportData(nodeTexture.exportID, newData.ToArray());
+                package.SaveToFile();
             }
 
             EnableMenuOptions(true);

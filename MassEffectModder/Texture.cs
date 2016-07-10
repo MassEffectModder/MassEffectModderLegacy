@@ -54,6 +54,7 @@ namespace MassEffectModder
             public uint internalOffset;
             public int width;
             public int height;
+            public byte[] newData;
         }
         public List<MipMap> mipMapsList;
         MemoryStream textureData;
@@ -177,6 +178,80 @@ namespace MassEffectModder
 #endif
         }
 
+        public void replaceMipMaps(List<Texture.MipMap> newMipMaps)
+        {
+            mipMapsList = newMipMaps;
+            MemoryStream textureData = new MemoryStream();
+            if (GameData.gameType != MeType.ME3_TYPE)
+            {
+                textureData.WriteZeros(12);
+                textureData.WriteUInt32(0); // filled later
+            }
+            textureData.WriteInt32(newMipMaps.Count);
+            for (int l = 0; l < newMipMaps.Count; l++)
+            {
+                MipMap mipmap = mipMapsList[l];
+                textureData.WriteUInt32((uint)mipmap.storageType);
+                textureData.WriteInt32(mipmap.uncompressedSize);
+                textureData.WriteInt32(mipmap.compressedSize);
+                textureData.WriteUInt32(mipmap.dataOffset);
+
+                if (mipmap.storageType == StorageTypes.pccUnc ||
+                    mipmap.storageType == StorageTypes.pccCpr)
+                {
+                    mipmap.internalOffset = (uint)textureData.Position;
+                    textureData.WriteFromBuffer(mipmap.newData);
+                }
+                mipMapsList[l] = mipmap;
+            }
+        }
+
+        public byte[] compressTexture(byte[] inputData)
+        {
+            MemoryStream ouputStream = new MemoryStream();
+            MemoryStream inputStream = new MemoryStream(inputData);
+            uint compressedSize = 0;
+            uint dataBlockLeft = (uint)inputData.Length;
+            uint newNumBlocks = ((uint)inputData.Length + maxBlockSize - 1) / maxBlockSize;
+            // skip blocks header and table - filled later
+            ouputStream.Seek(SizeOfChunk + SizeOfChunkBlock * newNumBlocks, SeekOrigin.Begin);
+
+            List<Package.ChunkBlock> blocks = new List<Package.ChunkBlock>();
+            for (int b = 0; b < newNumBlocks; b++)
+            {
+                Package.ChunkBlock block = new Package.ChunkBlock();
+                uint newBlockSize = Math.Min(maxBlockSize, dataBlockLeft);
+
+                byte[] dst;
+                byte[] src = inputStream.ReadToBuffer(newBlockSize);
+                if (GameData.gameType == MeType.ME3_TYPE)
+                    dst = ZlibHelper.Zlib.Compress(src, 9);
+                else
+                    dst = LZO2Helper.LZO2.Compress(src);
+                if (dst.Length == 0)
+                    throw new Exception("Compression failed!");
+
+                ouputStream.Write(dst, 0, dst.Length);
+                block.uncomprSize = newBlockSize;
+                block.comprSize = (uint)dst.Length;
+                compressedSize += block.comprSize;
+                blocks.Add(block);
+                dataBlockLeft -= newBlockSize;
+            }
+
+            ouputStream.WriteUInt32(textureTag);
+            ouputStream.WriteUInt32(maxBlockSize);
+            ouputStream.WriteUInt32(compressedSize);
+            ouputStream.WriteInt32(inputData.Length);
+            foreach (Package.ChunkBlock block in blocks)
+            {
+                ouputStream.WriteUInt32(block.comprSize);
+                ouputStream.WriteUInt32(block.uncomprSize);
+            }
+
+            return ouputStream.ToArray();
+        }
+
         private byte[] decompressTexture(MemoryStream stream, int uncompressedSize, int compressedSize)
         {
             byte[] data = new byte[uncompressedSize];
@@ -243,6 +318,16 @@ namespace MassEffectModder
         public MipMap getMipmap(int width, int height)
         {
             return mipMapsList.First(b => b.width == width && b.height == height);
+        }
+
+        public StorageTypes getStorageType(int width, int height)
+        {
+            MipMap tmpMipmap = getMipmap(width, height);
+            if (tmpMipmap.width == 0) // not found
+            {
+                tmpMipmap = getTopMipmap();
+            }
+            return tmpMipmap.storageType;
         }
 
         public bool hasImageData()
