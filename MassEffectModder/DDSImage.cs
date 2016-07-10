@@ -214,6 +214,27 @@ namespace AmaroK86.ImageFormat
             throw new Exception("invalid texture format");
         }
 
+        public static DDSFormat convertFormat(string format)
+        {
+            switch (format)
+            {
+                case "PF_DXT1":
+                    return DDSFormat.DXT1;
+                case "PF_DXT5":
+                    return DDSFormat.DXT5;
+                case "PF_NormalMap_HQ":
+                    return DDSFormat.ATI2;
+                case "PF_V8U8":
+                    return DDSFormat.V8U8;
+                case "PF_A8R8G8B8":
+                    return DDSFormat.ARGB;
+                case "PF_G8":
+                    return DDSFormat.G8;
+                default:
+                    throw new Exception("invalid texture format");
+            }
+        }
+
         public static Bitmap ToBitmap(byte[] imgData, DDSFormat ddsFormat, int w, int h)
         {
             switch (ddsFormat)
