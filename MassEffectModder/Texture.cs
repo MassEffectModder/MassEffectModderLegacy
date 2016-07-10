@@ -37,12 +37,12 @@ namespace MassEffectModder
 
         public enum StorageTypes
         {
-            pccUnc = 0x0,
-            pccCpr = 0x10,
-            extUnc = 0x1,
-            extCpr = 0x11,
-            arcCpr = 0x3,
-            empty = 0x21,
+            pccUnc = 0x0, // ME1 (Compressed PCC), ME2 (Compressed PCC)
+            pccCpr = 0x10, // ME1 (Uncompressed PCC)
+            extUnc = 0x1, // ME3 (DLC TFC archive)
+            extCpr = 0x11, // ME1 (Reference to PCC), ME2 (TFC archive)
+            arcCpr = 0x3, // ME3 (non-DLC TFC archive)
+            empty = 0x21, // ME1, ME2, ME3
         }
 
         public struct MipMap
@@ -226,13 +226,13 @@ namespace MassEffectModder
             return data;
         }
 
-        public UInt32 getCrcMipmap()
+        public uint getCrcMipmap()
         {
             byte[] data = getImageData();
             if (properties.getProperty("Format").valueName == "PF_NormalMap_HQ") // only ME1 and ME2
-                return (UInt32)~ParallelCRC.Compute(data, 0, data.Length / 2);
+                return (uint)~ParallelCRC.Compute(data, 0, data.Length / 2);
             else
-                return (UInt32)~ParallelCRC.Compute(data);
+                return (uint)~ParallelCRC.Compute(data);
         }
 
         public MipMap getTopMipmap()

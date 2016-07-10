@@ -45,7 +45,7 @@ namespace MassEffectModder
     public struct FoundTexture
     {
         public string name;
-        public UInt32 crc;
+        public uint crc;
         public uint mipmapOffset;
         public string packageName;
         public string displayName;
@@ -54,8 +54,8 @@ namespace MassEffectModder
 
     public partial class TexExplorer : Form
     {
-        const UInt32 textureMapBinTag = 0x4D455450;
-        const UInt32 textureMapBinVersion = 1;
+        const uint textureMapBinTag = 0x4D455450;
+        const uint textureMapBinVersion = 1;
 
         MeType _gameSelected;
         MainWindow _mainWindow;
@@ -69,15 +69,10 @@ namespace MassEffectModder
         {
             public List<FoundTexture> textures;
 
-            public PackageTreeNode()
-                : base()
-            {
-                textures = new List<FoundTexture>();
-            }
             public PackageTreeNode(string name)
                 : base()
             {
-                this.Name = this.Text = name;
+                Name = Text = name;
                 textures = new List<FoundTexture>();
             }
         };
@@ -128,8 +123,8 @@ namespace MassEffectModder
                 {
                     using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
                     {
-                        UInt32 tag = fs.ReadUInt32();
-                        UInt32 version = fs.ReadUInt32();
+                        uint tag = fs.ReadUInt32();
+                        uint version = fs.ReadUInt32();
                         if (tag != textureMapBinTag || version != textureMapBinVersion)
                         {
                             MessageBox.Show("Abort! Wrong " + filename + " file!");
@@ -138,14 +133,14 @@ namespace MassEffectModder
                             return;
                         }
 
-                        UInt32 countTexture = fs.ReadUInt32();
+                        uint countTexture = fs.ReadUInt32();
                         for (int i = 0; i < countTexture; i++)
                         {
                             FoundTexture texture = new FoundTexture();
                             texture.name = fs.ReadStringASCIINull();
                             texture.crc = fs.ReadUInt32();
                             texture.packageName = fs.ReadStringASCIINull();
-                            UInt32 countPackages = fs.ReadUInt32();
+                            uint countPackages = fs.ReadUInt32();
                             texture.list = new List<MatchedTexture>();
                             for (int k = 0; k < countPackages; k++)
                             {
@@ -390,13 +385,11 @@ namespace MassEffectModder
                 return;
             }
 
-            ListViewItem item = listViewTextures.FocusedItem;
-            int index = Convert.ToInt32(item.Name);
+            int index = Convert.ToInt32(listViewTextures.FocusedItem.Name);
             PackageTreeNode node = (PackageTreeNode)treeViewPackages.SelectedNode;
             MatchedTexture nodeTexture = node.textures[index].list[0];
             Package package = new Package(GameData.GamePath + nodeTexture.path);
-            byte[] data = package.getExportData(nodeTexture.exportID);
-            Texture texture = new Texture(package, nodeTexture.exportID, data);
+            Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
             if (previewShow)
             {
                 byte[] textureData = texture.getImageData();
@@ -453,7 +446,7 @@ namespace MassEffectModder
             }
         }
 
-        private void searchTexture(string name, UInt32 crc)
+        private void searchTexture(string name, uint crc)
         {
             listViewResults.Clear();
 
@@ -503,7 +496,7 @@ namespace MassEffectModder
         private void byNameToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string name = Microsoft.VisualBasic.Interaction.InputBox("Please enter texture name", "", "", 0, 0);
-            if (String.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name))
                 return;
 
             name = name.Split('.')[0]; // in case filename
@@ -513,10 +506,10 @@ namespace MassEffectModder
         private void byCRCToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string crc = Microsoft.VisualBasic.Interaction.InputBox("Please enter texture CRC", "", "", 0, 0);
-            if (String.IsNullOrEmpty(crc))
+            if (string.IsNullOrEmpty(crc))
                 return;
 
-            searchTexture(null, UInt32.Parse(crc, System.Globalization.NumberStyles.AllowHexSpecifier));
+            searchTexture(null, uint.Parse(crc, System.Globalization.NumberStyles.AllowHexSpecifier));
         }
 
         private void listViewResults_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -537,8 +530,7 @@ namespace MassEffectModder
                     updateListViewTextures(node);
                     for (int i = 0; i < node.textures.Count; i++)
                     {
-                        FoundTexture texture = node.textures[i];
-                        if (texture.name == item.Text.Split(' ')[0])
+                        if (node.textures[i].name == item.Text.Split(' ')[0])
                         {
                             listViewTextures.FocusedItem = listViewTextures.Items[i];
                             listViewTextures.Items[i].Selected = true;
@@ -566,16 +558,14 @@ namespace MassEffectModder
             EnableMenuOptions(false);
 
             DDSImage image = new DDSImage(selectDDS.FileName);
-            ListViewItem item = listViewTextures.FocusedItem;
-            int index = Convert.ToInt32(item.Name);
+            int index = Convert.ToInt32(listViewTextures.FocusedItem.Name);
             PackageTreeNode node = (PackageTreeNode)treeViewPackages.SelectedNode;
 
             for (int i = 0; i < node.textures[index].list.Count; i++)
             {
                 MatchedTexture nodeTexture = node.textures[index].list[i];
                 Package package = new Package(GameData.GamePath + nodeTexture.path);
-                byte[] data = package.getExportData(nodeTexture.exportID);
-                Texture texture = new Texture(package, nodeTexture.exportID, data);
+                Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
                 do
                 {
                     texture.mipMapsList.Remove(texture.mipMapsList.First(s => s.storageType == Texture.StorageTypes.empty));
@@ -623,8 +613,7 @@ namespace MassEffectModder
                     if (id == package.nameIdTexture2D ||
                         id == package.nameIdTextureFlipBook)
                     {
-                        byte[] origData = package.getExportData(l);
-                        Texture texture = new Texture(package, l, origData);
+                        Texture texture = new Texture(package, l, package.getExportData(l));
                         if (!texture.hasImageData() ||
                             !texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty))
                         {

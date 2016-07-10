@@ -107,11 +107,6 @@ namespace MassEffectModder
                 getProperty(data, nextOffset);
         }
 
-        public bool existProperty(string name)
-        {
-            return texPropertyList.Exists(s => s.name == name);
-        }
-
         public TexPropertyEntry getProperty(string name)
         {
             fetchValue(name);

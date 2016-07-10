@@ -24,7 +24,6 @@ using System.IO;
 using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
-using System.Net.NetworkInformation;
 using System.Security.Cryptography;
 using System.Text;
 using StreamHelpers;
