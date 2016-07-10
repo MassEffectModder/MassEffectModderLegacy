@@ -393,32 +393,10 @@ namespace MassEffectModder
             if (previewShow)
             {
                 byte[] textureData = texture.getImageData();
-                string format = texture.properties.getProperty("Format").valueName;
                 int width = texture.getTopMipmap().width;
                 int height = texture.getTopMipmap().height;
-                switch (format)
-                {
-                    case "PF_DXT1":
-                        pictureBoxPreview.Image = DDSImage.ToBitmap(textureData, DDSFormat.DXT1, width, height);
-                        break;
-                    case "PF_DXT5":
-                        pictureBoxPreview.Image = DDSImage.ToBitmap(textureData, DDSFormat.DXT5, width, height);
-                        break;
-                    case "PF_NormalMap_HQ":
-                        pictureBoxPreview.Image = DDSImage.ToBitmap(textureData, DDSFormat.ATI2, width, height);
-                        break;
-                    case "PF_V8U8":
-                        pictureBoxPreview.Image = DDSImage.ToBitmap(textureData, DDSFormat.V8U8, width, height);
-                        break;
-                    case "PF_A8R8G8B8":
-                        pictureBoxPreview.Image = DDSImage.ToBitmap(textureData, DDSFormat.ARGB, width, height);
-                        break;
-                    case "PF_G8":
-                        pictureBoxPreview.Image = DDSImage.ToBitmap(textureData, DDSFormat.G8, width, height);
-                        break;
-                    default:
-                        throw new Exception("");
-                }
+                DDSFormat format = DDSImage.convertFormat(texture.properties.getProperty("Format").valueName);
+                pictureBoxPreview.Image = DDSImage.ToBitmap(textureData, format, width, height);
             }
             else
             {
