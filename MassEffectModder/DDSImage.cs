@@ -125,45 +125,55 @@ namespace AmaroK86.ImageFormat
         {
             using (FileStream ddsStream = File.OpenRead(ddsFileName))
             {
-                using (BinaryReader r = new BinaryReader(ddsStream))
+                LoadDDSImage(ddsStream);
+            }
+        }
+
+        public DDSImage(FileStream ddsStream)
+        {
+            LoadDDSImage(ddsStream);
+        }
+
+        private void LoadDDSImage(FileStream ddsStream)
+        {
+            using (BinaryReader r = new BinaryReader(ddsStream))
+            {
+                dwMagic = r.ReadInt32();
+                if (dwMagic != 0x20534444)
                 {
-                    dwMagic = r.ReadInt32();
-                    if (dwMagic != 0x20534444)
+                    throw new Exception("This is not a DDS!");
+                }
+
+                Read_DDS_HEADER(header, r);
+
+                if (((header.ddspf.dwFlags & DDPF_FOURCC) != 0) && (header.ddspf.dwFourCC == FOURCC_DX10 /*DX10*/))
+                {
+                    throw new Exception("DX10 not supported yet!");
+                }
+
+                int mipMapCount = 1;
+                if ((header.dwFlags & DDSD_MIPMAPCOUNT) != 0)
+                    mipMapCount = header.dwMipMapCount;
+
+                mipMaps = new MipMap[mipMapCount];
+
+                ddsFormat = getFormat();
+
+                double bytePerPixel = getBytesPerPixel(ddsFormat);
+
+                for (int i = 0; i < mipMapCount; i++)
+                {
+                    int w = (int)(header.dwWidth / Math.Pow(2, i));
+                    int h = (int)(header.dwHeight / Math.Pow(2, i));
+
+                    if (ddsFormat == DDSFormat.DXT1 || ddsFormat == DDSFormat.DXT5)
                     {
-                        throw new Exception("This is not a DDS!");
+                        w = (w < 4) ? 4 : w;
+                        h = (h < 4) ? 4 : h;
                     }
 
-                    Read_DDS_HEADER(header, r);
-
-                    if (((header.ddspf.dwFlags & DDPF_FOURCC) != 0) && (header.ddspf.dwFourCC == FOURCC_DX10 /*DX10*/))
-                    {
-                        throw new Exception("DX10 not supported yet!");
-                    }
-
-                    int mipMapCount = 1;
-                    if ((header.dwFlags & DDSD_MIPMAPCOUNT) != 0)
-                        mipMapCount = header.dwMipMapCount;
-
-                    mipMaps = new MipMap[mipMapCount];
-
-                    ddsFormat = getFormat();
-
-                    double bytePerPixel = getBytesPerPixel(ddsFormat);
-
-                    for (int i = 0; i < mipMapCount; i++)
-                    {
-                        int w = (int)(header.dwWidth / Math.Pow(2, i));
-                        int h = (int)(header.dwHeight / Math.Pow(2, i));
-
-                        if (ddsFormat == DDSFormat.DXT1 || ddsFormat == DDSFormat.DXT5)
-                        {
-                            w = (w < 4) ? 4 : w;
-                            h = (h < 4) ? 4 : h;
-                        }
-
-                        int mipMapBytes = (int)(w * h * bytePerPixel);
-                        mipMaps[i] = new MipMap(r.ReadBytes(mipMapBytes), ddsFormat, w, h);
-                    }
+                    int mipMapBytes = (int)(w * h * bytePerPixel);
+                    mipMaps[i] = new MipMap(r.ReadBytes(mipMapBytes), ddsFormat, w, h);
                 }
             }
         }
