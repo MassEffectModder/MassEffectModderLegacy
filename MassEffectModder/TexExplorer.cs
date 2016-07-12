@@ -734,6 +734,7 @@ namespace MassEffectModder
                 if (n == 0)
                     firstTexture = texture;
 
+                _mainWindow.updateStatusLabel("Saving package: " + nodeTexture.path);
                 package.SaveToFile();
                 package.Dispose();
             }
