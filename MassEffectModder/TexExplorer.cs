@@ -676,7 +676,10 @@ namespace MassEffectModder
                         mipmap.storageType == Texture.StorageTypes.arcCpr ||
                         (mipmap.storageType == Texture.StorageTypes.extCpr && _gameSelected != MeType.ME1_TYPE))
                     {
-                        mipmap.newData = texture.compressTexture(image.mipMaps[m].data);
+                        if (n == 0)
+                            mipmap.newData = texture.compressTexture(image.mipMaps[m].data);
+                        else
+                            mipmap.newData = firstTexture.mipMapsList[m].newData;
                         mipmap.compressedSize = mipmap.newData.Length;
                     }
                     if (mipmap.storageType == Texture.StorageTypes.pccUnc ||
