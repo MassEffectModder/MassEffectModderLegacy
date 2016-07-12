@@ -864,7 +864,7 @@ namespace MassEffectModder
                             byte[] dst;
                             byte[] src = tempOutput.ReadToBuffer(newBlockSize);
                             if (compressionType == CompressionType.LZO)
-                                dst = LZO2Helper.LZO2.Compress(src, false);
+                                dst = LZO2Helper.LZO2.Compress(src);
                             else if (compressionType == CompressionType.Zlib)
                                 dst = ZlibHelper.Zlib.Compress(src);
                             else
