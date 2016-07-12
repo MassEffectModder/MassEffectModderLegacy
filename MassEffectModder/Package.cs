@@ -748,7 +748,7 @@ namespace MassEffectModder
             }
         }
 
-        public bool SaveToFile(int compressionLevel = -1, bool forceZlib = false)
+        public bool SaveToFile(bool forceZlib = false)
         {
             if (packageFile.Length == 0)
                 return false;
@@ -864,9 +864,9 @@ namespace MassEffectModder
                             byte[] dst;
                             byte[] src = tempOutput.ReadToBuffer(newBlockSize);
                             if (compressionType == CompressionType.LZO)
-                                dst = LZO2Helper.LZO2.Compress(src);
+                                dst = LZO2Helper.LZO2.Compress(src, false);
                             else if (compressionType == CompressionType.Zlib)
-                                dst = ZlibHelper.Zlib.Compress(src, compressionLevel);
+                                dst = ZlibHelper.Zlib.Compress(src);
                             else
                                 throw new Exception("Compression type not expected!");
                             if (dst.Length == 0)
