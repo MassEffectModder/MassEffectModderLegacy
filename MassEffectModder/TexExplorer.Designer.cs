@@ -100,7 +100,7 @@ namespace MassEffectModder
             this.replaceTextureToolStripMenuItem,
             this.viewToolStripMenuItem});
             this.contextMenuStripTextures.Name = "contextMenuStripTextures";
-            this.contextMenuStripTextures.Size = new System.Drawing.Size(198, 70);
+            this.contextMenuStripTextures.Size = new System.Drawing.Size(198, 48);
             // 
             // replaceTextureToolStripMenuItem
             // 
@@ -116,7 +116,7 @@ namespace MassEffectModder
             this.previewTextureToolStripMenuItem,
             this.infoTextureToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
-            this.viewToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
             this.viewToolStripMenuItem.Text = "View";
             // 
             // previewTextureToolStripMenuItem
@@ -286,7 +286,7 @@ namespace MassEffectModder
             this.pictureBoxPreview.Location = new System.Drawing.Point(3, 30);
             this.pictureBoxPreview.Name = "pictureBoxPreview";
             this.pictureBoxPreview.Size = new System.Drawing.Size(457, 429);
-            this.pictureBoxPreview.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBoxPreview.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBoxPreview.TabIndex = 1;
             this.pictureBoxPreview.TabStop = false;
             // 
@@ -404,7 +404,6 @@ namespace MassEffectModder
             this.contextMenuStripMods.ResumeLayout(false);
             this.splitContainer2.Panel1.ResumeLayout(false);
             this.splitContainer2.Panel2.ResumeLayout(false);
-            this.splitContainer2.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPreview)).EndInit();
