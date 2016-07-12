@@ -201,6 +201,11 @@ namespace StreamHelpers
             stream.Seek(0, SeekOrigin.Begin);
         }
 
+        public static void End(this Stream stream)
+        {
+            stream.Seek(0, SeekOrigin.End);
+        }
+
         public static void JumpTo(this Stream stream, int offset)
         {
             stream.Seek(offset, SeekOrigin.Begin);
