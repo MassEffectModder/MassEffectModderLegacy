@@ -757,12 +757,12 @@ namespace MassEffectModder
 
             if (!compressed)
             {
-                packageFile.Begin();
+                packageFile.SeekBegin();
                 tempOutput.WriteFromStream(packageFile, endOfTablesOffset);
             }
             else
             {
-                packageData.Begin();
+                packageData.SeekBegin();
                 tempOutput.WriteFromStream(packageData, packageData.Length);
             }
 
@@ -796,7 +796,7 @@ namespace MassEffectModder
 
                 if (!compressed)
                 {
-                    tempOutput.Begin();
+                    tempOutput.SeekBegin();
                     fs.WriteFromStream(tempOutput, tempOutput.Length);
                 }
                 else

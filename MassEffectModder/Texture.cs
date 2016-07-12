@@ -239,7 +239,7 @@ namespace MassEffectModder
                 dataBlockLeft -= newBlockSize;
             }
 
-            ouputStream.Begin();
+            ouputStream.SeekBegin();
             ouputStream.WriteUInt32(textureTag);
             ouputStream.WriteUInt32(maxBlockSize);
             ouputStream.WriteUInt32(compressedSize);

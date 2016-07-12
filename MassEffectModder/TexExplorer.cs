@@ -704,7 +704,7 @@ namespace MassEffectModder
                             using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Write))
                             {
                                 mipmap.dataOffset = (uint)fs.Length;
-                                fs.End();
+                                fs.SeekEnd();
                                 fs.WriteFromBuffer(mipmap.newData);
                             }
                         }
@@ -905,7 +905,7 @@ namespace MassEffectModder
 
         private void eNDModdingToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            fileStreamMod.Begin();
+            fileStreamMod.SeekBegin();
             fileStreamMod.WriteUInt32(TextureModTag);
             fileStreamMod.WriteUInt32(TextureModVersion);
             fileStreamMod.WriteUInt32(numberOfTexturesMod);

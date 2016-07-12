@@ -196,12 +196,12 @@ namespace StreamHelpers
             WriteZeros(stream, (uint)count);
         }
 
-        public static void Begin(this Stream stream)
+        public static void SeekBegin(this Stream stream)
         {
             stream.Seek(0, SeekOrigin.Begin);
         }
 
-        public static void End(this Stream stream)
+        public static void SeekEnd(this Stream stream)
         {
             stream.Seek(0, SeekOrigin.End);
         }

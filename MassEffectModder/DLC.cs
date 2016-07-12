@@ -291,7 +291,7 @@ namespace MassEffectModder
                 if (blockSizes.Count() != curBlockSizesIndex)
                     throw new Exception();
 
-                outputFile.Begin();
+                outputFile.SeekBegin();
                 outputFile.WriteUInt32(SfarTag);
                 outputFile.WriteUInt32(SfarVersion);
                 outputFile.WriteUInt32((uint)dataOffset);
