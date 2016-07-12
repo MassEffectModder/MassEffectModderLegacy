@@ -34,6 +34,7 @@ namespace MassEffectModder
         static public MeType gameType;
         private ConfIni _configIni;
         static public List<string> packageFiles;
+        static public List<string> tfcFiles;
 
         public bool DLCDataCacheDone = false;
 
@@ -264,6 +265,15 @@ namespace MassEffectModder
             }
         }
 
+        public bool getTfcTextures()
+        {
+            if (tfcFiles != null && tfcFiles.Count != 0)
+                return true;
+
+            tfcFiles = Directory.GetFiles(GameData.GamePath, "*.tfc", SearchOption.AllDirectories).ToList();
+            return true;
+        }
+
         public bool getPackages()
         {
             if (packageFiles != null && packageFiles.Count != 0)
@@ -307,6 +317,7 @@ namespace MassEffectModder
         void ClosePackagesList()
         {
             packageFiles.Clear();
+            tfcFiles.Clear();
         }
     }
 }

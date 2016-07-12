@@ -31,7 +31,6 @@ namespace MassEffectModder
     public partial class MainWindow : Form
     {
         public ConfIni _configIni;
-        List<string> _packageFiles;
         TOCBinFile _tocFile;
 
         public MainWindow()
@@ -145,7 +144,14 @@ namespace MassEffectModder
                 updateStatusLabel("");
                 return false;
             }
-            _packageFiles = GameData.packageFiles;
+            if (GameData.gameType != MeType.ME1_TYPE)
+            {
+                if (!gameData.getTfcTextures())
+                {
+                    updateStatusLabel("");
+                    return false;
+                }
+            }
             updateStatusLabel("Done.");
             return true;
         }
@@ -154,10 +160,10 @@ namespace MassEffectModder
         {
             GameData gameData = new GameData(gametype, _configIni);
             GetPackages(gameData);
-            for (int i = 0; i < _packageFiles.Count; i++)
+            for (int i = 0; i < GameData.packageFiles.Count; i++)
             {
-                updateStatusLabel("Repack file " + (i + 1) + " of " + _packageFiles.Count);
-                var package = new Package(_packageFiles[i]);
+                updateStatusLabel("Repack file " + (i + 1) + " of " + GameData.packageFiles.Count);
+                var package = new Package(GameData.packageFiles[i]);
                 if (package.compressed && package.compressionType != Package.CompressionType.Zlib)
                     package.SaveToFile();
             }

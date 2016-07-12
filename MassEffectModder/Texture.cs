@@ -373,7 +373,7 @@ namespace MassEffectModder
                         else
                         {
                             string archive = properties.getProperty("TextureFileCacheName").valueName + ".tfc";
-                            filename = Directory.GetFiles(GameData.GamePath, archive, SearchOption.AllDirectories)[0];
+                            filename = GameData.tfcFiles.Find(s => Path.GetFileName(s).Equals(archive, StringComparison.OrdinalIgnoreCase));
                         }
 
                         using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read))

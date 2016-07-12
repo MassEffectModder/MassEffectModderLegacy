@@ -435,25 +435,22 @@ namespace MassEffectModder
                     }
                     else
                     {
-                        for (int l = 0; l < _textures.Count; l++)
+                        FoundTexture foundTexture = _textures.Find(s => s.crc == crc && s.name == name);
+                        if (foundTexture.crc != 0)
                         {
-                            FoundTexture foundTexture = _textures[l];
-                            if (foundTexture.name == name || foundTexture.crc == crc)
+                            if (replace)
                             {
-                                if (replace)
-                                {
-                                    DDSImage image = new DDSImage(fs);
-                                    replaceTexture(image, foundTexture.list);
-                                }
-                                else
-                                {
-                                    fs.Skip(size);
-                                    ListViewItem item = new ListViewItem(foundTexture.displayName + " (" + foundTexture.packageName + ")");
-                                    item.Name = i.ToString();
-                                    listViewTextures.Items.Add(item);
-                                }
-                                break;
+                                DDSImage image = new DDSImage(fs);
+                                replaceTexture(image, foundTexture.list);
                             }
+                            else
+                            {
+                                fs.Skip(size);
+                                ListViewItem item = new ListViewItem(foundTexture.displayName + " (" + foundTexture.packageName + ")");
+                                item.Name = i.ToString();
+                                listViewTextures.Items.Add(item);
+                            }
+                            break;
                         }
                     }
                 }
@@ -494,27 +491,30 @@ namespace MassEffectModder
                 }
                 else
                 {
-                    richTextBoxInfo.Text += "Texture name:  " + node.textures[index].name + "\n";
-                    richTextBoxInfo.Text += "Node name:     " + node.textures[index].displayName + "\n";
-                    richTextBoxInfo.Text += "Package name:  " + node.textures[index].packageName + "\n";
-                    richTextBoxInfo.Text += "Packages:\n";
+                    string text = "";
+
+                    text += "Texture name:  " + node.textures[index].name + "\n";
+                    text += "Node name:     " + node.textures[index].displayName + "\n";
+                    text += "Package name:  " + node.textures[index].packageName + "\n";
+                    text += "Packages:\n";
                     for (int l = 0; l < node.textures[index].list.Count; l++)
                     {
-                        richTextBoxInfo.Text += "  Export Id:     " + node.textures[index].list[l].exportID + "\n";
-                        richTextBoxInfo.Text += "  Package path:  " + node.textures[index].list[l].path + "\n";
+                        text += "  Export Id:     " + node.textures[index].list[l].exportID + "\n";
+                        text += "  Package path:  " + node.textures[index].list[l].path + "\n";
                     }
-                    richTextBoxInfo.Text += "Texture properties:\n";
+                    text += "Texture properties:\n";
                     for (int l = 0; l < texture.properties.texPropertyList.Count; l++)
                     {
-                        richTextBoxInfo.Text += texture.properties.getDisplayString(l);
+                        text += texture.properties.getDisplayString(l);
                     }
                     for (int l = 0; l < texture.mipMapsList.Count; l++)
                     {
-                        richTextBoxInfo.Text += "MipMap:        " + l + "\n";
-                        richTextBoxInfo.Text += "  StorageType: " + texture.mipMapsList[l].storageType + "\n";
-                        richTextBoxInfo.Text += "  CompSize:    " + texture.mipMapsList[l].compressedSize + "\n";
-                        richTextBoxInfo.Text += "  UnCompSize:  " + texture.mipMapsList[l].uncompressedSize + "\n";
+                        text += "MipMap:        " + l + "\n";
+                        text += "  StorageType: " + texture.mipMapsList[l].storageType + "\n";
+                        text += "  CompSize:    " + texture.mipMapsList[l].compressedSize + "\n";
+                        text += "  UnCompSize:  " + texture.mipMapsList[l].uncompressedSize + "\n";
                     }
+                    richTextBoxInfo.Text = text;
                     pictureBoxPreview.Hide();
                     richTextBoxInfo.Show();
                 }
@@ -695,7 +695,7 @@ namespace MassEffectModder
                         if (n == 0)
                         {
                             string archive = texture.properties.getProperty("TextureFileCacheName").valueName + ".tfc";
-                            string filename = Directory.GetFiles(GameData.GamePath, archive, SearchOption.AllDirectories)[0];
+                            string filename = GameData.tfcFiles.Find(s => Path.GetFileName(s).Equals(archive, StringComparison.OrdinalIgnoreCase));
                             using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Write))
                             {
                                 mipmap.dataOffset = (uint)fs.Length;
