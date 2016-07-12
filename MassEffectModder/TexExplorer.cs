@@ -692,8 +692,10 @@ namespace MassEffectModder
                     {
                         mipmap.compressedSize = firstTexture.mipMapsList[m].compressedSize;
                     }
-                    if (_gameSelected == MeType.ME2_TYPE ||
-                        _gameSelected == MeType.ME3_TYPE)
+                    if ((_gameSelected == MeType.ME2_TYPE ||
+                         _gameSelected == MeType.ME3_TYPE) &&
+                        (mipmap.storageType == Texture.StorageTypes.arcCpr ||
+                         mipmap.storageType == Texture.StorageTypes.extCpr))
                     {
                         if (n == 0)
                         {
