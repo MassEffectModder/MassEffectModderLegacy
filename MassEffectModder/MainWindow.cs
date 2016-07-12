@@ -165,7 +165,7 @@ namespace MassEffectModder
                 updateStatusLabel("Repack file " + (i + 1) + " of " + GameData.packageFiles.Count);
                 var package = new Package(GameData.packageFiles[i]);
                 if (package.compressed && package.compressionType != Package.CompressionType.Zlib)
-                    package.SaveToFile();
+                    package.SaveToFile(-1, true);
             }
             updateStatusLabel("Done");
         }

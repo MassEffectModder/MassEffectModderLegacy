@@ -748,7 +748,7 @@ namespace MassEffectModder
             }
         }
 
-        public bool SaveToFile(int compressionLevel = -1)
+        public bool SaveToFile(int compressionLevel = -1, bool forceZlib = false)
         {
             if (packageFile.Length == 0)
                 return false;
@@ -830,7 +830,8 @@ namespace MassEffectModder
                     }
                     chunks.Add(chunk);
 
-                    compressionType = CompressionType.Zlib; // override compression type to Zlib
+                    if (forceZlib)
+                        compressionType = CompressionType.Zlib; // override compression type to Zlib
                     fs.Write(packageHeader, 0, packageHeader.Length);
                     fs.WriteUInt32((uint)compressionType);
                     fs.WriteUInt32((uint)chunks.Count);
