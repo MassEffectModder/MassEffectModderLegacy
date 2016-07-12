@@ -704,8 +704,8 @@ namespace MassEffectModder
                             string filename = GameData.tfcFiles.Find(s => Path.GetFileName(s).Equals(archive, StringComparison.OrdinalIgnoreCase));
                             using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Write))
                             {
-                                mipmap.dataOffset = (uint)fs.Length;
                                 fs.SeekEnd();
+                                mipmap.dataOffset = (uint)fs.Position;
                                 fs.WriteFromBuffer(mipmap.newData);
                             }
                         }
