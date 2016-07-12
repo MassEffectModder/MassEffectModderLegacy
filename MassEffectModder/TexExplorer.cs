@@ -695,7 +695,8 @@ namespace MassEffectModder
                     if ((_gameSelected == MeType.ME2_TYPE ||
                          _gameSelected == MeType.ME3_TYPE) &&
                         (mipmap.storageType == Texture.StorageTypes.arcCpr ||
-                         mipmap.storageType == Texture.StorageTypes.extCpr))
+                         mipmap.storageType == Texture.StorageTypes.extCpr ||
+                         mipmap.storageType == Texture.StorageTypes.extUnc))
                     {
                         if (n == 0)
                         {
