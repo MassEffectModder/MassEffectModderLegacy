@@ -227,7 +227,7 @@ namespace MassEffectModder
                 if (GameData.gameType == MeType.ME3_TYPE)
                     dst = ZlibHelper.Zlib.Compress(src, 9);
                 else
-                    dst = LZO2Helper.LZO2.Compress(src);
+                    dst = LZO2Helper.LZO2.Compress(src, false);
                 if (dst.Length == 0)
                     throw new Exception("Compression failed!");
 
