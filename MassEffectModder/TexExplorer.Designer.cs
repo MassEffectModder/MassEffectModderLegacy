@@ -58,7 +58,6 @@ namespace MassEffectModder
             this.infoTextureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.treeViewPackages = new System.Windows.Forms.TreeView();
             this.listViewMods = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contextMenuStripMods = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -66,6 +65,7 @@ namespace MassEffectModder
             this.deleteModToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.listViewResults = new System.Windows.Forms.ListView();
             this.columnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.treeViewPackages = new System.Windows.Forms.TreeView();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.listViewTextures = new System.Windows.Forms.ListView();
             this.pictureBoxPreview = new System.Windows.Forms.PictureBox();
@@ -100,12 +100,13 @@ namespace MassEffectModder
             this.replaceTextureToolStripMenuItem,
             this.viewToolStripMenuItem});
             this.contextMenuStripTextures.Name = "contextMenuStripTextures";
-            this.contextMenuStripTextures.Size = new System.Drawing.Size(157, 48);
+            this.contextMenuStripTextures.Size = new System.Drawing.Size(198, 70);
             // 
             // replaceTextureToolStripMenuItem
             // 
             this.replaceTextureToolStripMenuItem.Name = "replaceTextureToolStripMenuItem";
-            this.replaceTextureToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.replaceTextureToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
+            this.replaceTextureToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
             this.replaceTextureToolStripMenuItem.Text = "Replace Texture";
             this.replaceTextureToolStripMenuItem.Click += new System.EventHandler(this.replaceTextureToolStripMenuItem_Click);
             // 
@@ -157,22 +158,6 @@ namespace MassEffectModder
             this.splitContainer1.Size = new System.Drawing.Size(1140, 462);
             this.splitContainer1.SplitterDistance = 338;
             this.splitContainer1.TabIndex = 4;
-            // 
-            // treeViewPackages
-            // 
-            this.treeViewPackages.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.treeViewPackages.ImageKey = "Folder.png";
-            this.treeViewPackages.ImageList = this.imageList;
-            this.treeViewPackages.Location = new System.Drawing.Point(3, 28);
-            this.treeViewPackages.Name = "treeViewPackages";
-            this.treeViewPackages.SelectedImageIndex = 1;
-            this.treeViewPackages.Size = new System.Drawing.Size(336, 431);
-            this.treeViewPackages.TabIndex = 0;
-            this.treeViewPackages.AfterCollapse += new System.Windows.Forms.TreeViewEventHandler(this.treeViewPackages_AfterCollapse);
-            this.treeViewPackages.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.treeViewPackages_AfterExpand);
-            this.treeViewPackages.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewPackages_AfterSelect);
             // 
             // listViewMods
             // 
@@ -240,6 +225,22 @@ namespace MassEffectModder
             // 
             this.columnHeader.Width = 500;
             // 
+            // treeViewPackages
+            // 
+            this.treeViewPackages.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.treeViewPackages.ImageKey = "Folder.png";
+            this.treeViewPackages.ImageList = this.imageList;
+            this.treeViewPackages.Location = new System.Drawing.Point(3, 28);
+            this.treeViewPackages.Name = "treeViewPackages";
+            this.treeViewPackages.SelectedImageIndex = 1;
+            this.treeViewPackages.Size = new System.Drawing.Size(336, 431);
+            this.treeViewPackages.TabIndex = 0;
+            this.treeViewPackages.AfterCollapse += new System.Windows.Forms.TreeViewEventHandler(this.treeViewPackages_AfterCollapse);
+            this.treeViewPackages.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.treeViewPackages_AfterExpand);
+            this.treeViewPackages.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewPackages_AfterSelect);
+            // 
             // splitContainer2
             // 
             this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -273,6 +274,8 @@ namespace MassEffectModder
             this.listViewTextures.UseCompatibleStateImageBehavior = false;
             this.listViewTextures.View = System.Windows.Forms.View.List;
             this.listViewTextures.SelectedIndexChanged += new System.EventHandler(this.listViewTextures_SelectedIndexChanged);
+            this.listViewTextures.DoubleClick += new System.EventHandler(this.listViewTextures_DoubleClick);
+            this.listViewTextures.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.listViewTextures_KeyPress);
             // 
             // pictureBoxPreview
             // 
@@ -363,14 +366,15 @@ namespace MassEffectModder
             // byNameToolStripMenuItem
             // 
             this.byNameToolStripMenuItem.Name = "byNameToolStripMenuItem";
-            this.byNameToolStripMenuItem.Size = new System.Drawing.Size(120, 22);
+            this.byNameToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
+            this.byNameToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.byNameToolStripMenuItem.Text = "By name";
             this.byNameToolStripMenuItem.Click += new System.EventHandler(this.byNameToolStripMenuItem_Click);
             // 
             // byCRCToolStripMenuItem
             // 
             this.byCRCToolStripMenuItem.Name = "byCRCToolStripMenuItem";
-            this.byCRCToolStripMenuItem.Size = new System.Drawing.Size(120, 22);
+            this.byCRCToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.byCRCToolStripMenuItem.Text = "By CRC";
             this.byCRCToolStripMenuItem.Click += new System.EventHandler(this.byCRCToolStripMenuItem_Click);
             // 

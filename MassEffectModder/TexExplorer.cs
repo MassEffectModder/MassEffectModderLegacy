@@ -54,10 +54,10 @@ namespace MassEffectModder
 
     public partial class TexExplorer : Form
     {
-        const uint textureMapBinTag = 0x4D455450;
+        const uint textureMapBinTag = 0x5054454D;
         const uint textureMapBinVersion = 1;
         const string TempModFileName = "TextureMod.tmp";
-        const uint TextureModTag = 0x544D4F44;
+        const uint TextureModTag = 0x444F4D54;
         const uint TextureModVersion = 1;
         const uint TextureModHeaderLength = 12;
 
@@ -102,6 +102,7 @@ namespace MassEffectModder
             listViewResults.Enabled = enable;
             listViewTextures.Enabled = enable;
             listViewMods.Enabled = enable;
+            Application.DoEvents();
         }
 
         private void PrepareListOfTextures()
@@ -249,7 +250,9 @@ namespace MassEffectModder
             }
             else
             {
+                _mainWindow.updateStatusLabel("Preparing tree...");
                 PrepareListOfTextures();
+                _mainWindow.updateStatusLabel("Done.");
             }
 
             PrepareTreeList();
@@ -348,6 +351,7 @@ namespace MassEffectModder
                     }
                 }
             }
+            package.Dispose();
         }
 
         private void TexExplorer_FormClosed(object sender, FormClosedEventArgs e)
@@ -446,7 +450,7 @@ namespace MassEffectModder
                                     fs.Skip(size);
                                     ListViewItem item = new ListViewItem(foundTexture.displayName + " (" + foundTexture.packageName + ")");
                                     item.Name = i.ToString();
-                                    listViewResults.Items.Add(item);
+                                    listViewTextures.Items.Add(item);
                                 }
                                 break;
                             }
@@ -463,14 +467,13 @@ namespace MassEffectModder
                 clearPreview();
                 return;
             }
-            if (moddingEnable)
+            if (listViewMods.Items.Count > 0)
             {
                 previewShow = true;
                 int index = Convert.ToInt32(listViewTextures.FocusedItem.Name);
                 processTextureMod(listViewMods.SelectedItems[0].Name, index);
                 pictureBoxPreview.Show();
                 richTextBoxInfo.Hide();
-                _mainWindow.updateStatusLabel("Done.");
             }
             else
             {
@@ -515,6 +518,7 @@ namespace MassEffectModder
                     pictureBoxPreview.Hide();
                     richTextBoxInfo.Show();
                 }
+                package.Dispose();
             }
         }
 
@@ -533,11 +537,16 @@ namespace MassEffectModder
                     listViewResults.Items.Add(item);
                 }
             }
-            if (listViewResults.Items.Count > 0)
+            if (listViewResults.Items.Count > 1)
             {
                 listViewResults.Show();
                 listViewTextures.Clear();
                 clearPreview();
+            }
+            if (listViewResults.Items.Count == 1)
+            {
+                listViewTextures.Focus();
+                selectFoundTexture(listViewResults.Items[0]);
             }
         }
 
@@ -562,6 +571,22 @@ namespace MassEffectModder
             updateViewFromListView();
         }
 
+        private void listViewTextures_DoubleClick(object sender, EventArgs e)
+        {
+            _mainWindow.updateStatusLabel("Replacing texture...");
+            replaceTexture();
+            _mainWindow.updateStatusLabel("Done.");
+        }
+
+        private void listViewTextures_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar != '\r')
+                return;
+            _mainWindow.updateStatusLabel("Replacing texture...");
+            replaceTexture();
+            _mainWindow.updateStatusLabel("Done.");
+        }
+
         private void byNameToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string name = Microsoft.VisualBasic.Interaction.InputBox("Please enter texture name", "", "", 0, 0);
@@ -581,11 +606,8 @@ namespace MassEffectModder
             searchTexture(null, uint.Parse(crc, System.Globalization.NumberStyles.AllowHexSpecifier));
         }
 
-        private void listViewResults_MouseDoubleClick(object sender, MouseEventArgs e)
+        private void selectFoundTexture(ListViewItem item)
         {
-            if (listViewResults.Items.Count == 0)
-                return;
-            ListViewItem item = listViewResults.SelectedItems[0];
             int pos1 = item.Text.IndexOf('(');
             int pos2 = item.Text.IndexOf(')');
             string packageName = item.Text.Substring(pos1 + 1, pos2 - pos1 - 1);
@@ -603,12 +625,18 @@ namespace MassEffectModder
                         {
                             listViewTextures.FocusedItem = listViewTextures.Items[i];
                             listViewTextures.Items[i].Selected = true;
-                            updateViewFromListView();
                             return;
                         }
                     }
                 }
             }
+        }
+
+        private void listViewResults_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (listViewResults.Items.Count == 0)
+                return;
+            selectFoundTexture(listViewResults.SelectedItems[0]);
         }
 
         private void replaceTexture(DDSImage image, List<MatchedTexture> list)
@@ -620,10 +648,10 @@ namespace MassEffectModder
                 MatchedTexture nodeTexture = list[n];
                 Package package = new Package(GameData.GamePath + nodeTexture.path);
                 Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
-                do
+                while (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty))
                 {
                     texture.mipMapsList.Remove(texture.mipMapsList.First(s => s.storageType == Texture.StorageTypes.empty));
-                } while (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty));
+                }
 
                 if (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1)
                 {
@@ -642,15 +670,14 @@ namespace MassEffectModder
                 for (int m = 0; m < image.mipMaps.Count(); m++)
                 {
                     Texture.MipMap mipmap = new Texture.MipMap();
-                    mipmap.storageType = texture.getStorageType(mipmap.width, mipmap.height);
+                    mipmap.storageType = texture.getStorageType(image.mipMaps[m].width, image.mipMaps[m].height);
                     mipmap.uncompressedSize = image.mipMaps[m].data.Length;
                     if (mipmap.storageType == Texture.StorageTypes.pccCpr ||
                         mipmap.storageType == Texture.StorageTypes.arcCpr ||
                         (mipmap.storageType == Texture.StorageTypes.extCpr && _gameSelected != MeType.ME1_TYPE))
                     {
-                        byte[] compressedData = texture.compressTexture(mipmap.newData);
-                        mipmap.compressedSize = compressedData.Length;
                         mipmap.newData = texture.compressTexture(image.mipMaps[m].data);
+                        mipmap.compressedSize = mipmap.newData.Length;
                     }
                     if (mipmap.storageType == Texture.StorageTypes.pccUnc ||
                         mipmap.storageType == Texture.StorageTypes.extUnc)
@@ -672,7 +699,7 @@ namespace MassEffectModder
                             using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Write))
                             {
                                 mipmap.dataOffset = (uint)fs.Length;
-                                fs.Seek(0, SeekOrigin.End);
+                                fs.End();
                                 fs.WriteFromBuffer(mipmap.newData);
                             }
                         }
@@ -691,19 +718,28 @@ namespace MassEffectModder
                     mipmaps.Add(mipmap);
                     if (texture.mipMapsList.Count() == 1)
                         break;
-                    firstTexture = texture;
                 }
                 texture.replaceMipMaps(mipmaps);
 
                 MemoryStream newData = new MemoryStream();
                 newData.WriteFromBuffer(texture.properties.toArray());
+                newData.WriteFromBuffer(texture.toArray(0)); // filled later
+                package.setExportData(nodeTexture.exportID, newData.ToArray());
+
+                newData = new MemoryStream();
+                newData.WriteFromBuffer(texture.properties.toArray());
                 newData.WriteFromBuffer(texture.toArray(package.exportsTable[nodeTexture.exportID].dataOffset + (uint)newData.Position));
                 package.setExportData(nodeTexture.exportID, newData.ToArray());
+
+                if (n == 0)
+                    firstTexture = texture;
+
                 package.SaveToFile();
+                package.Dispose();
             }
         }
 
-        private void replaceTextureToolStripMenuItem_Click(object sender, EventArgs e)
+        private void replaceTexture()
         {
             if (listViewTextures.SelectedItems.Count == 0)
                 return;
@@ -716,14 +752,14 @@ namespace MassEffectModder
 
             bool startMod = sTARTModdingToolStripMenuItem.Enabled;
             bool endMod = eNDModdingToolStripMenuItem.Enabled;
+            bool loadMod = loadMODsToolStripMenuItem.Enabled;
+            bool clearMod = clearMODsToolStripMenuItem.Enabled;
             EnableMenuOptions(false);
-            MODsToolStripMenuItem.Enabled = true;
-            loadMODsToolStripMenuItem.Enabled = false;
-            clearMODsToolStripMenuItem.Enabled = false;
 
             DDSImage image = new DDSImage(selectDDS.FileName);
             PackageTreeNode node = (PackageTreeNode)treeViewPackages.SelectedNode;
-            int index = Convert.ToInt32(listViewTextures.FocusedItem.Name);
+            ListViewItem item = listViewTextures.FocusedItem;
+            int index = Convert.ToInt32(item.Name);
 
             replaceTexture(image, node.textures[index].list);
 
@@ -742,8 +778,21 @@ namespace MassEffectModder
             EnableMenuOptions(true);
             sTARTModdingToolStripMenuItem.Enabled = startMod;
             eNDModdingToolStripMenuItem.Enabled = endMod;
-            loadMODsToolStripMenuItem.Enabled = true;
-            clearMODsToolStripMenuItem.Enabled = false;
+            loadMODsToolStripMenuItem.Enabled = loadMod;
+            clearMODsToolStripMenuItem.Enabled = clearMod;
+            if (moddingEnable)
+                switchModMode(true);
+            listViewTextures.Focus();
+            item.Selected = false;
+            item.Selected = true;
+            item.Focused = true;
+        }
+
+        private void replaceTextureToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _mainWindow.updateStatusLabel("Replacing texture...");
+            replaceTexture();
+            _mainWindow.updateStatusLabel("Done.");
         }
 
         private void removeEmptyMipmapsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -773,6 +822,7 @@ namespace MassEffectModder
                         if (!texture.hasImageData() ||
                             !texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty))
                         {
+                            package.Dispose();
                             continue;
                         }
                         do
@@ -807,6 +857,7 @@ namespace MassEffectModder
                                         texture.mipMapsList[t] = mipmap;
                                     }
                                 }
+                                refPkg.Dispose();
                             }
                         }
 
@@ -817,13 +868,14 @@ namespace MassEffectModder
                         modified = true;
                     }
                 }
-                if (_gameSelected == MeType.ME3_TYPE && !modified)
-                    continue;
-                package.SaveToFile();
+                if (_gameSelected != MeType.ME3_TYPE && modified)
+                    package.SaveToFile();
+
+                package.Dispose();
             }
 
             EnableMenuOptions(true);
-            _mainWindow.updateStatusLabel("Done");
+            _mainWindow.updateStatusLabel("Done.");
         }
 
         private void switchModMode(bool enable)
@@ -833,19 +885,21 @@ namespace MassEffectModder
             loadMODsToolStripMenuItem.Enabled = !enable;
             clearMODsToolStripMenuItem.Enabled = false;
             removeEmptyMipmapsToolStripMenuItem.Enabled = !enable;
+            Application.DoEvents();
         }
 
         private void sTARTModdingToolStripMenuItem_Click(object sender, EventArgs e)
         {
             switchModMode(true);
             numberOfTexturesMod = 0;
+            moddingEnable = true;
             fileStreamMod = File.Create(TempModFileName);
             fileStreamMod.Seek(TextureModHeaderLength, SeekOrigin.Begin);
         }
 
         private void eNDModdingToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            fileStreamMod.Seek(0, SeekOrigin.Begin);
+            fileStreamMod.Begin();
             fileStreamMod.WriteUInt32(TextureModTag);
             fileStreamMod.WriteUInt32(TextureModVersion);
             fileStreamMod.WriteUInt32(numberOfTexturesMod);
@@ -853,7 +907,7 @@ namespace MassEffectModder
 
             if (numberOfTexturesMod > 0)
             {
-                OpenFileDialog modFile = new OpenFileDialog();
+                SaveFileDialog modFile = new SaveFileDialog();
                 modFile.Title = "Please select new name for Mod file";
                 modFile.Filter = "MOD file|*.mod";
                 if (modFile.ShowDialog() == DialogResult.OK)
@@ -864,6 +918,7 @@ namespace MassEffectModder
             if (File.Exists(TempModFileName))
                 File.Delete(TempModFileName);
 
+            moddingEnable = false;
             switchModMode(false);
         }
 
@@ -873,7 +928,9 @@ namespace MassEffectModder
             eNDModdingToolStripMenuItem.Enabled = !enable;
             loadMODsToolStripMenuItem.Enabled = enable;
             clearMODsToolStripMenuItem.Enabled = enable;
+            searchToolStripMenuItem.Enabled = !enable;
             removeEmptyMipmapsToolStripMenuItem.Enabled = !enable;
+            Application.DoEvents();
         }
 
         private void loadMODsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -935,9 +992,7 @@ namespace MassEffectModder
             }
             EnableMenuOptions(true);
             if (listViewMods.Items.Count == 0)
-            {
                 clearMODsView();
-            }
         }
 
         private void deleteModToolStripMenuItem_Click(object sender, EventArgs e)
@@ -947,14 +1002,14 @@ namespace MassEffectModder
 
             EnableMenuOptions(false);
             foreach (ListViewItem item in listViewMods.SelectedItems)
-            {
                 listViewMods.Items.Remove(item);
-            }
 
             listViewTextures.Clear();
             clearPreview();
 
             EnableMenuOptions(true);
+            if (listViewMods.Items.Count == 0)
+                clearMODsView();
         }
 
         private void listViewMods_SelectedIndexChanged(object sender, EventArgs e)

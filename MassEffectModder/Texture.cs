@@ -181,7 +181,7 @@ namespace MassEffectModder
         public void replaceMipMaps(List<Texture.MipMap> newMipMaps)
         {
             mipMapsList = newMipMaps;
-            MemoryStream textureData = new MemoryStream();
+            textureData = new MemoryStream();
             if (GameData.gameType != MeType.ME3_TYPE)
             {
                 textureData.WriteZeros(12);
@@ -239,6 +239,7 @@ namespace MassEffectModder
                 dataBlockLeft -= newBlockSize;
             }
 
+            ouputStream.Begin();
             ouputStream.WriteUInt32(textureTag);
             ouputStream.WriteUInt32(maxBlockSize);
             ouputStream.WriteUInt32(compressedSize);
@@ -317,7 +318,7 @@ namespace MassEffectModder
 
         public MipMap getMipmap(int width, int height)
         {
-            return mipMapsList.First(b => b.width == width && b.height == height);
+            return mipMapsList.Find(b => b.width == width && b.height == height);
         }
 
         public StorageTypes getStorageType(int width, int height)
@@ -428,6 +429,7 @@ namespace MassEffectModder
                 }
                 newData.WriteInt32(mipmap.width);
                 newData.WriteInt32(mipmap.height);
+                mipMapsList[l] = mipmap;
             }
 
             if (GameData.gameType == MeType.ME1_TYPE)
