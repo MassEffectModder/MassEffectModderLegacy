@@ -908,7 +908,8 @@ namespace MassEffectModder
 
         public void Dispose()
         {
-            chunkCache.Dispose();
+            if (chunkCache != null)
+                chunkCache.Dispose();
             packageData.Dispose();
             packageFile.Close();
         }
