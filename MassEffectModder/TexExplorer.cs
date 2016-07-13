@@ -875,7 +875,7 @@ namespace MassEffectModder
                         modified = true;
                     }
                 }
-                if (_gameSelected != MeType.ME3_TYPE && modified)
+                if (modified)
                     package.SaveToFile();
 
                 package.Dispose();
