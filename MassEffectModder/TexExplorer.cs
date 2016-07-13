@@ -848,7 +848,6 @@ namespace MassEffectModder
                         if (!texture.hasImageData() ||
                             !texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty))
                         {
-                            package.Dispose();
                             continue;
                         }
                         do
