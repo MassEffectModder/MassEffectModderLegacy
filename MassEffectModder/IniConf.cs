@@ -54,7 +54,7 @@ namespace MassEffectModder
             if (_iniPath == null || key == null)
                 throw new Exception();
 
-            var str = new StringBuilder(256);
+            StringBuilder str = new StringBuilder(256);
             GetPrivateProfileString(section, key, "", str, str.MaxCapacity, _iniPath);
             return str.ToString();
         }

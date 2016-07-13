@@ -52,7 +52,7 @@ namespace StreamHelpers
 
         public static void WriteFromStream(this Stream stream, Stream inputStream, int count)
         {
-            var buffer = ReadToBuffer(inputStream, count);
+            byte[] buffer = ReadToBuffer(inputStream, count);
             stream.Write(buffer, 0, buffer.Length);
         }
 
@@ -68,7 +68,7 @@ namespace StreamHelpers
 
         public static string ReadStringASCII(this Stream stream, int count)
         {
-            var buffer = stream.ReadToBuffer(count);
+            byte[] buffer = stream.ReadToBuffer(count);
             return Encoding.ASCII.GetString(buffer);
         }
 
@@ -87,7 +87,7 @@ namespace StreamHelpers
 
         public static string ReadStringUnicode(this Stream stream, int count)
         {
-            var buffer = stream.ReadToBuffer(count);
+            byte[] buffer = stream.ReadToBuffer(count);
             return Encoding.Unicode.GetString(buffer);
         }
 

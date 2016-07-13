@@ -83,8 +83,8 @@ namespace MassEffectModder
         {
             enableGameDataMenu(false);
             GameData gameData = new GameData(MeType.ME1_TYPE, _configIni);
-            var path = gameData.EngineConfigIniPath;
-            var exist = File.Exists(path);
+            string path = gameData.EngineConfigIniPath;
+            bool exist = File.Exists(path);
             if (!exist)
                 return;
             ConfIni engineConf = new ConfIni(path);
@@ -163,7 +163,7 @@ namespace MassEffectModder
             for (int i = 0; i < GameData.packageFiles.Count; i++)
             {
                 updateStatusLabel("Repack file " + (i + 1) + " of " + GameData.packageFiles.Count);
-                var package = new Package(GameData.packageFiles[i]);
+                Package package = new Package(GameData.packageFiles[i]);
                 if (package.compressed && package.compressionType != Package.CompressionType.Zlib)
                     package.SaveToFile(true);
             }
@@ -187,8 +187,8 @@ namespace MassEffectModder
         {
             enableGameDataMenu(false);
             GameData gameData = new GameData(MeType.ME2_TYPE, _configIni);
-            var path = gameData.EngineConfigIniPath;
-            var exist = File.Exists(path);
+            string path = gameData.EngineConfigIniPath;
+            bool exist = File.Exists(path);
             if (!exist)
                 return;
             ConfIni engineConf = new ConfIni(path);
@@ -301,8 +301,8 @@ namespace MassEffectModder
         {
             enableGameDataMenu(false);
             GameData gameData = new GameData(MeType.ME3_TYPE, _configIni);
-            var path = gameData.EngineConfigIniPath;
-            var exist = File.Exists(path);
+            string path = gameData.EngineConfigIniPath;
+            bool exist = File.Exists(path);
             if (!exist)
                 return;
             ConfIni engineConf = new ConfIni(path);

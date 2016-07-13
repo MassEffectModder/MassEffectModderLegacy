@@ -70,12 +70,12 @@ namespace MassEffectModder
             if (sfarVersion != SfarVersion)
                 throw new Exception("Wrong SFAR version");
 
-            var dataOffset = sfarFile.ReadUInt32();
-            var entriesOffset = sfarFile.ReadUInt32();
-            var filesCount = sfarFile.ReadUInt32();
-            var sizesArrayOffset = sfarFile.ReadUInt32();
-            var maxBlockSize = sfarFile.ReadUInt32();
-            var compressionTag = sfarFile.ReadUInt32();
+            uint dataOffset = sfarFile.ReadUInt32();
+            uint entriesOffset = sfarFile.ReadUInt32();
+            uint filesCount = sfarFile.ReadUInt32();
+            uint sizesArrayOffset = sfarFile.ReadUInt32();
+            uint maxBlockSize = sfarFile.ReadUInt32();
+            uint compressionTag = sfarFile.ReadUInt32();
             if (compressionTag != LZMATag)
                 throw new Exception("Not LZMA compression for SFAR file");
 
@@ -95,7 +95,7 @@ namespace MassEffectModder
             if (sfarFile.Position != sizesArrayOffset)
                 throw new Exception("not expected file position");
 
-            var numBlockSizes = (dataOffset - sizesArrayOffset) / sizeof(ushort);
+            uint numBlockSizes = (dataOffset - sizesArrayOffset) / sizeof(ushort);
             ushort[] blockSizes = new ushort[numBlockSizes];
             for (int i = 0; i < numBlockSizes; i++)
             {
@@ -118,11 +118,11 @@ namespace MassEffectModder
                         throw new Exception();
                     using (FileStream outputFile = new FileStream(outPath + @"\TOC", FileMode.Create, FileAccess.Write))
                     {
-                        var filenamesStream = new StreamReader(new MemoryStream(outBuf));
+                        StreamReader filenamesStream = new StreamReader(new MemoryStream(outBuf));
                         while (filenamesStream.EndOfStream == false)
                         {
                             string name = filenamesStream.ReadLine();
-                            var hash = MD5.Create().ComputeHash(Encoding.ASCII.GetBytes(name.ToLowerInvariant()));
+                            byte[] hash = MD5.Create().ComputeHash(Encoding.ASCII.GetBytes(name.ToLowerInvariant()));
                             for (int l = 0; l < filesCount; l++)
                             {
                                 if (StructuralComparisons.StructuralEqualityComparer.Equals(filesList[l].filenameHash, hash))
@@ -158,7 +158,7 @@ namespace MassEffectModder
                     }
                     else
                     {
-                        var bytesLeft = filesList[i].uncomprSize;
+                        long bytesLeft = filesList[i].uncomprSize;
                         for (int j = 0; j < filesList[i].numBlocks; j++)
                         {
                             int compressedBlockSize = blockSizes[filesList[i].compressedBlockSizesIndex + j];

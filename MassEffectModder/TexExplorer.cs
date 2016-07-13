@@ -267,7 +267,7 @@ namespace MassEffectModder
             List<string> restList = new List<string>();
             for (int i = 0; i < GameData.packageFiles.Count; i++)
             {
-                var package = new Package(GameData.packageFiles[i], true);
+                Package package = new Package(GameData.packageFiles[i], true);
                 if (!package.compressed)
                     sortedList.Add(GameData.packageFiles[i]);
                 else
@@ -281,7 +281,7 @@ namespace MassEffectModder
 
         public void FindTextures(string packagePath)
         {
-            var package = new Package(packagePath);
+            Package package = new Package(packagePath);
             for (int i = 0; i < package.exportsTable.Count; i++)
             {
                 int id = package.getClassNameId(package.exportsTable[i].classId);
@@ -837,7 +837,7 @@ namespace MassEffectModder
             {
                 bool modified = false;
                 _mainWindow.updateStatusLabel("Remove empty mipmaps, package " + (i + 1) + " of " + GameData.packageFiles.Count);
-                var package = new Package(GameData.packageFiles[i]);
+                Package package = new Package(GameData.packageFiles[i]);
                 for (int l = 0; l < package.exportsTable.Count; l++)
                 {
                     int id = package.getClassNameId(package.exportsTable[l].classId);

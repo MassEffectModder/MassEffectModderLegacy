@@ -43,8 +43,8 @@ namespace MassEffectModder
             gameType = type;
             _configIni = configIni;
 
-            var key = "ME" + (int)gameType;
-            var path = configIni.Read(key, "GameDataPath");
+            string key = "ME" + (int)gameType;
+            string path = configIni.Read(key, "GameDataPath");
             if (path != null && path != "")
             {
                 _path = path.TrimEnd(Path.DirectorySeparatorChar);

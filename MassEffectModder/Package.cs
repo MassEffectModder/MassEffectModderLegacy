@@ -394,7 +394,7 @@ namespace MassEffectModder
                     chunks.Add(chunk);
                 }
             }
-            var filePos = packageFile.Position;
+            long filePos = packageFile.Position;
             someTag = packageFile.ReadUInt32();
             if (version == packageFileVersionME2)
                 packageFile.SkipInt32(); // const 0
@@ -554,7 +554,7 @@ namespace MassEffectModder
                 int len = input.ReadInt32();
                 if (len < 0) // unicode
                 {
-                    var str = input.ReadToBuffer(-len * 2);
+                    byte[] str = input.ReadToBuffer(-len * 2);
                     if (version == packageFileVersionME3)
                     {
                         entry.name = Encoding.Unicode.GetString(str);
@@ -660,7 +660,7 @@ namespace MassEffectModder
             {
                 ImportEntry entry = new ImportEntry();
 
-                var start = input.Position;
+                long start = input.Position;
                 entry.packageFileId = input.ReadInt32();
                 entry.packageFile = namesTable[entry.packageFileId].name;
                 input.SkipInt32(); // const 0
@@ -671,7 +671,7 @@ namespace MassEffectModder
                 entry.objectName = namesTable[entry.objectNameId].name;
                 input.SkipInt32();
 
-                var len = input.Position - start;
+                long len = input.Position - start;
                 input.JumpTo(start);
                 entry.raw = input.ReadToBuffer((int)len);
 
@@ -698,7 +698,7 @@ namespace MassEffectModder
                 uint count;
                 ExportEntry entry = new ExportEntry();
 
-                var start = input.Position;
+                long start = input.Position;
                 entry.classId = input.ReadInt32();
                 entry.classParentId = input.ReadInt32();
                 entry.linkId = input.ReadInt32();
@@ -720,7 +720,7 @@ namespace MassEffectModder
                 input.Skip(16); // skip guid
                 input.SkipInt32();
 
-                var len = input.Position - start;
+                long len = input.Position - start;
                 input.JumpTo(start);
                 entry.raw = input.ReadToBuffer((int)len);
 
@@ -835,7 +835,7 @@ namespace MassEffectModder
                     fs.Write(packageHeader, 0, packageHeader.Length);
                     fs.WriteUInt32((uint)compressionType);
                     fs.WriteUInt32((uint)chunks.Count);
-                    var chunksTableOffset = (uint)fs.Position;
+                    uint chunksTableOffset = (uint)fs.Position;
                     fs.Skip(SizeOfChunk * chunks.Count); // skip chunks table - filled later
                     fs.WriteUInt32(someTag);
                     if (version == packageFileVersionME2)
@@ -1055,7 +1055,5 @@ namespace MassEffectModder
                 }
             }
         }
-
     }
-
 }
