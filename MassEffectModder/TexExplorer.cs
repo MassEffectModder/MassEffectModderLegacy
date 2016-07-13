@@ -672,6 +672,8 @@ namespace MassEffectModder
                     Texture.MipMap mipmap = new Texture.MipMap();
                     mipmap.storageType = texture.getStorageType(image.mipMaps[m].width, image.mipMaps[m].height);
                     mipmap.uncompressedSize = image.mipMaps[m].data.Length;
+                    mipmap.width = image.mipMaps[m].width;
+                    mipmap.height = image.mipMaps[m].height;
                     if (mipmap.storageType == Texture.StorageTypes.pccCpr ||
                         mipmap.storageType == Texture.StorageTypes.arcCpr ||
                         (mipmap.storageType == Texture.StorageTypes.extCpr && _gameSelected != MeType.ME1_TYPE))
@@ -704,9 +706,25 @@ namespace MassEffectModder
                             string filename = GameData.tfcFiles.Find(s => Path.GetFileName(s).Equals(archive, StringComparison.OrdinalIgnoreCase));
                             using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Write))
                             {
-                                fs.SeekEnd();
-                                mipmap.dataOffset = (uint)fs.Position;
-                                fs.WriteFromBuffer(mipmap.newData);
+                                Texture.MipMap oldMipmap = texture.getMipmap(mipmap.width, mipmap.height);
+                                if (oldMipmap.width == 0 || mipmap.newData.Length > oldMipmap.compressedSize)
+                                {
+                                    if (oldMipmap.width != 0)
+                                    {
+                                        fs.JumpTo(oldMipmap.dataOffset);
+                                        fs.WriteZeros(oldMipmap.compressedSize);
+                                    }
+                                    fs.SeekEnd();
+                                    mipmap.dataOffset = (uint)fs.Position;
+                                    fs.WriteFromBuffer(mipmap.newData);
+                                }
+                                else
+                                {
+                                    fs.JumpTo(oldMipmap.dataOffset);
+                                    mipmap.dataOffset = (uint)fs.Position;
+                                    fs.WriteFromBuffer(mipmap.newData);
+                                    fs.WriteZeros(oldMipmap.compressedSize - mipmap.newData.Length);
+                                }
                             }
                         }
                         else
@@ -719,8 +737,6 @@ namespace MassEffectModder
                         mipmap.dataOffset = firstTexture.mipMapsList[m].dataOffset;
                     }
 
-                    mipmap.width = image.mipMaps[m].width;
-                    mipmap.height = image.mipMaps[m].height;
                     mipmaps.Add(mipmap);
                     if (texture.mipMapsList.Count() == 1)
                         break;
