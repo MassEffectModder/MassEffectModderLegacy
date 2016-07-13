@@ -726,6 +726,9 @@ namespace MassEffectModder
                         break;
                 }
                 texture.replaceMipMaps(mipmaps);
+                texture.properties.setIntValue("SizeX", texture.mipMapsList.First().width);
+                texture.properties.setIntValue("SizeY", texture.mipMapsList.First().height);
+                texture.properties.setIntValue("MipTailBaseIdx", texture.mipMapsList.Count() - 1);
 
                 MemoryStream newData = new MemoryStream();
                 newData.WriteFromBuffer(texture.properties.toArray());
