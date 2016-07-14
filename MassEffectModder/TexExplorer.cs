@@ -732,7 +732,7 @@ namespace MassEffectModder
                             mipmap.dataOffset = firstTexture.mipMapsList[m].dataOffset;
                         }
                     }
-                    if (_gameSelected == MeType.ME1_TYPE && n > 0)
+                    if (_gameSelected == MeType.ME1_TYPE && n > 0 && mipmap.storageType == Texture.StorageTypes.extCpr)
                     {
                         mipmap.dataOffset = firstTexture.mipMapsList[m].dataOffset;
                     }
