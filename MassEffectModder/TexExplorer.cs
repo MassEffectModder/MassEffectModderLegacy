@@ -678,6 +678,8 @@ namespace MassEffectModder
                         mipmap.storageType == Texture.StorageTypes.arcCpr ||
                         (mipmap.storageType == Texture.StorageTypes.extCpr && _gameSelected != MeType.ME1_TYPE))
                     {
+                        if (mipmap.width < 4 && mipmap.height < 4)
+                            continue;
                         if (n == 0)
                             mipmap.newData = texture.compressTexture(image.mipMaps[m].data);
                         else
@@ -692,6 +694,8 @@ namespace MassEffectModder
                     }
                     if (mipmap.storageType == Texture.StorageTypes.extCpr && _gameSelected == MeType.ME1_TYPE)
                     {
+                        if (mipmap.width < 4 && mipmap.height < 4)
+                            continue;
                         mipmap.compressedSize = firstTexture.mipMapsList[m].compressedSize;
                     }
                     if ((_gameSelected == MeType.ME2_TYPE ||
