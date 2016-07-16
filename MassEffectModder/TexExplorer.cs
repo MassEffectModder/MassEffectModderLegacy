@@ -1201,6 +1201,8 @@ namespace MassEffectModder
                 listViewMods.Items.Add(item);
             }
             EnableMenuOptions(true);
+            if (listViewMods.Items.Count == 0)
+                clearMODsView();
             switchModsMode(true);
         }
 
