@@ -27,6 +27,7 @@ using StreamHelpers;
 using AmaroK86.ImageFormat;
 using System.Linq;
 using System.Text.RegularExpressions;
+using ICSharpCode.SharpZipLib.Zip;
 
 namespace MassEffectModder
 {
@@ -516,100 +517,141 @@ namespace MassEffectModder
             using (FileStream fs = new FileStream(filenameMod, FileMode.Open, FileAccess.Read))
             {
                 bool legacy = false;
-                uint tag = fs.ReadUInt32();
-                uint version = fs.ReadUInt32();
-                if (tag != TextureModTag || version != TextureModVersion)
-                {
-                    fs.SeekBegin();
-                    legacy = true;
-                }
 
-                FileStream outFile = null;
-                if (store)
+                if (Path.GetExtension(filenameMod).ToLower() == ".tpf")
                 {
-                    if (!legacy)
+                    byte[] tpfXorKey = { 0xA4, 0x3F };
+                    using (ZipInputStream zipFs = new ZipInputStream(fs, tpfXorKey))
                     {
-                        File.Copy(filenameMod, Path.Combine(outDir, Path.GetFileName(filenameMod)));
-                        return;
-                    }
-                    outFile = new FileStream(Path.Combine(outDir, Path.GetFileName(filenameMod)), FileMode.Create, FileAccess.Write);
-                    outFile.WriteUInt32(TextureModTag);
-                    outFile.WriteUInt32(TextureModVersion);
-                }
-                int numTextures = fs.ReadInt32();
-                if (store)
-                    outFile.WriteInt32(numTextures);
-                for (int i = 0; i < numTextures; i++)
-                {
-                    string name;
-                    uint crc, size;
-                    if (legacy)
-                    {
-                        int len = fs.ReadInt32();
-                        name = fs.ReadStringASCII(len);
-                        name = name.Split(' ').Last();
-                        len = fs.ReadInt32();
-                        string scriptLegacy = fs.ReadStringASCII(len);
-                        crc = ParseLegacyScriptMod(scriptLegacy, name);
-                    }
-                    else
-                    {
-                        name = fs.ReadStringASCIINull();
-                        crc = fs.ReadUInt32();
-                    }
-                    size = fs.ReadUInt32();
-                    _mainWindow.updateStatusLabel("Processing MOD: " +
-                        Path.GetFileNameWithoutExtension(filenameMod) + ", Texture: " + name);
-                    if (extract)
-                    {
-                        string filename = name + "-" + string.Format("{0:X8}", crc)+ ".dds";
-                        using (FileStream output = new FileStream(Path.Combine(outDir, Path.GetFileName(filename)), FileMode.Create, FileAccess.Write))
+                        ZipEntry entry;
+                        byte[] password = {
+                            0x73, 0x2A, 0x63, 0x7D, 0x5F, 0x0A, 0xA6, 0xBD,
+                            0x7D, 0x65, 0x7E, 0x67, 0x61, 0x2A, 0x7F, 0x7F,
+                            0x74, 0x61, 0x67, 0x5B, 0x60, 0x70, 0x45, 0x74,
+                            0x5C, 0x22, 0x74, 0x5D, 0x6E, 0x6A, 0x73, 0x41,
+                            0x77, 0x6E, 0x46, 0x47, 0x77, 0x49, 0x0C, 0x4B,
+                            0x46, 0x6F
+                        };
+                        zipFs.Password = password;
+                        while ((entry = zipFs.GetNextEntry()) != null)
                         {
-                            output.WriteFromStream(fs, size);
+                            string name = "";
+                            string filename = Path.GetFileName(entry.Name);
+                            using (FileStream outFile = File.Create(filename))
+                            {
+                                byte[] data = new byte[1000];
+                                for (;;)
+                                {
+                                    int readed = zipFs.Read(data, 0, data.Length);
+                                    if (readed > 0)
+                                        outFile.Write(data, 0, readed);
+                                    else
+                                        break;
+                                }
+                                //outFile.WriteFromStream(zipFs, entry.CompressedSize);
+                            }
+                            _mainWindow.updateStatusLabel("Processing MOD: " +
+                                    Path.GetFileNameWithoutExtension(filenameMod) + ", Texture: " + name);
                         }
-                        continue;
                     }
+                }
+                else
+                {
+                    uint tag = fs.ReadUInt32();
+                    uint version = fs.ReadUInt32();
+                    if (tag != TextureModTag || version != TextureModVersion)
+                    {
+                        fs.SeekBegin();
+                        legacy = true;
+                    }
+
+                    FileStream outFile = null;
                     if (store)
                     {
-                        outFile.WriteStringASCIINull(name);
-                        outFile.WriteUInt32(crc);
-                        outFile.WriteUInt32(size);
-                        outFile.WriteFromStream(fs, size);
-                        continue;
-                    }
-                    if (previewIndex != -1)
-                    {
-                        if (i != previewIndex)
+                        if (!legacy)
                         {
-                            fs.Skip(size);
+                            File.Copy(filenameMod, Path.Combine(outDir, Path.GetFileName(filenameMod)));
+                            return;
+                        }
+                        outFile = new FileStream(Path.Combine(outDir, Path.GetFileName(filenameMod)), FileMode.Create, FileAccess.Write);
+                        outFile.WriteUInt32(TextureModTag);
+                        outFile.WriteUInt32(TextureModVersion);
+                    }
+                    int numTextures = fs.ReadInt32();
+                    if (store)
+                        outFile.WriteInt32(numTextures);
+                    for (int i = 0; i < numTextures; i++)
+                    {
+                        string name;
+                        uint crc, size;
+                        if (legacy)
+                        {
+                            int len = fs.ReadInt32();
+                            name = fs.ReadStringASCII(len);
+                            name = name.Split(' ').Last();
+                            len = fs.ReadInt32();
+                            string scriptLegacy = fs.ReadStringASCII(len);
+                            crc = ParseLegacyScriptMod(scriptLegacy, name);
+                        }
+                        else
+                        {
+                            name = fs.ReadStringASCIINull();
+                            crc = fs.ReadUInt32();
+                        }
+                        size = fs.ReadUInt32();
+                        _mainWindow.updateStatusLabel("Processing MOD: " +
+                            Path.GetFileNameWithoutExtension(filenameMod) + ", Texture: " + name);
+                        if (extract)
+                        {
+                            string filename = name + "-" + string.Format("{0:X8}", crc) + ".dds";
+                            using (FileStream output = new FileStream(Path.Combine(outDir, Path.GetFileName(filename)), FileMode.Create, FileAccess.Write))
+                            {
+                                output.WriteFromStream(fs, size);
+                            }
                             continue;
                         }
-                        DDSImage image = new DDSImage(new MemoryStream(fs.ReadToBuffer(size)));
-                        pictureBoxPreview.Image = image.mipMaps[0].bitmap;
-                        return;
-                    }
-                    else
-                    {
-                        FoundTexture foundTexture = _textures.Find(s => s.crc == crc && s.name == name);
-                        if (foundTexture.crc != 0)
+                        if (store)
                         {
-                            if (replace)
-                            {
-                                DDSImage image = new DDSImage(new MemoryStream(fs.ReadToBuffer(size)));
-                                replaceTexture(image, foundTexture.list);
-                            }
-                            else
+                            outFile.WriteStringASCIINull(name);
+                            outFile.WriteUInt32(crc);
+                            outFile.WriteUInt32(size);
+                            outFile.WriteFromStream(fs, size);
+                            continue;
+                        }
+                        if (previewIndex != -1)
+                        {
+                            if (i != previewIndex)
                             {
                                 fs.Skip(size);
-                                ListViewItem item = new ListViewItem(foundTexture.displayName + " (" + foundTexture.packageName + ")");
-                                item.Name = i.ToString();
-                                listViewTextures.Items.Add(item);
+                                continue;
+                            }
+                            DDSImage image = new DDSImage(new MemoryStream(fs.ReadToBuffer(size)));
+                            pictureBoxPreview.Image = image.mipMaps[0].bitmap;
+                            break;
+                        }
+                        else
+                        {
+                            FoundTexture foundTexture = _textures.Find(s => s.crc == crc && s.name == name);
+                            if (foundTexture.crc != 0)
+                            {
+                                if (replace)
+                                {
+                                    DDSImage image = new DDSImage(new MemoryStream(fs.ReadToBuffer(size)));
+                                    replaceTexture(image, foundTexture.list);
+                                }
+                                else
+                                {
+                                    fs.Skip(size);
+                                    ListViewItem item = new ListViewItem(foundTexture.displayName + " (" + foundTexture.packageName + ")");
+                                    item.Name = i.ToString();
+                                    listViewTextures.Items.Add(item);
+                                }
                             }
                         }
                     }
+                    if (store)
+                        outFile.Close();
                 }
-                if (store)
-                    outFile.Close();
             }
         }
 
@@ -635,7 +677,6 @@ namespace MassEffectModder
                             File.Delete(outFile);
                             return;
                         }
-                        textureName.Split('-').First();
                         outFs.WriteStringASCIINull(textureName);
                         outFs.WriteUInt32(crc);
                         outFs.WriteUInt32((uint)fs.Length);
@@ -1160,7 +1201,7 @@ namespace MassEffectModder
         {
             OpenFileDialog modFile = new OpenFileDialog();
             modFile.Title = "Please select Mod file";
-            modFile.Filter = "MOD file|*.mod";
+            modFile.Filter = "MOD file | *.mod; *.tpf";
             modFile.Multiselect = true;
             if (modFile.ShowDialog() != DialogResult.OK)
                 return;
@@ -1176,24 +1217,34 @@ namespace MassEffectModder
             foreach (string file in files)
             {
                 bool legacy = false;
-                using (FileStream fs = new FileStream(file, FileMode.Open))
+                bool tpf = false;
+                if (Path.GetExtension(file).ToLower() == ".tpf")
                 {
-                    uint tag = fs.ReadUInt32();
-                    uint version = fs.ReadUInt32();
-                    if (tag != TextureModTag || version != TextureModVersion)
+                    tpf = true;
+                }
+                else
+                {
+                    using (FileStream fs = new FileStream(file, FileMode.Open))
                     {
-                        fs.SeekBegin();
-                        if (!checkTextureMod(fs))
+                        uint tag = fs.ReadUInt32();
+                        uint version = fs.ReadUInt32();
+                        if (tag != TextureModTag || version != TextureModVersion)
                         {
-                            MessageBox.Show("File " + file + " is not MOD, omitting...");
-                            continue;
+                            fs.SeekBegin();
+                            if (!checkTextureMod(fs))
+                            {
+                                MessageBox.Show("File " + file + " is not MOD, omitting...");
+                                continue;
+                            }
+                            legacy = true;
                         }
-                        legacy = true;
                     }
                 }
                 string desc;
                 if (legacy)
                     desc = Path.GetFileNameWithoutExtension(file) + " (Legacy MOD)";
+                else if (tpf)
+                    desc = Path.GetFileNameWithoutExtension(file) + " (TPF - View Only)";
                 else
                     desc = Path.GetFileNameWithoutExtension(file);
                 ListViewItem item = new ListViewItem(desc);

@@ -63,7 +63,7 @@ namespace ICSharpCode.SharpZipLib.Zip.Compression.Streams
 		/// Initialise a new instance of <see cref="InflaterInputBuffer"/> with a default buffer size
 		/// </summary>
 		/// <param name="stream">The stream to buffer.</param>
-		public InflaterInputBuffer(Stream stream) : this(stream , 4096)
+		public InflaterInputBuffer(Stream stream, byte[] xorkey) : this(stream , 4096, xorkey)
 		{
 		}
 		
@@ -73,7 +73,7 @@ namespace ICSharpCode.SharpZipLib.Zip.Compression.Streams
 		/// <param name="stream">The stream to buffer.</param>
 		/// <param name="bufferSize">The size to use for the buffer</param>
 		/// <remarks>A minimum buffer size of 1KB is permitted.  Lower sizes are treated as 1KB.</remarks>
-		public InflaterInputBuffer(Stream stream, int bufferSize)
+		public InflaterInputBuffer(Stream stream, int bufferSize, byte[] xorkey)
 		{
 			inputStream = stream;
 			if ( bufferSize < 1024 ) {
@@ -81,6 +81,7 @@ namespace ICSharpCode.SharpZipLib.Zip.Compression.Streams
 			}
 			rawData = new byte[bufferSize];
 			clearText = rawData;
+            xorKey = xorkey;
 		}
 		#endregion
 
@@ -153,8 +154,8 @@ namespace ICSharpCode.SharpZipLib.Zip.Compression.Streams
 		{
 			rawLength = 0;
 			int toRead = rawData.Length;
-			
-			while (toRead > 0) {
+
+            while (toRead > 0) {
 				int count = inputStream.Read(rawData, rawLength, toRead);
 				if ( count <= 0 ) {
 					if (rawLength == 0) {
@@ -162,7 +163,14 @@ namespace ICSharpCode.SharpZipLib.Zip.Compression.Streams
 					}
 					break;
 				}
-				rawLength += count;
+
+                if (xorKey != null && xorKey.Length > 0)
+                {
+                    for (int i = 0; i < rawData.Length; i++)
+                        rawData[i] = (byte)(xorKey[i % xorKey.Length] ^ rawData[i]);
+                }
+
+                rawLength += count;
 				toRead -= count;
 			}
 			
@@ -329,8 +337,9 @@ namespace ICSharpCode.SharpZipLib.Zip.Compression.Streams
 		#region Instance Fields
 		int rawLength;
 		byte[] rawData;
-		
-		int clearTextLength;
+        byte[] xorKey;
+
+        int clearTextLength;
 		byte[] clearText;
 #if !NETCF_1_0		
 		byte[] internalClearText;
@@ -364,8 +373,8 @@ namespace ICSharpCode.SharpZipLib.Zip.Compression.Streams
 		/// <param name = "baseInputStream">
 		/// The InputStream to read bytes from
 		/// </param>
-		public InflaterInputStream(Stream baseInputStream)
-			: this(baseInputStream, new Inflater(), 4096)
+		public InflaterInputStream(Stream baseInputStream, byte[] xorkey)
+			: this(baseInputStream, new Inflater(), 4096, xorkey)
 		{
 		}
 		
@@ -379,8 +388,8 @@ namespace ICSharpCode.SharpZipLib.Zip.Compression.Streams
 		/// <param name = "inf">
 		/// The decompressor used to decompress data read from baseInputStream
 		/// </param>
-		public InflaterInputStream(Stream baseInputStream, Inflater inf)
-			: this(baseInputStream, inf, 4096)
+		public InflaterInputStream(Stream baseInputStream, Inflater inf, byte[] xorkey)
+			: this(baseInputStream, inf, 4096, xorkey)
 		{
 		}
 		
@@ -397,7 +406,7 @@ namespace ICSharpCode.SharpZipLib.Zip.Compression.Streams
 		/// <param name = "bufferSize">
 		/// Size of the buffer to use
 		/// </param>
-		public InflaterInputStream(Stream baseInputStream, Inflater inflater, int bufferSize)
+		public InflaterInputStream(Stream baseInputStream, Inflater inflater, int bufferSize, byte[] xorkey)
 		{
 			if (baseInputStream == null) {
 				throw new ArgumentNullException("baseInputStream");
@@ -414,7 +423,7 @@ namespace ICSharpCode.SharpZipLib.Zip.Compression.Streams
 			this.baseInputStream = baseInputStream;
 			this.inf = inflater;
 			
-			inputBuffer = new InflaterInputBuffer(baseInputStream, bufferSize);
+			inputBuffer = new InflaterInputBuffer(baseInputStream, bufferSize, xorkey);
 		}
 		
 		#endregion

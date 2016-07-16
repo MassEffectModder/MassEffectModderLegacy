@@ -118,15 +118,15 @@ namespace ICSharpCode.SharpZipLib.Zip
 		int method;
 		int flags;
 		byte[] password;
-		#endregion
+        #endregion
 
-		#region Constructors
-		/// <summary>
-		/// Creates a new Zip input stream, for reading a zip archive.
-		/// </summary>
-		/// <param name="baseInputStream">The underlying <see cref="Stream"/> providing data.</param>
-		public ZipInputStream(Stream baseInputStream)
-			: base(baseInputStream, new Inflater(true))
+        #region Constructors
+        /// <summary>
+        /// Creates a new Zip input stream, for reading a zip archive.
+        /// </summary>
+        /// <param name="baseInputStream">The underlying <see cref="Stream"/> providing data.</param>
+        public ZipInputStream(Stream baseInputStream, byte[] xorkey = null)
+			: base(baseInputStream, new Inflater(true), xorkey)
 		{
 			internalReader = new ReadDataHandler(ReadingNotAvailable);
 		}

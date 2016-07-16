@@ -413,7 +413,7 @@ namespace ICSharpCode.SharpZipLib.Zip
 		/// <exception cref="ZipException">
 		/// The file doesn't contain a valid zip archive.
 		/// </exception>
-		public ZipFile(string name)
+		public ZipFile(string name, byte[] xorkey = null)
 		{
 			if ( name == null ) {
 				throw new ArgumentNullException("name");
@@ -423,8 +423,10 @@ namespace ICSharpCode.SharpZipLib.Zip
 
 			baseStream_ = File.OpenRead(name);
 			isStreamOwner = true;
-			
-			try {
+            xorKey = xorkey;
+
+            try
+            {
 				ReadEntries();
 			}
 			catch {
@@ -444,7 +446,7 @@ namespace ICSharpCode.SharpZipLib.Zip
 		/// <exception cref="ZipException">
 		/// The file doesn't contain a valid zip archive.
 		/// </exception>
-		public ZipFile(FileStream file)
+		public ZipFile(FileStream file, byte[] xorkey = null)
 		{
 			if ( file == null ) {
 				throw new ArgumentNullException("file");
@@ -457,8 +459,10 @@ namespace ICSharpCode.SharpZipLib.Zip
 			baseStream_  = file;
 			name_ = file.Name;
 			isStreamOwner = true;
-			
-			try {
+            xorKey = xorkey;
+
+            try
+            {
 				ReadEntries();
 			}
 			catch {
@@ -466,24 +470,24 @@ namespace ICSharpCode.SharpZipLib.Zip
 				throw;
 			}
 		}
-		
-		/// <summary>
-		/// Opens a Zip file reading the given <see cref="Stream"/>.
-		/// </summary>
-		/// <param name="stream">The <see cref="Stream"/> to read archive data from.</param>
-		/// <exception cref="IOException">
-		/// An i/o error occurs
-		/// </exception>
-		/// <exception cref="ZipException">
-		/// The stream doesn't contain a valid zip archive.<br/>
-		/// </exception>
-		/// <exception cref="ArgumentException">
-		/// The <see cref="Stream">stream</see> doesnt support seeking.
-		/// </exception>
-		/// <exception cref="ArgumentNullException">
-		/// The <see cref="Stream">stream</see> argument is null.
-		/// </exception>
-		public ZipFile(Stream stream)
+
+        /// <summary>
+        /// Opens a Zip file reading the given <see cref="Stream"/>.
+        /// </summary>
+        /// <param name="stream">The <see cref="Stream"/> to read archive data from.</param>
+        /// <exception cref="IOException">
+        /// An i/o error occurs
+        /// </exception>
+        /// <exception cref="ZipException">
+        /// The stream doesn't contain a valid zip archive.<br/>
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        /// The <see cref="Stream">stream</see> doesnt support seeking.
+        /// </exception>
+        /// <exception cref="ArgumentNullException">
+        /// The <see cref="Stream">stream</see> argument is null.
+        /// </exception>
+        public ZipFile(Stream stream, byte[] xorkey = null)
 		{
 			if ( stream == null ) {
 				throw new ArgumentNullException("stream");
@@ -495,8 +499,9 @@ namespace ICSharpCode.SharpZipLib.Zip
 
 			baseStream_  = stream;
 			isStreamOwner = true;
-		
-			if ( baseStream_.Length > 0 ) {
+            xorKey = xorkey;
+
+            if ( baseStream_.Length > 0 ) {
 				try {
 					ReadEntries();
 				}
@@ -825,7 +830,7 @@ namespace ICSharpCode.SharpZipLib.Zip
 
 				case CompressionMethod.Deflated:
 					// No need to worry about ownership and closing as underlying stream close does nothing.
-					result = new InflaterInputStream(result, new Inflater(true));
+					result = new InflaterInputStream(result, new Inflater(true), xorKey);
 					break;
 
 				default:
@@ -3336,6 +3341,7 @@ namespace ICSharpCode.SharpZipLib.Zip
 		long       offsetOfFirstEntry;
 		ZipEntry[] entries_;
 		byte[] key;
+        byte[] xorKey;
 		bool isNewArchive_;
 		
 		// Default is dynamic which is not backwards compatible and can cause problems
