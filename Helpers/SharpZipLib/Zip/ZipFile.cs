@@ -378,7 +378,7 @@ namespace ICSharpCode.SharpZipLib.Zip
 		/// Password to be used for encrypting/decrypting files.
 		/// </summary>
 		/// <remarks>Set to null if no password is required.</remarks>
-		public string Password
+		public byte[] Password
 		{
 			set 
 			{
@@ -386,16 +386,16 @@ namespace ICSharpCode.SharpZipLib.Zip
 					key = null;
 				}
 				else {
-					key = PkzipClassic.GenerateKeys(ZipConstants.ConvertToArray(value));
+					key = PkzipClassic.GenerateKeys(value);
 				}
 			}
 		}
 #endif
 
-		/// <summary>
-		/// Get a value indicating wether encryption keys are currently available.
-		/// </summary>
-		bool HaveKeys
+        /// <summary>
+        /// Get a value indicating wether encryption keys are currently available.
+        /// </summary>
+        bool HaveKeys
 		{
 			get { return key != null; }
 		}

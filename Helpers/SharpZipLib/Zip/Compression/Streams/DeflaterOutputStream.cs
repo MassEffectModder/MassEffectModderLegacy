@@ -196,7 +196,7 @@ namespace ICSharpCode.SharpZipLib.Zip.Compression.Streams
 		
 		#region Encryption
 		
-		string password;
+		byte[] password;
 		
 #if NETCF_1_0
 		uint[] keys;
@@ -208,7 +208,7 @@ namespace ICSharpCode.SharpZipLib.Zip.Compression.Streams
 		/// Get/set the password used for encryption.
 		/// </summary>
 		/// <remarks>When set to null or if the password is empty no encryption is performed</remarks>
-		public string Password {
+		public byte[] Password {
 			get { 
 				return password; 
 			}
@@ -250,7 +250,7 @@ namespace ICSharpCode.SharpZipLib.Zip.Compression.Streams
 		/// Initializes encryption keys based on given <paramref name="password"/>.
 		/// </summary>
 		/// <param name="password">The password.</param>
-		protected void InitializePassword(string password)
+		protected void InitializePassword(byte[] password)
 		{
 #if NETCF_1_0
 			keys = new uint[] {
@@ -267,7 +267,7 @@ namespace ICSharpCode.SharpZipLib.Zip.Compression.Streams
 			
 #else			
 			PkzipClassicManaged pkManaged = new PkzipClassicManaged();
-			byte[] key = PkzipClassic.GenerateKeys(ZipConstants.ConvertToArray(password));
+			byte[] key = PkzipClassic.GenerateKeys(password);
 			cryptoTransform_ = pkManaged.CreateEncryptor(key, null);
 #endif
 		}

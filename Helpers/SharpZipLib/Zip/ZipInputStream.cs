@@ -117,7 +117,7 @@ namespace ICSharpCode.SharpZipLib.Zip
 		long size;
 		int method;
 		int flags;
-		string password;
+		byte[] password;
 		#endregion
 
 		#region Constructors
@@ -136,7 +136,7 @@ namespace ICSharpCode.SharpZipLib.Zip
 		/// Optional password used for encryption when non-null
 		/// </summary>
 		/// <value>A password for all encrypted <see cref="ZipEntry">entries </see> in this <see cref="ZipInputStream"/></value>
-		public string Password
+		public byte[] Password
 		{
 			get {
 				return password;
@@ -486,7 +486,7 @@ namespace ICSharpCode.SharpZipLib.Zip
 				
 				// Generate and set crypto transform...
 				PkzipClassicManaged managed = new PkzipClassicManaged();
-				byte[] key = PkzipClassic.GenerateKeys(ZipConstants.ConvertToArray(password));
+				byte[] key = PkzipClassic.GenerateKeys(password);
 				
 				inputBuffer.CryptoTransform = managed.CreateDecryptor(key, null);
 				

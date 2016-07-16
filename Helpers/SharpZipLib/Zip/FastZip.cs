@@ -239,7 +239,7 @@ namespace ICSharpCode.SharpZipLib.Zip
 		/// <summary>
 		/// Get / set the password value.
 		/// </summary>
-		public string Password
+		public byte[] Password
 		{
 			get { return password_; }
 			set { password_ = value; }
@@ -685,7 +685,7 @@ namespace ICSharpCode.SharpZipLib.Zip
 		UseZip64 useZip64_=UseZip64.Dynamic;
 		
 #if !NETCF_1_0
-		string password_;
+		byte[] password_;
 #endif	
 
 		#endregion
