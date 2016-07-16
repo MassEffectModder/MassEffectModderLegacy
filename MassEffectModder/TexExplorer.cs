@@ -475,7 +475,7 @@ namespace MassEffectModder
                     len = fs.ReadInt32();
                     if (len == 0)
                         return false;
-                    DDSImage image = new DDSImage(fs);
+                    DDSImage image = new DDSImage(new MemoryStream(fs.ReadToBuffer(len)));
                 }
             }
             catch (Exception)
@@ -554,7 +554,7 @@ namespace MassEffectModder
                             fs.Skip(size);
                             continue;
                         }
-                        DDSImage image = new DDSImage(fs);
+                        DDSImage image = new DDSImage(new MemoryStream(fs.ReadToBuffer(size)));
                         pictureBoxPreview.Image = image.mipMaps[0].bitmap;
                         return;
                     }
@@ -565,7 +565,7 @@ namespace MassEffectModder
                         {
                             if (replace)
                             {
-                                DDSImage image = new DDSImage(fs);
+                                DDSImage image = new DDSImage(new MemoryStream(fs.ReadToBuffer(size)));
                                 replaceTexture(image, foundTexture.list);
                             }
                             else
@@ -575,7 +575,6 @@ namespace MassEffectModder
                                 item.Name = i.ToString();
                                 listViewTextures.Items.Add(item);
                             }
-                            break;
                         }
                     }
                 }

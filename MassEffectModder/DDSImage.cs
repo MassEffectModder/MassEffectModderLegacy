@@ -36,6 +36,7 @@ using System.Drawing;
 using System.IO;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using StreamHelpers;
 
 namespace AmaroK86.ImageFormat
 {
@@ -125,16 +126,16 @@ namespace AmaroK86.ImageFormat
         {
             using (FileStream ddsStream = File.OpenRead(ddsFileName))
             {
-                LoadDDSImage(ddsStream);
+                LoadDDSImage(new MemoryStream(ddsStream.ReadToBuffer(ddsStream.Length)));
             }
         }
 
-        public DDSImage(FileStream ddsStream)
+        public DDSImage(MemoryStream ddsStream)
         {
             LoadDDSImage(ddsStream);
         }
 
-        private void LoadDDSImage(FileStream ddsStream)
+        private void LoadDDSImage(MemoryStream ddsStream)
         {
             using (BinaryReader r = new BinaryReader(ddsStream))
             {
