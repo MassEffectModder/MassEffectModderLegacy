@@ -26,6 +26,7 @@ using System.Windows.Forms;
 using StreamHelpers;
 using AmaroK86.ImageFormat;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace MassEffectModder
 {
@@ -403,23 +404,120 @@ namespace MassEffectModder
             }
         }
 
+        private uint ParseLegacyScriptMod(string script, string textureName)
+        {
+            Regex parts = new Regex("pccs.Add[(]\"[A-z,0-9/,..]*\"");
+            Match match = parts.Match(script);
+            if (match.Success)
+            {
+                string packageName = match.ToString().Split('\"')[1].Split('/').Last().Split('.')[0];
+                parts = new Regex("IDs.Add[(][0-9]*[)];");
+                match = parts.Match(script);
+                if (match.Success)
+                {
+                    int exportId = int.Parse(match.ToString().Split('(')[1].Split(')')[0]);
+                    if (exportId != 0)
+                    {
+                        for (int i = 0; i < _textures.Count; i++)
+                        {
+                            if (_textures[i].name == textureName)
+                            {
+                                for (int l = 0; l < _textures[i].list.Count; l++)
+                                {
+                                    if (_textures[i].list[l].exportID == exportId)
+                                    {
+                                        string pkg = _textures[i].list[l].path.Split('\\').Last().Split('.')[0];
+                                        if (pkg == packageName)
+                                        {
+                                            return _textures[i].crc;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return 0;
+        }
+
+        private bool checkTextureMod(FileStream fs)
+        {
+            uint tag = fs.ReadUInt32();
+            uint version = fs.ReadUInt32();
+            if (tag == TextureModTag && version == TextureModVersion)
+                return true;
+
+            fs.SeekBegin();
+            uint numberOfTextures = fs.ReadUInt32();
+            if (numberOfTextures == 0)
+                return false;
+
+            try
+            {
+                for (int i = 0; i < numberOfTextures; i++)
+                {
+                    int len = fs.ReadInt32();
+                    string textureName = fs.ReadStringASCII(len);
+                    textureName = textureName.Split(' ').Last();
+                    if (textureName == "")
+                        return false;
+                    len = fs.ReadInt32();
+                    string script = fs.ReadStringASCII(len);
+                    if (script == "")
+                        return false;
+                    uint crc = ParseLegacyScriptMod(script, textureName);
+                    if (crc == 0)
+                    {
+                        MessageBox.Show("Not able match texture: " + textureName + " in MOD");
+                    }
+                    len = fs.ReadInt32();
+                    if (len == 0)
+                        return false;
+                    DDSImage image = new DDSImage(fs);
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         private void processTextureMod(string filenameMod, int previewIndex = -1, bool replace = false)
         {
             using (FileStream fs = new FileStream(filenameMod, FileMode.Open, FileAccess.Read))
             {
+                bool legacy = false;
                 uint tag = fs.ReadUInt32();
                 uint version = fs.ReadUInt32();
                 if (tag != TextureModTag || version != TextureModVersion)
                 {
-                    MessageBox.Show("Wrong Mod file!");
-                    return;
+                    fs.SeekBegin();
+                    legacy = true;
                 }
                 int numTextures = fs.ReadInt32();
                 for (int i = 0; i < numTextures; i++)
                 {
-                    string name = fs.ReadStringASCIINull();
-                    uint crc = fs.ReadUInt32();
-                    uint size = fs.ReadUInt32();
+                    string name;
+                    uint crc, size;
+                    if (legacy)
+                    {
+                        int len = fs.ReadInt32();
+                        name = fs.ReadStringASCII(len);
+                        name = name.Split(' ').Last();
+                        len = fs.ReadInt32();
+                        string scriptLegacy = fs.ReadStringASCII(len);
+                        crc = ParseLegacyScriptMod(scriptLegacy, name);
+                    }
+                    else
+                    {
+                        name = fs.ReadStringASCIINull();
+                        crc = fs.ReadUInt32();
+                    }
+                    size = fs.ReadUInt32();
                     _mainWindow.updateStatusLabel("Processing MOD: " +
                         Path.GetFileNameWithoutExtension(filenameMod) + ", Texture: " + name);
                     if (previewIndex != -1)
@@ -469,6 +567,7 @@ namespace MassEffectModder
                 previewShow = true;
                 int index = Convert.ToInt32(listViewTextures.FocusedItem.Name);
                 processTextureMod(listViewMods.SelectedItems[0].Name, index);
+                _mainWindow.updateStatusLabel("Done.");
                 pictureBoxPreview.Show();
                 richTextBoxInfo.Hide();
             }
@@ -982,7 +1081,28 @@ namespace MassEffectModder
             string[] files = modFile.FileNames;
             foreach (string file in files)
             {
-                ListViewItem item = new ListViewItem(Path.GetFileNameWithoutExtension(file));
+                bool legacy = false;
+                using (FileStream fs = new FileStream(file, FileMode.Open))
+                {
+                    uint tag = fs.ReadUInt32();
+                    uint version = fs.ReadUInt32();
+                    if (tag != TextureModTag || version != TextureModVersion)
+                    {
+                        fs.SeekBegin();
+                        if (!checkTextureMod(fs))
+                        {
+                            MessageBox.Show("File " + file + " is not MOD, omitting...");
+                            continue;
+                        }
+                        legacy = true;
+                    }
+                }
+                string desc;
+                if (legacy)
+                    desc = Path.GetFileNameWithoutExtension(file) + " (Legacy MOD)";
+                else
+                    desc = Path.GetFileNameWithoutExtension(file);
+                ListViewItem item = new ListViewItem(desc);
                 item.Name = file;
                 listViewMods.Items.Add(item);
             }
