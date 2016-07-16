@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SevenZipHelper", "Helpers\S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamHelpers", "Helpers\StreamHelpers\StreamHelpers.csproj", "{8EE302B7-4989-47D3-870C-BF38C88B1F38}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.SharpZipLib", "Helpers\SharpZipLib\ICSharpCode.SharpZipLib.csproj", "{60A20279-748E-445D-BA68-AB6EE7B4C38D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -46,6 +48,10 @@ Global
 		{8EE302B7-4989-47D3-870C-BF38C88B1F38}.Debug|x86.Build.0 = Debug|x86
 		{8EE302B7-4989-47D3-870C-BF38C88B1F38}.Release|x86.ActiveCfg = Release|x86
 		{8EE302B7-4989-47D3-870C-BF38C88B1F38}.Release|x86.Build.0 = Release|x86
+		{60A20279-748E-445D-BA68-AB6EE7B4C38D}.Debug|x86.ActiveCfg = Debug|x86
+		{60A20279-748E-445D-BA68-AB6EE7B4C38D}.Debug|x86.Build.0 = Debug|x86
+		{60A20279-748E-445D-BA68-AB6EE7B4C38D}.Release|x86.ActiveCfg = Release|x86
+		{60A20279-748E-445D-BA68-AB6EE7B4C38D}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
