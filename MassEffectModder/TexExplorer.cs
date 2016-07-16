@@ -494,6 +494,7 @@ namespace MassEffectModder
                     string text = "";
 
                     text += "Texture name:  " + node.textures[index].name + "\n";
+                    text += "Texture original CRC:  " + string.Format("0x{0:X8}", node.textures[index].crc) + "\n";
                     text += "Node name:     " + node.textures[index].displayName + "\n";
                     text += "Package name:  " + node.textures[index].packageName + "\n";
                     text += "Packages:\n";
@@ -509,7 +510,7 @@ namespace MassEffectModder
                     }
                     for (int l = 0; l < texture.mipMapsList.Count; l++)
                     {
-                        text += "MipMap:        " + l + "\n";
+                        text += "MipMap: " + l + ", " + texture.mipMapsList[l].width + "x" + texture.mipMapsList[l].height + "\n";
                         text += "  StorageType: " + texture.mipMapsList[l].storageType + "\n";
                         text += "  CompSize:    " + texture.mipMapsList[l].compressedSize + "\n";
                         text += "  UnCompSize:  " + texture.mipMapsList[l].uncompressedSize + "\n";
