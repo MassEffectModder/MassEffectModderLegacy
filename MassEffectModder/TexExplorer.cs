@@ -486,15 +486,36 @@ namespace MassEffectModder
             return true;
         }
 
-        private void processTextureMod(string filenameMod, int previewIndex = -1, bool replace = false, string outDir = "")
+        private void extractTextureMod(string filenameMod, string outDir)
+        {
+            processTextureMod(filenameMod, -1, true, false, false, outDir);
+        }
+
+        private void saveTextureMod(string filenameMod, string outDir)
+        {
+            processTextureMod(filenameMod, -1, false, false, true, outDir);
+        }
+
+        private void previewTextureMod(string filenameMod, int previewIndex)
+        {
+            processTextureMod(filenameMod, previewIndex, false, false, false, "");
+        }
+
+        private void replaceTextureMod(string filenameMod)
+        {
+            processTextureMod(filenameMod, -1, false, true, false, "");
+        }
+
+        private void listTextureMod(string filenameMod)
+        {
+            processTextureMod(filenameMod, -1, false, false, false, "");
+        }
+
+        private void processTextureMod(string filenameMod, int previewIndex, bool extract, bool replace, bool store, string outDir)
         {
             using (FileStream fs = new FileStream(filenameMod, FileMode.Open, FileAccess.Read))
             {
                 bool legacy = false;
-                bool store = false;
-                if (outDir != "")
-                    store = true;
-
                 uint tag = fs.ReadUInt32();
                 uint version = fs.ReadUInt32();
                 if (tag != TextureModTag || version != TextureModVersion)
@@ -539,6 +560,15 @@ namespace MassEffectModder
                     size = fs.ReadUInt32();
                     _mainWindow.updateStatusLabel("Processing MOD: " +
                         Path.GetFileNameWithoutExtension(filenameMod) + ", Texture: " + name);
+                    if (extract)
+                    {
+                        string filename = name + "-" + string.Format("{0:X8}", crc)+ ".dds";
+                        using (FileStream output = new FileStream(Path.Combine(outDir, Path.GetFileName(filename)), FileMode.Create, FileAccess.Write))
+                        {
+                            output.WriteFromStream(fs, size);
+                        }
+                        continue;
+                    }
                     if (store)
                     {
                         outFile.WriteStringASCIINull(name);
@@ -578,6 +608,40 @@ namespace MassEffectModder
                         }
                     }
                 }
+                if (store)
+                    outFile.Close();
+            }
+        }
+
+        void packTextureMod(string inDir, string outFile)
+        {
+            string[] files = Directory.GetFiles(inDir, "*.dds");
+
+            using (FileStream outFs = new FileStream(outFile, FileMode.Create, FileAccess.Write))
+            {
+                outFs.WriteUInt32(TextureModTag);
+                outFs.WriteUInt32(TextureModVersion);
+                outFs.WriteInt32(files.Count());
+                foreach (string file in files)
+                {
+                    _mainWindow.updateStatusLabel("Processing MOD: " + Path.GetFileNameWithoutExtension(outFile));
+                    using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
+                    {
+                        string textureName = Path.GetFileNameWithoutExtension(file).Split('-').First();
+                        uint crc = uint.Parse(Path.GetFileNameWithoutExtension(file).Split('-').Last(), System.Globalization.NumberStyles.HexNumber);
+                        if (textureName == "" || crc == 0)
+                        {
+                            MessageBox.Show("Wrong format of texture filename: " + file);
+                            File.Delete(outFile);
+                            return;
+                        }
+                        textureName.Split('-').First();
+                        outFs.WriteStringASCIINull(textureName);
+                        outFs.WriteUInt32(crc);
+                        outFs.WriteUInt32((uint)fs.Length);
+                        outFs.WriteFromStream(fs, fs.Length);
+                    }
+                }
             }
         }
 
@@ -592,7 +656,7 @@ namespace MassEffectModder
             {
                 previewShow = true;
                 int index = Convert.ToInt32(listViewTextures.FocusedItem.Name);
-                processTextureMod(listViewMods.SelectedItems[0].Name, index);
+                previewTextureMod(listViewMods.SelectedItems[0].Name, index);
                 _mainWindow.updateStatusLabel("Done.");
                 pictureBoxPreview.Show();
                 richTextBoxInfo.Hide();
@@ -910,6 +974,7 @@ namespace MassEffectModder
             bool endMod = eNDModdingToolStripMenuItem.Enabled;
             bool loadMod = loadMODsToolStripMenuItem.Enabled;
             bool clearMod = clearMODsToolStripMenuItem.Enabled;
+            bool packMod = packMODToolStripMenuItem.Enabled;
             EnableMenuOptions(false);
 
             DDSImage image = new DDSImage(selectDDS.FileName);
@@ -936,6 +1001,7 @@ namespace MassEffectModder
             eNDModdingToolStripMenuItem.Enabled = endMod;
             loadMODsToolStripMenuItem.Enabled = loadMod;
             clearMODsToolStripMenuItem.Enabled = clearMod;
+            packMODToolStripMenuItem.Enabled = packMod;
             if (moddingEnable)
                 switchModMode(true);
             listViewTextures.Focus();
@@ -1039,6 +1105,7 @@ namespace MassEffectModder
             eNDModdingToolStripMenuItem.Enabled = enable;
             loadMODsToolStripMenuItem.Enabled = !enable;
             clearMODsToolStripMenuItem.Enabled = false;
+            packMODToolStripMenuItem.Enabled = !enable;
             removeEmptyMipmapsToolStripMenuItem.Enabled = !enable;
             Application.DoEvents();
         }
@@ -1083,6 +1150,7 @@ namespace MassEffectModder
             eNDModdingToolStripMenuItem.Enabled = !enable;
             loadMODsToolStripMenuItem.Enabled = enable;
             clearMODsToolStripMenuItem.Enabled = enable;
+            packMODToolStripMenuItem.Enabled = true;
             searchToolStripMenuItem.Enabled = !enable;
             removeEmptyMipmapsToolStripMenuItem.Enabled = !enable;
             Application.DoEvents();
@@ -1162,7 +1230,7 @@ namespace MassEffectModder
             EnableMenuOptions(false);
             foreach (ListViewItem item in listViewMods.SelectedItems)
             {
-                processTextureMod(item.Name, -1, true);
+                replaceTextureMod(item.Name);
                 _mainWindow.updateStatusLabel("Done.");
                 listViewMods.Items.Remove(item);
             }
@@ -1196,7 +1264,7 @@ namespace MassEffectModder
             if (listViewMods.SelectedItems.Count != 1)
                 return;
 
-            processTextureMod(listViewMods.SelectedItems[0].Name);
+            listTextureMod(listViewMods.SelectedItems[0].Name);
             _mainWindow.updateStatusLabel("Done.");
         }
 
@@ -1212,10 +1280,45 @@ namespace MassEffectModder
             {
                 foreach (ListViewItem item in listViewMods.SelectedItems)
                 {
-                    processTextureMod(item.Name, -1, false, modFile.SelectedPath);
+                    saveTextureMod(item.Name, modFile.SelectedPath);
                     _mainWindow.updateStatusLabel("Done.");
                 }
             }
+            EnableMenuOptions(true);
+        }
+
+        private void extractModsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listViewMods.SelectedItems.Count == 0)
+                return;
+
+            EnableMenuOptions(false);
+
+            FolderBrowserDialog modFile = new FolderBrowserDialog();
+            if (modFile.ShowDialog() == DialogResult.OK)
+            {
+                foreach (ListViewItem item in listViewMods.SelectedItems)
+                {
+                    string outDir = Path.Combine(modFile.SelectedPath, Path.GetFileNameWithoutExtension(item.Name));
+                    Directory.CreateDirectory(outDir);
+                    extractTextureMod(item.Name, outDir);
+                    _mainWindow.updateStatusLabel("Done.");
+                }
+            }
+            EnableMenuOptions(true);
+        }
+
+        private void packMODToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            EnableMenuOptions(false);
+
+            FolderBrowserDialog modFile = new FolderBrowserDialog();
+            if (modFile.ShowDialog() == DialogResult.OK)
+            {
+                packTextureMod(modFile.SelectedPath, Path.Combine(Path.GetDirectoryName(modFile.SelectedPath), Path.GetFileName(modFile.SelectedPath)) + ".mod");
+            }
+            _mainWindow.updateStatusLabel("Done.");
+
             EnableMenuOptions(true);
         }
     }
