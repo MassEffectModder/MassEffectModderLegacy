@@ -486,11 +486,15 @@ namespace MassEffectModder
             return true;
         }
 
-        private void processTextureMod(string filenameMod, int previewIndex = -1, bool replace = false)
+        private void processTextureMod(string filenameMod, int previewIndex = -1, bool replace = false, string outDir = "")
         {
             using (FileStream fs = new FileStream(filenameMod, FileMode.Open, FileAccess.Read))
             {
                 bool legacy = false;
+                bool store = false;
+                if (outDir != "")
+                    store = true;
+
                 uint tag = fs.ReadUInt32();
                 uint version = fs.ReadUInt32();
                 if (tag != TextureModTag || version != TextureModVersion)
@@ -498,7 +502,22 @@ namespace MassEffectModder
                     fs.SeekBegin();
                     legacy = true;
                 }
+
+                FileStream outFile = null;
+                if (store)
+                {
+                    if (!legacy)
+                    {
+                        File.Copy(filenameMod, Path.Combine(outDir, Path.GetFileName(filenameMod)));
+                        return;
+                    }
+                    outFile = new FileStream(Path.Combine(outDir, Path.GetFileName(filenameMod)), FileMode.Create, FileAccess.Write);
+                    outFile.WriteUInt32(TextureModTag);
+                    outFile.WriteUInt32(TextureModVersion);
+                }
                 int numTextures = fs.ReadInt32();
+                if (store)
+                    outFile.WriteInt32(numTextures);
                 for (int i = 0; i < numTextures; i++)
                 {
                     string name;
@@ -520,6 +539,14 @@ namespace MassEffectModder
                     size = fs.ReadUInt32();
                     _mainWindow.updateStatusLabel("Processing MOD: " +
                         Path.GetFileNameWithoutExtension(filenameMod) + ", Texture: " + name);
+                    if (store)
+                    {
+                        outFile.WriteStringASCIINull(name);
+                        outFile.WriteUInt32(crc);
+                        outFile.WriteUInt32(size);
+                        outFile.WriteFromStream(fs, size);
+                        continue;
+                    }
                     if (previewIndex != -1)
                     {
                         if (i != previewIndex)
@@ -1172,6 +1199,25 @@ namespace MassEffectModder
 
             processTextureMod(listViewMods.SelectedItems[0].Name);
             _mainWindow.updateStatusLabel("Done.");
+        }
+
+        private void saveModsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listViewMods.SelectedItems.Count == 0)
+                return;
+
+            EnableMenuOptions(false);
+
+            FolderBrowserDialog modFile = new FolderBrowserDialog();
+            if (modFile.ShowDialog() == DialogResult.OK)
+            {
+                foreach (ListViewItem item in listViewMods.SelectedItems)
+                {
+                    processTextureMod(item.Name, -1, false, modFile.SelectedPath);
+                    _mainWindow.updateStatusLabel("Done.");
+                }
+            }
+            EnableMenuOptions(true);
         }
     }
 }
