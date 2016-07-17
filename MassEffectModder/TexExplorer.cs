@@ -946,7 +946,9 @@ namespace MassEffectModder
             if (string.IsNullOrEmpty(crc))
                 return;
 
-            searchTexture(null, uint.Parse(crc, System.Globalization.NumberStyles.AllowHexSpecifier));
+            if (crc.Substring(0, 2).ToLower() == "0x")
+                crc = crc.Substring(2);
+            searchTexture(null, uint.Parse(crc, System.Globalization.NumberStyles.HexNumber));
         }
 
         private void selectFoundTexture(ListViewItem item)
