@@ -211,6 +211,10 @@ namespace MassEffectModder
 
             return result;
         }
+        public bool exists(string name)
+        {
+            return texPropertyList.Exists(s => s.name == name);
+        }
 
         public void setIntValue(string name, int value)
         {
