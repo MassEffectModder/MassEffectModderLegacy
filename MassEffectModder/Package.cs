@@ -420,7 +420,7 @@ namespace MassEffectModder
             loadExportsNames();
         }
 
-        private void getData(uint offset, uint length, MemoryStream output)
+        private void getData(uint offset, uint length, Stream output)
         {
             if (compressed)
             {
