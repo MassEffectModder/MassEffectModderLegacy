@@ -64,6 +64,7 @@ namespace MassEffectModder
             this.applyModToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteModToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveModsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.extractModsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.listViewResults = new System.Windows.Forms.ListView();
             this.columnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.treeViewPackages = new System.Windows.Forms.TreeView();
@@ -77,12 +78,11 @@ namespace MassEffectModder
             this.eNDModdingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadMODsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearMODsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.packMODToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.searchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.byNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.byCRCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeEmptyMipmapsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.extractModsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.packMODToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStripTextures.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -167,6 +167,7 @@ namespace MassEffectModder
             this.listViewMods.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.listViewMods.BackColor = System.Drawing.Color.White;
             this.listViewMods.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1});
             this.listViewMods.ContextMenuStrip = this.contextMenuStripMods;
@@ -192,34 +193,42 @@ namespace MassEffectModder
             this.saveModsToolStripMenuItem,
             this.extractModsToolStripMenuItem});
             this.contextMenuStripMods.Name = "contextMenuStripTextures";
-            this.contextMenuStripMods.Size = new System.Drawing.Size(153, 114);
+            this.contextMenuStripMods.Size = new System.Drawing.Size(143, 92);
             // 
             // applyModToolStripMenuItem
             // 
             this.applyModToolStripMenuItem.Name = "applyModToolStripMenuItem";
-            this.applyModToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.applyModToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
             this.applyModToolStripMenuItem.Text = "Apply Mods";
             this.applyModToolStripMenuItem.Click += new System.EventHandler(this.applyModToolStripMenuItem_Click);
             // 
             // deleteModToolStripMenuItem
             // 
             this.deleteModToolStripMenuItem.Name = "deleteModToolStripMenuItem";
-            this.deleteModToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.deleteModToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
             this.deleteModToolStripMenuItem.Text = "Delete Mods";
             this.deleteModToolStripMenuItem.Click += new System.EventHandler(this.deleteModToolStripMenuItem_Click);
             // 
             // saveModsToolStripMenuItem
             // 
             this.saveModsToolStripMenuItem.Name = "saveModsToolStripMenuItem";
-            this.saveModsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveModsToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
             this.saveModsToolStripMenuItem.Text = "Save Mods";
             this.saveModsToolStripMenuItem.Click += new System.EventHandler(this.saveModsToolStripMenuItem_Click);
+            // 
+            // extractModsToolStripMenuItem
+            // 
+            this.extractModsToolStripMenuItem.Name = "extractModsToolStripMenuItem";
+            this.extractModsToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+            this.extractModsToolStripMenuItem.Text = "Extract Mods";
+            this.extractModsToolStripMenuItem.Click += new System.EventHandler(this.extractModsToolStripMenuItem_Click);
             // 
             // listViewResults
             // 
             this.listViewResults.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.listViewResults.BackColor = System.Drawing.Color.White;
             this.listViewResults.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader});
             this.listViewResults.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
@@ -276,6 +285,7 @@ namespace MassEffectModder
             this.listViewTextures.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.listViewTextures.BackColor = System.Drawing.Color.White;
             this.listViewTextures.ContextMenuStrip = this.contextMenuStripTextures;
             this.listViewTextures.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.listViewTextures.Location = new System.Drawing.Point(3, 28);
@@ -367,6 +377,13 @@ namespace MassEffectModder
             this.clearMODsToolStripMenuItem.Text = "Clear MODs";
             this.clearMODsToolStripMenuItem.Click += new System.EventHandler(this.clearMODsToolStripMenuItem_Click);
             // 
+            // packMODToolStripMenuItem
+            // 
+            this.packMODToolStripMenuItem.Name = "packMODToolStripMenuItem";
+            this.packMODToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.packMODToolStripMenuItem.Text = "Pack MOD";
+            this.packMODToolStripMenuItem.Click += new System.EventHandler(this.packMODToolStripMenuItem_Click);
+            // 
             // searchToolStripMenuItem
             // 
             this.searchToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -397,20 +414,6 @@ namespace MassEffectModder
             this.removeEmptyMipmapsToolStripMenuItem.Size = new System.Drawing.Size(152, 20);
             this.removeEmptyMipmapsToolStripMenuItem.Text = "Remove empty mipmaps";
             this.removeEmptyMipmapsToolStripMenuItem.Click += new System.EventHandler(this.removeEmptyMipmapsToolStripMenuItem_Click);
-            // 
-            // extractModsToolStripMenuItem
-            // 
-            this.extractModsToolStripMenuItem.Name = "extractModsToolStripMenuItem";
-            this.extractModsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.extractModsToolStripMenuItem.Text = "Extract Mods";
-            this.extractModsToolStripMenuItem.Click += new System.EventHandler(this.extractModsToolStripMenuItem_Click);
-            // 
-            // packMODToolStripMenuItem
-            // 
-            this.packMODToolStripMenuItem.Name = "packMODToolStripMenuItem";
-            this.packMODToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
-            this.packMODToolStripMenuItem.Text = "Pack MOD";
-            this.packMODToolStripMenuItem.Click += new System.EventHandler(this.packMODToolStripMenuItem_Click);
             // 
             // TexExplorer
             // 
