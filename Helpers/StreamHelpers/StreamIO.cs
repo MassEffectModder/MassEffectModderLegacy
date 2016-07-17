@@ -52,8 +52,15 @@ namespace StreamHelpers
 
         public static void WriteFromStream(this Stream stream, Stream inputStream, int count)
         {
-            byte[] buffer = ReadToBuffer(inputStream, count);
-            stream.Write(buffer, 0, buffer.Length);
+            byte[] buffer = new byte[0x10000];
+            for (;;)
+            {
+                int readed = inputStream.Read(buffer, 0, buffer.Length);
+                if (readed > 0)
+                    stream.Write(buffer, 0, readed);
+                else
+                    break;
+            }
         }
 
         public static void WriteFromStream(this Stream stream, Stream inputStream, uint count)
