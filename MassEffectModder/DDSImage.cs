@@ -182,6 +182,30 @@ namespace AmaroK86.ImageFormat
                     int mipMapBytes = (int)(w * h * bytePerPixel);
                     mipMaps[i] = new MipMap(r.ReadBytes(mipMapBytes), ddsFormat, w, h, origW, origH);
                 }
+                if (!checkExistAllMipmaps())
+                    throw new Exception("DDS doesn't have all mipmaps!");
+            }
+        }
+
+        public bool checkExistAllMipmaps()
+        {
+            if ((header.dwFlags & DDSD_MIPMAPCOUNT) != 0 && header.dwMipMapCount > 1)
+            {
+                int val = Math.Max(mipMaps[0].origWidth, mipMaps[0].origWidth);
+                int count = 0;
+                do
+                {
+                    val /= 2;
+                    count++;
+                } while (val != 0);
+                if (count == mipMaps.Length)
+                    return true;
+                else
+                    return false;
+            }
+            else
+            {
+                return true;
             }
         }
 
