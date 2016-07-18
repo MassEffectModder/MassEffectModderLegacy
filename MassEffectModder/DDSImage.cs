@@ -64,6 +64,8 @@ namespace AmaroK86.ImageFormat
         {
             public int width;
             public int height;
+            public int origWidth;
+            public int origHeight;
             DDSFormat ddsFormat;
             private byte[] _data;
             public byte[] data
@@ -91,7 +93,7 @@ namespace AmaroK86.ImageFormat
                 }
             }
 
-            public MipMap(byte[] data, DDSFormat format, int w, int h)
+            public MipMap(byte[] data, DDSFormat format, int w, int h, int origW , int origH)
             {
                 long requiredSize = (long)(w * h * getBytesPerPixel(format));
                 if (data.Length != requiredSize)
@@ -101,6 +103,8 @@ namespace AmaroK86.ImageFormat
                 ddsFormat = format;
                 width = w;
                 height = h;
+                origWidth = origW;
+                origHeight = origH;
             }
         }
 
@@ -167,6 +171,8 @@ namespace AmaroK86.ImageFormat
                     int w = (int)(header.dwWidth / Math.Pow(2, i));
                     int h = (int)(header.dwHeight / Math.Pow(2, i));
 
+                    int origW = w;
+                    int origH = h;
                     if (ddsFormat == DDSFormat.DXT1 || ddsFormat == DDSFormat.DXT5)
                     {
                         w = (w < 4) ? 4 : w;
@@ -174,7 +180,7 @@ namespace AmaroK86.ImageFormat
                     }
 
                     int mipMapBytes = (int)(w * h * bytePerPixel);
-                    mipMaps[i] = new MipMap(r.ReadBytes(mipMapBytes), ddsFormat, w, h);
+                    mipMaps[i] = new MipMap(r.ReadBytes(mipMapBytes), ddsFormat, w, h, origW, origH);
                 }
             }
         }
