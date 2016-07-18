@@ -313,7 +313,7 @@ namespace MassEffectModder
 
         public MipMap getTopMipmap()
         {
-            MipMap mipmap = mipMapsList.First(b => b.storageType != StorageTypes.empty);
+            MipMap mipmap = mipMapsList.Find(b => b.storageType != StorageTypes.empty);
             if (mipmap.width == 0)
                 throw new Exception();
 
@@ -337,7 +337,7 @@ namespace MassEffectModder
 
         public MipMap getMipmap(int width, int height)
         {
-            return mipMapsList.First(b => b.width == width && b.height == height);
+            return mipMapsList.Find(b => b.width == width && b.height == height);
         }
 
         public StorageTypes getStorageType(int width, int height)
