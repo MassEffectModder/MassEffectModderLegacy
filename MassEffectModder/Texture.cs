@@ -313,22 +313,39 @@ namespace MassEffectModder
 
         public MipMap getTopMipmap()
         {
-            return mipMapsList.First(b => b.storageType != StorageTypes.empty);
+            MipMap mipmap = mipMapsList.First(b => b.storageType != StorageTypes.empty);
+            if (mipmap.width == 0)
+                throw new Exception();
+
+            return mipmap;
+        }
+
+        public bool existMipmap(int width, int height)
+        {
+            return mipMapsList.Exists(b => b.width == width && b.height == height);
+        }
+
+        public bool isBiggerOfTopMipmap(int width, int height)
+        {
+            int topWidth = getTopMipmap().width;
+            int topHeight = getTopMipmap().height;
+            if (width * height > topWidth * topHeight)
+                return true;
+            else
+                return false;
         }
 
         public MipMap getMipmap(int width, int height)
         {
-            return mipMapsList.Find(b => b.width == width && b.height == height);
+            return mipMapsList.First(b => b.width == width && b.height == height);
         }
 
         public StorageTypes getStorageType(int width, int height)
         {
-            MipMap tmpMipmap = getMipmap(width, height);
-            if (tmpMipmap.width == 0) // not found
-            {
-                tmpMipmap = getTopMipmap();
-            }
-            return tmpMipmap.storageType;
+            if (existMipmap(width, height))
+                return getMipmap(width, height).storageType;
+            else
+                return getTopMipmap().storageType;
         }
 
         public bool hasImageData()
