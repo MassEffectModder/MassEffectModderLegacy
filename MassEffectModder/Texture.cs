@@ -66,48 +66,6 @@ namespace MassEffectModder
         public Texture(Package package, int exportId, byte[] data)
         {
             properties = new TexProperty(package, data);
-#if false // dump properties info
-            using (FileStream file = new FileStream("Textures.txt", FileMode.Append))
-            {
-                file.WriteStringASCII("---Package---" + package.packageFile.Name + " export data offset: " + package.exportsTable[exportId].dataOffset + "\n");
-                for (int i = 0; i < properties.texPropertyList.Count; i++)
-                {
-                    if (properties.texPropertyList[i].name == "None")
-                        continue;
-                    properties.fetchValue(properties.texPropertyList[i].name);
-                }
-                foreach (TexProperty.TexPropertyEntry prop in properties.texPropertyList)
-                {
-                    if (prop.name == "None")
-                        continue;
-                    file.WriteStringASCII("Texture: " + package.exportsTable[exportId].objectName + ", Name: " + prop.name + ", Type: " + prop.type + ", ");
-                    switch (prop.type)
-                    {
-                        case "IntProperty":
-                            file.WriteStringASCII("Value: " + prop.valueInt + "\n");
-                            break;
-                        case "ByteProperty":
-                            file.WriteStringASCII("ValueName: " + prop.valueName + ", ");
-                            file.WriteStringASCII("Value: " + prop.valueInt + "\n");
-                            break;
-                        case "BoolProperty":
-                            file.WriteStringASCII("Value: " + prop.valueInt + "\n");
-                            break;
-                        case "FloatProperty":
-                            file.WriteStringASCII("Value: " + prop.valueFloat + "\n");
-                            break;
-                        case "NameProperty":
-                            file.WriteStringASCII("ValueName: " + prop.valueName + ", ");
-                            file.WriteStringASCII("Value: " + prop.valueInt + "\n");
-                            break;
-                        case "StructProperty":
-                            file.WriteStringASCII("ValueName: " + prop.valueName + ", ");
-                            file.WriteStringASCII("Value: " + prop.valueInt + "\n");
-                            break;
-                    }
-                }
-            }
-#endif
             if (data.Length == properties.propertyEndOffset)
                 return;
 
@@ -155,27 +113,6 @@ namespace MassEffectModder
                 textureData.Seek(-4, SeekOrigin.End);
                 restOfData = textureData.ReadToBuffer(4);
             }
-#if false // dump mipmaps info
-            using (FileStream file = new FileStream("Textures.txt", FileMode.Append))
-            {
-                for (int l = 0; l < numMipMaps; l++)
-                {
-                    file.WriteStringASCII("MipMap: " + l + ", Width: " + mipMapsList[l].width + ", Height: " + mipMapsList[l].height);
-                    file.WriteStringASCII(" StorageType: " + mipMapsList[l].storageType);
-                    file.WriteStringASCII(" uncompressedSize: " + mipMapsList[l].uncompressedSize);
-                    file.WriteStringASCII(" compressedSize: " + mipMapsList[l].compressedSize);
-                    if (mipMapsList[l].storageType == StorageTypes.pccCpr ||
-                        mipMapsList[l].storageType == StorageTypes.pccUnc)
-                    {
-                        file.WriteStringASCII(" dataOffset: " + (mipMapsList[l].dataOffset + (int)package.exportsTable[exportId].dataOffset + properties.propertyEndOffset) + "\n");
-                    }
-                    else
-                    {
-                        file.WriteStringASCII(" dataOffset: " + mipMapsList[l].dataOffset + "\n");
-                    }
-                }
-            }
-#endif
         }
 
         public void replaceMipMaps(List<Texture.MipMap> newMipMaps)
