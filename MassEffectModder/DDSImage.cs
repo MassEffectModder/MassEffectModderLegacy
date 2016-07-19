@@ -126,20 +126,20 @@ namespace AmaroK86.ImageFormat
 
         public MipMap[] mipMaps;
 
-        public DDSImage(string ddsFileName)
+        public DDSImage(string ddsFileName, bool bypassCheck = false)
         {
             using (FileStream ddsStream = File.OpenRead(ddsFileName))
             {
-                LoadDDSImage(new MemoryStream(ddsStream.ReadToBuffer(ddsStream.Length)));
+                LoadDDSImage(new MemoryStream(ddsStream.ReadToBuffer(ddsStream.Length)), bypassCheck);
             }
         }
 
-        public DDSImage(MemoryStream ddsStream)
+        public DDSImage(MemoryStream ddsStream, bool bypassCheck = false)
         {
-            LoadDDSImage(ddsStream);
+            LoadDDSImage(ddsStream, bypassCheck);
         }
 
-        private void LoadDDSImage(MemoryStream ddsStream)
+        private void LoadDDSImage(MemoryStream ddsStream, bool bypassCheck = false)
         {
             using (BinaryReader r = new BinaryReader(ddsStream))
             {
@@ -182,7 +182,7 @@ namespace AmaroK86.ImageFormat
                     int mipMapBytes = (int)(w * h * bytePerPixel);
                     mipMaps[i] = new MipMap(r.ReadBytes(mipMapBytes), ddsFormat, w, h, origW, origH);
                 }
-                if (!checkExistAllMipmaps())
+                if (!bypassCheck && !checkExistAllMipmaps())
                     throw new Exception("DDS doesn't have all mipmaps!");
             }
         }
