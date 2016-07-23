@@ -108,11 +108,7 @@ namespace MassEffectModder
                 mipMapsList.Add(mipmap);
             }
 
-            if (GameData.gameType == MeType.ME1_TYPE)
-            {
-                textureData.Seek(-4, SeekOrigin.End);
-                restOfData = textureData.ReadToBuffer(4);
-            }
+            restOfData = textureData.ReadToBuffer(textureData.Length - textureData.Position);
         }
 
         public void replaceMipMaps(List<Texture.MipMap> newMipMaps)
@@ -386,10 +382,7 @@ namespace MassEffectModder
                 mipMapsList[l] = mipmap;
             }
 
-            if (GameData.gameType == MeType.ME1_TYPE)
-            {
-                newData.WriteFromBuffer(restOfData);
-            }
+            newData.WriteFromBuffer(restOfData);
 
             return newData.ToArray();
         }
