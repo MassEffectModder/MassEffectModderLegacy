@@ -854,6 +854,7 @@ namespace MassEffectModder
                     {
                         text += "MipMap: " + l + ", " + texture.mipMapsList[l].width + "x" + texture.mipMapsList[l].height + "\n";
                         text += "  StorageType: " + texture.mipMapsList[l].storageType + "\n";
+                        text += "  DataOffset:  " + (int)texture.mipMapsList[l].dataOffset + "\n";
                         text += "  CompSize:    " + texture.mipMapsList[l].compressedSize + "\n";
                         text += "  UnCompSize:  " + texture.mipMapsList[l].uncompressedSize + "\n";
                     }
