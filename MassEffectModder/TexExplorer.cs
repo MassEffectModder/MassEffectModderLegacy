@@ -559,6 +559,11 @@ namespace MassEffectModder
             {
                 bool legacy = false;
 
+                if (previewIndex == -1 && !store && !extract && !replace && !store)
+                {
+                    listViewTextures.BeginUpdate();
+                }
+
                 if (Path.GetExtension(filenameMod).ToLower() == ".tpf")
                 {
                     byte[] tpfXorKey = { 0xA4, 0x3F };
@@ -803,6 +808,10 @@ namespace MassEffectModder
                     }
                     if (store)
                         outFile.Close();
+                }
+                if (previewIndex == -1 && !store && !extract && !replace && !store)
+                {
+                    listViewTextures.EndUpdate();
                 }
             }
         }
