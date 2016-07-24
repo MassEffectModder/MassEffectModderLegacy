@@ -1088,7 +1088,7 @@ namespace MassEffectModder
                 byte[] origGuid = null;
                 if (texture.properties.exists("TextureFileCacheName"))
                 {
-                    origGuid = texture.properties.getProperty("TextureFileCacheName").valueStruct;
+                    origGuid = texture.properties.getProperty("TFCFileGuid").valueStruct;
                     string archive = texture.properties.getProperty("TextureFileCacheName").valueName;
                     archiveFile = archiveFile = Path.Combine(GameData.MainData, archive + ".tfc");
                     if (nodeTexture.path.Contains("DLC"))
