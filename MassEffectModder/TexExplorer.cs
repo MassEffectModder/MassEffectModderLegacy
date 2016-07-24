@@ -787,8 +787,7 @@ namespace MassEffectModder
                             crc = fs.ReadUInt32();
                         }
                         size = fs.ReadUInt32();
-                        _mainWindow.updateStatusLabel("Processing MOD: " + Path.GetFileNameWithoutExtension(filenameMod));
-                        _mainWindow.updateStatusLabel2("Texture: " + name);
+                        _mainWindow.updateStatusLabel("Processing MOD: " + Path.GetFileNameWithoutExtension(filenameMod) + " Texture: " + name);
                         if (extract)
                         {
                             string filename = name + "-" + string.Format("0x{0:X8}", crc) + ".dds";
@@ -1496,6 +1495,7 @@ namespace MassEffectModder
             {
                 bool legacy = false;
                 bool tpf = false;
+                _mainWindow.updateStatusLabel("MOD: " + Path.GetFileName(file) + " loading...");
                 if (Path.GetExtension(file).ToLower() == ".tpf")
                 {
                     tpf = true;
@@ -1529,6 +1529,8 @@ namespace MassEffectModder
                 item.Name = file;
                 listViewMods.Items.Add(item);
             }
+            _mainWindow.updateStatusLabel("MODs loaded.");
+            _mainWindow.updateStatusLabel2("");
             EnableMenuOptions(true);
             if (listViewMods.Items.Count == 0)
                 clearMODsView();
@@ -1562,11 +1564,12 @@ namespace MassEffectModder
             foreach (ListViewItem item in listViewMods.SelectedItems)
             {
                 replaceTextureMod(item.Name);
-                _mainWindow.updateStatusLabel("Done.");
-                _mainWindow.updateStatusLabel2("");
+                _mainWindow.updateStatusLabel("MOD: " + item.Name + " applying...");
                 listViewMods.Items.Remove(item);
             }
             EnableMenuOptions(true);
+            _mainWindow.updateStatusLabel("MODs applied.");
+            _mainWindow.updateStatusLabel2("");
             if (listViewMods.Items.Count == 0)
                 clearMODsView();
         }
@@ -1613,12 +1616,15 @@ namespace MassEffectModder
             {
                 foreach (ListViewItem item in listViewMods.SelectedItems)
                 {
+                    _mainWindow.updateStatusLabel("MOD: " + item.Name + "saving...");
                     saveTextureMod(item.Name, modFile.SelectedPath);
-                    _mainWindow.updateStatusLabel("Done.");
+                    _mainWindow.updateStatusLabel("MOD: " + item.Name + "saving...");
                     _mainWindow.updateStatusLabel2("");
                 }
             }
             EnableMenuOptions(true);
+            _mainWindow.updateStatusLabel("MODs saved.");
+            _mainWindow.updateStatusLabel2("");
         }
 
         private void extractModsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1636,11 +1642,13 @@ namespace MassEffectModder
                     string outDir = Path.Combine(modFile.SelectedPath, Path.GetFileNameWithoutExtension(item.Name));
                     Directory.CreateDirectory(outDir);
                     extractTextureMod(item.Name, outDir);
-                    _mainWindow.updateStatusLabel("Done.");
+                    _mainWindow.updateStatusLabel("MOD: " + item.Name + "extracting...");
                     _mainWindow.updateStatusLabel2("");
                 }
             }
             EnableMenuOptions(true);
+            _mainWindow.updateStatusLabel("MODs extracted.");
+            _mainWindow.updateStatusLabel2("");
         }
 
         private void packMODToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1650,12 +1658,14 @@ namespace MassEffectModder
             FolderBrowserDialog modFile = new FolderBrowserDialog();
             if (modFile.ShowDialog() == DialogResult.OK)
             {
+                _mainWindow.updateStatusLabel("MOD packing...");
+                _mainWindow.updateStatusLabel2("");
                 packTextureMod(modFile.SelectedPath, Path.Combine(Path.GetDirectoryName(modFile.SelectedPath), Path.GetFileName(modFile.SelectedPath)) + ".mod");
             }
-            _mainWindow.updateStatusLabel("Done.");
-            _mainWindow.updateStatusLabel2("");
 
             EnableMenuOptions(true);
+            _mainWindow.updateStatusLabel("MOD packed.");
+            _mainWindow.updateStatusLabel2("");
         }
 
         private void searchToolStripMenuItem_Click(object sender, EventArgs e)
