@@ -29,6 +29,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using ICSharpCode.SharpZipLib.Zip;
 using System.Text;
+using System.Collections;
 
 namespace MassEffectModder
 {
@@ -37,6 +38,12 @@ namespace MassEffectModder
         ME1_TYPE = 1,
         ME2_TYPE,
         ME3_TYPE
+    }
+
+    struct TFCTexture
+    {
+        public byte[] guid;
+        public string name;
     }
 
     public struct MatchedTexture
@@ -73,6 +80,39 @@ namespace MassEffectModder
         bool moddingEnable = false;
         FileStream fileStreamMod;
         uint numberOfTexturesMod;
+        TFCTexture[] guids = new TFCTexture[]
+        {
+            new TFCTexture
+            {
+                guid = new byte[] { 0x11, 0xD3, 0xC3, 0x39, 0xB3, 0x40, 0x44, 0x61, 0xBB, 0x0E, 0x76, 0x75, 0x2D, 0xF7, 0xC3, 0xB1 },
+                name = "Texture2D"
+            },
+            new TFCTexture
+            {
+                guid = new byte[] { 0x81, 0xCD, 0x12, 0x5C, 0xBB, 0x72, 0x40, 0x2D, 0x99, 0xB1, 0x63, 0x8D, 0xC0, 0xA7, 0x6E, 0x03 },
+                name = "IntProperty"
+            },
+            new TFCTexture
+            {
+                guid = new byte[] { 0xA5, 0xBE, 0xFF, 0x48, 0xB4, 0x7A, 0x47, 0xB0, 0xB2, 0x07, 0x2B, 0x35, 0x96, 0x39, 0x55, 0xFB },
+                name = "ByteProperty"
+            },
+            new TFCTexture
+            {
+                guid = new byte[] { 0x59, 0xF2, 0x1B, 0x17, 0xD0, 0xFE, 0x42, 0x3E, 0x94, 0x8A, 0x26, 0xBE, 0x26, 0x3C, 0x46, 0x2E },
+                name = "SizeX"
+            },
+            new TFCTexture
+            {
+                guid = new byte[] { 0x0C, 0x70, 0x7A, 0x01, 0xA0, 0xC1, 0x49, 0xB4, 0x97, 0x8D, 0x3B, 0xA4, 0x94, 0x71, 0xBE, 0x43 },
+                name = "SizeY"
+            },
+            new TFCTexture
+            {
+                guid = new byte[] { 0xCC, 0xB9, 0x93, 0xFB, 0xD9, 0x56, 0x49, 0x9B, 0xA7, 0x06, 0x9B, 0xD8, 0x37, 0x69, 0x10, 0x9E },
+                name = "None"
+            }
+        };
 
         public class PackageTreeNode : TreeNode
         {
@@ -987,7 +1027,7 @@ namespace MassEffectModder
 
         private void replaceTexture(DDSImage image, List<MatchedTexture> list)
         {
-            Texture firstTexture = null;
+            Texture firstTexture = null, arcTexture = null, cprTexture = null;
 
             for (int n = 0; n < list.Count; n++)
             {
@@ -1008,10 +1048,11 @@ namespace MassEffectModder
                 DDSFormat ddsFormat = DDSImage.convertFormat(texture.properties.getProperty("Format").valueName);
                 if (image.ddsFormat != ddsFormat)
                 {
-                    MessageBox.Show("DDS file not match texture format!");
+                    MessageBox.Show("DDS file not match expected texture format!");
                     break;
                 }
 
+                bool triggerCacheArc = false, triggerCacheCpr = false;
                 List<Texture.MipMap> mipmaps = new List<Texture.MipMap>();
                 for (int m = 0; m < image.mipMaps.Count(); m++)
                 {
@@ -1020,71 +1061,149 @@ namespace MassEffectModder
                     mipmap.uncompressedSize = image.mipMaps[m].data.Length;
                     mipmap.width = image.mipMaps[m].width;
                     mipmap.height = image.mipMaps[m].height;
-                    if (mipmap.storageType == Texture.StorageTypes.pccCpr ||
-                        mipmap.storageType == Texture.StorageTypes.arcCpr ||
-                        (mipmap.storageType == Texture.StorageTypes.extCpr && _gameSelected != MeType.ME1_TYPE))
-                    {
-                        if (mipmap.width < 4 && mipmap.height < 4)
-                            continue;
-                        if (n == 0)
-                            mipmap.newData = texture.compressTexture(image.mipMaps[m].data);
-                        else
-                            mipmap.newData = firstTexture.mipMapsList[m].newData;
-                        mipmap.compressedSize = mipmap.newData.Length;
-                    }
-                    if (mipmap.storageType == Texture.StorageTypes.pccUnc ||
-                        mipmap.storageType == Texture.StorageTypes.extUnc)
-                    {
-                        mipmap.compressedSize = mipmap.uncompressedSize;
-                        mipmap.newData = image.mipMaps[m].data;
-                    }
-                    if (mipmap.storageType == Texture.StorageTypes.extCpr && _gameSelected == MeType.ME1_TYPE)
-                    {
-                        if (mipmap.width < 4 && mipmap.height < 4)
-                            continue;
-                        mipmap.compressedSize = firstTexture.mipMapsList[m].compressedSize;
-                    }
-                    if ((_gameSelected == MeType.ME2_TYPE ||
-                         _gameSelected == MeType.ME3_TYPE) &&
-                        (mipmap.storageType == Texture.StorageTypes.arcCpr ||
-                         mipmap.storageType == Texture.StorageTypes.extCpr ||
-                         mipmap.storageType == Texture.StorageTypes.extUnc))
-                    {
-                        if (n == 0)
+                    if (_gameSelected == MeType.ME1_TYPE)
+                    { 
+                        if (texture.properties.getProperty("Format").valueName == "PF_NormalMap_HQ" &&
+                            (image.mipMaps[m].width < 4 || image.mipMaps[m].height < 4))
                         {
-                            string archive = texture.properties.getProperty("TextureFileCacheName").valueName + ".tfc";
-                            string filename = GameData.tfcFiles.Find(s => Path.GetFileName(s).Equals(archive, StringComparison.OrdinalIgnoreCase));
-                            using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Write))
-                            {
-                                Texture.MipMap oldMipmap = texture.getMipmap(mipmap.width, mipmap.height);
-                                if (oldMipmap.width == 0 || mipmap.newData.Length > oldMipmap.compressedSize)
-                                {
-                                    if (oldMipmap.width != 0)
-                                    {
-                                        fs.JumpTo(oldMipmap.dataOffset);
-                                        fs.WriteZeros(oldMipmap.compressedSize);
-                                    }
-                                    fs.SeekEnd();
-                                    mipmap.dataOffset = (uint)fs.Position;
-                                    fs.WriteFromBuffer(mipmap.newData);
-                                }
-                                else
-                                {
-                                    fs.JumpTo(oldMipmap.dataOffset);
-                                    mipmap.dataOffset = (uint)fs.Position;
-                                    fs.WriteFromBuffer(mipmap.newData);
-                                    fs.WriteZeros(oldMipmap.compressedSize - mipmap.newData.Length);
-                                }
-                            }
+                            continue;
                         }
-                        else
+                        if (mipmap.storageType == Texture.StorageTypes.pccCpr)
                         {
+                            if (n == 0)
+                                mipmap.newData = texture.compressTexture(image.mipMaps[m].data);
+                            else
+                                mipmap.newData = firstTexture.mipMapsList[m].newData;
+                            mipmap.compressedSize = mipmap.newData.Length;
+                        }
+                        if (mipmap.storageType == Texture.StorageTypes.pccUnc)
+                        {
+                            mipmap.compressedSize = mipmap.uncompressedSize;
+                            mipmap.newData = image.mipMaps[m].data;
+                        }
+                        if (mipmap.storageType == Texture.StorageTypes.extCpr && n > 0)
+                        {
+                            mipmap.compressedSize = firstTexture.mipMapsList[m].compressedSize;
                             mipmap.dataOffset = firstTexture.mipMapsList[m].dataOffset;
                         }
                     }
-                    if (_gameSelected == MeType.ME1_TYPE && n > 0 && mipmap.storageType == Texture.StorageTypes.extCpr)
+                    else
                     {
-                        mipmap.dataOffset = firstTexture.mipMapsList[m].dataOffset;
+                        if (image.mipMaps[m].origWidth < 4 || image.mipMaps[m].origHeight < 4)
+                        {
+                            continue;
+                        }
+                        if (mipmap.storageType == Texture.StorageTypes.arcCpr ||
+                            mipmap.storageType == Texture.StorageTypes.extCpr)
+                        {
+                            if (cprTexture == null)
+                            {
+                                mipmap.newData = texture.compressTexture(image.mipMaps[m].data);
+                                triggerCacheCpr = true;
+                            }
+                            else
+                            {
+                                if (cprTexture.mipMapsList[m].width != mipmap.width ||
+                                    cprTexture.mipMapsList[m].height != mipmap.height)
+                                    throw new Exception();
+                                mipmap.newData = cprTexture.mipMapsList[m].newData;
+                            }
+                            mipmap.compressedSize = mipmap.newData.Length;
+                        }
+                        if (mipmap.storageType == Texture.StorageTypes.pccUnc ||
+                            mipmap.storageType == Texture.StorageTypes.extUnc)
+                        {
+                            mipmap.compressedSize = mipmap.uncompressedSize;
+                            mipmap.newData = image.mipMaps[m].data;
+                        }
+                        if (mipmap.storageType == Texture.StorageTypes.arcCpr ||
+                            mipmap.storageType == Texture.StorageTypes.extCpr ||
+                            mipmap.storageType == Texture.StorageTypes.extUnc)
+                        {
+                            if (arcTexture == null ||
+                                !StructuralComparisons.StructuralEqualityComparer.Equals(
+                                    arcTexture.properties.getProperty("TFCFileGuid").valueStruct,
+                                    texture.properties.getProperty("TFCFileGuid").valueStruct))
+                            {
+                                string archive = texture.properties.getProperty("TextureFileCacheName").valueName;
+                                string archiveFile = archiveFile = Path.Combine(GameData.MainData, archive + ".tfc");
+                                if (nodeTexture.path.Contains("DLC"))
+                                {
+                                    string DLCname = Path.GetDirectoryName(Path.GetDirectoryName(nodeTexture.path)).Split('\\').Last();
+                                    archiveFile = Path.Combine(Path.GetDirectoryName((GameData.GamePath + nodeTexture.path)), archive + "_" + DLCname + ".tfc");
+                                    if (!File.Exists(archiveFile))
+                                        archiveFile = Path.Combine(GameData.MainData, archive + ".tfc");
+                                }
+                                Texture.MipMap oldMipmap = texture.getMipmap(mipmap.width, mipmap.height);
+                                if (oldMipmap.width == 0 || mipmap.newData.Length > oldMipmap.compressedSize)
+                                {
+                                    if (oldMipmap.width != 0 && mipmap.storageType == Texture.StorageTypes.extUnc)
+                                    {
+                                        using (FileStream fs = new FileStream(archiveFile, FileMode.Open, FileAccess.Write))
+                                        {
+                                            fs.JumpTo(oldMipmap.dataOffset);
+                                            fs.WriteZeros(oldMipmap.uncompressedSize);
+                                        }
+                                    }
+                                    long fileLength = new FileInfo(archiveFile).Length;
+                                    if (fileLength + 0x3000000 > 0x80000000)
+                                    {
+                                        archiveFile = "";
+                                        foreach (TFCTexture newGuid in guids)
+                                        {
+                                            archiveFile = Path.Combine(GameData.MainData, newGuid.name + ".tfc");
+                                            if (!File.Exists(archiveFile))
+                                            {
+                                                texture.properties.setNameValue("TextureFileCacheName", newGuid.name);
+                                                texture.properties.setStructValue("TFCFileGuid", "Guid", newGuid.guid);
+                                                using (FileStream fs = new FileStream(archiveFile, FileMode.CreateNew, FileAccess.Write))
+                                                {
+                                                    fs.WriteFromBuffer(newGuid.guid);
+                                                }
+                                                break;
+                                            }
+                                            else
+                                            {
+                                                fileLength = new FileInfo(archiveFile).Length;
+                                                if (fileLength + 0x3000000 < 0x80000000)
+                                                {
+                                                    texture.properties.setNameValue("TextureFileCacheName", newGuid.name);
+                                                    texture.properties.setStructValue("TFCFileGuid", "Guid", newGuid.guid);
+                                                    break;
+                                                }
+                                            }
+                                            archiveFile = "";
+                                        }
+                                        if (archiveFile == "")
+                                            throw new Exception("No free TFC texture file!");
+                                    }
+
+                                    using (FileStream fs = new FileStream(archiveFile, FileMode.Open, FileAccess.Write))
+                                    {
+                                        fs.SeekEnd();
+                                        mipmap.dataOffset = (uint)fs.Position;
+                                        fs.WriteFromBuffer(mipmap.newData);
+                                    }
+                                }
+                                else
+                                {
+                                    using (FileStream fs = new FileStream(archiveFile, FileMode.Open, FileAccess.Write))
+                                    {
+                                        fs.JumpTo(oldMipmap.dataOffset);
+                                        mipmap.dataOffset = oldMipmap.dataOffset;
+                                        fs.WriteFromBuffer(mipmap.newData);
+                                    }
+                                }
+                                triggerCacheArc = true;
+                            }
+                            else
+                            {
+                                if (arcTexture.mipMapsList[m].width != mipmap.width ||
+                                    arcTexture.mipMapsList[m].height != mipmap.height)
+                                    throw new Exception();
+                                mipmap.dataOffset = arcTexture.mipMapsList[m].dataOffset;
+                            }
+                        }
                     }
 
                     mipmaps.Add(mipmap);
@@ -1107,8 +1226,12 @@ namespace MassEffectModder
                 newData.WriteFromBuffer(texture.toArray(package.exportsTable[nodeTexture.exportID].dataOffset + (uint)newData.Position));
                 package.setExportData(nodeTexture.exportID, newData.ToArray());
 
-                if (n == 0)
+                if (_gameSelected == MeType.ME1_TYPE && n == 0)
                     firstTexture = texture;
+                if (_gameSelected != MeType.ME1_TYPE && triggerCacheCpr)
+                    cprTexture = texture;
+                if (_gameSelected != MeType.ME1_TYPE && triggerCacheArc)
+                    arcTexture = texture;
 
                 _mainWindow.updateStatusLabel("Saving package: " + nodeTexture.path);
                 package.SaveToFile();
