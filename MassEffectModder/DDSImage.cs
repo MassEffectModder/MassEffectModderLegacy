@@ -42,7 +42,7 @@ namespace AmaroK86.ImageFormat
 {
     public enum DDSFormat
     {
-        DXT1, DXT3, DXT5, V8U8, ATI2, G8, ARGB
+        DXT1, DXT3, DXT5, V8U8, ATI2, G8, ARGB, RGB
     }
 
     public enum ATI2BitCodes : ulong
@@ -180,11 +180,30 @@ namespace AmaroK86.ImageFormat
                     }
 
                     int mipMapBytes = (int)(w * h * bytePerPixel);
-                    mipMaps[i] = new MipMap(r.ReadBytes(mipMapBytes), ddsFormat, w, h, origW, origH);
+                    byte[] newData = r.ReadBytes(mipMapBytes);
+                    if (ddsFormat == DDSFormat.RGB)
+                    {
+                        byte[] data = newData;
+                        newData = new byte[w * h * 4];
+                        for (int k = 0; k < newData.Length / 4; k++)
+                        {
+                            newData[k * 4 + 0] = data[k * 3 + 0];
+                            newData[k * 4 + 1] = data[k * 3 + 1];
+                            newData[k * 4 + 2] = data[k * 3 + 2];
+                            newData[k * 4 + 3] = 255;
+                        }
+                        mipMaps[i] = new MipMap(newData, DDSFormat.ARGB, w, h, origW, origH);
+                    }
+                    else
+                    {
+                        mipMaps[i] = new MipMap(newData, ddsFormat, w, h, origW, origH);
+                    }
                 }
                 if (!bypassCheck && !checkExistAllMipmaps())
                     throw new Exception("DDS doesn't have all mipmaps!");
             }
+            if (ddsFormat == DDSFormat.RGB)
+                ddsFormat = DDSFormat.ARGB;
         }
 
         public bool checkExistAllMipmaps()
@@ -235,6 +254,12 @@ namespace AmaroK86.ImageFormat
                            header.ddspf.dwBBitMask == 0xFF &&
                            header.ddspf.dwABitMask == 0xFF000000)
                         return DDSFormat.ARGB;
+                    if (header.ddspf.dwRGBBitCount == 0x18 &&
+                           header.ddspf.dwRBitMask == 0xFF0000 &&
+                           header.ddspf.dwGBitMask == 0xFF00 &&
+                           header.ddspf.dwBBitMask == 0xFF &&
+                           header.ddspf.dwABitMask == 0x00)
+                        return DDSFormat.RGB;
                     break;
                 default: break;
             }
@@ -251,6 +276,7 @@ namespace AmaroK86.ImageFormat
                 case DDSFormat.G8: return 1;
                 case DDSFormat.V8U8: return 2;
                 case DDSFormat.ARGB: return 4;
+                case DDSFormat.RGB: return 3;
             }
             throw new Exception("invalid texture format");
         }
@@ -269,6 +295,8 @@ namespace AmaroK86.ImageFormat
                     return DDSFormat.V8U8;
                 case "PF_A8R8G8B8":
                     return DDSFormat.ARGB;
+                case "PF_R8G8B8":
+                    return DDSFormat.RGB;
                 case "PF_G8":
                     return DDSFormat.G8;
                 default:
@@ -286,6 +314,7 @@ namespace AmaroK86.ImageFormat
                 case DDSFormat.V8U8: return UncompressV8U8(imgData, w, h);
                 case DDSFormat.G8: return ViewG8(imgData, w, h);
                 case DDSFormat.ARGB: return View32Bit(imgData, w, h);
+                case DDSFormat.RGB: return View24Bit(imgData, w, h);
             }
             throw new Exception("invalid texture format " + ddsFormat);
         }
