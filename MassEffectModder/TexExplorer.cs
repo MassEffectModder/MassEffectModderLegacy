@@ -446,7 +446,7 @@ namespace MassEffectModder
             }
         }
 
-        private uint ParseLegacyScriptMod(string script, string textureName)
+        private FoundTexture ParseLegacyScriptMod(string script, string textureName)
         {
             Regex parts = new Regex("pccs.Add[(]\"[A-z,0-9/,..]*\"");
             Match match = parts.Match(script);
@@ -471,8 +471,23 @@ namespace MassEffectModder
                                         string pkg = _textures[i].list[l].path.Split('\\').Last().Split('.')[0];
                                         if (pkg == packageName)
                                         {
-                                            return _textures[i].crc;
+                                            return _textures[i];
                                         }
+                                    }
+                                }
+                            }
+                        }
+                        // search again but without name match
+                        for (int i = 0; i < _textures.Count; i++)
+                        {
+                            for (int l = 0; l < _textures[i].list.Count; l++)
+                            {
+                                if (_textures[i].list[l].exportID == exportId)
+                                {
+                                    string pkg = _textures[i].list[l].path.Split('\\').Last().Split('.')[0];
+                                    if (pkg == packageName)
+                                    {
+                                        return _textures[i];
                                     }
                                 }
                             }
@@ -481,7 +496,7 @@ namespace MassEffectModder
                 }
             }
 
-            return 0;
+            return new FoundTexture();
         }
 
         private bool checkTextureMod(FileStream fs)
@@ -509,7 +524,9 @@ namespace MassEffectModder
                     string script = fs.ReadStringASCII(len);
                     if (script == "")
                         return false;
-                    uint crc = ParseLegacyScriptMod(script, textureName);
+                    FoundTexture f = ParseLegacyScriptMod(script, textureName);
+                    uint crc = f.crc;
+                    textureName = f.name;
                     if (crc == 0)
                     {
                         MessageBox.Show("Not able match texture: " + textureName + " in MOD");
@@ -748,7 +765,9 @@ namespace MassEffectModder
                             name = name.Split(' ').Last();
                             len = fs.ReadInt32();
                             string scriptLegacy = fs.ReadStringASCII(len);
-                            crc = ParseLegacyScriptMod(scriptLegacy, name);
+                            FoundTexture f = ParseLegacyScriptMod(scriptLegacy, name);
+                            crc = f.crc;
+                            name = f.name;
                         }
                         else
                         {
