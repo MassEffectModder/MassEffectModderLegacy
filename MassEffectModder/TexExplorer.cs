@@ -545,7 +545,7 @@ namespace MassEffectModder
                     len = fs.ReadInt32();
                     if (len == 0)
                         return false;
-                    _mainWindow.updateStatusLabel2("Checking texture: " + textureName);
+                    _mainWindow.updateStatusLabel2("Checking texture " + (i + 1) + " of " + numberOfTextures + " - " + textureName);
                     DDSImage image = new DDSImage(new MemoryStream(fs.ReadToBuffer(len)));
                 }
             }
@@ -787,7 +787,8 @@ namespace MassEffectModder
                             crc = fs.ReadUInt32();
                         }
                         size = fs.ReadUInt32();
-                        _mainWindow.updateStatusLabel("Processing MOD: " + Path.GetFileNameWithoutExtension(filenameMod) + " Texture: " + name);
+                        _mainWindow.updateStatusLabel("Processing MOD: " + Path.GetFileNameWithoutExtension(filenameMod) +
+                            " Texture " + (i + 1) + " of " + numTextures + " - " + name);
                         if (extract)
                         {
                             string filename = name + "-" + string.Format("0x{0:X8}", crc) + ".dds";
@@ -1084,8 +1085,10 @@ namespace MassEffectModder
 
                 bool triggerCacheArc = false, triggerCacheCpr = false;
                 string archiveFile = "";
+                byte[] origGuid = null;
                 if (texture.properties.exists("TextureFileCacheName"))
                 {
+                    origGuid = texture.properties.getProperty("TextureFileCacheName").valueStruct;
                     string archive = texture.properties.getProperty("TextureFileCacheName").valueName;
                     archiveFile = archiveFile = Path.Combine(GameData.MainData, archive + ".tfc");
                     if (nodeTexture.path.Contains("DLC"))
@@ -1093,7 +1096,7 @@ namespace MassEffectModder
                         string DLCname = Path.GetDirectoryName(Path.GetDirectoryName(nodeTexture.path)).Split('\\').Last();
                         archiveFile = Path.Combine(Path.GetDirectoryName((GameData.GamePath + nodeTexture.path)), archive + ".tfc");
                         if (!File.Exists(archiveFile))
-                            archiveFile = Path.Combine(GameData.MainData, archive + ".tfc");
+                            archiveFile = Path.Combine(GameData.MainData, "Textures" + ".tfc");
                     }
                     long fileLength = new FileInfo(archiveFile).Length;
                     if (fileLength + 0x3000000 > 0x80000000)
@@ -1198,12 +1201,15 @@ namespace MassEffectModder
                         {
                             if (arcTexture == null ||
                                 !StructuralComparisons.StructuralEqualityComparer.Equals(
-                                    arcTexture.properties.getProperty("TFCFileGuid").valueStruct,
-                                    texture.properties.getProperty("TFCFileGuid").valueStruct))
+                                arcTexture.properties.getProperty("TFCFileGuid").valueStruct,
+                                texture.properties.getProperty("TFCFileGuid").valueStruct) ||
+                                !StructuralComparisons.StructuralEqualityComparer.Equals(origGuid,
+                                texture.properties.getProperty("TFCFileGuid").valueStruct))
                             {
-                                Texture.MipMap oldMipmap = texture.getMipmap(mipmap.width, mipmap.height);
-                                if (oldMipmap.width == 0 || mipmap.newData.Length > oldMipmap.compressedSize)
+                                if (StructuralComparisons.StructuralEqualityComparer.Equals(origGuid,
+                                    texture.properties.getProperty("TFCFileGuid").valueStruct))
                                 {
+                                    Texture.MipMap oldMipmap = texture.getMipmap(mipmap.width, mipmap.height);
                                     if (oldMipmap.width != 0 && mipmap.storageType == Texture.StorageTypes.extUnc)
                                     {
                                         using (FileStream fs = new FileStream(archiveFile, FileMode.Open, FileAccess.Write))
@@ -1212,19 +1218,22 @@ namespace MassEffectModder
                                             fs.WriteZeros(oldMipmap.uncompressedSize);
                                         }
                                     }
-                                    using (FileStream fs = new FileStream(archiveFile, FileMode.Open, FileAccess.Write))
+                                    if (oldMipmap.width != 0 && mipmap.newData.Length <= oldMipmap.compressedSize)
                                     {
-                                        fs.SeekEnd();
-                                        mipmap.dataOffset = (uint)fs.Position;
-                                        fs.WriteFromBuffer(mipmap.newData);
+                                        using (FileStream fs = new FileStream(archiveFile, FileMode.Open, FileAccess.Write))
+                                        {
+                                            fs.JumpTo(oldMipmap.dataOffset);
+                                            mipmap.dataOffset = oldMipmap.dataOffset;
+                                            fs.WriteFromBuffer(mipmap.newData);
+                                        }
                                     }
                                 }
                                 else
                                 {
                                     using (FileStream fs = new FileStream(archiveFile, FileMode.Open, FileAccess.Write))
                                     {
-                                        fs.JumpTo(oldMipmap.dataOffset);
-                                        mipmap.dataOffset = oldMipmap.dataOffset;
+                                        fs.SeekEnd();
+                                        mipmap.dataOffset = (uint)fs.Position;
                                         fs.WriteFromBuffer(mipmap.newData);
                                     }
                                 }
@@ -1267,7 +1276,7 @@ namespace MassEffectModder
                 if (_gameSelected != MeType.ME1_TYPE && triggerCacheArc)
                     arcTexture = texture;
 
-                _mainWindow.updateStatusLabel2("Saving package: " + nodeTexture.path);
+                _mainWindow.updateStatusLabel2("Saving package " + (n + 1) + " of " + list.Count + " - " + nodeTexture.path);
                 package.SaveToFile();
                 package.Dispose();
             }
