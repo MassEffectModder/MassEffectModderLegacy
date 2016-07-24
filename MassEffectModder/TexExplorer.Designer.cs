@@ -80,8 +80,6 @@ namespace MassEffectModder
             this.clearMODsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.packMODToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.searchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.byNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.byCRCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeEmptyMipmapsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStripTextures.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -386,27 +384,11 @@ namespace MassEffectModder
             // 
             // searchToolStripMenuItem
             // 
-            this.searchToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.byNameToolStripMenuItem,
-            this.byCRCToolStripMenuItem});
             this.searchToolStripMenuItem.Name = "searchToolStripMenuItem";
+            this.searchToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
             this.searchToolStripMenuItem.Size = new System.Drawing.Size(95, 20);
             this.searchToolStripMenuItem.Text = "Search Texture";
-            // 
-            // byNameToolStripMenuItem
-            // 
-            this.byNameToolStripMenuItem.Name = "byNameToolStripMenuItem";
-            this.byNameToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
-            this.byNameToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
-            this.byNameToolStripMenuItem.Text = "By name";
-            this.byNameToolStripMenuItem.Click += new System.EventHandler(this.byNameToolStripMenuItem_Click);
-            // 
-            // byCRCToolStripMenuItem
-            // 
-            this.byCRCToolStripMenuItem.Name = "byCRCToolStripMenuItem";
-            this.byCRCToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
-            this.byCRCToolStripMenuItem.Text = "By CRC";
-            this.byCRCToolStripMenuItem.Click += new System.EventHandler(this.byCRCToolStripMenuItem_Click);
+            this.searchToolStripMenuItem.Click += new System.EventHandler(this.searchToolStripMenuItem_Click);
             // 
             // removeEmptyMipmapsToolStripMenuItem
             // 
@@ -460,8 +442,6 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripMenuItem previewTextureToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem infoTextureToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem searchToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem byNameToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem byCRCToolStripMenuItem;
         private System.Windows.Forms.ColumnHeader columnHeader;
         private System.Windows.Forms.ToolStripMenuItem removeEmptyMipmapsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem MODsToolStripMenuItem;

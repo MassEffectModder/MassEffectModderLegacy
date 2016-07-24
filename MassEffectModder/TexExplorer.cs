@@ -162,6 +162,7 @@ namespace MassEffectModder
                     {
                         MessageBox.Show("Abort! Wrong " + filename + " file!");
                         _mainWindow.updateStatusLabel("");
+                        _mainWindow.updateStatusLabel2("");
                         Close();
                         return;
                     }
@@ -203,6 +204,7 @@ namespace MassEffectModder
                 for (int i = 0; i < GameData.packageFiles.Count; i++)
                 {
                     _mainWindow.updateStatusLabel("Find textures in package " + (i + 1) + " of " + GameData.packageFiles.Count);
+                    _mainWindow.updateStatusLabel2("");
                     FindTextures(GameData.packageFiles[i]);
                 }
 
@@ -225,6 +227,7 @@ namespace MassEffectModder
                     }
                 }
                 _mainWindow.updateStatusLabel("Done.");
+                _mainWindow.updateStatusLabel("");
             }
         }
 
@@ -293,9 +296,11 @@ namespace MassEffectModder
             }
             else
             {
+                _mainWindow.updateStatusLabel("");
                 _mainWindow.updateStatusLabel("Preparing tree...");
                 PrepareListOfTextures();
                 _mainWindow.updateStatusLabel("Done.");
+                _mainWindow.updateStatusLabel("");
             }
 
             PrepareTreeList();
@@ -306,6 +311,7 @@ namespace MassEffectModder
         void sortPackagesME1()
         {
             _mainWindow.updateStatusLabel("Sorting packages...");
+            _mainWindow.updateStatusLabel("");
             List<string> sortedList = new List<string>();
             List<string> restList = new List<string>();
             for (int i = 0; i < GameData.packageFiles.Count; i++)
@@ -320,6 +326,7 @@ namespace MassEffectModder
             sortedList.AddRange(restList);
             GameData.packageFiles = sortedList;
             _mainWindow.updateStatusLabel("Done.");
+            _mainWindow.updateStatusLabel("");
         }
 
         public void FindTextures(string packagePath)
@@ -534,6 +541,7 @@ namespace MassEffectModder
                     len = fs.ReadInt32();
                     if (len == 0)
                         return false;
+                    _mainWindow.updateStatusLabel2("Checking texture: " + textureName);
                     DDSImage image = new DDSImage(new MemoryStream(fs.ReadToBuffer(len)));
                 }
             }
@@ -775,8 +783,8 @@ namespace MassEffectModder
                             crc = fs.ReadUInt32();
                         }
                         size = fs.ReadUInt32();
-                        _mainWindow.updateStatusLabel("Processing MOD: " +
-                            Path.GetFileNameWithoutExtension(filenameMod) + ", Texture: " + name);
+                        _mainWindow.updateStatusLabel("Processing MOD: " + Path.GetFileNameWithoutExtension(filenameMod));
+                        _mainWindow.updateStatusLabel2("Texture: " + name);
                         if (extract)
                         {
                             string filename = name + "-" + string.Format("0x{0:X8}", crc) + ".dds";
@@ -847,6 +855,7 @@ namespace MassEffectModder
                 foreach (string file in files)
                 {
                     _mainWindow.updateStatusLabel("Processing MOD: " + Path.GetFileNameWithoutExtension(outFile));
+                    _mainWindow.updateStatusLabel2("");
                     using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
                     {
                         string textureName = Path.GetFileNameWithoutExtension(file).Split('-').First();
@@ -986,8 +995,10 @@ namespace MassEffectModder
         private void listViewTextures_DoubleClick(object sender, EventArgs e)
         {
             _mainWindow.updateStatusLabel("Replacing texture...");
+            _mainWindow.updateStatusLabel2("");
             replaceTexture();
             _mainWindow.updateStatusLabel("Done.");
+            _mainWindow.updateStatusLabel2("");
         }
 
         private void listViewTextures_KeyPress(object sender, KeyPressEventArgs e)
@@ -995,29 +1006,10 @@ namespace MassEffectModder
             if (e.KeyChar != '\r')
                 return;
             _mainWindow.updateStatusLabel("Replacing texture...");
+            _mainWindow.updateStatusLabel2("");
             replaceTexture();
             _mainWindow.updateStatusLabel("Done.");
-        }
-
-        private void byNameToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            string name = Microsoft.VisualBasic.Interaction.InputBox("Please enter texture name", "", "", 0, 0);
-            if (string.IsNullOrEmpty(name))
-                return;
-
-            name = name.Split('.')[0]; // in case filename
-            searchTexture(name, 0);
-        }
-
-        private void byCRCToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            string crc = Microsoft.VisualBasic.Interaction.InputBox("Please enter texture CRC", "", "", 0, 0);
-            if (string.IsNullOrEmpty(crc))
-                return;
-
-            if (crc.Substring(0, 2).ToLower() == "0x")
-                crc = crc.Substring(2);
-            searchTexture(null, uint.Parse(crc, System.Globalization.NumberStyles.HexNumber));
+            _mainWindow.updateStatusLabel2("");
         }
 
         private void selectFoundTexture(ListViewItem item)
@@ -1268,7 +1260,7 @@ namespace MassEffectModder
                 if (_gameSelected != MeType.ME1_TYPE && triggerCacheArc)
                     arcTexture = texture;
 
-                _mainWindow.updateStatusLabel("Saving package: " + nodeTexture.path);
+                _mainWindow.updateStatusLabel2("Saving package: " + nodeTexture.path);
                 package.SaveToFile();
                 package.Dispose();
             }
@@ -1328,8 +1320,10 @@ namespace MassEffectModder
         private void replaceTextureToolStripMenuItem_Click(object sender, EventArgs e)
         {
             _mainWindow.updateStatusLabel("Replacing texture...");
+            _mainWindow.updateStatusLabel2("");
             replaceTexture();
             _mainWindow.updateStatusLabel("Done.");
+            _mainWindow.updateStatusLabel2("");
         }
 
         private void removeEmptyMipmapsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1348,6 +1342,7 @@ namespace MassEffectModder
             {
                 bool modified = false;
                 _mainWindow.updateStatusLabel("Remove empty mipmaps, package " + (i + 1) + " of " + GameData.packageFiles.Count);
+                _mainWindow.updateStatusLabel2("");
                 Package package = new Package(GameData.packageFiles[i]);
                 for (int l = 0; l < package.exportsTable.Count; l++)
                 {
@@ -1412,6 +1407,7 @@ namespace MassEffectModder
 
             EnableMenuOptions(true);
             _mainWindow.updateStatusLabel("Done.");
+            _mainWindow.updateStatusLabel2("");
         }
 
         private void switchModMode(bool enable)
@@ -1559,6 +1555,7 @@ namespace MassEffectModder
             {
                 replaceTextureMod(item.Name);
                 _mainWindow.updateStatusLabel("Done.");
+                _mainWindow.updateStatusLabel2("");
                 listViewMods.Items.Remove(item);
             }
             EnableMenuOptions(true);
@@ -1593,6 +1590,7 @@ namespace MassEffectModder
 
             listTextureMod(listViewMods.SelectedItems[0].Name);
             _mainWindow.updateStatusLabel("Done.");
+            _mainWindow.updateStatusLabel2("");
         }
 
         private void saveModsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1609,6 +1607,7 @@ namespace MassEffectModder
                 {
                     saveTextureMod(item.Name, modFile.SelectedPath);
                     _mainWindow.updateStatusLabel("Done.");
+                    _mainWindow.updateStatusLabel2("");
                 }
             }
             EnableMenuOptions(true);
@@ -1630,6 +1629,7 @@ namespace MassEffectModder
                     Directory.CreateDirectory(outDir);
                     extractTextureMod(item.Name, outDir);
                     _mainWindow.updateStatusLabel("Done.");
+                    _mainWindow.updateStatusLabel2("");
                 }
             }
             EnableMenuOptions(true);
@@ -1645,8 +1645,36 @@ namespace MassEffectModder
                 packTextureMod(modFile.SelectedPath, Path.Combine(Path.GetDirectoryName(modFile.SelectedPath), Path.GetFileName(modFile.SelectedPath)) + ".mod");
             }
             _mainWindow.updateStatusLabel("Done.");
+            _mainWindow.updateStatusLabel2("");
 
             EnableMenuOptions(true);
+        }
+
+        private void searchToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string name = Microsoft.VisualBasic.Interaction.InputBox("Please enter texture name or CRC", "", "", 0, 0);
+            if (string.IsNullOrEmpty(name))
+                return;
+
+            string crcStr = name.Split('-').Last(); // in case filename contain CRC
+            if (crcStr == "")
+                crcStr = name;
+
+            uint crc = 0;
+            try
+            {
+                if (crcStr.Substring(0, 2).ToLower() == "0x")
+                    crcStr = crcStr.Substring(2, 8);
+                else
+                    crcStr = crcStr.Substring(0, 8);
+                crc = uint.Parse(crcStr, System.Globalization.NumberStyles.HexNumber);
+                searchTexture("", crc);
+            }
+            catch
+            {
+                name = name.Split('.')[0]; // in case filename
+                searchTexture(name, 0);
+            }
         }
     }
 }

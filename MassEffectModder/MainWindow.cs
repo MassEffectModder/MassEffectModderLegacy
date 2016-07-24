@@ -52,6 +52,12 @@ namespace MassEffectModder
             Application.DoEvents();
         }
 
+        public void updateStatusLabel2(string text)
+        {
+            toolStripStatusLabel2.Text = text;
+            Application.DoEvents();
+        }
+
         public TexExplorer CreateTextureExplorer(MeType type)
         {
             TexExplorer explorer = new TexExplorer(this, type);
@@ -168,6 +174,7 @@ namespace MassEffectModder
                     package.SaveToFile(true);
             }
             updateStatusLabel("Done");
+            updateStatusLabel2("");
         }
 
         private void repackME1ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -238,6 +245,7 @@ namespace MassEffectModder
                 dlc.extract(sfarFiles[i], outPath);
             }
             updateStatusLabel("Done");
+            updateStatusLabel2("");
             enableGameDataMenu(true);
         }
 
@@ -280,6 +288,7 @@ namespace MassEffectModder
                 PackME3DLC(DLCs[i], DLCname, compressed);
             }
             updateStatusLabel("Done");
+            updateStatusLabel2("");
             enableGameDataMenu(true);
         }
 
