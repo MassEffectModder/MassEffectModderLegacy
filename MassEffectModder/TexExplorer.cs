@@ -1141,10 +1141,31 @@ namespace MassEffectModder
                 for (int m = 0; m < image.mipMaps.Count(); m++)
                 {
                     Texture.MipMap mipmap = new Texture.MipMap();
-                    mipmap.storageType = texture.getStorageType(image.mipMaps[m].width, image.mipMaps[m].height);
-                    mipmap.uncompressedSize = image.mipMaps[m].data.Length;
                     mipmap.width = image.mipMaps[m].width;
                     mipmap.height = image.mipMaps[m].height;
+                    if (texture.existMipmap(mipmap.width, mipmap.height))
+                        mipmap.storageType = texture.getMipmap(mipmap.width, mipmap.height).storageType;
+                    else
+                    {
+                        mipmap.storageType = texture.getTopMipmap().storageType;
+                        if (_gameSelected == MeType.ME2_TYPE)
+                        {
+                            if (texture.properties.exists("TextureFileCacheName"))
+                                mipmap.storageType = Texture.StorageTypes.extCpr;
+                        }
+                        else if (_gameSelected == MeType.ME3_TYPE)
+                        {
+                            if (texture.properties.exists("TextureFileCacheName"))
+                            {
+                                if (nodeTexture.path.Contains("DLC"))
+                                    mipmap.storageType = Texture.StorageTypes.extUnc;
+                                else
+                                    mipmap.storageType = Texture.StorageTypes.arcCpr;
+                            }
+                        }
+                    }
+
+                    mipmap.uncompressedSize = image.mipMaps[m].data.Length;
                     if (_gameSelected == MeType.ME1_TYPE)
                     { 
                         if (texture.properties.getProperty("Format").valueName == "PF_NormalMap_HQ" &&
@@ -1211,26 +1232,17 @@ namespace MassEffectModder
                                 !StructuralComparisons.StructuralEqualityComparer.Equals(origGuid,
                                 texture.properties.getProperty("TFCFileGuid").valueStruct))
                             {
+                                triggerCacheArc = true;
+                                Texture.MipMap oldMipmap = texture.getMipmap(mipmap.width, mipmap.height);
                                 if (StructuralComparisons.StructuralEqualityComparer.Equals(origGuid,
-                                    texture.properties.getProperty("TFCFileGuid").valueStruct))
+                                    texture.properties.getProperty("TFCFileGuid").valueStruct) &&
+                                    oldMipmap.width != 0 && mipmap.newData.Length <= oldMipmap.compressedSize)
                                 {
-                                    Texture.MipMap oldMipmap = texture.getMipmap(mipmap.width, mipmap.height);
-                                    if (oldMipmap.width != 0 && mipmap.storageType == Texture.StorageTypes.extUnc)
+                                    using (FileStream fs = new FileStream(archiveFile, FileMode.Open, FileAccess.Write))
                                     {
-                                        using (FileStream fs = new FileStream(archiveFile, FileMode.Open, FileAccess.Write))
-                                        {
-                                            fs.JumpTo(oldMipmap.dataOffset);
-                                            fs.WriteZeros(oldMipmap.uncompressedSize);
-                                        }
-                                    }
-                                    if (oldMipmap.width != 0 && mipmap.newData.Length <= oldMipmap.compressedSize)
-                                    {
-                                        using (FileStream fs = new FileStream(archiveFile, FileMode.Open, FileAccess.Write))
-                                        {
-                                            fs.JumpTo(oldMipmap.dataOffset);
-                                            mipmap.dataOffset = oldMipmap.dataOffset;
-                                            fs.WriteFromBuffer(mipmap.newData);
-                                        }
+                                        fs.JumpTo(oldMipmap.dataOffset);
+                                        mipmap.dataOffset = oldMipmap.dataOffset;
+                                        fs.WriteFromBuffer(mipmap.newData);
                                     }
                                 }
                                 else
@@ -1242,7 +1254,6 @@ namespace MassEffectModder
                                         fs.WriteFromBuffer(mipmap.newData);
                                     }
                                 }
-                                triggerCacheArc = true;
                             }
                             else
                             {

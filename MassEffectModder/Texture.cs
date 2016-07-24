@@ -273,14 +273,6 @@ namespace MassEffectModder
             return mipMapsList.Find(b => b.width == width && b.height == height);
         }
 
-        public StorageTypes getStorageType(int width, int height)
-        {
-            if (existMipmap(width, height))
-                return getMipmap(width, height).storageType;
-            else
-                return getTopMipmap().storageType;
-        }
-
         public bool hasImageData()
         {
             if (textureData == null || mipMapsList.Count == 0)
