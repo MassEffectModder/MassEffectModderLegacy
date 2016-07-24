@@ -283,13 +283,14 @@ namespace MassEffectModder
 
         public void setStructValue(string name, string valueName, byte[] valueStruct)
         {
+            fetchValue(name);
             TexPropertyEntry texProperty = texPropertyList.Find(s => s.name == name);
             if (texProperty.type != "StructProperty" || texProperty.valueStruct.Length != valueStruct.Length)
                 throw new Exception();
             Buffer.BlockCopy(BitConverter.GetBytes(package.getNameId(valueName)), 0, texProperty.valueRaw, 0, sizeof(int));
             Buffer.BlockCopy(valueStruct, 0, texProperty.valueRaw, 8, valueStruct.Length);
             texProperty.valueName = valueName;
-            Buffer.BlockCopy(valueStruct, 0, texProperty.valueStruct, 8, valueStruct.Length);
+            Buffer.BlockCopy(valueStruct, 0, texProperty.valueStruct, 0, valueStruct.Length);
             texPropertyList[texPropertyList.FindIndex(s => s.name == name)] = texProperty;
         }
 
