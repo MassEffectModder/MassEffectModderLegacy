@@ -459,7 +459,11 @@ namespace MassEffectModder
             Match match = parts.Match(script);
             if (match.Success)
             {
-                string packageName = match.ToString().Split('\"')[1].Split('/').Last().Split('.')[0];
+                string packageName;
+                if (_gameSelected == MeType.ME3_TYPE)
+                    packageName = match.ToString().Split('\"')[1].Split('\\').Last().Split('.')[0];
+                else
+                    packageName = match.ToString().Split('\"')[1].Split('/').Last().Split('.')[0];
                 parts = new Regex("IDs.Add[(][0-9]*[)];");
                 match = parts.Match(script);
                 if (match.Success)
