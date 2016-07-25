@@ -1077,15 +1077,8 @@ namespace MassEffectModder
                 DDSFormat ddsFormat = DDSImage.convertFormat(texture.properties.getProperty("Format").valueName);
                 if (image.ddsFormat != ddsFormat)
                 {
-                    if (image.ddsFormat == DDSFormat.ARGB)
-                    {
-                        texture.properties.setNameValue("Format", "PF_A8R8G8B8");
-                    }
-                    else
-                    {
-                        MessageBox.Show("DDS file not match expected texture format!");
-                        break;
-                    }
+                    MessageBox.Show("DDS file not match expected texture format!");
+                    break;
                 }
 
                 bool triggerCacheArc = false, triggerCacheCpr = false;

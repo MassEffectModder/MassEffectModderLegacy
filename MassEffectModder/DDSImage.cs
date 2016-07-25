@@ -180,30 +180,12 @@ namespace AmaroK86.ImageFormat
                     }
 
                     int mipMapBytes = (int)(w * h * bytePerPixel);
-                    byte[] newData = r.ReadBytes(mipMapBytes);
-                    if (ddsFormat == DDSFormat.RGB)
-                    {
-                        byte[] data = newData;
-                        newData = new byte[w * h * 4];
-                        for (int k = 0; k < newData.Length / 4; k++)
-                        {
-                            newData[k * 4 + 0] = data[k * 3 + 0];
-                            newData[k * 4 + 1] = data[k * 3 + 1];
-                            newData[k * 4 + 2] = data[k * 3 + 2];
-                            newData[k * 4 + 3] = 255;
-                        }
-                        mipMaps[i] = new MipMap(newData, DDSFormat.ARGB, w, h, origW, origH);
-                    }
-                    else
-                    {
-                        mipMaps[i] = new MipMap(newData, ddsFormat, w, h, origW, origH);
-                    }
+                    byte[] data = r.ReadBytes(mipMapBytes);
+                    mipMaps[i] = new MipMap(data, ddsFormat, w, h, origW, origH);
                 }
                 if (!bypassCheck && !checkExistAllMipmaps())
                     throw new Exception("DDS doesn't have all mipmaps!");
             }
-            if (ddsFormat == DDSFormat.RGB)
-                ddsFormat = DDSFormat.ARGB;
         }
 
         public bool checkExistAllMipmaps()
