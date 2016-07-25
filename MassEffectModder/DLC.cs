@@ -39,6 +39,7 @@ namespace MassEffectModder
         const uint EntryHeaderSize = 0x1e;
         byte[] FileListHash = new byte[] { 0xb5, 0x50, 0x19, 0xcb, 0xf9, 0xd3, 0xda, 0x65, 0xd5, 0x5b, 0x32, 0x1c, 0x00, 0x19, 0x69, 0x7c };
         const long MaxBlockSize = 0x00010000;
+        MainWindow mainWindow;
 
         public struct FileEntry
         {
@@ -55,6 +56,11 @@ namespace MassEffectModder
             {
                 return StructuralComparisons.StructuralComparer.Compare(x.filenameHash, y.filenameHash);
             }
+        }
+
+        public ME3DLC(MainWindow main)
+        {
+            mainWindow = main;
         }
 
         public void extract(string filename, string outPath)
@@ -146,6 +152,8 @@ namespace MassEffectModder
                     continue;
                 if (filenamesArray[i] == null)
                     throw new Exception("filename missing");
+
+                mainWindow.updateStatusLabel2("File " + (i + 1) + " of " + filenamesArray.Count() + " - " + Path.GetFileName(filenamesArray[i]));
 
                 string dir = Path.GetDirectoryName(filenamesArray[i]);
                 Directory.CreateDirectory(outPath + dir);
@@ -243,6 +251,7 @@ namespace MassEffectModder
                 outputFile.JumpTo(dataOffset);
                 for (int i = 0; i < srcFilesList.Count(); i++)
                 {
+                    mainWindow.updateStatusLabel2("File " + (i + 1) + " of " + srcFilesList.Count() + " - " + Path.GetFileName(srcFilesList[i]));
                     FileEntry file = new FileEntry();
                     Stream inputFile = new FileStream(srcFilesList[i], FileMode.Open, FileAccess.Read);
                     long fileLen = new FileInfo(srcFilesList[i]).Length;

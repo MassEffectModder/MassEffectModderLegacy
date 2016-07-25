@@ -239,9 +239,8 @@ namespace MassEffectModder
                 string DLCname = Path.GetFileName(Path.GetDirectoryName(Path.GetDirectoryName(sfarFiles[i])));
                 string outPath = Path.Combine(gameData.DLCDataCache, DLCname);
                 Directory.CreateDirectory(outPath);
-                ME3DLC dlc = new ME3DLC();
-                updateStatusLabel("SFAR unpacking " + (i + 1) + " of " + sfarFiles.Count);
-                Application.DoEvents();
+                ME3DLC dlc = new ME3DLC(this);
+                updateStatusLabel("SFAR unpacking - DLC " + (i + 1) + " of " + sfarFiles.Count);
                 dlc.extract(sfarFiles[i], outPath);
             }
             updateStatusLabel("Done");
@@ -253,7 +252,7 @@ namespace MassEffectModder
         {
             GameData gameData = new GameData(MeType.ME3_TYPE, _configIni);
             string outPath = Path.Combine(gameData.DLCData, DLCname, "CookedPCConsole", "Default.sfar");
-            ME3DLC dlc = new ME3DLC();
+            ME3DLC dlc = new ME3DLC(this);
             dlc.pack(inPath, outPath, DLCname, !compressed);
         }
 
@@ -283,8 +282,7 @@ namespace MassEffectModder
             for (int i = 0; i < DLCs.Count; i++)
             {
                 string DLCname = Path.GetFileName(DLCs[i]);
-                updateStatusLabel("SFAR packing " + (i + 1) + " of " + DLCs.Count);
-                Application.DoEvents();
+                updateStatusLabel("SFAR packing - DLC " + (i + 1) + " of " + DLCs.Count);
                 PackME3DLC(DLCs[i], DLCname, compressed);
             }
             updateStatusLabel("Done");
