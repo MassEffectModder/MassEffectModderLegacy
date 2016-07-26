@@ -35,14 +35,23 @@ namespace MassEffectModder
         const int SizeOfChunkBlock = 8;
         const int SizeOfChunk = 16;
 
+        public enum StorageFlags
+        {
+            noFlags        = 0,
+            externalFile   = 1 << 0,
+            compressedZLib = 1 << 1,
+            compressedLZO  = 1 << 4,
+            unused         = 1 << 5,
+        }
+
         public enum StorageTypes
         {
-            pccUnc = 0x0, // ME1 (Compressed PCC), ME2 (Compressed PCC)
-            pccCpr = 0x10, // ME1 (Uncompressed PCC)
-            extUnc = 0x1, // ME3 (DLC TFC archive)
-            extCpr = 0x11, // ME1 (Reference to PCC), ME2 (TFC archive)
-            arcCpr = 0x3, // ME3 (non-DLC TFC archive)
-            empty = 0x21, // ME1, ME2, ME3
+            pccUnc = StorageFlags.noFlags,                                    // ME1 (Compressed PCC), ME2 (Compressed PCC)
+            pccCpr = StorageFlags.compressedLZO,                              // ME1 (Uncompressed PCC)
+            extUnc = StorageFlags.externalFile,                               // ME3 (DLC TFC archive)
+            extCpr = StorageFlags.externalFile | StorageFlags.compressedLZO,  // ME1 (Reference to PCC), ME2 (TFC archive)
+            arcCpr = StorageFlags.externalFile | StorageFlags.compressedZLib, // ME3 (non-DLC TFC archive)
+            empty = StorageFlags.externalFile | StorageFlags.unused,          // ME1, ME2, ME3
         }
 
         public struct MipMap
