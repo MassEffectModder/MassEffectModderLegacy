@@ -1278,12 +1278,18 @@ namespace MassEffectModder
                 newData.WriteFromBuffer(texture.toArray(package.exportsTable[nodeTexture.exportID].dataOffset + (uint)newData.Position));
                 package.setExportData(nodeTexture.exportID, newData.ToArray());
 
-                if (_gameSelected == MeType.ME1_TYPE && n == 0)
-                    firstTexture = texture;
-                if (_gameSelected != MeType.ME1_TYPE && triggerCacheCpr)
-                    cprTexture = texture;
-                if (_gameSelected != MeType.ME1_TYPE && triggerCacheArc)
-                    arcTexture = texture;
+                if (_gameSelected == MeType.ME1_TYPE)
+                {
+                    if (n == 0)
+                        firstTexture = texture;
+                }
+                else
+                {
+                    if (triggerCacheCpr)
+                        cprTexture = texture;
+                    if (triggerCacheArc)
+                        arcTexture = texture;
+                }
 
                 _mainWindow.updateStatusLabel2("Saving package " + (n + 1) + " of " + list.Count + " - " + nodeTexture.path);
                 package.SaveToFile();
