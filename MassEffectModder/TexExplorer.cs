@@ -1187,6 +1187,11 @@ namespace MassEffectModder
                     }
                     else
                     {
+                        if (_gameSelected == MeType.ME2_TYPE &&
+                            (image.mipMaps[m].origWidth < 4 || image.mipMaps[m].origHeight < 4))
+                        {
+                            continue;
+                        }
                         if (mipmap.storageType == Texture.StorageTypes.arcCpr ||
                             mipmap.storageType == Texture.StorageTypes.extCpr)
                         {
