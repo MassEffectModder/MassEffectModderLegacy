@@ -61,7 +61,6 @@ namespace MassEffectModder
             this.toolStripMenuME3 = new System.Windows.Forms.ToolStripMenuItem();
             this.massEffect3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extractME3DLCPackagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.packME3DLCPackagesUncompressedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.packME3DLCPackagesLZMAToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updateME3ConfigToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
@@ -151,7 +150,6 @@ namespace MassEffectModder
             this.toolStripMenuME3.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.massEffect3ToolStripMenuItem,
             this.extractME3DLCPackagesToolStripMenuItem,
-            this.packME3DLCPackagesUncompressedToolStripMenuItem,
             this.packME3DLCPackagesLZMAToolStripMenuItem,
             this.updateME3ConfigToolStripMenuItem});
             this.toolStripMenuME3.Name = "toolStripMenuME3";
@@ -161,35 +159,28 @@ namespace MassEffectModder
             // massEffect3ToolStripMenuItem
             // 
             this.massEffect3ToolStripMenuItem.Name = "massEffect3ToolStripMenuItem";
-            this.massEffect3ToolStripMenuItem.Size = new System.Drawing.Size(286, 22);
+            this.massEffect3ToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.massEffect3ToolStripMenuItem.Text = "Texture Explorer";
             this.massEffect3ToolStripMenuItem.Click += new System.EventHandler(this.massEffect3ToolStripMenuItem_Click);
             // 
             // extractME3DLCPackagesToolStripMenuItem
             // 
             this.extractME3DLCPackagesToolStripMenuItem.Name = "extractME3DLCPackagesToolStripMenuItem";
-            this.extractME3DLCPackagesToolStripMenuItem.Size = new System.Drawing.Size(286, 22);
+            this.extractME3DLCPackagesToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.extractME3DLCPackagesToolStripMenuItem.Text = "Unpack DLC SFARs";
             this.extractME3DLCPackagesToolStripMenuItem.Click += new System.EventHandler(this.extractME3DLCPackagesToolStripMenuItem_Click);
-            // 
-            // packME3DLCPackagesUncompressedToolStripMenuItem
-            // 
-            this.packME3DLCPackagesUncompressedToolStripMenuItem.Name = "packME3DLCPackagesUncompressedToolStripMenuItem";
-            this.packME3DLCPackagesUncompressedToolStripMenuItem.Size = new System.Drawing.Size(286, 22);
-            this.packME3DLCPackagesUncompressedToolStripMenuItem.Text = "RePack DLC SFARs (Faster Compression)";
-            this.packME3DLCPackagesUncompressedToolStripMenuItem.Click += new System.EventHandler(this.packME3DLCPackagesUncompressedToolStripMenuItem_Click);
             // 
             // packME3DLCPackagesLZMAToolStripMenuItem
             // 
             this.packME3DLCPackagesLZMAToolStripMenuItem.Name = "packME3DLCPackagesLZMAToolStripMenuItem";
-            this.packME3DLCPackagesLZMAToolStripMenuItem.Size = new System.Drawing.Size(286, 22);
-            this.packME3DLCPackagesLZMAToolStripMenuItem.Text = "RePack DLC SFARs (Best Compression)";
+            this.packME3DLCPackagesLZMAToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.packME3DLCPackagesLZMAToolStripMenuItem.Text = "Pack DLC SFARs";
             this.packME3DLCPackagesLZMAToolStripMenuItem.Click += new System.EventHandler(this.packME3DLCPackagesLZMAToolStripMenuItem_Click);
             // 
             // updateME3ConfigToolStripMenuItem
             // 
             this.updateME3ConfigToolStripMenuItem.Name = "updateME3ConfigToolStripMenuItem";
-            this.updateME3ConfigToolStripMenuItem.Size = new System.Drawing.Size(286, 22);
+            this.updateME3ConfigToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.updateME3ConfigToolStripMenuItem.Text = "Update LOD Settings";
             this.updateME3ConfigToolStripMenuItem.Click += new System.EventHandler(this.updateME3ConfigToolStripMenuItem_Click);
             // 
@@ -259,7 +250,6 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripMenuItem repackME1ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem repackME2ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem extractME3DLCPackagesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem packME3DLCPackagesUncompressedToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem packME3DLCPackagesLZMAToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem updateME2ConfigToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem updateME3ConfigToolStripMenuItem;

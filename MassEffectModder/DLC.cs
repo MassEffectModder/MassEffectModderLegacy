@@ -196,7 +196,7 @@ namespace MassEffectModder
             sfarFile.Close();
         }
 
-        public void pack(string inPath, string outPath, string DLCName, bool noCompress = false)
+        public void pack(string inPath, string outPath, string DLCName, bool fasterCompression = false)
         {
             if (!Directory.Exists(inPath))
                 throw new Exception("Directory not found: " + inPath);
@@ -273,7 +273,7 @@ namespace MassEffectModder
                             if (k == (file.numBlocks - 1)) // last block
                                 uncompressedBlockSize = fileLen - (MaxBlockSize * k);
                             byte[] inBuf = inputFile.ReadToBuffer((int)uncompressedBlockSize);
-                            byte[] outBuf = SevenZipHelper.LZMA.Compress(inBuf, noCompress ? 0 : 9);
+                            byte[] outBuf = SevenZipHelper.LZMA.Compress(inBuf, fasterCompression ? 0 : 9);
                             if (outBuf.Length == 0)
                                 throw new Exception();
                             if (outBuf.Length >= (int)MaxBlockSize)

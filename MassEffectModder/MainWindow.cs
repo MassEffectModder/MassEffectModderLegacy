@@ -248,12 +248,12 @@ namespace MassEffectModder
             enableGameDataMenu(true);
         }
 
-        private void PackME3DLC(string inPath, string DLCname, bool compressed)
+        private void PackME3DLC(string inPath, string DLCname)
         {
             GameData gameData = new GameData(MeType.ME3_TYPE, _configIni);
             string outPath = Path.Combine(gameData.DLCData, DLCname, "CookedPCConsole", "Default.sfar");
             ME3DLC dlc = new ME3DLC(this);
-            dlc.pack(inPath, outPath, DLCname, !compressed);
+            dlc.pack(inPath, outPath, DLCname);
         }
 
         public void updateTOCBinEntry(string filePath, bool updateSHA1 = false)
@@ -270,7 +270,7 @@ namespace MassEffectModder
             _tocFile.saveToFile(Path.Combine(GameData.bioGamePath, @"PCConsoleTOC.bin"));
         }
 
-        private void PackAllME3DLC(bool compressed)
+        private void PackAllME3DLC()
         {
             GameData gameData = new GameData(MeType.ME3_TYPE, _configIni);
             if (!Directory.Exists(gameData.DLCDataCache))
@@ -283,24 +283,17 @@ namespace MassEffectModder
             {
                 string DLCname = Path.GetFileName(DLCs[i]);
                 updateStatusLabel("SFAR packing - DLC " + (i + 1) + " of " + DLCs.Count);
-                PackME3DLC(DLCs[i], DLCname, compressed);
+                PackME3DLC(DLCs[i], DLCname);
             }
             updateStatusLabel("Done");
             updateStatusLabel2("");
             enableGameDataMenu(true);
         }
 
-        private void packME3DLCPackagesUncompressedToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            enableGameDataMenu(false);
-            PackAllME3DLC(false);
-            enableGameDataMenu(true);
-        }
-
         private void packME3DLCPackagesLZMAToolStripMenuItem_Click(object sender, EventArgs e)
         {
             enableGameDataMenu(false);
-            PackAllME3DLC(true);
+            PackAllME3DLC();
             enableGameDataMenu(true);
         }
 
