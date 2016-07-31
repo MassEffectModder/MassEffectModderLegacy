@@ -170,9 +170,9 @@ namespace MassEffectModder
                 byte[] dst = null;
                 byte[] src = inputStream.ReadToBuffer(newBlockSize);
                 if (type == StorageTypes.extZlib || type == StorageTypes.pccZlib)
-                    dst = ZlibHelper.Zlib.Compress(src, 9);
+                    dst = ZlibHelper.Zlib.Compress(src);
                 else if (type == StorageTypes.extLZO || type == StorageTypes.pccLZO)
-                    dst = LZO2Helper.LZO2.Compress(src, false);
+                    dst = LZO2Helper.LZO2.Compress(src);
                 if (dst.Length == 0)
                     throw new Exception("Compression failed!");
 
