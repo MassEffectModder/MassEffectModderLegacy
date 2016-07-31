@@ -80,6 +80,7 @@ namespace MassEffectModder
         bool moddingEnable = false;
         FileStream fileStreamMod;
         uint numberOfTexturesMod;
+        CachePackageMgr cachePackageMgr;
         TFCTexture[] guids = new TFCTexture[]
         {
             new TFCTexture
@@ -132,6 +133,98 @@ namespace MassEffectModder
         };
         List<PackageTreeNode> nodeList;
 
+        public class CachePackageMgr
+        {
+            public List<Package> packages;
+            MainWindow mainWindow;
+
+            public CachePackageMgr(MainWindow main)
+            {
+                packages = new List<Package>();
+                mainWindow = main;
+            }
+
+            public Package OpenPackage(string path, bool headerOnly = false)
+            {
+                if (!packages.Exists(p => p.packagePath == path))
+                {
+                    Package pkg = new Package(path, headerOnly);
+                    packages.Add(pkg);
+                    return pkg;
+                }
+                else
+                {
+                    return packages.Find(p => p.packagePath == path);
+                }
+            }
+
+            public void ClosePackageWithoutSave(Package package)
+            {
+                int index = packages.IndexOf(package);
+                packages[index].Dispose();
+                packages.RemoveAt(index);
+            }
+
+            public void ClosePackageWithSave(Package package)
+            {
+                mainWindow.updateStatusLabel2("Saving package: " + package.packagePath);
+                int index = packages.IndexOf(package);
+                packages[index].SaveToFile();
+                packages[index].Dispose();
+                packages.RemoveAt(index);
+                mainWindow.updateStatusLabel2("");
+            }
+
+            public void CloseAllWithoutSave()
+            {
+                foreach(Package pkg in packages)
+                {
+                    pkg.Dispose();
+                }
+                packages.Clear();
+            }
+
+            public void CloseAllWithSave()
+            {
+                if (GameData.gameType == MeType.ME3_TYPE)
+                {
+                    List<string> sfarFiles = Directory.GetFiles(GameData.DLCData, "Default.sfar", SearchOption.AllDirectories).ToList();
+                    for (int i = 0; i < sfarFiles.Count; i++)
+                    {
+                        string DLCname = Path.GetFileName(Path.GetDirectoryName(Path.GetDirectoryName(sfarFiles[i])));
+                        List<Package> dlcPackageList = packages.FindAll(p => p.packagePath.Contains("DLC\\" + DLCname + "\\CookedPCConsole\\"));
+                        List<string> modifiedPkgs = new List<string>();
+                        for (int p = 0; p < dlcPackageList.Count; p++)
+                        {
+                            Package pkg = dlcPackageList[p];
+                            string path = pkg.packagePath.Substring(pkg.packagePath.IndexOf("\\BioGame\\DLCCache"));
+                            modifiedPkgs.Add(path);
+                            mainWindow.updateStatusLabel2("DLC " + (i + 1) + " of " + sfarFiles.Count + " - " + DLCname + " - Saving package " + (p + 1) + " of " + dlcPackageList.Count + " - " + path);
+                            pkg.SaveToFile();
+                            pkg.Dispose();
+                            packages.Remove(pkg);
+                        }
+                        mainWindow.updateStatusLabel2("");
+
+                        mainWindow.updateStatusLabel("Updating DLC " + (i + 1) + " of " + sfarFiles.Count + " - " + DLCname);
+                        ME3DLC dlc = new ME3DLC(mainWindow);
+                        dlc.update(sfarFiles[i], modifiedPkgs);
+                        mainWindow.updateStatusLabel("");
+                    }
+                }
+
+                for (int i = 0; i < packages.Count; i++)
+                {
+                    Package pkg = packages[i];
+                    mainWindow.updateStatusLabel2("Saving package " + (i + 1) + " of " + packages.Count + " - " + pkg.packagePath);
+                    pkg.SaveToFile();
+                    pkg.Dispose();
+                }
+                mainWindow.updateStatusLabel2("");
+                packages.Clear();
+            }
+        }
+
         public TexExplorer(MainWindow main, MeType gameType)
         {
             InitializeComponent();
@@ -139,6 +232,7 @@ namespace MassEffectModder
             _gameSelected = gameType;
             _configIni = main._configIni;
             gameData = new GameData(_gameSelected, _configIni);
+            cachePackageMgr = new CachePackageMgr(main);
         }
 
         public void EnableMenuOptions(bool enable)
@@ -282,6 +376,7 @@ namespace MassEffectModder
         public void Run()
         {
             _mainWindow.updateStatusLabel("");
+            _mainWindow.updateStatusLabel2("");
             EnableMenuOptions(false);
             eNDModdingToolStripMenuItem.Enabled = false;
             clearMODsToolStripMenuItem.Enabled = false;
@@ -412,6 +507,7 @@ namespace MassEffectModder
         private void TexExplorer_FormClosed(object sender, FormClosedEventArgs e)
         {
             GameData.packageFiles.Clear();
+            cachePackageMgr.CloseAllWithoutSave();
             _mainWindow.enableGameDataMenu(true);
         }
 
@@ -639,6 +735,7 @@ namespace MassEffectModder
                         outFile = new FileStream(Path.Combine(outDir, Path.GetFileNameWithoutExtension(filenameMod)) + ".mod", FileMode.Create, FileAccess.Write);
                         outFile.WriteUInt32(TextureModTag);
                         outFile.WriteUInt32(TextureModVersion);
+                        outFile.WriteUInt32((uint)_gameSelected);
                         outFile.WriteInt32(ddsList.Count());
                     }
 
@@ -679,7 +776,7 @@ namespace MassEffectModder
                                 name = "Unknown" + index;
 
                             _mainWindow.updateStatusLabel("Processing MOD: " +
-                                    Path.GetFileNameWithoutExtension(filenameMod) + ", Texture: " + name);
+                                    Path.GetFileNameWithoutExtension(filenameMod) + " - Texture: " + name);
 
                             if (store)
                             {
@@ -755,7 +852,15 @@ namespace MassEffectModder
                         fs.SeekBegin();
                         legacy = true;
                     }
-
+                    else
+                    {
+                        uint gameType = fs.ReadUInt32();
+                        if ((MeType)gameType != _gameSelected)
+                        {
+                            MessageBox.Show("Mod for different game!");
+                            return;
+                        }
+                    }
                     FileStream outFile = null;
                     if (store)
                     {
@@ -767,6 +872,7 @@ namespace MassEffectModder
                         outFile = new FileStream(Path.Combine(outDir, Path.GetFileName(filenameMod)), FileMode.Create, FileAccess.Write);
                         outFile.WriteUInt32(TextureModTag);
                         outFile.WriteUInt32(TextureModVersion);
+                        outFile.WriteUInt32((uint)_gameSelected);
                     }
                     int numTextures = fs.ReadInt32();
                     if (store)
@@ -792,8 +898,8 @@ namespace MassEffectModder
                             crc = fs.ReadUInt32();
                         }
                         size = fs.ReadUInt32();
-                        _mainWindow.updateStatusLabel("Processing MOD: " + Path.GetFileNameWithoutExtension(filenameMod) +
-                            " Texture " + (i + 1) + " of " + numTextures + " - " + name);
+                        _mainWindow.updateStatusLabel("Processing MOD " + Path.GetFileNameWithoutExtension(filenameMod) +
+                            " - Texture " + (i + 1) + " of " + numTextures + " - " + name);
                         if (extract)
                         {
                             string filename = name + "-" + string.Format("0x{0:X8}", crc) + ".dds";
@@ -860,6 +966,7 @@ namespace MassEffectModder
             {
                 outFs.WriteUInt32(TextureModTag);
                 outFs.WriteUInt32(TextureModVersion);
+                outFs.WriteUInt32((uint)_gameSelected);
                 outFs.WriteInt32(files.Count());
                 foreach (string file in files)
                 {
@@ -905,7 +1012,7 @@ namespace MassEffectModder
                 int index = Convert.ToInt32(listViewTextures.FocusedItem.Name);
                 PackageTreeNode node = (PackageTreeNode)treeViewPackages.SelectedNode;
                 MatchedTexture nodeTexture = node.textures[index].list[0];
-                Package package = new Package(GameData.GamePath + nodeTexture.path);
+                Package package = cachePackageMgr.OpenPackage(GameData.GamePath + nodeTexture.path);
                 Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
                 if (previewShow)
                 {
@@ -948,7 +1055,6 @@ namespace MassEffectModder
                     pictureBoxPreview.Hide();
                     richTextBoxInfo.Show();
                 }
-                package.Dispose();
             }
         }
 
@@ -1061,7 +1167,7 @@ namespace MassEffectModder
             for (int n = 0; n < list.Count; n++)
             {
                 MatchedTexture nodeTexture = list[n];
-                Package package = new Package(GameData.GamePath + nodeTexture.path);
+                Package package = cachePackageMgr.OpenPackage(GameData.GamePath + nodeTexture.path);
                 Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
                 while (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty))
                 {
@@ -1130,6 +1236,8 @@ namespace MassEffectModder
                     }
                 }
 
+                if (n == 0)
+                    _mainWindow.updateStatusLabel2("Preparing texture...");
                 List<Texture.MipMap> mipmaps = new List<Texture.MipMap>();
                 for (int m = 0; m < image.mipMaps.Count(); m++)
                 {
@@ -1269,6 +1377,7 @@ namespace MassEffectModder
                 if (texture.properties.exists("MipTailBaseIdx"))
                     texture.properties.setIntValue("MipTailBaseIdx", texture.mipMapsList.Count() - 1);
 
+                _mainWindow.updateStatusLabel2("Applying package " + (n + 1) + " of " + list.Count + " - " + nodeTexture.path);
                 MemoryStream newData = new MemoryStream();
                 newData.WriteFromBuffer(texture.properties.toArray());
                 newData.WriteFromBuffer(texture.toArray(0)); // filled later
@@ -1291,10 +1400,6 @@ namespace MassEffectModder
                     if (triggerCacheArc)
                         arcTexture = texture;
                 }
-
-                _mainWindow.updateStatusLabel2("Saving package " + (n + 1) + " of " + list.Count + " - " + nodeTexture.path);
-                package.SaveToFile();
-                package.Dispose();
             }
         }
 
@@ -1333,6 +1438,10 @@ namespace MassEffectModder
                     fileStreamMod.WriteFromStream(fs, fs.Length);
                 }
                 numberOfTexturesMod++;
+            }
+            else
+            {
+                cachePackageMgr.CloseAllWithSave();
             }
 
             EnableMenuOptions(true);
@@ -1375,7 +1484,7 @@ namespace MassEffectModder
                 bool modified = false;
                 _mainWindow.updateStatusLabel("Remove empty mipmaps, package " + (i + 1) + " of " + GameData.packageFiles.Count);
                 _mainWindow.updateStatusLabel2("");
-                Package package = new Package(GameData.packageFiles[i]);
+                Package package = cachePackageMgr.OpenPackage(GameData.packageFiles[i]);
                 for (int l = 0; l < package.exportsTable.Count; l++)
                 {
                     int id = package.getClassNameId(package.exportsTable[l].classId);
@@ -1403,7 +1512,7 @@ namespace MassEffectModder
                             {
                                 string textureName = package.exportsTable[l].objectName;
                                 FoundTexture foundTexName = _textures.Find(s => s.name == textureName && s.packageName == texture.packageName);
-                                Package refPkg = new Package(GameData.GamePath + foundTexName.list[0].path);
+                                Package refPkg = cachePackageMgr.OpenPackage(GameData.GamePath + foundTexName.list[0].path);
                                 int refExportId = foundTexName.list[0].exportID;
                                 byte[] refData = refPkg.getExportData(refExportId);
                                 Texture refTexture = new Texture(refPkg, refExportId, refData);
@@ -1420,7 +1529,6 @@ namespace MassEffectModder
                                         texture.mipMapsList[t] = mipmap;
                                     }
                                 }
-                                refPkg.Dispose();
                             }
                         }
 
@@ -1431,11 +1539,10 @@ namespace MassEffectModder
                         modified = true;
                     }
                 }
-                if (modified)
-                    package.SaveToFile();
-
-                package.Dispose();
+                if (!modified)
+                    cachePackageMgr.ClosePackageWithoutSave(package);
             }
+            cachePackageMgr.CloseAllWithSave();
 
             EnableMenuOptions(true);
             _mainWindow.updateStatusLabel("Done.");
@@ -1467,6 +1574,7 @@ namespace MassEffectModder
             fileStreamMod.SeekBegin();
             fileStreamMod.WriteUInt32(TextureModTag);
             fileStreamMod.WriteUInt32(TextureModVersion);
+            fileStreamMod.WriteUInt32((uint)_gameSelected);
             fileStreamMod.WriteUInt32(numberOfTexturesMod);
             fileStreamMod.Close();
 
@@ -1482,6 +1590,8 @@ namespace MassEffectModder
             }
             if (File.Exists(TempModFileName))
                 File.Delete(TempModFileName);
+
+            cachePackageMgr.CloseAllWithSave();
 
             moddingEnable = false;
             switchModMode(false);
@@ -1520,7 +1630,7 @@ namespace MassEffectModder
             {
                 bool legacy = false;
                 bool tpf = false;
-                _mainWindow.updateStatusLabel("MOD: " + Path.GetFileName(file) + " loading...");
+                _mainWindow.updateStatusLabel("MOD: " + Path.GetFileNameWithoutExtension(file) + " loading...");
                 if (Path.GetExtension(file).ToLower() == ".tpf")
                 {
                     tpf = true;
@@ -1589,9 +1699,11 @@ namespace MassEffectModder
             foreach (ListViewItem item in listViewMods.SelectedItems)
             {
                 replaceTextureMod(item.Name);
-                _mainWindow.updateStatusLabel("MOD: " + item.Name + " applying...");
+                _mainWindow.updateStatusLabel("MOD: " + item.Text + " applying...");
                 listViewMods.Items.Remove(item);
             }
+            _mainWindow.updateStatusLabel("");
+            cachePackageMgr.CloseAllWithSave();
             EnableMenuOptions(true);
             _mainWindow.updateStatusLabel("MODs applied.");
             _mainWindow.updateStatusLabel2("");
@@ -1641,9 +1753,8 @@ namespace MassEffectModder
             {
                 foreach (ListViewItem item in listViewMods.SelectedItems)
                 {
-                    _mainWindow.updateStatusLabel("MOD: " + item.Name + "saving...");
+                    _mainWindow.updateStatusLabel("MOD: " + item.Text + "saving...");
                     saveTextureMod(item.Name, modFile.SelectedPath);
-                    _mainWindow.updateStatusLabel("MOD: " + item.Name + "saving...");
                     _mainWindow.updateStatusLabel2("");
                 }
             }
@@ -1667,7 +1778,7 @@ namespace MassEffectModder
                     string outDir = Path.Combine(modFile.SelectedPath, Path.GetFileNameWithoutExtension(item.Name));
                     Directory.CreateDirectory(outDir);
                     extractTextureMod(item.Name, outDir);
-                    _mainWindow.updateStatusLabel("MOD: " + item.Name + "extracting...");
+                    _mainWindow.updateStatusLabel("MOD: " + item.Text + "extracting...");
                     _mainWindow.updateStatusLabel2("");
                 }
             }

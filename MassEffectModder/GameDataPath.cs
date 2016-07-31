@@ -157,7 +157,7 @@ namespace MassEffectModder
                 return path.Substring(_path.Length);
         }
 
-        public string DLCData
+        static public string DLCData
         {
             get
             {
@@ -179,7 +179,7 @@ namespace MassEffectModder
             }
         }
 
-        public string DLCDataCache
+        static public string DLCDataCache
         {
             get
             {

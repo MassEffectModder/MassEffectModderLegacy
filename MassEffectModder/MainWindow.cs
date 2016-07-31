@@ -61,6 +61,7 @@ namespace MassEffectModder
         public TexExplorer CreateTextureExplorer(MeType type)
         {
             TexExplorer explorer = new TexExplorer(this, type);
+            explorer.Text = "Mass Effect " + (int)type;
             explorer.MdiParent = this;
             explorer.WindowState = FormWindowState.Maximized;
             explorer.Show();
@@ -126,7 +127,7 @@ namespace MassEffectModder
             using (FileStream fs = new FileStream(gameData.GameExePath, FileMode.Open, FileAccess.ReadWrite))
             {
                 fs.JumpTo(0x3C); // jump to offset of COFF header
-                UInt32 offset = fs.ReadUInt32() + 4; // skip PE signature too
+                uint offset = fs.ReadUInt32() + 4; // skip PE signature too
                 fs.JumpTo(offset + 0x12); // jump to flags entry
                 ushort flag = fs.ReadUInt16(); // read flags
                 if ((flag & 0x20) != 0x20) // check for LAA flag
@@ -228,16 +229,16 @@ namespace MassEffectModder
         {
             enableGameDataMenu(false);
             GameData gameData = new GameData(MeType.ME3_TYPE, _configIni);
-            if (Directory.Exists(gameData.DLCDataCache))
+            if (Directory.Exists(GameData.DLCDataCache))
             {
-                Directory.Delete(gameData.DLCDataCache, true);
+                Directory.Delete(GameData.DLCDataCache, true);
             }
-            Directory.CreateDirectory(gameData.DLCDataCache);
-            List<string> sfarFiles = Directory.GetFiles(gameData.DLCData, "Default.sfar", SearchOption.AllDirectories).ToList();
+            Directory.CreateDirectory(GameData.DLCDataCache);
+            List<string> sfarFiles = Directory.GetFiles(GameData.DLCData, "Default.sfar", SearchOption.AllDirectories).ToList();
             for (int i = 0; i < sfarFiles.Count; i++)
             {
                 string DLCname = Path.GetFileName(Path.GetDirectoryName(Path.GetDirectoryName(sfarFiles[i])));
-                string outPath = Path.Combine(gameData.DLCDataCache, DLCname);
+                string outPath = Path.Combine(GameData.DLCDataCache, DLCname);
                 Directory.CreateDirectory(outPath);
                 ME3DLC dlc = new ME3DLC(this);
                 updateStatusLabel("SFAR unpacking - DLC " + (i + 1) + " of " + sfarFiles.Count);
@@ -251,9 +252,9 @@ namespace MassEffectModder
         private void PackME3DLC(string inPath, string DLCname)
         {
             GameData gameData = new GameData(MeType.ME3_TYPE, _configIni);
-            string outPath = Path.Combine(gameData.DLCData, DLCname, "CookedPCConsole", "Default.sfar");
+            string outPath = Path.Combine(GameData.DLCData, DLCname, "CookedPCConsole", "Default.sfar");
             ME3DLC dlc = new ME3DLC(this);
-            dlc.pack(inPath, outPath, DLCname);
+            dlc.fullRePack(inPath, outPath, DLCname);
         }
 
         public void updateTOCBinEntry(string filePath, bool updateSHA1 = false)
@@ -273,12 +274,12 @@ namespace MassEffectModder
         private void PackAllME3DLC()
         {
             GameData gameData = new GameData(MeType.ME3_TYPE, _configIni);
-            if (!Directory.Exists(gameData.DLCDataCache))
+            if (!Directory.Exists(GameData.DLCDataCache))
             {
                 MessageBox.Show("DLCCache directory is missing, you need unpack SFAR files first.");
                 return;
             }
-            List<string> DLCs = Directory.GetDirectories(gameData.DLCDataCache).ToList();
+            List<string> DLCs = Directory.GetDirectories(GameData.DLCDataCache).ToList();
             for (int i = 0; i < DLCs.Count; i++)
             {
                 string DLCname = Path.GetFileName(DLCs[i]);

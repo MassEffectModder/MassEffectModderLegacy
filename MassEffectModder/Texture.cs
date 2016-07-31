@@ -120,7 +120,7 @@ namespace MassEffectModder
             restOfData = textureData.ReadToBuffer(textureData.Length - textureData.Position);
         }
 
-        public void replaceMipMaps(List<Texture.MipMap> newMipMaps)
+        public void replaceMipMaps(List<MipMap> newMipMaps)
         {
             mipMapsList = newMipMaps;
             textureData = new MemoryStream();

@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using StreamHelpers;
 using System.Linq;
+using System.Collections;
 
 namespace MassEffectModder
 {
@@ -77,6 +78,7 @@ namespace MassEffectModder
         uint exportsEndOffset = 0;
         public CompressionType compressionType;
         public FileStream packageFile;
+        public string packagePath;
         MemoryStream packageData;
         List<Chunk> chunks;
         List<NameEntry> namesTable;
@@ -85,6 +87,7 @@ namespace MassEffectModder
         List<string> extraNamesTable;
         int currentChunk = -1;
         MemoryStream chunkCache;
+        bool modified;
         public int nameIdTexture2D = -1;
         public int nameIdLightMapTexture2D = -1;
         public int nameIdShadowMapTexture2D = -1;
@@ -161,7 +164,8 @@ namespace MassEffectModder
             public uint exportflags;
             public uint packageflags;
             public byte[] raw;
-            public byte[] newData;
+            public bool newData;
+            public uint id;
         }
 
         private uint tag
@@ -344,6 +348,8 @@ namespace MassEffectModder
 
         public Package(string filename, bool headerOnly = false)
         {
+            packagePath = filename;
+
             if (GameData.gameType == MeType.ME1_TYPE)
             {
                 packageHeaderSize = packageHeaderSizeME1;
@@ -508,8 +514,14 @@ namespace MassEffectModder
 
         public byte[] getExportData(int id)
         {
-            if (exportsTable[id].newData != null)
-                return exportsTable[id].newData;
+            if (exportsTable[id].newData)
+            {
+                string exportFile = packagePath + "-exports\\exportId-" + id;
+                using (FileStream fs = new FileStream(exportFile, FileMode.Open, FileAccess.Read))
+                {
+                    return fs.ReadToBuffer(fs.Length);
+                }
+            }
             MemoryStream data = new MemoryStream();
             getData(exportsTable[id].dataOffset, exportsTable[id].dataSize, data);
             return data.ToArray();
@@ -524,8 +536,19 @@ namespace MassEffectModder
                 exportsEndOffset = export.dataOffset + (uint)data.Length;
             }
             export.dataSize = (uint)data.Length;
-            export.newData = data;
+            string packageDir = Path.GetDirectoryName(packagePath);
+            Directory.CreateDirectory(packagePath + "-exports");
+            string exportFile = packagePath + "-exports\\exportId-" + id;
+            if (File.Exists(exportFile))
+                File.Delete(exportFile);
+            using (FileStream fs = new FileStream(exportFile, FileMode.Create, FileAccess.Write))
+            {
+                fs.WriteFromBuffer(data);
+            }
+
+            export.newData = true;
             exportsTable[id] = export;
+            modified = true;
         }
 
         public int getNameId(string name)
@@ -727,6 +750,7 @@ namespace MassEffectModder
                 if ((entry.dataOffset + entry.dataSize) > exportsEndOffset)
                     exportsEndOffset = entry.dataOffset + entry.dataSize;
 
+                entry.id = (uint)i;
                 exportsTable.Add(entry);
             }
         }
@@ -750,7 +774,7 @@ namespace MassEffectModder
 
         public bool SaveToFile(bool forceZlib = false)
         {
-            if (packageFile.Length == 0)
+            if (packageFile.Length == 0 || !modified)
                 return false;
 
             MemoryStream tempOutput = new MemoryStream();
@@ -777,8 +801,15 @@ namespace MassEffectModder
                     dataLeft = exportsEndOffset - export.dataOffset - export.dataSize;
                 else
                     dataLeft = sortedExports[i + 1].dataOffset - export.dataOffset - export.dataSize;
-                if (export.newData != null)
-                    tempOutput.WriteFromBuffer(export.newData);
+                if (export.newData)
+                {
+                    string exportFile = packagePath + "-exports\\exportId-" + export.id;
+                    using (FileStream fs = new FileStream(exportFile, FileMode.Open, FileAccess.Read))
+                    {
+                        tempOutput.WriteFromStream(fs, fs.Length);
+                    }
+                    export.newData = false;
+                }
                 else
                     getData(export.dataOffset, export.dataSize, tempOutput);
                 tempOutput.WriteZeros(dataLeft);
@@ -787,6 +818,8 @@ namespace MassEffectModder
             tempOutput.JumpTo(exportsOffset);
             saveExports(tempOutput);
             packageFile.Close();
+            if (Directory.Exists(packagePath + "-exports"))
+                Directory.Delete(packagePath + "-exports", true);
 
             string filename = packageFile.Name;
             using (FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
@@ -913,6 +946,8 @@ namespace MassEffectModder
                 chunkCache.Dispose();
             packageData.Dispose();
             packageFile.Close();
+            if (Directory.Exists(packagePath + "-exports"))
+                Directory.Delete(packagePath + "-exports", true);
         }
     }
 
@@ -941,42 +976,52 @@ namespace MassEffectModder
         {
             using (FileStream tocFile = new FileStream(filename, FileMode.Open, FileAccess.Read))
             {
-                uint tag = tocFile.ReadUInt32();
-                if (tag != TOCTag)
-                    throw new Exception("Wrong TOCTag tag");
-                tocFile.SkipInt32();
+                upload(tocFile);
+            }
+        }
 
-                blockList = new List<Block>();
-                uint numBlocks = tocFile.ReadUInt32();
-                for (int b = 0; b < numBlocks; b++)
-                {
-                    Block block = new Block();
-                    block.filesOffset = tocFile.ReadUInt32();
-                    block.numFiles = tocFile.ReadUInt32();
-                    block.filesList = new List<File>();
-                    blockList.Add(block);
-                }
+        public TOCBinFile(byte[] content)
+        {
+            upload(new MemoryStream(content));
+        }
 
-                tocFile.JumpTo(TOCHeaderSize + (numBlocks * 8));
-                for (int b = 0; b < numBlocks; b++)
+        private void upload(Stream tocFile)
+        {
+            uint tag = tocFile.ReadUInt32();
+            if (tag != TOCTag)
+                throw new Exception("Wrong TOCTag tag");
+            tocFile.SkipInt32();
+
+            blockList = new List<Block>();
+            uint numBlocks = tocFile.ReadUInt32();
+            for (int b = 0; b < numBlocks; b++)
+            {
+                Block block = new Block();
+                block.filesOffset = tocFile.ReadUInt32();
+                block.numFiles = tocFile.ReadUInt32();
+                block.filesList = new List<File>();
+                blockList.Add(block);
+            }
+
+            tocFile.JumpTo(TOCHeaderSize + (numBlocks * 8));
+            for (int b = 0; b < numBlocks; b++)
+            {
+                Block block = blockList[b];
+                File file = new File();
+                for (int f = 0; f < block.numFiles; f++)
                 {
-                    Block block = blockList[b];
-                    File file = new File();
-                    for (int f = 0; f < block.numFiles; f++)
-                    {
-                        long curPos = tocFile.Position;
-                        ushort blockSize = tocFile.ReadUInt16();
-                        file.type = tocFile.ReadUInt16();
-                        if (file.type != 9 && file.type != 1)
-                            throw new Exception();
-                        file.size = tocFile.ReadUInt32();
-                        file.sha1 = tocFile.ReadToBuffer(20);
-                        file.path = tocFile.ReadStringASCIINull();
-                        block.filesList.Add(file);
-                        tocFile.JumpTo(curPos + blockSize);
-                    }
-                    blockList[b] = block;
+                    long curPos = tocFile.Position;
+                    ushort blockSize = tocFile.ReadUInt16();
+                    file.type = tocFile.ReadUInt16();
+                    if (file.type != 9 && file.type != 1)
+                        throw new Exception();
+                    file.size = tocFile.ReadUInt32();
+                    file.sha1 = tocFile.ReadToBuffer(20);
+                    file.path = tocFile.ReadStringASCIINull();
+                    block.filesList.Add(file);
+                    tocFile.JumpTo(curPos + blockSize);
                 }
+                blockList[b] = block;
             }
         }
 
@@ -1011,48 +1056,62 @@ namespace MassEffectModder
             throw new Exception("not found");
         }
 
+        public byte[] saveToBuffer(bool updateOffsets = false)
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                saveToStream(stream, updateOffsets);
+                return stream.ToArray();
+            }
+        }
+
         public void saveToFile(string outPath, bool updateOffsets = false)
         {
-            using (FileStream tocFile = new FileStream(outPath, FileMode.Create, FileAccess.Write))
+            using (FileStream stream = new FileStream(outPath, FileMode.Create, FileAccess.Write))
             {
-                tocFile.WriteUInt32(TOCTag);
-                tocFile.WriteUInt32(0);
-                tocFile.WriteUInt32((uint)blockList.Count);
-                tocFile.Skip(8 * blockList.Count); // filled later
+                saveToStream(stream, updateOffsets);
+            }
+        }
 
-                long lastOffset = 0;
-                for (int b = 0; b < blockList.Count; b++)
-                {
-                    Block block = blockList[b];
-                    if (updateOffsets)
-                        block.filesOffset = (uint)(tocFile.Position - TOCHeaderSize - (8 * b));
-                    for (int f = 0; f < blockList[b].numFiles; f++)
-                    {
-                        long fileOffset = lastOffset = tocFile.Position;
-                        File file = blockList[b].filesList[f];
-                        int blockSize = ((28 + (file.path.Length + 1) + 3) / 4) * 4; // align to 4
-                        tocFile.WriteUInt16((ushort)blockSize);
-                        tocFile.WriteUInt16(file.type);
-                        tocFile.WriteUInt32(file.size);
-                        tocFile.WriteFromBuffer(file.sha1);
-                        tocFile.WriteStringASCIINull(file.path);
-                        tocFile.JumpTo(fileOffset + blockSize - 1);
-                        tocFile.WriteByte(0); // make sure all bytes are written after seek
-                    }
-                    blockList[b] = block;
-                }
-                if (lastOffset != 0)
-                {
-                    tocFile.JumpTo(lastOffset);
-                    tocFile.WriteUInt16(0);
-                }
+        public void saveToStream(Stream tocFile, bool updateOffsets = false)
+        {
+            tocFile.WriteUInt32(TOCTag);
+            tocFile.WriteUInt32(0);
+            tocFile.WriteUInt32((uint)blockList.Count);
+            tocFile.Skip(8 * blockList.Count); // filled later
 
-                tocFile.JumpTo(TOCHeaderSize);
-                for (int b = 0; b < blockList.Count; b++)
+            long lastOffset = 0;
+            for (int b = 0; b < blockList.Count; b++)
+            {
+                Block block = blockList[b];
+                if (updateOffsets)
+                    block.filesOffset = (uint)(tocFile.Position - TOCHeaderSize - (8 * b));
+                for (int f = 0; f < blockList[b].numFiles; f++)
                 {
-                    tocFile.WriteUInt32(blockList[b].filesOffset);
-                    tocFile.WriteUInt32(blockList[b].numFiles);
+                    long fileOffset = lastOffset = tocFile.Position;
+                    File file = blockList[b].filesList[f];
+                    int blockSize = ((28 + (file.path.Length + 1) + 3) / 4) * 4; // align to 4
+                    tocFile.WriteUInt16((ushort)blockSize);
+                    tocFile.WriteUInt16(file.type);
+                    tocFile.WriteUInt32(file.size);
+                    tocFile.WriteFromBuffer(file.sha1);
+                    tocFile.WriteStringASCIINull(file.path);
+                    tocFile.JumpTo(fileOffset + blockSize - 1);
+                    tocFile.WriteByte(0); // make sure all bytes are written after seek
                 }
+                blockList[b] = block;
+            }
+            if (lastOffset != 0)
+            {
+                tocFile.JumpTo(lastOffset);
+                tocFile.WriteUInt16(0);
+            }
+
+            tocFile.JumpTo(TOCHeaderSize);
+            for (int b = 0; b < blockList.Count; b++)
+            {
+                tocFile.WriteUInt32(blockList[b].filesOffset);
+                tocFile.WriteUInt32(blockList[b].numFiles);
             }
         }
     }
