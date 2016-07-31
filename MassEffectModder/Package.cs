@@ -774,6 +774,9 @@ namespace MassEffectModder
 
         public bool SaveToFile(bool forceZlib = false)
         {
+            if (forceZlib && compressionType != CompressionType.Zlib)
+                modified = true;
+
             if (packageFile.Length == 0 || !modified)
                 return false;
 
