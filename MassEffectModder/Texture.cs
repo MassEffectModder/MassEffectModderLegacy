@@ -39,19 +39,20 @@ namespace MassEffectModder
         {
             noFlags        = 0,
             externalFile   = 1 << 0,
-            compressedZLib = 1 << 1,
+            compressedZlib = 1 << 1,
             compressedLZO  = 1 << 4,
             unused         = 1 << 5,
         }
 
         public enum StorageTypes
         {
-            pccUnc = StorageFlags.noFlags,                                    // ME1 (Compressed PCC), ME2 (Compressed PCC)
-            pccCpr = StorageFlags.compressedLZO,                              // ME1 (Uncompressed PCC)
-            extUnc = StorageFlags.externalFile,                               // ME3 (DLC TFC archive)
-            extCpr = StorageFlags.externalFile | StorageFlags.compressedLZO,  // ME1 (Reference to PCC), ME2 (TFC archive)
-            arcCpr = StorageFlags.externalFile | StorageFlags.compressedZLib, // ME3 (non-DLC TFC archive)
-            empty = StorageFlags.externalFile | StorageFlags.unused,          // ME1, ME2, ME3
+            pccUnc = StorageFlags.noFlags,                                     // ME1 (Compressed PCC), ME2 (Compressed PCC)
+            pccLZO = StorageFlags.compressedLZO,                               // ME1 (Uncompressed PCC)
+            pccZlib = StorageFlags.compressedZlib,                             // ME1 (Uncompressed PCC)
+            extUnc = StorageFlags.externalFile,                                // ME3 (DLC TFC archive)
+            extLZO = StorageFlags.externalFile | StorageFlags.compressedLZO,   // ME1 (Reference to PCC), ME2 (TFC archive)
+            extZlib = StorageFlags.externalFile | StorageFlags.compressedZlib, // ME3 (non-DLC TFC archive)
+            empty = StorageFlags.externalFile | StorageFlags.unused,           // ME1, ME2, ME3
         }
 
         public struct MipMap
@@ -107,7 +108,8 @@ namespace MassEffectModder
                     mipmap.internalOffset = (uint)textureData.Position;
                     textureData.Skip(mipmap.uncompressedSize);
                 }
-                if (mipmap.storageType == StorageTypes.pccCpr)
+                if (mipmap.storageType == StorageTypes.pccLZO ||
+                    mipmap.storageType == StorageTypes.pccZlib)
                 {
                     mipmap.internalOffset = (uint)textureData.Position;
                     textureData.Skip(mipmap.compressedSize);
@@ -139,7 +141,8 @@ namespace MassEffectModder
                 textureData.WriteUInt32(mipmap.dataOffset);
 
                 if (mipmap.storageType == StorageTypes.pccUnc ||
-                    mipmap.storageType == StorageTypes.pccCpr)
+                    mipmap.storageType == StorageTypes.pccLZO ||
+                    mipmap.storageType == StorageTypes.pccZlib)
                 {
                     mipmap.internalOffset = (uint)textureData.Position;
                     textureData.WriteFromBuffer(mipmap.newData);
@@ -148,7 +151,7 @@ namespace MassEffectModder
             }
         }
 
-        public byte[] compressTexture(byte[] inputData)
+        public byte[] compressTexture(byte[] inputData, StorageTypes type)
         {
             MemoryStream ouputStream = new MemoryStream();
             MemoryStream inputStream = new MemoryStream(inputData);
@@ -164,11 +167,11 @@ namespace MassEffectModder
                 Package.ChunkBlock block = new Package.ChunkBlock();
                 uint newBlockSize = Math.Min(maxBlockSize, dataBlockLeft);
 
-                byte[] dst;
+                byte[] dst = null;
                 byte[] src = inputStream.ReadToBuffer(newBlockSize);
-                if (GameData.gameType == MeType.ME3_TYPE)
+                if (type == StorageTypes.extZlib || type == StorageTypes.pccZlib)
                     dst = ZlibHelper.Zlib.Compress(src, 9);
-                else
+                else if (type == StorageTypes.extLZO || type == StorageTypes.pccLZO)
                     dst = LZO2Helper.LZO2.Compress(src, false);
                 if (dst.Length == 0)
                     throw new Exception("Compression failed!");
@@ -195,7 +198,7 @@ namespace MassEffectModder
             return ouputStream.ToArray();
         }
 
-        private byte[] decompressTexture(MemoryStream stream, int uncompressedSize, int compressedSize)
+        private byte[] decompressTexture(MemoryStream stream, StorageTypes type, int uncompressedSize, int compressedSize)
         {
             byte[] data = new byte[uncompressedSize];
             uint blockTag = stream.ReadUInt32();
@@ -228,10 +231,10 @@ namespace MassEffectModder
                 Package.ChunkBlock block = blocks[b];
                 byte[] dst = new byte[block.uncomprSize];
                 byte[] src = stream.ReadToBuffer(block.comprSize);
-                uint dstLen;
-                if (GameData.gameType == MeType.ME3_TYPE)
+                uint dstLen = 0;
+                if (type == StorageTypes.extZlib || type == StorageTypes.pccZlib)
                     dstLen = ZlibHelper.Zlib.Decompress(src, block.comprSize, dst);
-                else
+                else if (type == StorageTypes.extLZO || type == StorageTypes.pccLZO)
                     dstLen = LZO2Helper.LZO2.Decompress(src, block.comprSize, dst);
 
                 if (dstLen != block.uncomprSize)
@@ -306,15 +309,16 @@ namespace MassEffectModder
                         mipMapData = textureData.ReadToBuffer(mipmap.uncompressedSize);
                         break;
                     }
-                case StorageTypes.pccCpr:
+                case StorageTypes.pccLZO:
+                case StorageTypes.pccZlib:
                     {
                         textureData.JumpTo(mipmap.internalOffset);
-                        mipMapData = decompressTexture(textureData, mipmap.uncompressedSize, mipmap.compressedSize);
+                        mipMapData = decompressTexture(textureData, mipmap.storageType, mipmap.uncompressedSize, mipmap.compressedSize);
                         break;
                     }
                 case StorageTypes.extUnc:
-                case StorageTypes.extCpr:
-                case StorageTypes.arcCpr:
+                case StorageTypes.extLZO:
+                case StorageTypes.extZlib:
                     {
                         string filename;
                         if (GameData.gameType == MeType.ME1_TYPE)
@@ -330,10 +334,10 @@ namespace MassEffectModder
                         using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
                         {
                             fs.JumpTo(mipmap.dataOffset);
-                            if (mipmap.storageType == StorageTypes.extCpr || mipmap.storageType == StorageTypes.arcCpr)
+                            if (mipmap.storageType == StorageTypes.extLZO || mipmap.storageType == StorageTypes.extZlib)
                             {
                                 mipMapData = decompressTexture(new MemoryStream(fs.ReadToBuffer(mipmap.compressedSize)),
-                                    mipmap.uncompressedSize, mipmap.compressedSize);
+                                    mipmap.storageType, mipmap.uncompressedSize, mipmap.compressedSize);
                             }
                             else
                             {
@@ -367,7 +371,8 @@ namespace MassEffectModder
                     textureData.JumpTo(mipmap.internalOffset);
                     newData.WriteFromBuffer(textureData.ReadToBuffer(mipmap.uncompressedSize));
                 }
-                else if (mipmap.storageType == StorageTypes.pccCpr)
+                else if (mipmap.storageType == StorageTypes.pccLZO ||
+                    mipmap.storageType == StorageTypes.pccZlib)
                 {
                     mipmap.dataOffset = (uint)newData.Position + pccTextureDataOffset + 4;
                     newData.WriteUInt32(mipmap.dataOffset);

@@ -453,7 +453,8 @@ namespace MassEffectModder
                     if (_gameSelected == MeType.ME1_TYPE)
                     {
                         if (mipmap.storageType == Texture.StorageTypes.pccUnc ||
-                            mipmap.storageType == Texture.StorageTypes.pccCpr)
+                            mipmap.storageType == Texture.StorageTypes.pccLZO ||
+                            mipmap.storageType == Texture.StorageTypes.pccZlib)
                         {
                             uint crc = texture.getCrcMipmap();
                             FoundTexture foundTexName = _textures.Find(s => s.crc == crc);
@@ -1238,6 +1239,7 @@ namespace MassEffectModder
 
                 if (n == 0)
                     _mainWindow.updateStatusLabel2("Preparing texture...");
+
                 List<Texture.MipMap> mipmaps = new List<Texture.MipMap>();
                 for (int m = 0; m < image.mipMaps.Count(); m++)
                 {
@@ -1252,7 +1254,7 @@ namespace MassEffectModder
                         if (_gameSelected == MeType.ME2_TYPE)
                         {
                             if (texture.properties.exists("TextureFileCacheName"))
-                                mipmap.storageType = Texture.StorageTypes.extCpr;
+                                mipmap.storageType = Texture.StorageTypes.extLZO;
                         }
                         else if (_gameSelected == MeType.ME3_TYPE)
                         {
@@ -1261,10 +1263,15 @@ namespace MassEffectModder
                                 if (nodeTexture.path.Contains("DLC"))
                                     mipmap.storageType = Texture.StorageTypes.extUnc;
                                 else
-                                    mipmap.storageType = Texture.StorageTypes.arcCpr;
+                                    mipmap.storageType = Texture.StorageTypes.extZlib;
                             }
                         }
                     }
+
+                    if (mipmap.storageType == Texture.StorageTypes.extLZO)
+                        mipmap.storageType = Texture.StorageTypes.extZlib;
+                    if (mipmap.storageType == Texture.StorageTypes.pccLZO)
+                        mipmap.storageType = Texture.StorageTypes.pccZlib;
 
                     mipmap.uncompressedSize = image.mipMaps[m].data.Length;
                     if (_gameSelected == MeType.ME1_TYPE)
@@ -1274,10 +1281,11 @@ namespace MassEffectModder
                         {
                             continue;
                         }
-                        if (mipmap.storageType == Texture.StorageTypes.pccCpr)
+                        if (mipmap.storageType == Texture.StorageTypes.pccLZO ||
+                            mipmap.storageType == Texture.StorageTypes.pccZlib)
                         {
                             if (n == 0)
-                                mipmap.newData = texture.compressTexture(image.mipMaps[m].data);
+                                mipmap.newData = texture.compressTexture(image.mipMaps[m].data, mipmap.storageType);
                             else
                                 mipmap.newData = firstTexture.mipMapsList[m].newData;
                             mipmap.compressedSize = mipmap.newData.Length;
@@ -1287,7 +1295,8 @@ namespace MassEffectModder
                             mipmap.compressedSize = mipmap.uncompressedSize;
                             mipmap.newData = image.mipMaps[m].data;
                         }
-                        if (mipmap.storageType == Texture.StorageTypes.extCpr && n > 0)
+                        if ((mipmap.storageType == Texture.StorageTypes.extLZO ||
+                            mipmap.storageType == Texture.StorageTypes.extZlib) && n > 0)
                         {
                             mipmap.compressedSize = firstTexture.mipMapsList[m].compressedSize;
                             mipmap.dataOffset = firstTexture.mipMapsList[m].dataOffset;
@@ -1300,12 +1309,12 @@ namespace MassEffectModder
                         {
                             continue;
                         }
-                        if (mipmap.storageType == Texture.StorageTypes.arcCpr ||
-                            mipmap.storageType == Texture.StorageTypes.extCpr)
+                        if (mipmap.storageType == Texture.StorageTypes.extZlib ||
+                            mipmap.storageType == Texture.StorageTypes.extLZO)
                         {
                             if (cprTexture == null)
                             {
-                                mipmap.newData = texture.compressTexture(image.mipMaps[m].data);
+                                mipmap.newData = texture.compressTexture(image.mipMaps[m].data, mipmap.storageType);
                                 triggerCacheCpr = true;
                             }
                             else
@@ -1323,8 +1332,8 @@ namespace MassEffectModder
                             mipmap.compressedSize = mipmap.uncompressedSize;
                             mipmap.newData = image.mipMaps[m].data;
                         }
-                        if (mipmap.storageType == Texture.StorageTypes.arcCpr ||
-                            mipmap.storageType == Texture.StorageTypes.extCpr ||
+                        if (mipmap.storageType == Texture.StorageTypes.extZlib ||
+                            mipmap.storageType == Texture.StorageTypes.extLZO ||
                             mipmap.storageType == Texture.StorageTypes.extUnc)
                         {
                             if (arcTexture == null ||
@@ -1507,7 +1516,8 @@ namespace MassEffectModder
 
                         if (_gameSelected == MeType.ME1_TYPE && package.compressed)
                         {
-                            if (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extCpr) ||
+                            if (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extLZO) ||
+                                texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extZlib) ||
                                 texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extUnc))
                             {
                                 string textureName = package.exportsTable[l].objectName;
@@ -1522,7 +1532,8 @@ namespace MassEffectModder
                                 for (int t = 0; t < texture.mipMapsList.Count; t++)
                                 {
                                     Texture.MipMap mipmap = texture.mipMapsList[t];
-                                    if (mipmap.storageType == Texture.StorageTypes.extCpr ||
+                                    if (mipmap.storageType == Texture.StorageTypes.extLZO ||
+                                        mipmap.storageType == Texture.StorageTypes.extZlib ||
                                         mipmap.storageType == Texture.StorageTypes.extUnc)
                                     {
                                         mipmap.dataOffset = refPkg.exportsTable[refExportId].dataOffset + (uint)refTexture.properties.propertyEndOffset + refTexture.mipMapsList[t].internalOffset;
