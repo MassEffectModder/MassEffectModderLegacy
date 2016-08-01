@@ -39,7 +39,7 @@ static HEAP_ALLOC(wrkmem, LZO1X_999_MEM_COMPRESS);
 
 LZO_EXPORT int LZODecompress(unsigned char *src, unsigned int src_len, unsigned char *dst, unsigned int *dst_len)
 {
-	lzo_uint len;
+	lzo_uint len = 0;
 
 	int status = lzo_init();
 	if (status != LZO_E_OK)
@@ -58,7 +58,7 @@ LZO_EXPORT int LZODecompress(unsigned char *src, unsigned int src_len, unsigned 
 
 LZO_EXPORT int LZOCompress(unsigned char *src, unsigned int src_len, unsigned char *dst, unsigned int *dst_len, int fast)
 {
-	lzo_uint len;
+	lzo_uint len = 0;
 
 	int status = lzo_init();
 	if (status != LZO_E_OK)
