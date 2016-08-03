@@ -479,10 +479,10 @@ namespace MassEffectModder
                         chunk.blocks = blocks;
                         chunks[c] = chunk;
 
+                        byte[] dst = new byte[maxBlockSize * 2];
                         for (int b = 0; b < blocks.Count; b++)
                         {
                             ChunkBlock block = blocks[b];
-                            byte[] dst = new byte[block.uncomprSize];
                             byte[] src = packageFile.ReadToBuffer(block.comprSize);
                             uint dstLen;
                             if (compressionType == CompressionType.LZO)
@@ -495,7 +495,7 @@ namespace MassEffectModder
                             if (dstLen != block.uncomprSize)
                                 throw new Exception("Decompressed data size not expected!");
 
-                            chunkCache.WriteFromBuffer(dst);
+                            chunkCache.Write(dst, 0, (int)dstLen);
                         }
                     }
                     chunkCache.JumpTo(startInChunk);

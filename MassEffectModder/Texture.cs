@@ -226,10 +226,10 @@ namespace MassEffectModder
             }
 
             int dstPos = 0;
+            byte[] dst = new byte[maxBlockSize * 2];
             for (int b = 0; b < blocks.Count; b++)
             {
                 Package.ChunkBlock block = blocks[b];
-                byte[] dst = new byte[block.uncomprSize];
                 byte[] src = stream.ReadToBuffer(block.comprSize);
                 uint dstLen = 0;
                 if (type == StorageTypes.extZlib || type == StorageTypes.pccZlib)
