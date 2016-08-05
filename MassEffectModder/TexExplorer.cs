@@ -782,7 +782,6 @@ namespace MassEffectModder
                             {
                                 outFile.WriteStringASCIINull(name);
                                 outFile.WriteUInt32(crc);
-                                outFile.WriteUInt32((uint)entry.Size);
                             }
                             if (extract)
                             {
@@ -805,7 +804,25 @@ namespace MassEffectModder
                                 pictureBoxPreview.Image = image.mipMaps[0].bitmap;
                                 break;
                             }
-                            else if (store || extract)
+                            else if (store)
+                            {
+                                MemoryStream outMem = new MemoryStream();
+                                for (;;)
+                                {
+                                    int readed = zipFs.Read(buffer, 0, buffer.Length);
+                                    if (readed > 0)
+                                        outMem.Write(buffer, 0, readed);
+                                    else
+                                        break;
+                                }
+                                outMem.SeekBegin();
+                                byte[] src = outMem.ReadToBuffer(outMem.Length);
+                                byte[] dst = ZlibHelper.Zlib.Compress(src);
+                                outFile.WriteInt32(src.Length);
+                                outFile.WriteInt32(dst.Length);
+                                outFile.WriteFromBuffer(dst);
+                            }
+                            else if (extract)
                             {
                                 for (;;)
                                 {
@@ -815,8 +832,7 @@ namespace MassEffectModder
                                     else
                                         break;
                                 }
-                                if (extract)
-                                    outFile.Close();
+                                outFile.Close();
                             }
                             else if (previewIndex == -1)
                             {
@@ -897,7 +913,11 @@ namespace MassEffectModder
                             name = fs.ReadStringASCIINull();
                             crc = fs.ReadUInt32();
                         }
+                        uint decSize = fs.ReadUInt32();
                         size = fs.ReadUInt32();
+                        byte[] src = fs.ReadToBuffer(size);
+                        byte[] dst = new byte[decSize];
+                        uint dstLen = ZlibHelper.Zlib.Decompress(src, size, dst);
                         _mainWindow.updateStatusLabel("Processing MOD " + Path.GetFileNameWithoutExtension(filenameMod) +
                             " - Texture " + (i + 1) + " of " + numTextures + " - " + name);
                         if (extract)
@@ -905,7 +925,7 @@ namespace MassEffectModder
                             string filename = name + "-" + string.Format("0x{0:X8}", crc) + ".dds";
                             using (FileStream output = new FileStream(Path.Combine(outDir, Path.GetFileName(filename)), FileMode.Create, FileAccess.Write))
                             {
-                                output.WriteFromStream(fs, size);
+                                output.Write(dst, 0, (int)dstLen);
                             }
                             continue;
                         }
@@ -913,8 +933,11 @@ namespace MassEffectModder
                         {
                             outFile.WriteStringASCIINull(name);
                             outFile.WriteUInt32(crc);
-                            outFile.WriteUInt32(size);
-                            outFile.WriteFromStream(fs, size);
+                            src = fs.ReadToBuffer(size);
+                            dst = ZlibHelper.Zlib.Compress(src);
+                            outFile.WriteInt32(src.Length);
+                            outFile.WriteInt32(dst.Length);
+                            outFile.WriteFromBuffer(dst);
                             continue;
                         }
                         if (previewIndex != -1)
@@ -924,7 +947,7 @@ namespace MassEffectModder
                                 fs.Skip(size);
                                 continue;
                             }
-                            DDSImage image = new DDSImage(new MemoryStream(fs.ReadToBuffer(size)));
+                            DDSImage image = new DDSImage(new MemoryStream(dst, 0, (int)dstLen));
                             pictureBoxPreview.Image = image.mipMaps[0].bitmap;
                             break;
                         }
@@ -935,7 +958,7 @@ namespace MassEffectModder
                             {
                                 if (replace)
                                 {
-                                    DDSImage image = new DDSImage(new MemoryStream(fs.ReadToBuffer(size)));
+                                    DDSImage image = new DDSImage(new MemoryStream(dst, 0, (int)dstLen));
                                     replaceTexture(image, foundTexture.list);
                                 }
                                 else
@@ -984,8 +1007,11 @@ namespace MassEffectModder
                         }
                         outFs.WriteStringASCIINull(textureName);
                         outFs.WriteUInt32(crc);
-                        outFs.WriteUInt32((uint)fs.Length);
-                        outFs.WriteFromStream(fs, fs.Length);
+                        byte[] src = fs.ReadToBuffer((int)fs.Length);
+                        byte[] dst = ZlibHelper.Zlib.Compress(src);
+                        outFs.WriteInt32(src.Length);
+                        outFs.WriteInt32(dst.Length);
+                        outFs.WriteFromBuffer(dst);
                     }
                 }
             }
@@ -1442,8 +1468,11 @@ namespace MassEffectModder
                 {
                     fileStreamMod.WriteStringASCIINull(node.textures[index].name);
                     fileStreamMod.WriteUInt32(node.textures[index].crc);
-                    fileStreamMod.WriteUInt32((uint)fs.Length);
-                    fileStreamMod.WriteFromStream(fs, fs.Length);
+                    byte[] src = fs.ReadToBuffer((int)fs.Length);
+                    byte[] dst = ZlibHelper.Zlib.Compress(src);
+                    fileStreamMod.WriteInt32(src.Length);
+                    fileStreamMod.WriteInt32(dst.Length);
+                    fileStreamMod.WriteFromBuffer(dst);
                 }
                 numberOfTexturesMod++;
             }
