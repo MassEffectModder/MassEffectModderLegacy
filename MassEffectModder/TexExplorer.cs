@@ -896,7 +896,8 @@ namespace MassEffectModder
                     for (int i = 0; i < numTextures; i++)
                     {
                         string name;
-                        uint crc, size;
+                        uint crc, size, dstLen = 0, decSize = 0;
+                        byte[] dst = null;
                         if (legacy)
                         {
                             int len = fs.ReadInt32();
@@ -907,17 +908,20 @@ namespace MassEffectModder
                             FoundTexture f = ParseLegacyScriptMod(scriptLegacy, name);
                             crc = f.crc;
                             name = f.name;
+                            decSize = dstLen = size = fs.ReadUInt32();
+                            dst = fs.ReadToBuffer(size);
                         }
                         else
                         {
                             name = fs.ReadStringASCIINull();
                             crc = fs.ReadUInt32();
+                            decSize = fs.ReadUInt32();
+                            size = fs.ReadUInt32();
+                            byte[] src = fs.ReadToBuffer(size);
+                            dst = new byte[decSize];
+                            dstLen = ZlibHelper.Zlib.Decompress(src, size, dst);
                         }
-                        uint decSize = fs.ReadUInt32();
-                        size = fs.ReadUInt32();
-                        byte[] src = fs.ReadToBuffer(size);
-                        byte[] dst = new byte[decSize];
-                        uint dstLen = ZlibHelper.Zlib.Decompress(src, size, dst);
+
                         _mainWindow.updateStatusLabel("Processing MOD " + Path.GetFileNameWithoutExtension(filenameMod) +
                             " - Texture " + (i + 1) + " of " + numTextures + " - " + name);
                         if (extract)
@@ -933,9 +937,9 @@ namespace MassEffectModder
                         {
                             outFile.WriteStringASCIINull(name);
                             outFile.WriteUInt32(crc);
-                            src = fs.ReadToBuffer(size);
+                            outFile.WriteUInt32(decSize);
+                            byte[] src = fs.ReadToBuffer((int)fs.Length);
                             dst = ZlibHelper.Zlib.Compress(src);
-                            outFile.WriteInt32(src.Length);
                             outFile.WriteInt32(dst.Length);
                             outFile.WriteFromBuffer(dst);
                             continue;
@@ -944,7 +948,6 @@ namespace MassEffectModder
                         {
                             if (i != previewIndex)
                             {
-                                fs.Skip(size);
                                 continue;
                             }
                             DDSImage image = new DDSImage(new MemoryStream(dst, 0, (int)dstLen));
@@ -963,7 +966,6 @@ namespace MassEffectModder
                                 }
                                 else
                                 {
-                                    fs.Skip(size);
                                     ListViewItem item = new ListViewItem(foundTexture.displayName + " (" + foundTexture.packageName + ")");
                                     item.Name = i.ToString();
                                     listViewTextures.Items.Add(item);

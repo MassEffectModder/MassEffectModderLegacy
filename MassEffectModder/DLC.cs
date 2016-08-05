@@ -382,7 +382,7 @@ namespace MassEffectModder
                                 if (k == (file.numBlocks - 1)) // last block
                                     uncompressedBlockSize = file.uncomprSize - (MaxBlockSize * k);
                                 byte[] inBuf = inputFile.ReadToBuffer((int)uncompressedBlockSize);
-                                byte[] outBuf = SevenZipHelper.LZMA.Compress(inBuf, 9);
+                                byte[] outBuf = SevenZipHelper.LZMA.Compress(inBuf, 0);
                                 if (outBuf.Length == 0)
                                     throw new Exception();
                                 if (outBuf.Length >= (int)MaxBlockSize)
