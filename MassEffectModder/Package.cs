@@ -1060,7 +1060,6 @@ namespace MassEffectModder
 
             pathsList.Add(Path.Combine(directory, "PCConsoleTOC.bin"));
             pathsList.Add(Path.Combine(directory, "PCConsoleTOC.txt"));
-            pathsList.RemoveAll(s => s.Contains("\\DLC"));
             foreach (string file in pathsList)
             {
                 int pos = file.IndexOf("BioGame", StringComparison.OrdinalIgnoreCase);
