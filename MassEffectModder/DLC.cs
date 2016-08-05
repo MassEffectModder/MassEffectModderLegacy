@@ -43,7 +43,6 @@ namespace MassEffectModder
         FileStream sfarFile;
         int filenamesIndex;
         int TOCFileIndex;
-        MemoryStream TOCcontent;
         TOCBinFile tocFile;
         uint filesCount;
         List<FileEntry> filesList;
@@ -75,7 +74,6 @@ namespace MassEffectModder
 
         public void Dispose()
         {
-            TOCcontent.Dispose();
             sfarFile.Close();
             sfarFile.Dispose();
             sfarFile = null;
@@ -141,7 +139,6 @@ namespace MassEffectModder
                     byte[] outBuf = SevenZipHelper.LZMA.Decompress(inBuf, (uint)filesList[i].uncomprSize);
                     if (outBuf.Length == 0)
                         throw new Exception();
-                    TOCcontent = new MemoryStream();
                     StreamReader filenamesStream = new StreamReader(new MemoryStream(outBuf));
                     while (filenamesStream.EndOfStream == false)
                     {
@@ -156,7 +153,6 @@ namespace MassEffectModder
                                 filesList[l] = f;
                             }
                         }
-                        TOCcontent.WriteStringASCII(name + Environment.NewLine);
                     }
                     filenamesIndex = i;
                     break;
@@ -164,7 +160,6 @@ namespace MassEffectModder
             }
             if (filenamesIndex == -1)
                 throw new Exception("filenames entry not found");
-            TOCcontent.SeekBegin();
 
             TOCFileIndex = -1;
             for (int i = 0; i < filesCount; i++)
@@ -173,6 +168,7 @@ namespace MassEffectModder
                 {
                     tocFile = new TOCBinFile(unpackFileEntry(filesList[i].filenamePath));
                     TOCFileIndex = i;
+                    break;
                 }
             }
         }
@@ -228,11 +224,6 @@ namespace MassEffectModder
         public void extract(string SFARfilename, string outPath)
         {
             loadHeader(SFARfilename);
-
-            using (FileStream outputFile = new FileStream(outPath + @"\TOC", FileMode.Create, FileAccess.Write))
-            {
-                outputFile.WriteFromStream(TOCcontent, TOCcontent.Length);
-            }
 
             for (int i = 0; i < filesCount; i++)
             {
@@ -465,30 +456,33 @@ namespace MassEffectModder
 
             int indexTOC = -1;
             List<byte[]> hashList = new List<byte[]>();
-            List<string> srcFilesList = new List<string>();
-            string TOCFilePath = inPath + @"\TOC";
-            string[] srcFilesOrg = File.ReadAllLines(TOCFilePath);
-            for (int i = 0; i < srcFilesOrg.Count(); i++)
+            List<string> srcFilesList = Directory.GetFiles(inPath, "*.*", SearchOption.AllDirectories).ToList();
+            using (FileStream outputFile = new FileStream(inPath + @"\TOC", FileMode.Create, FileAccess.Write))
             {
-                if (srcFilesOrg[i].EndsWith("PCConsoleTOC.bin"))
+                for (int i = 0; i < srcFilesList.Count(); i++)
                 {
-                    indexTOC = i;
+                    int pos = srcFilesList[i].IndexOf("\\BIOGame\\DLC\\", StringComparison.CurrentCultureIgnoreCase);
+                    string filename = srcFilesList[i].Substring(pos).Replace('\\', '/');
+                    if (filename.EndsWith("PCConsoleTOC.bin"))
+                    {
+                        indexTOC = i;
+                    }
+                    hashList.Add(MD5.Create().ComputeHash(Encoding.ASCII.GetBytes(filename.ToLowerInvariant())));
+                    outputFile.WriteStringASCII(filename + Environment.NewLine);
                 }
-                string filename = srcFilesOrg[i].ToLowerInvariant();
-                hashList.Add(MD5.Create().ComputeHash(Encoding.ASCII.GetBytes(filename)));
-                srcFilesList.Add(inPath + srcFilesOrg[i].Replace('/', '\\'));
             }
-            hashList.Add(FileListHash);
-            srcFilesList.Add(TOCFilePath);
 
             TOCBinFile tocFile = new TOCBinFile(srcFilesList[indexTOC]);
-            int pos = (@"\BIOGame\DLC\" + DLCName + @"\").Length;
-            for (int i = 0; i < srcFilesOrg.Count(); i++)
+            for (int i = 0; i < srcFilesList.Count(); i++)
             {
-                string filename = srcFilesOrg[i].Substring(pos).Replace('/', '\\');
+                int pos = srcFilesList[i].IndexOf("\\DLC\\" + DLCName + "\\", StringComparison.CurrentCultureIgnoreCase);
+                string filename = srcFilesList[i].Substring(pos + ("\\DLC\\" + DLCName + "\\").Length);
                 tocFile.updateFile(filename, srcFilesList[i]);
             }
             tocFile.saveToFile(srcFilesList[indexTOC]);
+
+            hashList.Add(FileListHash);
+            srcFilesList.Add(inPath + @"\TOC");
 
             Directory.CreateDirectory(Path.GetDirectoryName(outPath));
             using (FileStream outputFile = new FileStream(outPath, FileMode.Create, FileAccess.Write))
@@ -557,6 +551,7 @@ namespace MassEffectModder
                     }
                     curDataOffset = outputFile.Position;
                     filesList.Add(file);
+                    inputFile.Close();
                 }
 
                 if (blockSizes.Count() != curBlockSizesIndex)
@@ -594,6 +589,7 @@ namespace MassEffectModder
                 if (outputFile.Position != dataOffset)
                     throw new Exception();
             }
+            File.Delete(inPath + @"\TOC");
         }
     }
 }

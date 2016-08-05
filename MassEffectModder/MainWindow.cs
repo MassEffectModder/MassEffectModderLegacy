@@ -31,7 +31,6 @@ namespace MassEffectModder
     public partial class MainWindow : Form
     {
         public ConfIni _configIni;
-        TOCBinFile _tocFile;
 
         public MainWindow()
         {
@@ -142,8 +141,6 @@ namespace MassEffectModder
 
         public bool GetPackages(GameData gameData)
         {
-            if (GameData.gameType == MeType.ME3_TYPE)
-                _tocFile = new TOCBinFile(Path.Combine(GameData.bioGamePath, @"PCConsoleTOC.bin"));
             updateStatusLabel("Finding packages in game data...");
             if (!gameData.getPackages())
             {
@@ -255,20 +252,6 @@ namespace MassEffectModder
             string outPath = Path.Combine(GameData.DLCData, DLCname, "CookedPCConsole", "Default.sfar");
             ME3DLC dlc = new ME3DLC(this);
             dlc.fullRePack(inPath, outPath, DLCname);
-        }
-
-        public void updateTOCBinEntry(string filePath, bool updateSHA1 = false)
-        {
-            if (!filePath.Contains(GameData.MainData))
-                return;
-            int pos = (Path.Combine(Path.GetDirectoryName(GameData.GamePath + @"\"))).Length;
-            string filename = filePath.Substring(pos + 1);
-            _tocFile.updateFile(filename, filePath, updateSHA1);
-        }
-
-        public void saveTOCBin()
-        {
-            _tocFile.saveToFile(Path.Combine(GameData.bioGamePath, @"PCConsoleTOC.bin"));
         }
 
         private void PackAllME3DLC()

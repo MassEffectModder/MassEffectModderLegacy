@@ -254,17 +254,6 @@ namespace MassEffectModder
             }
         }
 
-        public string EntitlementCacheIniPath
-        {
-            get
-            {
-                if (gameType == MeType.ME2_TYPE)
-                    return Path.Combine(ConfigIniPath, @"BioPersistentEntitlementCache.ini");
-                else
-                    return null;
-            }
-        }
-
         public bool getTfcTextures()
         {
             if (tfcFiles != null && tfcFiles.Count != 0)

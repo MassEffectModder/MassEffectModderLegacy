@@ -165,16 +165,6 @@ namespace MassEffectModder
                 packages.RemoveAt(index);
             }
 
-            public void ClosePackageWithSave(Package package)
-            {
-                mainWindow.updateStatusLabel2("Saving package: " + package.packagePath);
-                int index = packages.IndexOf(package);
-                packages[index].SaveToFile();
-                packages[index].Dispose();
-                packages.RemoveAt(index);
-                mainWindow.updateStatusLabel2("");
-            }
-
             public void CloseAllWithoutSave()
             {
                 foreach(Package pkg in packages)
@@ -206,9 +196,12 @@ namespace MassEffectModder
                         }
                         mainWindow.updateStatusLabel2("");
 
-                        mainWindow.updateStatusLabel("Updating DLC " + (i + 1) + " of " + sfarFiles.Count + " - " + DLCname);
-                        ME3DLC dlc = new ME3DLC(mainWindow);
-                        dlc.update(sfarFiles[i], modifiedPkgs);
+                        if (dlcPackageList.Count != 0)
+                        {
+                            mainWindow.updateStatusLabel("Updating DLC " + (i + 1) + " of " + sfarFiles.Count + " - " + DLCname);
+                            ME3DLC dlc = new ME3DLC(mainWindow);
+                            dlc.update(sfarFiles[i], modifiedPkgs);
+                        }
                         mainWindow.updateStatusLabel("");
                     }
                 }
@@ -219,6 +212,12 @@ namespace MassEffectModder
                     mainWindow.updateStatusLabel2("Saving package " + (i + 1) + " of " + packages.Count + " - " + pkg.packagePath);
                     pkg.SaveToFile();
                     pkg.Dispose();
+                }
+                if (GameData.gameType == MeType.ME3_TYPE)
+                {
+                    TOCBinFile tocFile = new TOCBinFile();
+                    tocFile.generateTOC(GameData.bioGamePath);
+                    tocFile.saveToFile(Path.Combine(GameData.bioGamePath, @"PCConsoleTOC.bin"));
                 }
                 mainWindow.updateStatusLabel2("");
                 packages.Clear();
@@ -1196,7 +1195,7 @@ namespace MassEffectModder
                     origGuid = texture.properties.getProperty("TFCFileGuid").valueStruct;
                     string archive = texture.properties.getProperty("TextureFileCacheName").valueName;
                     archiveFile = archiveFile = Path.Combine(GameData.MainData, archive + ".tfc");
-                    if (nodeTexture.path.Contains("DLC"))
+                    if (nodeTexture.path.Contains("\\DLC"))
                     {
                         string DLCname = Path.GetDirectoryName(Path.GetDirectoryName(nodeTexture.path)).Split('\\').Last();
                         archiveFile = Path.Combine(Path.GetDirectoryName((GameData.GamePath + nodeTexture.path)), archive + ".tfc");
@@ -1260,7 +1259,7 @@ namespace MassEffectModder
                         {
                             if (texture.properties.exists("TextureFileCacheName"))
                             {
-                                if (nodeTexture.path.Contains("DLC"))
+                                if (nodeTexture.path.Contains("\\DLC"))
                                     mipmap.storageType = Texture.StorageTypes.extUnc;
                                 else
                                     mipmap.storageType = Texture.StorageTypes.extZlib;

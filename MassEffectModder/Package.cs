@@ -959,7 +959,7 @@ namespace MassEffectModder
         const uint TOCTag = 0x3AB70C13; // TOC tag
         const int TOCHeaderSize = 12;
 
-        struct File
+        struct FileEntry
         {
             public ushort type;
             public uint size;
@@ -971,9 +971,17 @@ namespace MassEffectModder
         {
             public uint filesOffset;
             public uint numFiles;
-            public List<File> filesList;
+            public List<FileEntry> filesList;
         }
+
         List<Block> blockList;
+        List<string> pathsList;
+
+        public TOCBinFile()
+        {
+            pathsList = new List<string>();
+            blockList = new List<Block>();
+        }
 
         public TOCBinFile(string filename)
         {
@@ -1002,7 +1010,7 @@ namespace MassEffectModder
                 Block block = new Block();
                 block.filesOffset = tocFile.ReadUInt32();
                 block.numFiles = tocFile.ReadUInt32();
-                block.filesList = new List<File>();
+                block.filesList = new List<FileEntry>();
                 blockList.Add(block);
             }
 
@@ -1010,7 +1018,7 @@ namespace MassEffectModder
             for (int b = 0; b < numBlocks; b++)
             {
                 Block block = blockList[b];
-                File file = new File();
+                FileEntry file = new FileEntry();
                 for (int f = 0; f < block.numFiles; f++)
                 {
                     long curPos = tocFile.Position;
@@ -1028,6 +1036,49 @@ namespace MassEffectModder
             }
         }
 
+        public void generateTOC(string directory)
+        {
+            pathsList = Directory.GetFiles(Path.Combine(directory, "CookedPCConsole"), "*.*",
+                SearchOption.AllDirectories).Where(s =>
+                s.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase) ||
+                s.EndsWith(".afc", StringComparison.OrdinalIgnoreCase) ||
+                s.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase) ||
+                s.EndsWith(".tlk", StringComparison.OrdinalIgnoreCase) ||
+                s.EndsWith(".bin", StringComparison.OrdinalIgnoreCase) ||
+                s.EndsWith(".cnd", StringComparison.OrdinalIgnoreCase) ||
+                s.EndsWith(".dlc", StringComparison.OrdinalIgnoreCase) ||
+                s.EndsWith(".upk", StringComparison.OrdinalIgnoreCase)).ToList();
+            if (Directory.Exists(Path.Combine(directory, "Movies")))
+            {
+                pathsList.AddRange(Directory.GetFiles(Path.Combine(directory, "Movies"), "*.*",
+                    SearchOption.AllDirectories).Where(s => s.EndsWith(".bik", StringComparison.OrdinalIgnoreCase)));
+            }
+            List<FileEntry> filesList = new List<FileEntry>();
+
+            pathsList.Add(Path.Combine(directory, "PCConsoleTOC.bin"));
+            pathsList.Add(Path.Combine(directory, "PCConsoleTOC.txt"));
+            pathsList.RemoveAll(s => s.Contains("\\DLC"));
+            foreach (string file in pathsList)
+            {
+                int pos = file.IndexOf("BioGame", StringComparison.OrdinalIgnoreCase);
+                FileEntry e = new FileEntry();
+                e.path = file;
+                if (file.EndsWith(".tlk") || file.EndsWith(".tfc"))
+                    e.type = 9;
+                else
+                    e.type = 1;
+                e.size = (uint)new FileInfo(file).Length;
+                e.sha1 = new byte[20];
+                filesList.Add(e);
+            }
+
+            Block block = new Block();
+            block.filesOffset = 8;
+            block.numFiles = (uint)filesList.Count;
+            block.filesList = filesList;
+            blockList.Add(block);
+        }
+
         byte[] calculateSHA1(string filePath)
         {
             using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
@@ -1040,13 +1091,13 @@ namespace MassEffectModder
             }
         }
 
-        public void updateFile(string filename, string filePath, bool updateSHA1 = true)
+        public void updateFile(string filename, string filePath, bool updateSHA1 = false)
         {
             for (int b = 0; b < blockList.Count; b++)
             {
                 for (int f = 0; f < blockList[b].numFiles; f++)
                 {
-                    File file = blockList[b].filesList[f];
+                    FileEntry file = blockList[b].filesList[f];
                     if (file.path == filename)
                     {
                         file.size = (uint)new FileInfo(filePath).Length;
@@ -1056,23 +1107,35 @@ namespace MassEffectModder
                     }
                 }
             }
-            throw new Exception("not found");
+            Block block = blockList[blockList.Count - 1];
+            FileEntry e = new FileEntry();
+            e.path = filename;
+            e.size = (uint)new FileInfo(filePath).Length;
+            if (updateSHA1)
+                e.sha1 = calculateSHA1(filePath);
+            else
+                e.sha1 = new byte[20];
+            block.filesList.Add(e);
+            block.numFiles++;
+            blockList[blockList.Count - 1] = block;
         }
 
-        public byte[] saveToBuffer(bool updateOffsets = false)
+        public byte[] saveToBuffer()
         {
             using (MemoryStream stream = new MemoryStream())
             {
-                saveToStream(stream, updateOffsets);
+                saveToStream(stream);
                 return stream.ToArray();
             }
         }
 
-        public void saveToFile(string outPath, bool updateOffsets = false)
+        public void saveToFile(string outPath)
         {
+            if (File.Exists(outPath))
+                File.Delete(outPath);
             using (FileStream stream = new FileStream(outPath, FileMode.Create, FileAccess.Write))
             {
-                saveToStream(stream, updateOffsets);
+                saveToStream(stream);
             }
         }
 
@@ -1092,7 +1155,7 @@ namespace MassEffectModder
                 for (int f = 0; f < blockList[b].numFiles; f++)
                 {
                     long fileOffset = lastOffset = tocFile.Position;
-                    File file = blockList[b].filesList[f];
+                    FileEntry file = blockList[b].filesList[f];
                     int blockSize = ((28 + (file.path.Length + 1) + 3) / 4) * 4; // align to 4
                     tocFile.WriteUInt16((ushort)blockSize);
                     tocFile.WriteUInt16(file.type);
