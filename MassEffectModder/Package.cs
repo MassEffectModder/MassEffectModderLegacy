@@ -1038,6 +1038,9 @@ namespace MassEffectModder
 
         public void generateTOC(string directory)
         {
+            if (directory.Contains("\\DLC"))
+                throw new Exception("not for DLC update");
+
             pathsList = Directory.GetFiles(Path.Combine(directory, "CookedPCConsole"), "*.*",
                 SearchOption.AllDirectories).Where(s =>
                 s.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase) ||
