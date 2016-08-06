@@ -215,8 +215,14 @@ namespace MassEffectModder
                 }
                 if (GameData.gameType == MeType.ME3_TYPE)
                 {
-                    TOCBinFile tocFile = new TOCBinFile();
-                    tocFile.generateTOC(GameData.bioGamePath);
+                    TOCBinFile tocFile = new TOCBinFile(Path.Combine(GameData.bioGamePath, @"PCConsoleTOC.bin"));
+                    for (int i = 0; i < packages.Count; i++)
+                    {
+                        Package pkg = packages[i];
+                        int pos = pkg.packagePath.IndexOf("BioGame", StringComparison.OrdinalIgnoreCase);
+                        string filename = pkg.packagePath.Substring(pos);
+                        tocFile.updateFile(filename, pkg.packagePath);
+                    }
                     tocFile.saveToFile(Path.Combine(GameData.bioGamePath, @"PCConsoleTOC.bin"));
                 }
                 mainWindow.updateStatusLabel2("");

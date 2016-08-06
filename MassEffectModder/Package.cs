@@ -975,13 +975,6 @@ namespace MassEffectModder
         }
 
         List<Block> blockList;
-        List<string> pathsList;
-
-        public TOCBinFile()
-        {
-            pathsList = new List<string>();
-            blockList = new List<Block>();
-        }
 
         public TOCBinFile(string filename)
         {
@@ -1034,51 +1027,6 @@ namespace MassEffectModder
                 }
                 blockList[b] = block;
             }
-        }
-
-        public void generateTOC(string directory)
-        {
-            if (directory.Contains("\\DLC"))
-                throw new Exception("not for DLC update");
-
-            pathsList = Directory.GetFiles(Path.Combine(directory, "CookedPCConsole"), "*.*",
-                SearchOption.AllDirectories).Where(s =>
-                s.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase) ||
-                s.EndsWith(".afc", StringComparison.OrdinalIgnoreCase) ||
-                s.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase) ||
-                s.EndsWith(".tlk", StringComparison.OrdinalIgnoreCase) ||
-                s.EndsWith(".bin", StringComparison.OrdinalIgnoreCase) ||
-                s.EndsWith(".cnd", StringComparison.OrdinalIgnoreCase) ||
-                s.EndsWith(".dlc", StringComparison.OrdinalIgnoreCase) ||
-                s.EndsWith(".upk", StringComparison.OrdinalIgnoreCase)).ToList();
-            if (Directory.Exists(Path.Combine(directory, "Movies")))
-            {
-                pathsList.AddRange(Directory.GetFiles(Path.Combine(directory, "Movies"), "*.*",
-                    SearchOption.AllDirectories).Where(s => s.EndsWith(".bik", StringComparison.OrdinalIgnoreCase)));
-            }
-            List<FileEntry> filesList = new List<FileEntry>();
-
-            pathsList.Add(Path.Combine(directory, "PCConsoleTOC.bin"));
-            pathsList.Add(Path.Combine(directory, "PCConsoleTOC.txt"));
-            foreach (string file in pathsList)
-            {
-                int pos = file.IndexOf("BioGame", StringComparison.OrdinalIgnoreCase);
-                FileEntry e = new FileEntry();
-                e.path = file;
-                if (file.EndsWith(".tlk") || file.EndsWith(".tfc"))
-                    e.type = 9;
-                else
-                    e.type = 1;
-                e.size = (uint)new FileInfo(file).Length;
-                e.sha1 = new byte[20];
-                filesList.Add(e);
-            }
-
-            Block block = new Block();
-            block.filesOffset = 8;
-            block.numFiles = (uint)filesList.Count;
-            block.filesList = filesList;
-            blockList.Add(block);
         }
 
         byte[] calculateSHA1(string filePath)
