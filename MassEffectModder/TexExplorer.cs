@@ -1002,17 +1002,42 @@ namespace MassEffectModder
                 foreach (string file in files)
                 {
                     _mainWindow.updateStatusLabel("Processing MOD: " + Path.GetFileNameWithoutExtension(outFile));
-                    _mainWindow.updateStatusLabel2("");
                     using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
                     {
-                        string textureName = Path.GetFileNameWithoutExtension(file).Split('-').First();
-                        uint crc = uint.Parse(Path.GetFileNameWithoutExtension(file).Split('-').Last().Substring(2), System.Globalization.NumberStyles.HexNumber);
-                        if (textureName == "" || crc == 0)
+                        string crcStr = Path.GetFileNameWithoutExtension(file);
+                        if (crcStr.Contains("_0x"))
+                        {
+                            crcStr = Path.GetFileNameWithoutExtension(file).Split('_').Last().Substring(2, 8); // in case filename contain CRC 
+                        }
+                        else
+                        {
+                            crcStr = Path.GetFileNameWithoutExtension(file).Split('-').Last().Substring(2, 8); // in case filename contain CRC 
+                        }
+                        uint crc = uint.Parse(crcStr, System.Globalization.NumberStyles.HexNumber);
+                        if (crc == 0)
                         {
                             MessageBox.Show("Wrong format of texture filename: " + file);
                             File.Delete(outFile);
                             return;
                         }
+
+                        string textureName = "";
+                        for (int l = 0; l < _textures.Count; l++)
+                        {
+                            FoundTexture foundTexture = _textures[l];
+                            if (crc != 0 && foundTexture.crc == crc)
+                            {
+                                textureName = foundTexture.name;
+                            }
+                        }
+                        if (textureName == "")
+                        {
+                            MessageBox.Show("Texture not match: " + file);
+                            File.Delete(outFile);
+                            return;
+                        }
+                        _mainWindow.updateStatusLabel2("Texture: " + textureName + ", CRC: " + string.Format("0x{0:X8}", crc));
+
                         outFs.WriteStringASCIINull(textureName);
                         outFs.WriteUInt32(crc);
                         byte[] src = fs.ReadToBuffer((int)fs.Length);
