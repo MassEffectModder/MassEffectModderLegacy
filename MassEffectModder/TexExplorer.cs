@@ -999,8 +999,9 @@ namespace MassEffectModder
                 outFs.WriteUInt32(TextureModVersion);
                 outFs.WriteUInt32((uint)_gameSelected);
                 outFs.WriteInt32(files.Count());
-                foreach (string file in files)
+                for (int n = 0; n < files.Count(); n++)
                 {
+                    string file = files[n];
                     _mainWindow.updateStatusLabel("Processing MOD: " + Path.GetFileNameWithoutExtension(outFile));
                     using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
                     {
@@ -1017,7 +1018,6 @@ namespace MassEffectModder
                         if (crc == 0)
                         {
                             MessageBox.Show("Wrong format of texture filename: " + file);
-                            File.Delete(outFile);
                             return;
                         }
 
@@ -1033,10 +1033,9 @@ namespace MassEffectModder
                         if (textureName == "")
                         {
                             MessageBox.Show("Texture not match: " + file);
-                            File.Delete(outFile);
-                            return;
+                            textureName = "!Unknown";
                         }
-                        _mainWindow.updateStatusLabel2("Texture Name: " + textureName);
+                        _mainWindow.updateStatusLabel2("Texture " + (n + 1) + " of " + files.Count() + ", Name: " + textureName);
 
                         outFs.WriteStringASCIINull(textureName);
                         outFs.WriteUInt32(crc);
