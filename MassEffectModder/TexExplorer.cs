@@ -1857,9 +1857,19 @@ namespace MassEffectModder
             if (string.IsNullOrEmpty(name))
                 return;
 
-            string crcStr = name.Split('-').Last(); // in case filename contain CRC
-            if (crcStr == "")
-                crcStr = name;
+            string crcStr = name;
+            if (crcStr.Contains("_0x"))
+            {
+                crcStr = name.Split('_').Last().Substring(2, 8); // in case filename contain CRC 
+            }
+            else
+            {
+                crcStr = name.Split('-').Last(); // in case filename contain CRC
+                if (crcStr == "")
+                {
+                    crcStr = name;
+                }
+            }
 
             uint crc = 0;
             try
