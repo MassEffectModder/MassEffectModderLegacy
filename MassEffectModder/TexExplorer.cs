@@ -1036,7 +1036,7 @@ namespace MassEffectModder
                             File.Delete(outFile);
                             return;
                         }
-                        _mainWindow.updateStatusLabel2("Texture: " + textureName + ", CRC: " + string.Format("0x{0:X8}", crc));
+                        _mainWindow.updateStatusLabel2("Texture Name: " + textureName);
 
                         outFs.WriteStringASCIINull(textureName);
                         outFs.WriteUInt32(crc);
