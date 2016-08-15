@@ -1259,13 +1259,12 @@ namespace MassEffectModder
                 {
                     origGuid = texture.properties.getProperty("TFCFileGuid").valueStruct;
                     string archive = texture.properties.getProperty("TextureFileCacheName").valueName;
-                    archiveFile = archiveFile = Path.Combine(GameData.MainData, archive + ".tfc");
+                    archiveFile = Path.Combine(GameData.MainData, archive + ".tfc");
                     if (nodeTexture.path.Contains("\\DLC"))
                     {
-                        string DLCname = Path.GetDirectoryName(Path.GetDirectoryName(nodeTexture.path)).Split('\\').Last();
-                        archiveFile = Path.Combine(Path.GetDirectoryName((GameData.GamePath + nodeTexture.path)), archive + ".tfc");
-                        if (!File.Exists(archiveFile))
-                            archiveFile = Path.Combine(GameData.MainData, archive + ".tfc");
+                        string DLCArchiveFile = Path.Combine(Path.GetDirectoryName((GameData.GamePath + nodeTexture.path)), archive + ".tfc");
+                        if (File.Exists(DLCArchiveFile))
+                            archiveFile = DLCArchiveFile;
                     }
                     long fileLength = new FileInfo(archiveFile).Length;
                     if (fileLength + 0x3000000 > 0x80000000)
