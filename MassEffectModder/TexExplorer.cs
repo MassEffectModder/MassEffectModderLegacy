@@ -223,6 +223,13 @@ namespace MassEffectModder
                         string filename = pkg.packagePath.Substring(pos);
                         tocFile.updateFile(filename, pkg.packagePath);
                     }
+                    string[] tfcFiles = Directory.GetFiles(GameData.MainData, "*.tfc", SearchOption.AllDirectories);
+                    for (int i = 0; i < tfcFiles.Length; i++)
+                    {
+                        int pos = tfcFiles[i].IndexOf("BioGame", StringComparison.OrdinalIgnoreCase);
+                        string filename = tfcFiles[i].Substring(pos);
+                        tocFile.updateFile(filename, tfcFiles[i]);
+                    }
                     tocFile.saveToFile(Path.Combine(GameData.bioGamePath, @"PCConsoleTOC.bin"));
                 }
                 mainWindow.updateStatusLabel2("");
