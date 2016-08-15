@@ -173,6 +173,10 @@ namespace AmaroK86.ImageFormat
 
                     int origW = w;
                     int origH = h;
+                    if (origW == 0 && origH != 0)
+                        origW = 1;
+                    if (origH == 0 && origW != 0)
+                        origH = 1;
                     if (ddsFormat == DDSFormat.DXT1 || ddsFormat == DDSFormat.DXT5)
                     {
                         w = (w < 4) ? 4 : w;
@@ -192,7 +196,7 @@ namespace AmaroK86.ImageFormat
         {
             if ((header.dwFlags & DDSD_MIPMAPCOUNT) != 0 && header.dwMipMapCount > 1)
             {
-                int val = Math.Min(mipMaps[0].origWidth, mipMaps[0].origHeight);
+                int val = Math.Max(mipMaps[0].origWidth, mipMaps[0].origHeight);
                 int count = 0;
                 do
                 {
