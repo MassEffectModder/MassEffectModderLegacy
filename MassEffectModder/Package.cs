@@ -1061,6 +1061,7 @@ namespace MassEffectModder
             FileEntry e = new FileEntry();
             e.path = filename;
             e.size = (uint)new FileInfo(filePath).Length;
+            e.type = 1;
             if (updateSHA1)
                 e.sha1 = calculateSHA1(filePath);
             else
