@@ -27,14 +27,14 @@ namespace LZO2Helper
     public static class LZO2
     {
         [DllImport("lzo2wrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
-        private static extern Int32 LZODecompress([In] byte[] srcBuf, uint srcLen, [Out] byte[] dstBuf, ref uint dstLen);
+        private static extern int LZODecompress([In] byte[] srcBuf, uint srcLen, [Out] byte[] dstBuf, ref uint dstLen);
 
         [DllImport("lzo2wrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
-        private static extern Int32 LZOCompress([In] byte[] srcBuf, uint srcLen, [Out] byte[] dstBuf, ref uint dstLen, int fast);
+        private static extern int LZOCompress([In] byte[] srcBuf, uint srcLen, [Out] byte[] dstBuf, ref uint dstLen, int fast);
 
         public unsafe static uint Decompress(byte[] src, uint srcLen, byte[] dst)
         {
-            uint dstLen = (uint)dst.Length;
+            uint dstLen = 0;
 
             int status = LZODecompress(src, srcLen, dst, ref dstLen);
             if (status != 0)
@@ -46,7 +46,7 @@ namespace LZO2Helper
         public unsafe static byte[] Compress(byte[] src, bool fast = true)
         {
             byte[] tmpbuf = new byte[src.Length + (src.Length / 16) + 64 + 3];
-            uint dstLen = (uint)tmpbuf.Length;
+            uint dstLen = 0;
 
             int status = LZOCompress(src, (uint)src.Length, tmpbuf, ref dstLen, fast ? 1 : 0);
             if (status != 0)
