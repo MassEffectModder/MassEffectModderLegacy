@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CRC32;
+using System.Threading.Tasks;
 
 namespace MassEffectModder
 {
@@ -165,23 +166,45 @@ namespace MassEffectModder
             for (int b = 0; b < newNumBlocks; b++)
             {
                 Package.ChunkBlock block = new Package.ChunkBlock();
-                uint newBlockSize = Math.Min(maxBlockSize, dataBlockLeft);
-
-                byte[] dst = null;
-                byte[] src = inputStream.ReadToBuffer(newBlockSize);
-                if (type == StorageTypes.extZlib || type == StorageTypes.pccZlib)
-                    dst = ZlibHelper.Zlib.Compress(src);
-                else if (type == StorageTypes.extLZO || type == StorageTypes.pccLZO)
-                    dst = LZO2Helper.LZO2.Compress(src);
-                if (dst.Length == 0)
-                    throw new Exception("Compression failed!");
-
-                ouputStream.Write(dst, 0, dst.Length);
-                block.uncomprSize = newBlockSize;
-                block.comprSize = (uint)dst.Length;
-                compressedSize += block.comprSize;
+                block.uncomprSize = Math.Min(maxBlockSize, dataBlockLeft);
+                dataBlockLeft -= block.uncomprSize;
+                block.uncompressedBuffer = inputStream.ReadToBuffer(block.uncomprSize);
                 blocks.Add(block);
-                dataBlockLeft -= newBlockSize;
+            }
+
+            if (type == StorageTypes.extLZO || type == StorageTypes.pccLZO)
+            {
+                for (int b = 0; b < blocks.Count; b++)
+                {
+                    Package.ChunkBlock block = blocks[b];
+                    block.compressedBuffer = LZO2Helper.LZO2.Compress(block.uncompressedBuffer);
+                    if (block.compressedBuffer.Length == 0)
+                        throw new Exception("Compression failed!");
+                    block.comprSize = (uint)block.compressedBuffer.Length;
+                    blocks[b] = block;
+                }
+            }
+            else
+            {
+                Parallel.For(0, blocks.Count, b =>
+                {
+                    Package.ChunkBlock block = blocks[b];
+                    if (type == StorageTypes.extZlib || type == StorageTypes.pccZlib)
+                        block.compressedBuffer = ZlibHelper.Zlib.Compress(block.uncompressedBuffer);
+                    else
+                        throw new Exception("Compression type not expected!");
+                    if (block.compressedBuffer.Length == 0)
+                        throw new Exception("Compression failed!");
+                    block.comprSize = (uint)block.compressedBuffer.Length;
+                    blocks[b] = block;
+                });
+            }
+
+            for (int b = 0; b < blocks.Count; b++)
+            {
+                Package.ChunkBlock block = blocks[b];
+                ouputStream.Write(block.compressedBuffer, 0, (int)block.comprSize);
+                compressedSize += block.comprSize;
             }
 
             ouputStream.SeekBegin();
@@ -225,23 +248,43 @@ namespace MassEffectModder
                 blocks.Add(block);
             }
 
-            int dstPos = 0;
-            byte[] dst = new byte[maxBlockSize * 2];
             for (int b = 0; b < blocks.Count; b++)
             {
                 Package.ChunkBlock block = blocks[b];
-                byte[] src = stream.ReadToBuffer(block.comprSize);
-                uint dstLen = 0;
-                if (type == StorageTypes.extZlib || type == StorageTypes.pccZlib)
-                    dstLen = ZlibHelper.Zlib.Decompress(src, block.comprSize, dst);
-                else if (type == StorageTypes.extLZO || type == StorageTypes.pccLZO)
-                    dstLen = LZO2Helper.LZO2.Decompress(src, block.comprSize, dst);
+                block.compressedBuffer = stream.ReadToBuffer(blocks[b].comprSize);
+                block.uncompressedBuffer = new byte[maxBlockSize * 2];
+                blocks[b] = block;
+            }
 
-                if (dstLen != block.uncomprSize)
-                    throw new Exception("Decompressed data size not expected!");
+            if (type == StorageTypes.extLZO || type == StorageTypes.pccLZO)
+            {
+                for (int b = 0; b < blocks.Count; b++)
+                {
+                    uint dstLen = 0;
+                    Package.ChunkBlock block = blocks[b];
+                    dstLen = LZO2Helper.LZO2.Decompress(block.compressedBuffer, block.comprSize, block.uncompressedBuffer);
+                    if (dstLen != block.uncomprSize)
+                        throw new Exception("Decompressed data size not expected!");
+                }
+            }
+            else
+            {
+                Parallel.For(0, blocks.Count, b =>
+                {
+                    uint dstLen = 0;
+                    Package.ChunkBlock block = blocks[b];
+                    if (type == StorageTypes.extZlib || type == StorageTypes.pccZlib)
+                        dstLen = ZlibHelper.Zlib.Decompress(block.compressedBuffer, block.comprSize, block.uncompressedBuffer);
+                    if (dstLen != block.uncomprSize)
+                        throw new Exception("Decompressed data size not expected!");
+                });
+            }
 
-                Buffer.BlockCopy(dst, 0, data, dstPos, (int)dstLen);
-                dstPos += (int)dstLen;
+            int dstPos = 0;
+            for (int b = 0; b < blocks.Count; b++)
+            {
+                Buffer.BlockCopy(blocks[b].uncompressedBuffer, 0, data, dstPos, (int)blocks[b].uncomprSize);
+                dstPos += (int)blocks[b].uncomprSize;
             }
 
             return data;
