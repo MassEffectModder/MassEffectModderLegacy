@@ -542,9 +542,11 @@ namespace MassEffectModder
                     return fs.ReadToBuffer(fs.Length);
                 }
             }
-            MemoryStream data = new MemoryStream();
-            getData(exportsTable[id].dataOffset, exportsTable[id].dataSize, data);
-            return data.ToArray();
+            using (MemoryStream data = new MemoryStream())
+            {
+                getData(exportsTable[id].dataOffset, exportsTable[id].dataSize, data);
+                return data.ToArray();
+            }
         }
 
         public void setExportData(int id, byte[] data)
@@ -980,6 +982,9 @@ namespace MassEffectModder
                 }
             }
 
+            tempOutput.Close();
+            tempOutput.Dispose();
+
             return true;
         }
 
@@ -987,8 +992,10 @@ namespace MassEffectModder
         {
             if (chunkCache != null)
                 chunkCache.Dispose();
+            packageData.Close();
             packageData.Dispose();
             packageFile.Close();
+            packageFile.Dispose();
             if (Directory.Exists(packagePath + "-exports"))
                 Directory.Delete(packagePath + "-exports", true);
         }

@@ -296,36 +296,38 @@ namespace MassEffectModder
 
         public byte[] toArray()
         {
-            MemoryStream mem = new MemoryStream();
-            mem.WriteUInt32(headerData);
-            for (int i = 0; i < texPropertyList.Count; i++)
+            using (MemoryStream mem = new MemoryStream())
             {
-                mem.WriteInt32(package.getNameId(texPropertyList[i].name));
-                mem.WriteInt32(0); // skip
-                if (texPropertyList[i].name == "None")
-                    break;
-                mem.WriteInt32(package.getNameId(texPropertyList[i].type));
-                mem.WriteInt32(0); // skip
-                int size = texPropertyList[i].valueRaw.Length;
-                switch (texPropertyList[i].type)
+                mem.WriteUInt32(headerData);
+                for (int i = 0; i < texPropertyList.Count; i++)
                 {
-                    case "StructProperty":
-                        size -= 8;
+                    mem.WriteInt32(package.getNameId(texPropertyList[i].name));
+                    mem.WriteInt32(0); // skip
+                    if (texPropertyList[i].name == "None")
                         break;
-                    case "ByteProperty":
-                        if (GameData.gameType == MeType.ME3_TYPE)
+                    mem.WriteInt32(package.getNameId(texPropertyList[i].type));
+                    mem.WriteInt32(0); // skip
+                    int size = texPropertyList[i].valueRaw.Length;
+                    switch (texPropertyList[i].type)
+                    {
+                        case "StructProperty":
                             size -= 8;
-                        break;
-                    case "BoolProperty":
-                        size = 0;
-                        break;
+                            break;
+                        case "ByteProperty":
+                            if (GameData.gameType == MeType.ME3_TYPE)
+                                size -= 8;
+                            break;
+                        case "BoolProperty":
+                            size = 0;
+                            break;
+                    }
+                    mem.WriteInt32(size);
+                    mem.WriteInt32(texPropertyList[i].index);
+                    mem.Write(texPropertyList[i].valueRaw, 0, texPropertyList[i].valueRaw.Length);
                 }
-                mem.WriteInt32(size);
-                mem.WriteInt32(texPropertyList[i].index);
-                mem.Write(texPropertyList[i].valueRaw, 0, texPropertyList[i].valueRaw.Length);
-            }
 
-            return mem.ToArray();
+                return mem.ToArray();
+            }
         }
     }
 }

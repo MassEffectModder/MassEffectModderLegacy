@@ -310,106 +310,108 @@ namespace AmaroK86.ImageFormat
         {
             const int bufferSize = 8;
             byte[] blockStorage = new byte[bufferSize];
-            MemoryStream bitmapStream = new MemoryStream(w * h * 2);
-            BinaryWriter bitmapBW = new BinaryWriter(bitmapStream);
-
-            int readPtr = 0;
-            for (int s = 0; s < h; s += 4)
+            using (MemoryStream bitmapStream = new MemoryStream(w * h * 2))
             {
-                for (int t = 0; t < w; t += 4)
+                using (BinaryWriter bitmapBW = new BinaryWriter(bitmapStream))
                 {
-                    Buffer.BlockCopy(imgData, readPtr, blockStorage, 0, bufferSize);
-                    //DecompressBlockDXT1(i, j, buffer, res);
-                    readPtr += bufferSize;
+
+                    int readPtr = 0;
+                    for (int s = 0; s < h; s += 4)
                     {
-                        int color0 = blockStorage[0] | blockStorage[1] << 8;
-                        int color1 = blockStorage[2] | blockStorage[3] << 8;
-
-                        int temp;
-
-                        temp = (color0 >> 11) * 255 + 16;
-                        int r0 = ((temp >> 5) + temp) >> 5;
-                        temp = ((color0 & 0x07E0) >> 5) * 255 + 32;
-                        int g0 = ((temp >> 6) + temp) >> 6;
-                        temp = (color0 & 0x001F) * 255 + 16;
-                        int b0 = ((temp >> 5) + temp) >> 5;
-
-                        temp = (color1 >> 11) * 255 + 16;
-                        int r1 = ((temp >> 5) + temp) >> 5;
-                        temp = ((color1 & 0x07E0) >> 5) * 255 + 32;
-                        int g1 = ((temp >> 6) + temp) >> 6;
-                        temp = (color1 & 0x001F) * 255 + 16;
-                        int b1 = ((temp >> 5) + temp) >> 5;
-
-                        int code = blockStorage[4] | blockStorage[5] << 8 | blockStorage[6] << 16 | blockStorage[7] << 24;
-
-                        for (int j = 0; j < 4; j++)
+                        for (int t = 0; t < w; t += 4)
                         {
-                            bitmapStream.Seek(((s + j) * w * 4) + (t * 4), SeekOrigin.Begin);
-                            for (int i = 0; i < 4; i++)
+                            Buffer.BlockCopy(imgData, readPtr, blockStorage, 0, bufferSize);
+                            readPtr += bufferSize;
                             {
-                                int fCol = 0;
-                                int positionCode = ((code >> 2 * (4 * j + i)) & 0x03);
+                                int color0 = blockStorage[0] | blockStorage[1] << 8;
+                                int color1 = blockStorage[2] | blockStorage[3] << 8;
 
-                                if (color0 > color1)
+                                int temp;
+
+                                temp = (color0 >> 11) * 255 + 16;
+                                int r0 = ((temp >> 5) + temp) >> 5;
+                                temp = ((color0 & 0x07E0) >> 5) * 255 + 32;
+                                int g0 = ((temp >> 6) + temp) >> 6;
+                                temp = (color0 & 0x001F) * 255 + 16;
+                                int b0 = ((temp >> 5) + temp) >> 5;
+
+                                temp = (color1 >> 11) * 255 + 16;
+                                int r1 = ((temp >> 5) + temp) >> 5;
+                                temp = ((color1 & 0x07E0) >> 5) * 255 + 32;
+                                int g1 = ((temp >> 6) + temp) >> 6;
+                                temp = (color1 & 0x001F) * 255 + 16;
+                                int b1 = ((temp >> 5) + temp) >> 5;
+
+                                int code = blockStorage[4] | blockStorage[5] << 8 | blockStorage[6] << 16 | blockStorage[7] << 24;
+
+                                for (int j = 0; j < 4; j++)
                                 {
-                                    switch (positionCode)
+                                    bitmapStream.Seek(((s + j) * w * 4) + (t * 4), SeekOrigin.Begin);
+                                    for (int i = 0; i < 4; i++)
                                     {
-                                        case 0:
-                                            fCol = b0 | (g0 << 8) | (r0 << 16) | 0xFF << 24;
-                                            break;
-                                        case 1:
-                                            fCol = b1 | (g1 << 8) | (r1 << 16) | 0xFF << 24;
-                                            break;
-                                        case 2:
-                                            fCol = ((2 * b0 + b1) / 3) | (((2 * g0 + g1) / 3) << 8) | (((2 * r0 + r1) / 3) << 16) | (0xFF << 24);
-                                            break;
-                                        case 3:
-                                            fCol = ((b0 + 2 * b1) / 3) | ((g0 + 2 * g1) / 3) << 8 | ((r0 + 2 * r1) / 3) << 16 | 0xFF << 24;
-                                            break;
+                                        int fCol = 0;
+                                        int positionCode = ((code >> 2 * (4 * j + i)) & 0x03);
+
+                                        if (color0 > color1)
+                                        {
+                                            switch (positionCode)
+                                            {
+                                                case 0:
+                                                    fCol = b0 | (g0 << 8) | (r0 << 16) | 0xFF << 24;
+                                                    break;
+                                                case 1:
+                                                    fCol = b1 | (g1 << 8) | (r1 << 16) | 0xFF << 24;
+                                                    break;
+                                                case 2:
+                                                    fCol = ((2 * b0 + b1) / 3) | (((2 * g0 + g1) / 3) << 8) | (((2 * r0 + r1) / 3) << 16) | (0xFF << 24);
+                                                    break;
+                                                case 3:
+                                                    fCol = ((b0 + 2 * b1) / 3) | ((g0 + 2 * g1) / 3) << 8 | ((r0 + 2 * r1) / 3) << 16 | 0xFF << 24;
+                                                    break;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            switch (positionCode)
+                                            {
+                                                case 0:
+                                                    fCol = b0 | g0 << 8 | r0 << 16 | 0xFF << 24;
+                                                    break;
+                                                case 1:
+                                                    fCol = b1 | g1 << 8 | r1 << 16 | 0xFF << 24;
+                                                    break;
+                                                case 2:
+                                                    fCol = ((b0 + b1) / 2) | ((g0 + g1) / 2) << 8 | ((r0 + r1) / 2) << 16 | 0xFF << 24;
+                                                    break;
+                                                case 3:
+                                                    fCol = 0xFF << 24;
+                                                    break;
+                                            }
+                                        }
+
+                                        bitmapBW.Write(fCol);
                                     }
                                 }
-                                else
-                                {
-                                    switch (positionCode)
-                                    {
-                                        case 0:
-                                            fCol = b0 | g0 << 8 | r0 << 16 | 0xFF << 24;
-                                            break;
-                                        case 1:
-                                            fCol = b1 | g1 << 8 | r1 << 16 | 0xFF << 24;
-                                            break;
-                                        case 2:
-                                            fCol = ((b0 + b1) / 2) | ((g0 + g1) / 2) << 8 | ((r0 + r1) / 2) << 16 | 0xFF << 24;
-                                            break;
-                                        case 3:
-                                            fCol = 0xFF << 24;
-                                            break;
-                                    }
-                                }
-
-                                bitmapBW.Write(fCol);
                             }
                         }
                     }
                 }
+
+                byte[] imageData = bitmapStream.ToArray();
+                var bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
+                {
+                    BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0,
+                                                        bmp.Width,
+                                                        bmp.Height),
+                                          ImageLockMode.WriteOnly,
+                                          bmp.PixelFormat);
+
+                    Marshal.Copy(imageData, 0, bmpData.Scan0, imageData.Length);
+                    bmp.UnlockBits(bmpData);
+                }
+
+                return bmp;
             }
-
-            byte[] imageData = bitmapStream.ToArray();
-            var bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
-            {
-                BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0,
-                                                    bmp.Width,
-                                                    bmp.Height),
-                                      ImageLockMode.WriteOnly,
-                                      bmp.PixelFormat);
-                //MessageBox.Show("empty bitmap stride: " + bmpData.Stride + "\n total bytes: " + bmpData.Stride * bmpData.Height + "\n imageData size : " + imageData.Length);
-
-                Marshal.Copy(imageData, 0, bmpData.Scan0, imageData.Length);
-                bmp.UnlockBits(bmpData);
-            }
-
-            return bmp;
         }
         #endregion
         #region DXT5
@@ -417,119 +419,127 @@ namespace AmaroK86.ImageFormat
         {
             const int bufferSize = 16;
             byte[] blockStorage = new byte[bufferSize];
-            MemoryStream bitmapStream = new MemoryStream(w * h * 2);
-            BinaryWriter bitmapBW = new BinaryWriter(bitmapStream);
-
-            int ptr = 0;
-            for (int s = 0; s < h; s += 4)
+            using (MemoryStream bitmapStream = new MemoryStream(w * h * 2))
             {
-                for (int t = 0; t < w; t += 4)
+                using (BinaryWriter bitmapBW = new BinaryWriter(bitmapStream))
                 {
-                    Buffer.BlockCopy(imgData, ptr, blockStorage, 0, bufferSize);
-                    ptr += bufferSize;
+
+                    int ptr = 0;
+                    for (int s = 0; s < h; s += 4)
                     {
-                        int color0 = blockStorage[8] | blockStorage[9] << 8;
-                        int color1 = blockStorage[10] | blockStorage[11] << 8;
-
-                        int temp;
-
-                        temp = (color0 >> 11) * 255 + 16;
-                        int r0 = ((temp >> 5) + temp) >> 5;
-                        temp = ((color0 & 0x07E0) >> 5) * 255 + 32;
-                        int g0 = ((temp >> 6) + temp) >> 6;
-                        temp = (color0 & 0x001F) * 255 + 16;
-                        int b0 = ((temp >> 5) + temp) >> 5;
-
-                        temp = (color1 >> 11) * 255 + 16;
-                        int r1 = ((temp >> 5) + temp) >> 5;
-                        temp = ((color1 & 0x07E0) >> 5) * 255 + 32;
-                        int g1 = ((temp >> 6) + temp) >> 6;
-                        temp = (color1 & 0x001F) * 255 + 16;
-                        int b1 = ((temp >> 5) + temp) >> 5;
-
-                        int code = blockStorage[12] | blockStorage[13] << 8 | blockStorage[14] << 16 | blockStorage[15] << 24;
-
-                        for (int j = 0; j < 4; j++)
+                        for (int t = 0; t < w; t += 4)
                         {
-                            bitmapStream.Seek(((s + j) * w * 4) + (t * 4), SeekOrigin.Begin);
-                            for (int i = 0; i < 4; i++)
+                            Buffer.BlockCopy(imgData, ptr, blockStorage, 0, bufferSize);
+                            ptr += bufferSize;
                             {
-                                int fCol = 0;
-                                int colorCode = (code >> 2 * (4 * j + i)) & 0x03;
+                                int color0 = blockStorage[8] | blockStorage[9] << 8;
+                                int color1 = blockStorage[10] | blockStorage[11] << 8;
 
-                                switch (colorCode)
+                                int temp;
+
+                                temp = (color0 >> 11) * 255 + 16;
+                                int r0 = ((temp >> 5) + temp) >> 5;
+                                temp = ((color0 & 0x07E0) >> 5) * 255 + 32;
+                                int g0 = ((temp >> 6) + temp) >> 6;
+                                temp = (color0 & 0x001F) * 255 + 16;
+                                int b0 = ((temp >> 5) + temp) >> 5;
+
+                                temp = (color1 >> 11) * 255 + 16;
+                                int r1 = ((temp >> 5) + temp) >> 5;
+                                temp = ((color1 & 0x07E0) >> 5) * 255 + 32;
+                                int g1 = ((temp >> 6) + temp) >> 6;
+                                temp = (color1 & 0x001F) * 255 + 16;
+                                int b1 = ((temp >> 5) + temp) >> 5;
+
+                                int code = blockStorage[12] | blockStorage[13] << 8 | blockStorage[14] << 16 | blockStorage[15] << 24;
+
+                                for (int j = 0; j < 4; j++)
                                 {
-                                    case 0:
-                                        fCol = b0 | g0 << 8 | r0 << 16 | 0xFF << 24;
-                                        break;
-                                    case 1:
-                                        fCol = b1 | g1 << 8 | r1 << 16 | 0xFF << 24;
-                                        break;
-                                    case 2:
-                                        fCol = (2 * b0 + b1) / 3 | (2 * g0 + g1) / 3 << 8 | (2 * r0 + r1) / 3 << 16 | 0xFF << 24;
-                                        break;
-                                    case 3:
-                                        fCol = (b0 + 2 * b1) / 3 | (g0 + 2 * g1) / 3 << 8 | (r0 + 2 * r1) / 3 << 16 | 0xFF << 24;
-                                        break;
-                                }
+                                    bitmapStream.Seek(((s + j) * w * 4) + (t * 4), SeekOrigin.Begin);
+                                    for (int i = 0; i < 4; i++)
+                                    {
+                                        int fCol = 0;
+                                        int colorCode = (code >> 2 * (4 * j + i)) & 0x03;
 
-                                bitmapBW.Write(fCol);
+                                        switch (colorCode)
+                                        {
+                                            case 0:
+                                                fCol = b0 | g0 << 8 | r0 << 16 | 0xFF << 24;
+                                                break;
+                                            case 1:
+                                                fCol = b1 | g1 << 8 | r1 << 16 | 0xFF << 24;
+                                                break;
+                                            case 2:
+                                                fCol = (2 * b0 + b1) / 3 | (2 * g0 + g1) / 3 << 8 | (2 * r0 + r1) / 3 << 16 | 0xFF << 24;
+                                                break;
+                                            case 3:
+                                                fCol = (b0 + 2 * b1) / 3 | (g0 + 2 * g1) / 3 << 8 | (r0 + 2 * r1) / 3 << 16 | 0xFF << 24;
+                                                break;
+                                        }
+
+                                        bitmapBW.Write(fCol);
+                                    }
+                                }
                             }
                         }
                     }
+
+                    byte[] imageData = bitmapStream.ToArray();
+                    var bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
+                    {
+                        BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0,
+                                                            bmp.Width,
+                                                            bmp.Height),
+                                              ImageLockMode.WriteOnly,
+                                              bmp.PixelFormat);
+
+                        Marshal.Copy(imageData, 0, bmpData.Scan0, imageData.Length);
+                        bmp.UnlockBits(bmpData);
+                    }
+
+                    return bmp;
                 }
             }
-
-            byte[] imageData = bitmapStream.ToArray();
-            var bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
-            {
-                BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0,
-                                                    bmp.Width,
-                                                    bmp.Height),
-                                      ImageLockMode.WriteOnly,
-                                      bmp.PixelFormat);
-                //MessageBox.Show("empty bitmap stride: " + bmpData.Stride + "\n total bytes: " + bmpData.Stride * bmpData.Height + "\n imageData size : " + imageData.Length);
-
-                Marshal.Copy(imageData, 0, bmpData.Scan0, imageData.Length);
-                bmp.UnlockBits(bmpData);
-            }
-
-            return bmp;
         }
         #endregion
         #region V8U8
         private static Bitmap UncompressV8U8(byte[] imgData, int w, int h)
         {
-            MemoryStream bitmapStream = new MemoryStream(w * h * 2);
-            BinaryWriter bitmapBW = new BinaryWriter(bitmapStream);
-            int ptr = 0;
-            for (int y = 0; y < h; y++)
+            using (MemoryStream bitmapStream = new MemoryStream(w * h * 2))
             {
-                for (int x = 0; x < w; x++)
+                using (BinaryWriter bitmapBW = new BinaryWriter(bitmapStream))
                 {
-                    sbyte red = (sbyte)Buffer.GetByte(imgData, ptr++);
-                    sbyte green = (sbyte)Buffer.GetByte(imgData, ptr++);
-                    byte blue = 0xFF;
 
-                    int fCol = blue | (0x7F + green) << 8 | (0x7F + red) << 16 | 0xFF << 24;
-                    bitmapBW.Write(fCol);
+                    int ptr = 0;
+                    for (int y = 0; y < h; y++)
+                    {
+                        for (int x = 0; x < w; x++)
+                        {
+                            sbyte red = (sbyte)Buffer.GetByte(imgData, ptr++);
+                            sbyte green = (sbyte)Buffer.GetByte(imgData, ptr++);
+                            byte blue = 0xFF;
+
+                            int fCol = blue | (0x7F + green) << 8 | (0x7F + red) << 16 | 0xFF << 24;
+                            bitmapBW.Write(fCol);
+                        }
+                    }
+
+                    byte[] imageData = bitmapStream.ToArray();
+                    var bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
+                    {
+                        BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0,
+                                                            bmp.Width,
+                                                            bmp.Height),
+                                              ImageLockMode.WriteOnly,
+                                              bmp.PixelFormat);
+
+                        Marshal.Copy(imageData, 0, bmpData.Scan0, imageData.Length);
+                        bmp.UnlockBits(bmpData);
+                    }
+
+                    return bmp;
                 }
             }
-
-            byte[] imageData = bitmapStream.ToArray();
-            var bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
-            {
-                BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0,
-                                                    bmp.Width,
-                                                    bmp.Height),
-                                      ImageLockMode.WriteOnly,
-                                      bmp.PixelFormat);
-
-                Marshal.Copy(imageData, 0, bmpData.Scan0, imageData.Length);
-                bmp.UnlockBits(bmpData);
-            }
-
-            return bmp;
         }
         #endregion
         #region ATI2
@@ -538,122 +548,123 @@ namespace AmaroK86.ImageFormat
             const int bufferSize = 16;
             const int bytesPerPixel = 3;
             byte[] blockStorage = new byte[bufferSize];
-            MemoryStream bitmapStream = new MemoryStream(w * h * 2);
-
-            int ptr = 0;
-            for (int s = 0; s < h; s += 4)
+            using (MemoryStream bitmapStream = new MemoryStream(w * h * 2))
             {
-                for (int t = 0; t < w; t += 4)
+                int ptr = 0;
+                for (int s = 0; s < h; s += 4)
                 {
-                    Buffer.BlockCopy(imgData, ptr, blockStorage, 0, bufferSize);
-                    ptr += bufferSize;
-                    #region Block Decompression Loop
-                    byte[][] rgbVals = new byte[3][];
-                    byte[] blueVals = new byte[bufferSize];
-                    for (int j = 1; j >= 0; j--)
+                    for (int t = 0; t < w; t += 4)
                     {
-                        byte colour0 = blockStorage[j * 8]; // First 2 bytes are the min and max vals to be interpolated between
-                        byte colour1 = blockStorage[1 + (j * 8)];
-                        ulong longRep = BitConverter.ToUInt64(blockStorage, j * 8);
-                        byte[] colVals = new byte[bufferSize];
-
-                        //for (int k = 0; k < bufferSize; k++)
-                        for (int k = bufferSize - 1; k >= 0; k--)
+                        Buffer.BlockCopy(imgData, ptr, blockStorage, 0, bufferSize);
+                        ptr += bufferSize;
+                        #region Block Decompression Loop
+                        byte[][] rgbVals = new byte[3][];
+                        byte[] blueVals = new byte[bufferSize];
+                        for (int j = 1; j >= 0; j--)
                         {
-                            ulong tempLong = longRep | (ulong)ATI2BitCodes.interpColor5; // Set all trailing bits to 1
+                            byte colour0 = blockStorage[j * 8]; // First 2 bytes are the min and max vals to be interpolated between
+                            byte colour1 = blockStorage[1 + (j * 8)];
+                            ulong longRep = BitConverter.ToUInt64(blockStorage, j * 8);
+                            byte[] colVals = new byte[bufferSize];
 
-                            if ((tempLong ^ (ulong)ATI2BitCodes.color0) == (ulong)ATI2BitCodes.result) // First 2 values mean to use the specified min or max values
+                            //for (int k = 0; k < bufferSize; k++)
+                            for (int k = bufferSize - 1; k >= 0; k--)
                             {
-                                colVals[k] = colour0;
-                            }
-                            else if ((tempLong ^ (ulong)ATI2BitCodes.color1) == (ulong)ATI2BitCodes.result)
-                            {
-                                colVals[k] = colour1;
-                            }
-                            else if ((tempLong ^ (ulong)ATI2BitCodes.interpColor0) == (ulong)ATI2BitCodes.result) // Remaining values interpolate the min/max
-                            {
-                                if (colour0 > colour1)
-                                    colVals[k] = (byte)((6 * colour0 + colour1) / 7);
+                                ulong tempLong = longRep | (ulong)ATI2BitCodes.interpColor5; // Set all trailing bits to 1
+
+                                if ((tempLong ^ (ulong)ATI2BitCodes.color0) == (ulong)ATI2BitCodes.result) // First 2 values mean to use the specified min or max values
+                                {
+                                    colVals[k] = colour0;
+                                }
+                                else if ((tempLong ^ (ulong)ATI2BitCodes.color1) == (ulong)ATI2BitCodes.result)
+                                {
+                                    colVals[k] = colour1;
+                                }
+                                else if ((tempLong ^ (ulong)ATI2BitCodes.interpColor0) == (ulong)ATI2BitCodes.result) // Remaining values interpolate the min/max
+                                {
+                                    if (colour0 > colour1)
+                                        colVals[k] = (byte)((6 * colour0 + colour1) / 7);
+                                    else
+                                        colVals[k] = (byte)((4 * colour0 + colour1) / 5);
+                                }
+                                else if ((tempLong ^ (ulong)ATI2BitCodes.interpColor1) == (ulong)ATI2BitCodes.result)
+                                {
+                                    if (colour0 > colour1)
+                                        colVals[k] = (byte)((5 * colour0 + 2 * colour1) / 7);
+                                    else
+                                        colVals[k] = (byte)((3 * colour0 + 2 * colour1) / 5);
+                                }
+                                else if ((tempLong ^ (ulong)ATI2BitCodes.interpColor2) == (ulong)ATI2BitCodes.result)
+                                {
+                                    if (colour0 > colour1)
+                                        colVals[k] = (byte)((4 * colour0 + 3 * colour1) / 7);
+                                    else
+                                        colVals[k] = (byte)((2 * colour0 + 3 * colour1) / 5);
+                                }
+                                else if ((tempLong ^ (ulong)ATI2BitCodes.interpColor3) == (ulong)ATI2BitCodes.result)
+                                {
+                                    if (colour0 > colour1)
+                                        colVals[k] = (byte)((3 * colour0 + 4 * colour1) / 7);
+                                    else
+                                        colVals[k] = (byte)((colour0 + 4 * colour1) / 5);
+                                }
+                                else if ((tempLong ^ (ulong)ATI2BitCodes.interpColor4) == (ulong)ATI2BitCodes.result)
+                                {
+                                    if (colour0 > colour1)
+                                        colVals[k] = (byte)((2 * colour0 + 5 * colour1) / 7);
+                                    else
+                                        colVals[k] = (byte)0;
+                                }
+                                else if ((tempLong ^ (ulong)ATI2BitCodes.interpColor5) == (ulong)ATI2BitCodes.result)
+                                {
+                                    if (colour0 > colour1)
+                                        colVals[k] = (byte)((colour0 + 6 * colour1) / 7);
+                                    else
+                                        colVals[k] = (byte)255;
+                                }
                                 else
-                                    colVals[k] = (byte)((4 * colour0 + colour1) / 5);
+                                {
+                                    //MessageBox.Show("Error. Bitwise value not found."); // Safety catch. Shouldn't ever be encountered
+                                    throw new FormatException("Unknown bit value found. This shouldn't be possible...");
+                                }
+                                longRep <<= 3;
                             }
-                            else if ((tempLong ^ (ulong)ATI2BitCodes.interpColor1) == (ulong)ATI2BitCodes.result)
-                            {
-                                if (colour0 > colour1)
-                                    colVals[k] = (byte)((5 * colour0 + 2 * colour1) / 7);
-                                else
-                                    colVals[k] = (byte)((3 * colour0 + 2 * colour1) / 5);
-                            }
-                            else if ((tempLong ^ (ulong)ATI2BitCodes.interpColor2) == (ulong)ATI2BitCodes.result)
-                            {
-                                if (colour0 > colour1)
-                                    colVals[k] = (byte)((4 * colour0 + 3 * colour1) / 7);
-                                else
-                                    colVals[k] = (byte)((2 * colour0 + 3 * colour1) / 5);
-                            }
-                            else if ((tempLong ^ (ulong)ATI2BitCodes.interpColor3) == (ulong)ATI2BitCodes.result)
-                            {
-                                if (colour0 > colour1)
-                                    colVals[k] = (byte)((3 * colour0 + 4 * colour1) / 7);
-                                else
-                                    colVals[k] = (byte)((colour0 + 4 * colour1) / 5);
-                            }
-                            else if ((tempLong ^ (ulong)ATI2BitCodes.interpColor4) == (ulong)ATI2BitCodes.result)
-                            {
-                                if (colour0 > colour1)
-                                    colVals[k] = (byte)((2 * colour0 + 5 * colour1) / 7);
-                                else
-                                    colVals[k] = (byte)0;
-                            }
-                            else if ((tempLong ^ (ulong)ATI2BitCodes.interpColor5) == (ulong)ATI2BitCodes.result)
-                            {
-                                if (colour0 > colour1)
-                                    colVals[k] = (byte)((colour0 + 6 * colour1) / 7);
-                                else
-                                    colVals[k] = (byte)255;
-                            }
-                            else
-                            {
-                                //MessageBox.Show("Error. Bitwise value not found."); // Safety catch. Shouldn't ever be encountered
-                                throw new FormatException("Unknown bit value found. This shouldn't be possible...");
-                            }
-                            longRep <<= 3;
+                            int index = (j == 0) ? 0 : 1;
+                            rgbVals[index] = colVals;
                         }
-                        int index = (j == 0) ? 0 : 1;
-                        rgbVals[index] = colVals;
-                    }
-                    for (int j = 0; j < bufferSize; j++)
-                    {
-                        if (rgbVals[0][j] <= 20 && rgbVals[1][j] <= 20)
-                            blueVals[j] = 128;
-                        else
-                            blueVals[j] = 255;
-                    }
-                    rgbVals[2] = blueVals;
-                    #endregion
-
-                    for (int i = 0; i < 4; i++)
-                    {
-                        bitmapStream.Seek(((s + i) * w * bytesPerPixel) + (t * bytesPerPixel), SeekOrigin.Begin);
-                        for (int j = 0; j < 4; j++)
+                        for (int j = 0; j < bufferSize; j++)
                         {
-                            //for (int k = 0; k < 3; k++)
-                            for (int k = 2; k >= 0; k--)
-                                bitmapStream.WriteByte(rgbVals[k][(i * 4) + j]);
+                            if (rgbVals[0][j] <= 20 && rgbVals[1][j] <= 20)
+                                blueVals[j] = 128;
+                            else
+                                blueVals[j] = 255;
+                        }
+                        rgbVals[2] = blueVals;
+                        #endregion
+
+                        for (int i = 0; i < 4; i++)
+                        {
+                            bitmapStream.Seek(((s + i) * w * bytesPerPixel) + (t * bytesPerPixel), SeekOrigin.Begin);
+                            for (int j = 0; j < 4; j++)
+                            {
+                                //for (int k = 0; k < 3; k++)
+                                for (int k = 2; k >= 0; k--)
+                                    bitmapStream.WriteByte(rgbVals[k][(i * 4) + j]);
+                            }
                         }
                     }
                 }
+
+                byte[] imageData = bitmapStream.ToArray();
+                if (imageData.Length != (w * h * bytesPerPixel))
+                    throw new FormatException("Incorect length of generated data array");
+                var bmp = new Bitmap(w, h, PixelFormat.Format24bppRgb);
+                BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.WriteOnly, bmp.PixelFormat);
+                Marshal.Copy(imageData, 0, bmpData.Scan0, imageData.Length);
+                bmp.UnlockBits(bmpData);
+
+                return bmp;
             }
-
-            byte[] imageData = bitmapStream.ToArray();
-            if (imageData.Length != (w * h * bytesPerPixel))
-                throw new FormatException("Incorect length of generated data array");
-            var bmp = new Bitmap(w, h, PixelFormat.Format24bppRgb);
-            BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.WriteOnly, bmp.PixelFormat);
-            Marshal.Copy(imageData, 0, bmpData.Scan0, imageData.Length);
-            bmp.UnlockBits(bmpData);
-
-            return bmp;
         }
         #endregion
         #region A8R8G8B8

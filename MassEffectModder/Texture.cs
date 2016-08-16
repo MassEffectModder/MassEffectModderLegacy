@@ -126,6 +126,7 @@ namespace MassEffectModder
         public void replaceMipMaps(List<MipMap> newMipMaps)
         {
             mipMapsList = newMipMaps;
+            textureData.Dispose();
             textureData = new MemoryStream();
             if (GameData.gameType != MeType.ME3_TYPE)
             {
@@ -154,71 +155,75 @@ namespace MassEffectModder
 
         public byte[] compressTexture(byte[] inputData, StorageTypes type)
         {
-            MemoryStream ouputStream = new MemoryStream();
-            MemoryStream inputStream = new MemoryStream(inputData);
-            uint compressedSize = 0;
-            uint dataBlockLeft = (uint)inputData.Length;
-            uint newNumBlocks = ((uint)inputData.Length + maxBlockSize - 1) / maxBlockSize;
-            // skip blocks header and table - filled later
-            ouputStream.Seek(SizeOfChunk + SizeOfChunkBlock * newNumBlocks, SeekOrigin.Begin);
-
-            List<Package.ChunkBlock> blocks = new List<Package.ChunkBlock>();
-            for (int b = 0; b < newNumBlocks; b++)
+            using (MemoryStream ouputStream = new MemoryStream())
             {
-                Package.ChunkBlock block = new Package.ChunkBlock();
-                block.uncomprSize = Math.Min(maxBlockSize, dataBlockLeft);
-                dataBlockLeft -= block.uncomprSize;
-                block.uncompressedBuffer = inputStream.ReadToBuffer(block.uncomprSize);
-                blocks.Add(block);
-            }
+                uint compressedSize = 0;
+                uint dataBlockLeft = (uint)inputData.Length;
+                uint newNumBlocks = ((uint)inputData.Length + maxBlockSize - 1) / maxBlockSize;
+                List<Package.ChunkBlock> blocks = new List<Package.ChunkBlock>();
+                using (MemoryStream inputStream = new MemoryStream(inputData))
+                {
+                    // skip blocks header and table - filled later
+                    ouputStream.Seek(SizeOfChunk + SizeOfChunkBlock * newNumBlocks, SeekOrigin.Begin);
 
-            if (type == StorageTypes.extLZO || type == StorageTypes.pccLZO)
-            {
+                    for (int b = 0; b < newNumBlocks; b++)
+                    {
+                        Package.ChunkBlock block = new Package.ChunkBlock();
+                        block.uncomprSize = Math.Min(maxBlockSize, dataBlockLeft);
+                        dataBlockLeft -= block.uncomprSize;
+                        block.uncompressedBuffer = inputStream.ReadToBuffer(block.uncomprSize);
+                        blocks.Add(block);
+                    }
+                }
+
+                if (type == StorageTypes.extLZO || type == StorageTypes.pccLZO)
+                {
+                    for (int b = 0; b < blocks.Count; b++)
+                    {
+                        Package.ChunkBlock block = blocks[b];
+                        block.compressedBuffer = LZO2Helper.LZO2.Compress(block.uncompressedBuffer);
+                        if (block.compressedBuffer.Length == 0)
+                            throw new Exception("Compression failed!");
+                        block.comprSize = (uint)block.compressedBuffer.Length;
+                        blocks[b] = block;
+                    }
+                }
+                else
+                {
+                    Parallel.For(0, blocks.Count, b =>
+                    {
+                        Package.ChunkBlock block = blocks[b];
+                        if (type == StorageTypes.extZlib || type == StorageTypes.pccZlib)
+                            block.compressedBuffer = ZlibHelper.Zlib.Compress(block.uncompressedBuffer);
+                        else
+                            throw new Exception("Compression type not expected!");
+                        if (block.compressedBuffer.Length == 0)
+                            throw new Exception("Compression failed!");
+                        block.comprSize = (uint)block.compressedBuffer.Length;
+                        blocks[b] = block;
+                    });
+                }
+
                 for (int b = 0; b < blocks.Count; b++)
                 {
                     Package.ChunkBlock block = blocks[b];
-                    block.compressedBuffer = LZO2Helper.LZO2.Compress(block.uncompressedBuffer);
-                    if (block.compressedBuffer.Length == 0)
-                        throw new Exception("Compression failed!");
-                    block.comprSize = (uint)block.compressedBuffer.Length;
-                    blocks[b] = block;
+                    ouputStream.Write(block.compressedBuffer, 0, (int)block.comprSize);
+                    compressedSize += block.comprSize;
                 }
-            }
-            else
-            {
-                Parallel.For(0, blocks.Count, b =>
+
+                ouputStream.SeekBegin();
+                ouputStream.WriteUInt32(textureTag);
+                ouputStream.WriteUInt32(maxBlockSize);
+                ouputStream.WriteUInt32(compressedSize);
+                ouputStream.WriteInt32(inputData.Length);
+                foreach (Package.ChunkBlock block in blocks)
                 {
-                    Package.ChunkBlock block = blocks[b];
-                    if (type == StorageTypes.extZlib || type == StorageTypes.pccZlib)
-                        block.compressedBuffer = ZlibHelper.Zlib.Compress(block.uncompressedBuffer);
-                    else
-                        throw new Exception("Compression type not expected!");
-                    if (block.compressedBuffer.Length == 0)
-                        throw new Exception("Compression failed!");
-                    block.comprSize = (uint)block.compressedBuffer.Length;
-                    blocks[b] = block;
-                });
-            }
+                    ouputStream.WriteUInt32(block.comprSize);
+                    ouputStream.WriteUInt32(block.uncomprSize);
+                }
 
-            for (int b = 0; b < blocks.Count; b++)
-            {
-                Package.ChunkBlock block = blocks[b];
-                ouputStream.Write(block.compressedBuffer, 0, (int)block.comprSize);
-                compressedSize += block.comprSize;
+                return ouputStream.ToArray();
             }
-
-            ouputStream.SeekBegin();
-            ouputStream.WriteUInt32(textureTag);
-            ouputStream.WriteUInt32(maxBlockSize);
-            ouputStream.WriteUInt32(compressedSize);
-            ouputStream.WriteInt32(inputData.Length);
-            foreach (Package.ChunkBlock block in blocks)
-            {
-                ouputStream.WriteUInt32(block.comprSize);
-                ouputStream.WriteUInt32(block.uncomprSize);
-            }
-
-            return ouputStream.ToArray();
         }
 
         private byte[] decompressTexture(MemoryStream stream, StorageTypes type, int uncompressedSize, int compressedSize)
@@ -379,8 +384,11 @@ namespace MassEffectModder
                             fs.JumpTo(mipmap.dataOffset);
                             if (mipmap.storageType == StorageTypes.extLZO || mipmap.storageType == StorageTypes.extZlib)
                             {
-                                mipMapData = decompressTexture(new MemoryStream(fs.ReadToBuffer(mipmap.compressedSize)),
-                                    mipmap.storageType, mipmap.uncompressedSize, mipmap.compressedSize);
+                                using (MemoryStream tmpStream = new MemoryStream(fs.ReadToBuffer(mipmap.compressedSize)))
+                                {
+                                    mipMapData = decompressTexture(tmpStream,
+                                        mipmap.storageType, mipmap.uncompressedSize, mipmap.compressedSize);
+                                }
                             }
                             else
                             {
@@ -392,48 +400,51 @@ namespace MassEffectModder
             }
             return mipMapData;
         }
+
         public byte[] toArray(uint pccTextureDataOffset)
         {
-            MemoryStream newData = new MemoryStream();
-            if (GameData.gameType != MeType.ME3_TYPE)
+            using (MemoryStream newData = new MemoryStream())
             {
-                newData.WriteZeros(12);
-                newData.WriteUInt32(pccTextureDataOffset + 12 + 4);
-            }
-            newData.WriteInt32(mipMapsList.Count());
-            for (int l = 0; l < mipMapsList.Count(); l++)
-            {
-                MipMap mipmap = mipMapsList[l];
-                newData.WriteInt32((int)mipmap.storageType);
-                newData.WriteInt32(mipmap.uncompressedSize);
-                newData.WriteInt32(mipmap.compressedSize);
-                if (mipmap.storageType == StorageTypes.pccUnc)
+                if (GameData.gameType != MeType.ME3_TYPE)
                 {
-                    mipmap.dataOffset = (uint)newData.Position + pccTextureDataOffset + 4;
-                    newData.WriteUInt32(mipmap.dataOffset);
-                    textureData.JumpTo(mipmap.internalOffset);
-                    newData.WriteFromBuffer(textureData.ReadToBuffer(mipmap.uncompressedSize));
+                    newData.WriteZeros(12);
+                    newData.WriteUInt32(pccTextureDataOffset + 12 + 4);
                 }
-                else if (mipmap.storageType == StorageTypes.pccLZO ||
-                    mipmap.storageType == StorageTypes.pccZlib)
+                newData.WriteInt32(mipMapsList.Count());
+                for (int l = 0; l < mipMapsList.Count(); l++)
                 {
-                    mipmap.dataOffset = (uint)newData.Position + pccTextureDataOffset + 4;
-                    newData.WriteUInt32(mipmap.dataOffset);
-                    textureData.JumpTo(mipmap.internalOffset);
-                    newData.WriteFromBuffer(textureData.ReadToBuffer(mipmap.compressedSize));
+                    MipMap mipmap = mipMapsList[l];
+                    newData.WriteInt32((int)mipmap.storageType);
+                    newData.WriteInt32(mipmap.uncompressedSize);
+                    newData.WriteInt32(mipmap.compressedSize);
+                    if (mipmap.storageType == StorageTypes.pccUnc)
+                    {
+                        mipmap.dataOffset = (uint)newData.Position + pccTextureDataOffset + 4;
+                        newData.WriteUInt32(mipmap.dataOffset);
+                        textureData.JumpTo(mipmap.internalOffset);
+                        newData.WriteFromBuffer(textureData.ReadToBuffer(mipmap.uncompressedSize));
+                    }
+                    else if (mipmap.storageType == StorageTypes.pccLZO ||
+                        mipmap.storageType == StorageTypes.pccZlib)
+                    {
+                        mipmap.dataOffset = (uint)newData.Position + pccTextureDataOffset + 4;
+                        newData.WriteUInt32(mipmap.dataOffset);
+                        textureData.JumpTo(mipmap.internalOffset);
+                        newData.WriteFromBuffer(textureData.ReadToBuffer(mipmap.compressedSize));
+                    }
+                    else
+                    {
+                        newData.WriteUInt32(mipmap.dataOffset);
+                    }
+                    newData.WriteInt32(mipmap.width);
+                    newData.WriteInt32(mipmap.height);
+                    mipMapsList[l] = mipmap;
                 }
-                else
-                {
-                    newData.WriteUInt32(mipmap.dataOffset);
-                }
-                newData.WriteInt32(mipmap.width);
-                newData.WriteInt32(mipmap.height);
-                mipMapsList[l] = mipmap;
-            }
 
-            newData.WriteFromBuffer(restOfData);
+                newData.WriteFromBuffer(restOfData);
 
-            return newData.ToArray();
+                return newData.ToArray();
+            }
         }
 
         public void Dispose()
