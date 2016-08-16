@@ -34,17 +34,19 @@ namespace LZO2Helper
 
         public unsafe static uint Decompress(byte[] src, uint srcLen, byte[] dst)
         {
-            uint dstLen = 0;
+            uint dstLen = (uint)dst.Length;
 
             int status = LZODecompress(src, srcLen, dst, ref dstLen);
+            if (status != 0)
+                return 0;
 
             return dstLen;
         }
 
         public unsafe static byte[] Compress(byte[] src, bool fast = true)
         {
-            uint dstLen = 0;
             byte[] tmpbuf = new byte[src.Length + (src.Length / 16) + 64 + 3];
+            uint dstLen = (uint)tmpbuf.Length;
 
             int status = LZOCompress(src, (uint)src.Length, tmpbuf, ref dstLen, fast ? 1 : 0);
             if (status != 0)
