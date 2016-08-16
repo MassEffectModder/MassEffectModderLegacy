@@ -195,9 +195,11 @@ namespace MassEffectModder
                 {
                     List<byte[]> uncompressedBlockBuffers = new List<byte[]>();
                     List<byte[]> compressedBlockBuffers = new List<byte[]>();
+                    List<long> blockBytesLeft = new List<long>();
                     long bytesLeft = filesList[index].uncomprSize;
                     for (int j = 0; j < filesList[index].numBlocks; j++)
                     {
+                        blockBytesLeft.Add(bytesLeft);
                         int compressedBlockSize = blockSizes[filesList[index].compressedBlockSizesIndex + j];
                         int uncompressedBlockSize = (int)Math.Min(bytesLeft, maxBlockSize);
                         if (compressedBlockSize == 0)
@@ -205,21 +207,21 @@ namespace MassEffectModder
                             compressedBlockSize = (int)maxBlockSize;
                         }
                         compressedBlockBuffers.Add(sfarFile.ReadToBuffer(compressedBlockSize));
+                        uncompressedBlockBuffers.Add(null);
                         bytesLeft -= uncompressedBlockSize;
                     }
 
-                    bytesLeft = filesList[index].uncomprSize;
                     Parallel.For(0, filesList[index].numBlocks, j =>
                     {
                         int compressedBlockSize = blockSizes[filesList[index].compressedBlockSizesIndex + (int)j];
-                        int uncompressedBlockSize = (int)Math.Min(bytesLeft, maxBlockSize);
-                        if (compressedBlockSize == 0 || compressedBlockSize == bytesLeft)
+                        int uncompressedBlockSize = (int)Math.Min(blockBytesLeft[(int)j], maxBlockSize);
+                        if (compressedBlockSize == 0 || compressedBlockSize == blockBytesLeft[(int)j])
                         {
-                            uncompressedBlockBuffers.Add(compressedBlockBuffers[(int)j]);
+                            uncompressedBlockBuffers[(int)j] = compressedBlockBuffers[(int)j];
                         }
                         else
                         {
-                            uncompressedBlockBuffers.Add(SevenZipHelper.LZMA.Decompress(compressedBlockBuffers[(int)j], (uint)uncompressedBlockSize));
+                            uncompressedBlockBuffers[(int)j] = SevenZipHelper.LZMA.Decompress(compressedBlockBuffers[(int)j], (uint)uncompressedBlockSize);
                             if (uncompressedBlockBuffers[(int)j].Length == 0)
                                 throw new Exception();
                         }
@@ -260,9 +262,11 @@ namespace MassEffectModder
                     {
                         List<byte[]> uncompressedBlockBuffers = new List<byte[]>();
                         List<byte[]> compressedBlockBuffers = new List<byte[]>();
+                        List<long> blockBytesLeft = new List<long>();
                         long bytesLeft = filesList[i].uncomprSize;
                         for (int j = 0; j < filesList[i].numBlocks; j++)
                         {
+                            blockBytesLeft.Add(bytesLeft);
                             int compressedBlockSize = blockSizes[filesList[i].compressedBlockSizesIndex + j];
                             int uncompressedBlockSize = (int)Math.Min(bytesLeft, maxBlockSize);
                             if (compressedBlockSize == 0)
@@ -270,21 +274,21 @@ namespace MassEffectModder
                                 compressedBlockSize = (int)maxBlockSize;
                             }
                             compressedBlockBuffers.Add(sfarFile.ReadToBuffer(compressedBlockSize));
+                            uncompressedBlockBuffers.Add(null);
                             bytesLeft -= uncompressedBlockSize;
                         }
 
-                        bytesLeft = filesList[i].uncomprSize;
                         Parallel.For(0, filesList[i].numBlocks, j =>
                         {
                             int compressedBlockSize = blockSizes[filesList[i].compressedBlockSizesIndex + (int)j];
-                            int uncompressedBlockSize = (int)Math.Min(bytesLeft, maxBlockSize);
-                            if (compressedBlockSize == 0 || compressedBlockSize == bytesLeft)
+                            int uncompressedBlockSize = (int)Math.Min(blockBytesLeft[(int)j], maxBlockSize);
+                            if (compressedBlockSize == 0 || compressedBlockSize == blockBytesLeft[(int)j])
                             {
-                                uncompressedBlockBuffers.Add(compressedBlockBuffers[(int)j]);
+                                uncompressedBlockBuffers[(int)j] = compressedBlockBuffers[(int)j];
                             }
                             else
                             {
-                                uncompressedBlockBuffers.Add(SevenZipHelper.LZMA.Decompress(compressedBlockBuffers[(int)j], (uint)uncompressedBlockSize));
+                                uncompressedBlockBuffers[(int)j] = SevenZipHelper.LZMA.Decompress(compressedBlockBuffers[(int)j], (uint)uncompressedBlockSize);
                                 if (uncompressedBlockBuffers[(int)j].Length == 0)
                                     throw new Exception();
                             }
