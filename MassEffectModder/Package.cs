@@ -479,7 +479,6 @@ namespace MassEffectModder
                             blocks.Add(block);
                         }
                         chunk.blocks = blocks;
-                        chunks[c] = chunk;
 
                         for (int b = 0; b < blocks.Count; b++)
                         {
