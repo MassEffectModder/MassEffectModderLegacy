@@ -978,6 +978,14 @@ namespace MassEffectModder
                             fs.WriteUInt32(block.uncomprSize);
                         }
                     }
+                    for (int c = 0; c < chunks.Count; c++)
+                    {
+                        chunk = chunks[c];
+                        chunk.blocks.Clear();
+                        chunk.blocks = null;
+                    }
+                    chunks.Clear();
+                    chunks = null;
                 }
             }
 
@@ -985,6 +993,14 @@ namespace MassEffectModder
             tempOutput.Dispose();
 
             return true;
+        }
+
+        public void DisposeCache()
+        {
+            if (chunkCache != null)
+                chunkCache.Dispose();
+            chunkCache = null;
+            currentChunk = -1;
         }
 
         public void Dispose()

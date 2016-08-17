@@ -1234,6 +1234,7 @@ namespace MassEffectModder
                 MatchedTexture nodeTexture = list[n];
                 Package package = cachePackageMgr.OpenPackage(GameData.GamePath + nodeTexture.path);
                 Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
+                package.DisposeCache();
                 while (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty))
                 {
                     texture.mipMapsList.Remove(texture.mipMapsList.First(s => s.storageType == Texture.StorageTypes.empty));
@@ -1470,16 +1471,30 @@ namespace MassEffectModder
                 if (_gameSelected == MeType.ME1_TYPE)
                 {
                     if (n == 0)
+                    {
+                        if (firstTexture != null)
+                            firstTexture.Dispose();
                         firstTexture = texture;
+                    }
                 }
                 else
                 {
                     if (triggerCacheCpr)
+                    {
+                        if (cprTexture != null)
+                            cprTexture.Dispose();
                         cprTexture = texture;
+                    }
                     if (triggerCacheArc)
+                    {
+                        if (arcTexture != null)
+                            arcTexture.Dispose();
                         arcTexture = texture;
+                    }
                 }
+                package = null;
             }
+            firstTexture = arcTexture = cprTexture = null;
         }
 
         private void replaceTexture()
@@ -1602,6 +1617,7 @@ namespace MassEffectModder
                                     Package refPkg = cachePackageMgr.OpenPackage(GameData.GamePath + foundTexName.list[0].path);
                                     int refExportId = foundTexName.list[0].exportID;
                                     byte[] refData = refPkg.getExportData(refExportId);
+                                    refPkg.DisposeCache();
                                     using (Texture refTexture = new Texture(refPkg, refExportId, refData))
                                     {
                                         if (texture.mipMapsList.Count != refTexture.mipMapsList.Count)
@@ -1617,6 +1633,7 @@ namespace MassEffectModder
                                                 texture.mipMapsList[t] = mipmap;
                                             }
                                         }
+                                        refPkg = null;
                                     }
                                 }
                             }
