@@ -1651,6 +1651,7 @@ namespace MassEffectModder
                 if (!modified)
                     cachePackageMgr.ClosePackageWithoutSave(package);
             }
+            _mainWindow.updateStatusLabel("");
             cachePackageMgr.CloseAllWithSave();
 
             EnableMenuOptions(true);
