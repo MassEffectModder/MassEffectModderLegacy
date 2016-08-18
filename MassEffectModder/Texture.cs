@@ -449,7 +449,8 @@ namespace MassEffectModder
 
         public void Dispose()
         {
-            textureData.Dispose();
+            if (textureData != null)
+               textureData.Dispose();
         }
     }
 }
