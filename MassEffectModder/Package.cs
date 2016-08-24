@@ -1115,6 +1115,7 @@ namespace MassEffectModder
                         file.size = (uint)new FileInfo(filePath).Length;
                         if (updateSHA1)
                             file.sha1 = calculateSHA1(filePath);
+                        blockList[b].filesList[f] = file;
                         return;
                     }
                 }
