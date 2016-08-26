@@ -115,8 +115,20 @@ namespace MassEffectModder
                     mipmap.internalOffset = (uint)textureData.Position;
                     textureData.Skip(mipmap.compressedSize);
                 }
+
                 mipmap.width = textureData.ReadInt32();
                 mipmap.height = textureData.ReadInt32();
+
+                if (mipmap.width == 4 && mipMapsList.Exists(mip => mip.width == mipmap.width))
+                    mipmap.width = mipMapsList.Last().width / 2;
+                if (mipmap.height == 4 && mipMapsList.Exists(mip => mip.height == mipmap.height))
+                    mipmap.height = mipMapsList.Last().height / 2;
+
+                if (mipmap.width == 0)
+                    mipmap.width = 1;
+                if (mipmap.height == 0)
+                    mipmap.height = 1;
+
                 mipMapsList.Add(mipmap);
             }
 
