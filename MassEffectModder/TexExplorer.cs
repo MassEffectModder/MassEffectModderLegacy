@@ -1320,12 +1320,12 @@ namespace MassEffectModder
                         mipmap.storageType = texture.getTopMipmap().storageType;
                         if (_gameSelected == MeType.ME2_TYPE)
                         {
-                            if (texture.properties.exists("TextureFileCacheName"))
+                            if (texture.properties.exists("TextureFileCacheName") && texture.mipMapsList.Count > 1)
                                 mipmap.storageType = Texture.StorageTypes.extLZO;
                         }
                         else if (_gameSelected == MeType.ME3_TYPE)
                         {
-                            if (texture.properties.exists("TextureFileCacheName"))
+                            if (texture.properties.exists("TextureFileCacheName") && texture.mipMapsList.Count > 1)
                             {
                                 if (archiveFile.Contains("\\DLC"))
                                     mipmap.storageType = Texture.StorageTypes.extUnc;
@@ -1374,7 +1374,11 @@ namespace MassEffectModder
                         if (_gameSelected == MeType.ME2_TYPE &&
                             (image.mipMaps[m].origWidth < 4 || image.mipMaps[m].origHeight < 4))
                         {
-                            continue;
+                            if (!texture.existMipmap(image.mipMaps[m].origWidth, image.mipMaps[m].origHeight) ||
+                                (mipmaps.Exists(b => b.width == image.mipMaps[m].origWidth && b.height == image.mipMaps[m].origHeight)))
+                            {
+                                continue;
+                            }
                         }
                         if (mipmap.storageType == Texture.StorageTypes.extZlib ||
                             mipmap.storageType == Texture.StorageTypes.extLZO)
