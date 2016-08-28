@@ -1340,14 +1340,18 @@ namespace MassEffectModder
                     if (mipmap.storageType == Texture.StorageTypes.pccLZO)
                         mipmap.storageType = Texture.StorageTypes.pccZlib;
 
-                    mipmap.uncompressedSize = image.mipMaps[m].data.Length;
-                    if (_gameSelected == MeType.ME1_TYPE)
-                    { 
-                        if (texture.properties.getProperty("Format").valueName == "PF_NormalMap_HQ" &&
-                            (image.mipMaps[m].width < 4 || image.mipMaps[m].height < 4))
+                    if (image.mipMaps[m].origWidth < 4 || image.mipMaps[m].origHeight < 4)
+                    {
+                        if (!texture.existMipmap(image.mipMaps[m].origWidth, image.mipMaps[m].origHeight) ||
+                            (mipmaps.Exists(b => b.width == image.mipMaps[m].origWidth && b.height == image.mipMaps[m].origHeight)))
                         {
                             continue;
                         }
+                    }
+
+                    mipmap.uncompressedSize = image.mipMaps[m].data.Length;
+                    if (_gameSelected == MeType.ME1_TYPE)
+                    {
                         if (mipmap.storageType == Texture.StorageTypes.pccLZO ||
                             mipmap.storageType == Texture.StorageTypes.pccZlib)
                         {
@@ -1371,15 +1375,6 @@ namespace MassEffectModder
                     }
                     else
                     {
-                        if (_gameSelected == MeType.ME2_TYPE &&
-                            (image.mipMaps[m].origWidth < 4 || image.mipMaps[m].origHeight < 4))
-                        {
-                            if (!texture.existMipmap(image.mipMaps[m].origWidth, image.mipMaps[m].origHeight) ||
-                                (mipmaps.Exists(b => b.width == image.mipMaps[m].origWidth && b.height == image.mipMaps[m].origHeight)))
-                            {
-                                continue;
-                            }
-                        }
                         if (mipmap.storageType == Texture.StorageTypes.extZlib ||
                             mipmap.storageType == Texture.StorageTypes.extLZO)
                         {
