@@ -182,6 +182,11 @@ namespace MassEffectModder
             enableGameDataMenu(true);
         }
 
+        private void modME1ExportDataToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
         private void repackME2ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             enableGameDataMenu(false);
@@ -220,6 +225,10 @@ namespace MassEffectModder
             engineConf.Write("TEXTUREGROUP_Character_Norm", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
             engineConf.Write("TEXTUREGROUP_Character_Spec", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
             enableGameDataMenu(true);
+        }
+
+        private void modME2ExportDataToolStripMenuItem_Click(object sender, EventArgs e)
+        {
         }
 
         private void extractME3DLCPackagesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -311,6 +320,11 @@ namespace MassEffectModder
             engineConf.Write("TEXTUREGROUP_Character_Norm", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
             engineConf.Write("TEXTUREGROUP_Character_Spec", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
             enableGameDataMenu(true);
+        }
+
+        private void modME3ExportDataToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

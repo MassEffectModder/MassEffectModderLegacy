@@ -67,6 +67,9 @@ namespace MassEffectModder
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.statusStrip2 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.modME2ExportDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.modME1ExportDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.modME3ExportDataToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuGame.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.statusStrip2.SuspendLayout();
@@ -88,7 +91,8 @@ namespace MassEffectModder
             this.toolStripMenuME1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.massEffect1ToolStripMenuItem,
             this.repackME1ToolStripMenuItem,
-            this.updateME1ConfigToolStripMenuItem});
+            this.updateME1ConfigToolStripMenuItem,
+            this.modME1ExportDataToolStripMenuItem});
             this.toolStripMenuME1.Name = "toolStripMenuME1";
             this.toolStripMenuME1.Size = new System.Drawing.Size(88, 20);
             this.toolStripMenuME1.Text = "Mass Effect 1";
@@ -119,7 +123,8 @@ namespace MassEffectModder
             this.toolStripMenuME2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.massEffect2ToolStripMenuItem,
             this.repackME2ToolStripMenuItem,
-            this.updateME2ConfigToolStripMenuItem});
+            this.updateME2ConfigToolStripMenuItem,
+            this.modME2ExportDataToolStripMenuItem});
             this.toolStripMenuME2.Name = "toolStripMenuME2";
             this.toolStripMenuME2.Size = new System.Drawing.Size(88, 20);
             this.toolStripMenuME2.Text = "Mass Effect 2";
@@ -151,7 +156,8 @@ namespace MassEffectModder
             this.massEffect3ToolStripMenuItem,
             this.extractME3DLCPackagesToolStripMenuItem,
             this.packME3DLCPackagesLZMAToolStripMenuItem,
-            this.updateME3ConfigToolStripMenuItem});
+            this.updateME3ConfigToolStripMenuItem,
+            this.modME3ExportDataToolStripMenuItem1});
             this.toolStripMenuME3.Name = "toolStripMenuME3";
             this.toolStripMenuME3.Size = new System.Drawing.Size(88, 20);
             this.toolStripMenuME3.Text = "Mass Effect 3";
@@ -213,6 +219,27 @@ namespace MassEffectModder
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
             this.toolStripStatusLabel2.Size = new System.Drawing.Size(0, 17);
             // 
+            // modME2ExportDataToolStripMenuItem
+            // 
+            this.modME2ExportDataToolStripMenuItem.Name = "modME2ExportDataToolStripMenuItem";
+            this.modME2ExportDataToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.modME2ExportDataToolStripMenuItem.Text = "Mod Export Data";
+            this.modME2ExportDataToolStripMenuItem.Click += new System.EventHandler(this.modME2ExportDataToolStripMenuItem_Click);
+            // 
+            // modME1ExportDataToolStripMenuItem
+            // 
+            this.modME1ExportDataToolStripMenuItem.Name = "modME1ExportDataToolStripMenuItem";
+            this.modME1ExportDataToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.modME1ExportDataToolStripMenuItem.Text = "Mod Export Data";
+            this.modME1ExportDataToolStripMenuItem.Click += new System.EventHandler(this.modME1ExportDataToolStripMenuItem_Click);
+            // 
+            // modME3ExportDataToolStripMenuItem1
+            // 
+            this.modME3ExportDataToolStripMenuItem1.Name = "modME3ExportDataToolStripMenuItem1";
+            this.modME3ExportDataToolStripMenuItem1.Size = new System.Drawing.Size(183, 22);
+            this.modME3ExportDataToolStripMenuItem1.Text = "Mod Export Data";
+            this.modME3ExportDataToolStripMenuItem1.Click += new System.EventHandler(this.modME3ExportDataToolStripMenuItem1_Click);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -257,6 +284,9 @@ namespace MassEffectModder
         private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.StatusStrip statusStrip2;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
+        private System.Windows.Forms.ToolStripMenuItem modME2ExportDataToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem modME1ExportDataToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem modME3ExportDataToolStripMenuItem1;
     }
 }
 
