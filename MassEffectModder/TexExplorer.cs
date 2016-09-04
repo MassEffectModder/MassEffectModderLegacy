@@ -1255,10 +1255,10 @@ namespace MassEffectModder
 
                 bool triggerCacheArc = false, triggerCacheCpr = false;
                 string archiveFile = "";
-                byte[] origGuid = null;
+                byte[] origGuid = new byte[16];
                 if (texture.properties.exists("TextureFileCacheName"))
                 {
-                    origGuid = texture.properties.getProperty("TFCFileGuid").valueStruct;
+                    Array.Copy(texture.properties.getProperty("TFCFileGuid").valueStruct, origGuid, 16);
                     string archive = texture.properties.getProperty("TextureFileCacheName").valueName;
                     archiveFile = Path.Combine(GameData.MainData, archive + ".tfc");
                     if (nodeTexture.path.Contains("\\DLC"))
@@ -1405,8 +1405,6 @@ namespace MassEffectModder
                             if (arcTexture == null ||
                                 !StructuralComparisons.StructuralEqualityComparer.Equals(
                                 arcTexture.properties.getProperty("TFCFileGuid").valueStruct,
-                                texture.properties.getProperty("TFCFileGuid").valueStruct) ||
-                                !StructuralComparisons.StructuralEqualityComparer.Equals(origGuid,
                                 texture.properties.getProperty("TFCFileGuid").valueStruct))
                             {
                                 triggerCacheArc = true;
@@ -1470,26 +1468,14 @@ namespace MassEffectModder
                 if (_gameSelected == MeType.ME1_TYPE)
                 {
                     if (n == 0)
-                    {
-                        if (firstTexture != null)
-                            firstTexture.Dispose();
                         firstTexture = texture;
-                    }
                 }
                 else
                 {
                     if (triggerCacheCpr)
-                    {
-                        if (cprTexture != null)
-                            cprTexture.Dispose();
                         cprTexture = texture;
-                    }
                     if (triggerCacheArc)
-                    {
-                        if (arcTexture != null)
-                            arcTexture.Dispose();
                         arcTexture = texture;
-                    }
                 }
                 package = null;
             }
