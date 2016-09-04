@@ -30,6 +30,10 @@ namespace MassEffectModder
 {
     public partial class MainWindow : Form
     {
+        const uint ExportModTag = 0x444F4D45;
+        const uint ExportModVersion = 1;
+        const uint ExportModHeaderLength = 16;
+
         public ConfIni _configIni;
 
         public MainWindow()
@@ -160,6 +164,53 @@ namespace MassEffectModder
             return true;
         }
 
+        private void replaceExportDataMod(MeType gameType)
+        {
+            GameData gameData = new GameData(gameType, _configIni);
+            using (OpenFileDialog modFile = new OpenFileDialog())
+            {
+                modFile.Title = "Please select Mod file";
+                modFile.Filter = "MOD file | *.mod";
+                if (modFile.ShowDialog() != DialogResult.OK)
+                    return;
+                updateStatusLabel("Processing mod: " + modFile.FileName);
+                using (FileStream fs = new FileStream(modFile.FileName, FileMode.Open))
+                {
+                    uint tag = fs.ReadUInt32();
+                    uint version = fs.ReadUInt32();
+                    if (tag != ExportModTag || version != ExportModVersion)
+                    {
+                        MessageBox.Show("File " + modFile.FileName + " is not MOD");
+                        return;
+                    }
+                    if ((MeType)fs.ReadUInt32() != gameType)
+                    {
+                        MessageBox.Show("Mod for different game!");
+                        return;
+                    }
+                    int numEntries = fs.ReadInt32();
+                    for (int i = 0; i < numEntries; i++)
+                    {
+                        string package = fs.ReadStringASCIINull();
+                        int expId = fs.ReadInt32();
+                        uint uncSize = fs.ReadUInt32();
+                        uint compSize = fs.ReadUInt32();
+                        byte[] src = fs.ReadToBuffer(compSize);
+                        byte[] dst = new byte[uncSize];
+                        ZlibHelper.Zlib.Decompress(src, (uint)src.Length, dst);
+                        string[] packages = Directory.GetFiles(GameData.MainData, package, SearchOption.AllDirectories);
+                        if (packages.Count() != 0)
+                        {
+                            Package pkg = new Package(packages[0]);
+                            pkg.setExportData(expId, dst);
+                            pkg.SaveToFile();
+                        }
+                    }
+                }
+                updateStatusLabel("Mod applied");
+            }
+        }
+
         public void repackME12(MeType gametype)
         {
             GameData gameData = new GameData(gametype, _configIni);
@@ -184,7 +235,9 @@ namespace MassEffectModder
 
         private void modME1ExportDataToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            enableGameDataMenu(false);
+            replaceExportDataMod(MeType.ME1_TYPE);
+            enableGameDataMenu(true);
         }
 
         private void repackME2ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -193,6 +246,7 @@ namespace MassEffectModder
             repackME12(MeType.ME2_TYPE);
             enableGameDataMenu(true);
         }
+
         private void updateME2ConfigToolStripMenuItem_Click(object sender, EventArgs e)
         {
             enableGameDataMenu(false);
@@ -229,6 +283,9 @@ namespace MassEffectModder
 
         private void modME2ExportDataToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            enableGameDataMenu(false);
+            replaceExportDataMod(MeType.ME2_TYPE);
+            enableGameDataMenu(true);
         }
 
         private void extractME3DLCPackagesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -324,7 +381,9 @@ namespace MassEffectModder
 
         private void modME3ExportDataToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-
+            enableGameDataMenu(false);
+            replaceExportDataMod(MeType.ME3_TYPE);
+            enableGameDataMenu(true);
         }
     }
 }
