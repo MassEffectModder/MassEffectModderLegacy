@@ -69,7 +69,7 @@ namespace MassEffectModder
         const string TempModFileName = "TextureMod.tmp";
         const uint TextureModTag = 0x444F4D54;
         const uint TextureModVersion = 1;
-        const uint TextureModHeaderLength = 12;
+        const uint TextureModHeaderLength = 16;
 
         MeType _gameSelected;
         MainWindow _mainWindow;
