@@ -1321,7 +1321,12 @@ namespace MassEffectModder
                         if (_gameSelected == MeType.ME2_TYPE)
                         {
                             if (texture.properties.exists("TextureFileCacheName") && texture.mipMapsList.Count > 1)
+                            {
                                 mipmap.storageType = Texture.StorageTypes.extLZO;
+                                // for unknown reason engine not able accept more mipmaps properly
+                                if (texture.mipMapsList.Count < 6)
+                                    continue;
+                            }
                         }
                         else if (_gameSelected == MeType.ME3_TYPE)
                         {
