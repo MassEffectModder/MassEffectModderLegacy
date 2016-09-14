@@ -519,7 +519,8 @@ namespace MassEffectModder
 
         private void TexExplorer_FormClosed(object sender, FormClosedEventArgs e)
         {
-            GameData.packageFiles.Clear();
+            if (GameData.packageFiles != null)
+                GameData.packageFiles.Clear();
             cachePackageMgr.CloseAllWithoutSave();
             _mainWindow.enableGameDataMenu(true);
         }
