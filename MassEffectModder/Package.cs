@@ -88,6 +88,7 @@ namespace MassEffectModder
         int currentChunk = -1;
         MemoryStream chunkCache;
         bool modified;
+        bool memoryMode;
         public int nameIdTexture2D = -1;
         public int nameIdLightMapTexture2D = -1;
         public int nameIdShadowMapTexture2D = -1;
@@ -166,7 +167,8 @@ namespace MassEffectModder
             public uint exportflags;
             public uint packageflags;
             public byte[] raw;
-            public bool newData;
+            public bool updatedData;
+            public byte[] newData;
             public uint id;
         }
 
@@ -246,6 +248,10 @@ namespace MassEffectModder
             get
             {
                 return BitConverter.ToUInt32(packageHeader, tablesOffset + packageHeaderNamesOffsetTabletsOffset);
+            }
+            set
+            {
+                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, tablesOffset + packageHeaderNamesOffsetTabletsOffset, sizeof(uint));
             }
         }
 
@@ -348,9 +354,10 @@ namespace MassEffectModder
             return s;
         }
 
-        public Package(string filename, bool headerOnly = false)
+        public Package(string filename, bool memMode = false, bool headerOnly = false)
         {
             packagePath = filename;
+            memoryMode = memMode;
 
             if (GameData.gameType == MeType.ME1_TYPE)
             {
@@ -421,7 +428,16 @@ namespace MassEffectModder
             packageData.JumpTo(dataOffset);
             getData((uint)dataOffset, length, packageData);
 
-            loadNames(packageData);
+            if (endOfTablesOffset < namesOffset)
+            {
+                if (compressed) // allowed only uncompressed
+                    throw new Exception();
+                loadNames(packageFile);
+            }
+            else
+            {
+                loadNames(packageData);
+            }
             loadImports(packageData);
             loadExports(packageData);
             loadImportsNames();
@@ -533,13 +549,17 @@ namespace MassEffectModder
 
         public byte[] getExportData(int id)
         {
-            if (exportsTable[id].newData)
+            if (exportsTable[id].updatedData)
             {
                 string exportFile = packagePath + "-exports\\exportId-" + id;
                 using (FileStream fs = new FileStream(exportFile, FileMode.Open, FileAccess.Read))
                 {
                     return fs.ReadToBuffer(fs.Length);
                 }
+            }
+            if (exportsTable[id].newData != null)
+            {
+                return exportsTable[id].newData;
             }
             using (MemoryStream data = new MemoryStream())
             {
@@ -557,17 +577,25 @@ namespace MassEffectModder
                 exportsEndOffset = export.dataOffset + (uint)data.Length;
             }
             export.dataSize = (uint)data.Length;
-            string packageDir = Path.GetDirectoryName(packagePath);
-            Directory.CreateDirectory(packagePath + "-exports");
-            string exportFile = packagePath + "-exports\\exportId-" + id;
-            if (File.Exists(exportFile))
-                File.Delete(exportFile);
-            using (FileStream fs = new FileStream(exportFile, FileMode.Create, FileAccess.Write))
+
+            if (memoryMode)
             {
-                fs.WriteFromBuffer(data);
+                export.newData = data;
+            }
+            else
+            {
+                string packageDir = Path.GetDirectoryName(packagePath);
+                Directory.CreateDirectory(packagePath + "-exports");
+                string exportFile = packagePath + "-exports\\exportId-" + id;
+                if (File.Exists(exportFile))
+                    File.Delete(exportFile);
+                using (FileStream fs = new FileStream(exportFile, FileMode.Create, FileAccess.Write))
+                {
+                    fs.WriteFromBuffer(data);
+                }
+                export.updatedData = true;
             }
 
-            export.newData = true;
             exportsTable[id] = export;
             modified = true;
         }
@@ -825,24 +853,40 @@ namespace MassEffectModder
                     dataLeft = exportsEndOffset - export.dataOffset - export.dataSize;
                 else
                     dataLeft = sortedExports[i + 1].dataOffset - export.dataOffset - export.dataSize;
-                if (export.newData)
+                if (export.updatedData)
                 {
                     string exportFile = packagePath + "-exports\\exportId-" + export.id;
                     using (FileStream fs = new FileStream(exportFile, FileMode.Open, FileAccess.Read))
                     {
                         tempOutput.WriteFromStream(fs, fs.Length);
                     }
-                    export.newData = false;
+                    export.updatedData = false;
+                }
+                else if (export.newData != null)
+                {
+                    tempOutput.WriteFromBuffer(export.newData);
                 }
                 else
+                {
                     getData(export.dataOffset, export.dataSize, tempOutput);
+                }
                 tempOutput.WriteZeros(dataLeft);
             }
 
             tempOutput.JumpTo(exportsOffset);
             saveExports(tempOutput);
+            if (endOfTablesOffset < namesOffset)
+            {
+                if (compressed) // allowed only uncompressed
+                    throw new Exception();
+                namesOffset = exportsEndOffset;
+                tempOutput.JumpTo(namesOffset);
+                saveNames(tempOutput);
+                packageFile.SeekBegin();
+                tempOutput.Write(packageHeader, 0, packageHeader.Length);
+            }
             packageFile.Close();
-            if (Directory.Exists(packagePath + "-exports"))
+            if (!memoryMode && Directory.Exists(packagePath + "-exports"))
                 Directory.Delete(packagePath + "-exports", true);
 
             string filename = packageFile.Name;
@@ -1011,7 +1055,7 @@ namespace MassEffectModder
             packageData.Dispose();
             packageFile.Close();
             packageFile.Dispose();
-            if (Directory.Exists(packagePath + "-exports"))
+            if (!memoryMode && Directory.Exists(packagePath + "-exports"))
                 Directory.Delete(packagePath + "-exports", true);
         }
     }
@@ -1079,7 +1123,7 @@ namespace MassEffectModder
                     long curPos = tocFile.Position;
                     ushort blockSize = tocFile.ReadUInt16();
                     file.type = tocFile.ReadUInt16();
-                    if (file.type != 9 && file.type != 1)
+                    if (file.type != 9 && file.type != 1 && file.type != 0)
                         throw new Exception();
                     file.size = tocFile.ReadUInt32();
                     file.sha1 = tocFile.ReadToBuffer(20);

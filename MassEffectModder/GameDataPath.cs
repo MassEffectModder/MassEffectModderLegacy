@@ -179,17 +179,6 @@ namespace MassEffectModder
             }
         }
 
-        static public string DLCDataCache
-        {
-            get
-            {
-                if (gameType == MeType.ME3_TYPE)
-                    return Path.Combine(_path, @"BioGame\DLCCache");
-                else
-                    return null;
-            }
-        }
-
         public string GameExePath
         {
             get
@@ -290,14 +279,14 @@ namespace MassEffectModder
             }
             else if (gameType == MeType.ME3_TYPE)
             {
-                if (!Directory.Exists(DLCDataCache))
+                List<string> dlcs = Directory.GetFiles(DLCData, "*.pcc", SearchOption.AllDirectories).ToList();
+                if (dlcs.Count() == 0)
                 {
-                    MessageBox.Show("DLCCache directory is missing, you need exract DLC packages first.");
+                    MessageBox.Show("You need exract DLC packages first.");
                     return false;
                 }
                 packageFiles = Directory.GetFiles(MainData, "*.pcc", SearchOption.AllDirectories).ToList();
-                if (Directory.Exists(DLCDataCache))
-                    packageFiles.AddRange(Directory.GetFiles(DLCDataCache, "*.pcc", SearchOption.AllDirectories));
+                packageFiles.AddRange(dlcs);
                 packageFiles.RemoveAll(s => s.Contains("GuidCache"));
             }
             return true;

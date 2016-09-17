@@ -240,6 +240,19 @@ namespace MassEffectModder
         {
             loadHeader(SFARfilename);
 
+            Directory.CreateDirectory(Path.Combine(outPath, "CookedPCConsole"));
+            using (FileStream outputFile = new FileStream(Path.Combine(outPath, "CookedPCConsole", "Default.sfar"), FileMode.Create, FileAccess.Write))
+            {
+                outputFile.WriteUInt32(SfarTag);
+                outputFile.WriteUInt32(SfarVersion);
+                outputFile.WriteUInt32(HeaderSize);
+                outputFile.WriteUInt32(HeaderSize);
+                outputFile.WriteUInt32((uint)filesList.Count);
+                outputFile.WriteUInt32(HeaderSize);
+                outputFile.WriteUInt32((uint)MaxBlockSize);
+                outputFile.WriteUInt32(LZMATag);
+            }
+
             for (int i = 0; i < filesCount; i++)
             {
                 if (filenamesIndex == i)
@@ -249,9 +262,11 @@ namespace MassEffectModder
 
                 mainWindow.updateStatusLabel2("File " + (i + 1) + " of " + filesList.Count() + " - " + Path.GetFileName(filesList[i].filenamePath));
 
-                string dir = Path.GetDirectoryName(filesList[i].filenamePath);
-                Directory.CreateDirectory(outPath + dir);
-                using (FileStream outputFile = new FileStream(outPath + filesList[i].filenamePath, FileMode.Create, FileAccess.Write))
+                int pos = filesList[i].filenamePath.IndexOf("\\BIOGame\\DLC\\", StringComparison.CurrentCultureIgnoreCase);
+                string filename = filesList[i].filenamePath.Substring(pos + ("\\BIOGame\\DLC\\").Length).Replace('/', '\\');
+                string dir = Path.GetDirectoryName(outPath);
+                Directory.CreateDirectory(Path.GetDirectoryName(dir + filename));
+                using (FileStream outputFile = new FileStream(dir + filename, FileMode.Create, FileAccess.Write))
                 {
                     sfarFile.JumpTo(filesList[i].dataOffset);
                     if (filesList[i].compressedBlockSizesIndex == -1)
@@ -306,186 +321,6 @@ namespace MassEffectModder
             sfarFile = null;
         }
 
-        public void update(string filename, List<string> modifiedFiles)
-        {
-            loadHeader(filename);
-
-            List<byte[]> hashList = new List<byte[]>();
-            FileEntry e;
-            for (int k = 0; k < modifiedFiles.Count(); k++)
-            {
-                int pos = modifiedFiles[k].IndexOf("CookedPCConsole");
-                if (pos == -1)
-                    throw new Exception();
-                string TOCBinfilePath = modifiedFiles[k].Substring(pos);
-                pos = modifiedFiles[k].IndexOf("\\BIOGame\\DLC\\");
-                if (pos == -1)
-                    throw new Exception();
-                string fileName = modifiedFiles[k].Substring(pos).Replace('\\', '/').ToLowerInvariant();
-                byte[] fileHash = MD5.Create().ComputeHash(Encoding.ASCII.GetBytes(fileName));
-                hashList.Add(fileHash);
-                int index = filesList.FindIndex(s => StructuralComparisons.StructuralEqualityComparer.Equals(s.filenameHash, fileHash));
-                if (index == -1)
-                    throw new Exception("File not found in SFAR file");
-                e = filesList[index];
-                e.uncomprSize = (uint)new FileInfo(GameData.GamePath + modifiedFiles[k]).Length;
-                filesList[index] = e;
-                tocFile.updateFile(TOCBinfilePath, GameData.GamePath + modifiedFiles[k]);
-            }
-            byte[] TOCFileMem = tocFile.saveToBuffer();
-
-            modifiedFiles.Add("PCConsoleTOC.bin");
-            hashList.Add(filesList[TOCFileIndex].filenameHash);
-            e = filesList[TOCFileIndex];
-            e.uncomprSize = TOCFileMem.Length;
-            filesList[TOCFileIndex] = e;
-
-            using (FileStream outputFile = new FileStream(filename + ".tmp", FileMode.Create, FileAccess.Write))
-            {
-                long numBlockSizes = 0;
-                int curBlockSizesIndex = 0;
-                long dataOffset = HeaderSize + EntryHeaderSize * (filesList.Count());
-                long sizesArrayOffset = dataOffset;
-                for (int i = 0; i < filesList.Count(); i++)
-                {
-                    e = filesList[i];
-                    if (e.filenamePath != null && (e.filenamePath.EndsWith(".bik") || e.filenamePath.EndsWith(".afc")))
-                        continue;
-                    long numBlocks = (e.uncomprSize + MaxBlockSize - 1) / MaxBlockSize;
-                    dataOffset += numBlocks * sizeof(ushort);
-                    numBlockSizes += numBlocks;
-                }
-
-                ushort[] newBlockSizes = new ushort[numBlockSizes];
-                long curDataOffset = dataOffset;
-                outputFile.JumpTo(dataOffset);
-                for (int i = 0; i < filesList.Count(); i++)
-                {
-                    Stream inputFile = null;
-                    FileEntry file = filesList[i];
-                    mainWindow.updateStatusLabel2("File " + (i + 1) + " of " + filesList.Count() + " - " + Path.GetFileName(file.filenamePath));
-
-                    if (file.filenamePath != null && file.filenamePath.EndsWith("PCConsoleTOC.bin"))
-                    {
-                        inputFile = new MemoryStream(TOCFileMem);
-                    }
-                    else if (hashList.Exists(a => StructuralComparisons.StructuralEqualityComparer.Equals(a, file.filenameHash)))
-                    {
-                        int index = hashList.FindIndex(a => StructuralComparisons.StructuralEqualityComparer.Equals(a, file.filenameHash));
-                        inputFile = new FileStream(GameData.GamePath + modifiedFiles[index], FileMode.Open, FileAccess.Read);
-                    }
-                    file.dataOffset = curDataOffset;
-
-                    if (file.filenamePath != null && (file.filenamePath.EndsWith(".bik") || file.filenamePath.EndsWith(".afc")))
-                    {
-                        if (!hashList.Exists(a => StructuralComparisons.StructuralEqualityComparer.Equals(a, file.filenameHash)))
-                        {
-                            sfarFile.JumpTo(filesList[i].dataOffset);
-                            outputFile.WriteFromStream(sfarFile, file.uncomprSize);
-                        }
-                        else
-                        {
-                            outputFile.WriteFromStream(inputFile, file.uncomprSize);
-                        }
-                    }
-                    else
-                    {
-                        file.compressedBlockSizesIndex = curBlockSizesIndex;
-                        if (!hashList.Exists(a => StructuralComparisons.StructuralEqualityComparer.Equals(a, file.filenameHash)))
-                        {
-                            int compressedSize = 0;
-                            for (int k = 0; k < file.numBlocks; k++, curBlockSizesIndex++)
-                            {
-                                newBlockSizes[curBlockSizesIndex] = blockSizes[filesList[i].compressedBlockSizesIndex + k];
-                                compressedSize += newBlockSizes[curBlockSizesIndex];
-                            }
-                            sfarFile.JumpTo(filesList[i].dataOffset);
-                            outputFile.WriteFromStream(sfarFile, compressedSize);
-                        }
-                        else
-                        {
-                            List<byte[]> uncompressedBlockBuffers = new List<byte[]>();
-                            List<byte[]> compressedBlockBuffers = new List<byte[]>();
-                            file.numBlocks = (uint)((file.uncomprSize + MaxBlockSize - 1) / MaxBlockSize);
-                            for (int k = 0; k < file.numBlocks; k++)
-                            {
-                                long uncompressedBlockSize = MaxBlockSize;
-                                if (k == (file.numBlocks - 1)) // last block
-                                    uncompressedBlockSize = file.uncomprSize - (MaxBlockSize * k);
-                                uncompressedBlockBuffers.Add(inputFile.ReadToBuffer((int)uncompressedBlockSize));
-                                compressedBlockBuffers.Add(null);
-                            }
-
-                            Parallel.For(0, file.numBlocks, k =>
-                            {
-                                compressedBlockBuffers[(int)k] = SevenZipHelper.LZMA.Compress(uncompressedBlockBuffers[(int)k], 0);
-                                if (compressedBlockBuffers[(int)k].Length == 0)
-                                    throw new Exception();
-                            });
-
-                            for (int k = 0; k < file.numBlocks; k++, curBlockSizesIndex++)
-                            {
-                                if (compressedBlockBuffers[k].Length >= (int)MaxBlockSize)
-                                {
-                                    outputFile.WriteFromBuffer(uncompressedBlockBuffers[k]);
-                                    newBlockSizes[curBlockSizesIndex] = 0;
-                                }
-                                else if (compressedBlockBuffers[k].Length >= uncompressedBlockBuffers[k].Length)
-                                {
-                                    outputFile.WriteFromBuffer(uncompressedBlockBuffers[k]);
-                                    newBlockSizes[curBlockSizesIndex] = (ushort)uncompressedBlockBuffers[k].Length;
-                                }
-                                else
-                                {
-                                    outputFile.WriteFromBuffer(compressedBlockBuffers[k]);
-                                    newBlockSizes[curBlockSizesIndex] = (ushort)compressedBlockBuffers[k].Length;
-                                }
-                            }
-                        }
-                    }
-                    filesList[i] = file;
-                    curDataOffset = outputFile.Position;
-                }
-
-                outputFile.SeekBegin();
-                outputFile.WriteUInt32(SfarTag);
-                outputFile.WriteUInt32(SfarVersion);
-                outputFile.WriteUInt32((uint)dataOffset);
-                outputFile.WriteUInt32(HeaderSize);
-                outputFile.WriteUInt32((uint)filesList.Count);
-                outputFile.WriteUInt32((uint)sizesArrayOffset);
-                outputFile.WriteUInt32((uint)MaxBlockSize);
-                outputFile.WriteUInt32(LZMATag);
-
-                filesList.Sort(new FileArrayComparer());
-                for (int i = 0; i < filesList.Count; i++)
-                {
-                    outputFile.WriteFromBuffer(filesList[i].filenameHash);
-                    outputFile.WriteInt32(filesList[i].compressedBlockSizesIndex);
-                    outputFile.WriteUInt32((uint)filesList[i].uncomprSize);
-                    outputFile.WriteByte((byte)(filesList[i].uncomprSize >> 32));
-                    outputFile.WriteUInt32((uint)filesList[i].dataOffset);
-                    outputFile.WriteByte((byte)(filesList[i].dataOffset >> 32));
-                }
-
-                if (outputFile.Position != sizesArrayOffset)
-                    throw new Exception();
-
-                for (int i = 0; i < newBlockSizes.Count(); i++)
-                {
-                    outputFile.WriteUInt16(newBlockSizes[i]);
-                }
-
-                if (outputFile.Position != dataOffset)
-                    throw new Exception();
-            }
-            sfarFile.Close();
-            sfarFile.Dispose();
-            sfarFile = null;
-            File.Delete(filename);
-            File.Move(filename + ".tmp", filename);
-        }
-
         public void fullRePack(string inPath, string outPath, string DLCName)
         {
             if (sfarFile != null)
@@ -497,6 +332,7 @@ namespace MassEffectModder
             int indexTOC = -1;
             List<byte[]> hashList = new List<byte[]>();
             List<string> srcFilesList = Directory.GetFiles(inPath, "*.*", SearchOption.AllDirectories).ToList();
+            srcFilesList.RemoveAll(s => s.Contains("Default.sfar"));
             using (FileStream outputFile = new FileStream(inPath + @"\TOC", FileMode.Create, FileAccess.Write))
             {
                 for (int i = 0; i < srcFilesList.Count(); i++)

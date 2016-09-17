@@ -292,20 +292,25 @@ namespace MassEffectModder
         {
             enableGameDataMenu(false);
             GameData gameData = new GameData(MeType.ME3_TYPE, _configIni);
-            if (Directory.Exists(GameData.DLCDataCache))
+            string tmpDlcDir = Path.Combine(GameData.GamePath, "BIOGame", "DLCTemp");
+            List<string> dlcs = Directory.GetFiles(GameData.DLCData, "*.pcc", SearchOption.AllDirectories).ToList();
+            if (dlcs.Count() == 0)
             {
-                Directory.Delete(GameData.DLCDataCache, true);
-            }
-            Directory.CreateDirectory(GameData.DLCDataCache);
-            List<string> sfarFiles = Directory.GetFiles(GameData.DLCData, "Default.sfar", SearchOption.AllDirectories).ToList();
-            for (int i = 0; i < sfarFiles.Count; i++)
-            {
-                string DLCname = Path.GetFileName(Path.GetDirectoryName(Path.GetDirectoryName(sfarFiles[i])));
-                string outPath = Path.Combine(GameData.DLCDataCache, DLCname);
-                Directory.CreateDirectory(outPath);
-                ME3DLC dlc = new ME3DLC(this);
-                updateStatusLabel("SFAR unpacking - DLC " + (i + 1) + " of " + sfarFiles.Count);
-                dlc.extract(sfarFiles[i], outPath);
+                if (Directory.Exists(tmpDlcDir))
+                    Directory.Delete(tmpDlcDir, true);
+                Directory.CreateDirectory(tmpDlcDir);
+                List<string> sfarFiles = Directory.GetFiles(GameData.DLCData, "Default.sfar", SearchOption.AllDirectories).ToList();
+                for (int i = 0; i < sfarFiles.Count; i++)
+                {
+                    string DLCname = Path.GetFileName(Path.GetDirectoryName(Path.GetDirectoryName(sfarFiles[i])));
+                    string outPath = Path.Combine(tmpDlcDir, DLCname);
+                    Directory.CreateDirectory(outPath);
+                    ME3DLC dlc = new ME3DLC(this);
+                    updateStatusLabel("SFAR unpacking - DLC " + (i + 1) + " of " + sfarFiles.Count);
+                    dlc.extract(sfarFiles[i], outPath);
+                }
+                Directory.Delete(GameData.DLCData, true);
+                Directory.Move(tmpDlcDir, GameData.DLCData);
             }
             updateStatusLabel("Done");
             updateStatusLabel2("");
@@ -315,7 +320,7 @@ namespace MassEffectModder
         private void PackME3DLC(string inPath, string DLCname)
         {
             GameData gameData = new GameData(MeType.ME3_TYPE, _configIni);
-            string outPath = Path.Combine(GameData.DLCData, DLCname, "CookedPCConsole", "Default.sfar");
+            string outPath = Path.Combine(Path.Combine(GameData.GamePath, "BIOGame", "DLCTemp"), DLCname, "CookedPCConsole", "Default.sfar");
             ME3DLC dlc = new ME3DLC(this);
             dlc.fullRePack(inPath, outPath, DLCname);
         }
@@ -323,18 +328,22 @@ namespace MassEffectModder
         private void PackAllME3DLC()
         {
             GameData gameData = new GameData(MeType.ME3_TYPE, _configIni);
-            if (!Directory.Exists(GameData.DLCDataCache))
+            List<string> dlcs = Directory.GetFiles(GameData.DLCData, "*.pcc", SearchOption.AllDirectories).ToList();
+            if (dlcs.Count() == 0)
             {
-                MessageBox.Show("DLCCache directory is missing, you need unpack SFAR files first.");
+                MessageBox.Show("You need unpack SFAR files first.");
                 return;
             }
-            List<string> DLCs = Directory.GetDirectories(GameData.DLCDataCache).ToList();
+            List<string> DLCs = Directory.GetDirectories(GameData.DLCData).ToList();
             for (int i = 0; i < DLCs.Count; i++)
             {
                 string DLCname = Path.GetFileName(DLCs[i]);
                 updateStatusLabel("SFAR packing - DLC " + (i + 1) + " of " + DLCs.Count);
                 PackME3DLC(DLCs[i], DLCname);
             }
+            Directory.Delete(GameData.DLCData, true);
+            Directory.Move(Path.Combine(GameData.GamePath, "BIOGame", "DLCTemp"), GameData.DLCData);
+
             updateStatusLabel("Done");
             updateStatusLabel2("");
             enableGameDataMenu(true);
