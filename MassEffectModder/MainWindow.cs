@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace MassEffectModder
@@ -164,6 +165,24 @@ namespace MassEffectModder
             return true;
         }
 
+        private void ParseLegacyScriptMod(string script, ref string package, ref int expId)
+        {
+            Regex parts = new Regex("int objidx = [0-9]*");
+            Match match = parts.Match(script);
+            if (match.Success)
+            {
+                expId = int.Parse(match.ToString().Split(' ').Last());
+                parts = new Regex("string filename = \"[A-z,0-9,.]*\";");
+                match = parts.Match(script);
+                if (match.Success)
+                {
+                    package = match.ToString().Split('\"')[1];
+                    return;
+                }
+            }
+            MessageBox.Show("Wrong Legacy Mod");
+        }
+
         private void replaceExportDataMod(MeType gameType)
         {
             GameData gameData = new GameData(gameType, _configIni);
@@ -180,30 +199,54 @@ namespace MassEffectModder
                     uint version = fs.ReadUInt32();
                     if (tag != ExportModTag || version != ExportModVersion)
                     {
-                        MessageBox.Show("File " + modFile.FileName + " is not MOD");
-                        return;
-                    }
-                    if ((MeType)fs.ReadUInt32() != gameType)
-                    {
-                        MessageBox.Show("Mod for different game!");
-                        return;
-                    }
-                    int numEntries = fs.ReadInt32();
-                    for (int i = 0; i < numEntries; i++)
-                    {
-                        string package = fs.ReadStringASCIINull();
-                        int expId = fs.ReadInt32();
-                        uint uncSize = fs.ReadUInt32();
-                        uint compSize = fs.ReadUInt32();
-                        byte[] src = fs.ReadToBuffer(compSize);
-                        byte[] dst = new byte[uncSize];
-                        ZlibHelper.Zlib.Decompress(src, (uint)src.Length, dst);
-                        string[] packages = Directory.GetFiles(GameData.MainData, package, SearchOption.AllDirectories);
-                        if (packages.Count() != 0)
+                        fs.SeekBegin();
+                        int len = fs.ReadInt32();
+                        fs.ReadStringASCII(len); // version
+                        int numEntries = fs.ReadInt32();
+                        len = fs.ReadInt32();
+                        fs.ReadStringASCII(len); // description
+                        len = fs.ReadInt32();
+                        string scriptLegacy = fs.ReadStringASCII(len);
+                        int expId = -1;
+                        string package = "";
+                        ParseLegacyScriptMod(scriptLegacy, ref package, ref expId);
+                        len = fs.ReadInt32();
+                        byte[] data = fs.ReadToBuffer(len);
+                        if (expId != -1 && package != "")
                         {
-                            Package pkg = new Package(packages[0]);
-                            pkg.setExportData(expId, dst);
-                            pkg.SaveToFile();
+                            string[] packages = Directory.GetFiles(GameData.MainData, package, SearchOption.AllDirectories);
+                            if (packages.Count() != 0)
+                            {
+                                Package pkg = new Package(packages[0]);
+                                pkg.setExportData(expId, data);
+                                pkg.SaveToFile();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if ((MeType)fs.ReadUInt32() != gameType)
+                        {
+                            MessageBox.Show("Mod for different game!");
+                            return;
+                        }
+                        int numEntries = fs.ReadInt32();
+                        for (int i = 0; i < numEntries; i++)
+                        {
+                            string package = fs.ReadStringASCIINull();
+                            int expId = fs.ReadInt32();
+                            uint uncSize = fs.ReadUInt32();
+                            uint compSize = fs.ReadUInt32();
+                            byte[] src = fs.ReadToBuffer(compSize);
+                            byte[] dst = new byte[uncSize];
+                            ZlibHelper.Zlib.Decompress(src, (uint)src.Length, dst);
+                            string[] packages = Directory.GetFiles(GameData.MainData, package, SearchOption.AllDirectories);
+                            if (packages.Count() != 0)
+                            {
+                                Package pkg = new Package(packages[0]);
+                                pkg.setExportData(expId, dst);
+                                pkg.SaveToFile();
+                            }
                         }
                     }
                 }
