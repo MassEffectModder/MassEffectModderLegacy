@@ -363,7 +363,11 @@ namespace MassEffectModder
             if (mipMapData != null)
                 return mipMapData;
 
-            MipMap mipmap = getTopMipmap();
+            return getMipMapData(getTopMipmap());
+        }
+
+        public byte[] getMipMapData(MipMap mipmap)
+        {
             switch (mipmap.storageType)
             {
                 case StorageTypes.pccUnc:
