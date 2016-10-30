@@ -99,6 +99,26 @@ namespace MassEffectModder
                     break;
                 }
 
+                for (int t = 0; t < texture.mipMapsList.Count; t++)
+                {
+                    if (texture.mipMapsList[t].width <= 4 ||
+                        texture.mipMapsList[t].height <= 4)
+                    {
+                        if (!image.mipMaps.Exists(m => m.origWidth == texture.mipMapsList[t].width && m.origHeight == texture.mipMapsList[t].height))
+                        {
+                            int width = texture.mipMapsList[t].width;
+                            int height = texture.mipMapsList[t].height;
+                            if (ddsFormat == DDSFormat.DXT1 || ddsFormat == DDSFormat.DXT5)
+                            {
+                                width = 4;
+                                height = 4;
+                            }
+                            DDSImage.MipMap mipmap = new DDSImage.MipMap(texture.getMipMapData(texture.mipMapsList[t]), ddsFormat, width, height, texture.mipMapsList[t].width, texture.mipMapsList[t].height);
+                            image.mipMaps.Add(mipmap);
+                        }
+                    }
+                }
+
                 bool triggerCacheArc = false, triggerCacheCpr = false;
                 string archiveFile = "";
                 byte[] origGuid = new byte[16];
