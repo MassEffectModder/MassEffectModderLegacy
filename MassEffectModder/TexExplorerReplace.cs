@@ -340,11 +340,18 @@ namespace MassEffectModder
 
             using (OpenFileDialog selectDDS = new OpenFileDialog())
             {
-
                 selectDDS.Title = "Please select DDS file";
                 selectDDS.Filter = "DDS file|*.dds";
                 if (selectDDS.ShowDialog() != DialogResult.OK)
                     return;
+
+                DDSImage image = new DDSImage(selectDDS.FileName);
+                if (!image.checkExistAllMipmaps())
+                {
+                    DialogResult result = MessageBox.Show("Not all mipmaps exists in DDS file, continue?", "Replace Texture", MessageBoxButtons.YesNo);
+                    if (result == DialogResult.No)
+                        return;
+                }
 
                 bool startMod = sTARTModdingToolStripMenuItem.Enabled;
                 bool endMod = eNDModdingToolStripMenuItem.Enabled;
@@ -353,7 +360,6 @@ namespace MassEffectModder
                 bool packMod = packMODToolStripMenuItem.Enabled;
                 EnableMenuOptions(false);
 
-                DDSImage image = new DDSImage(selectDDS.FileName);
                 PackageTreeNode node = (PackageTreeNode)treeViewPackages.SelectedNode;
                 ListViewItem item = listViewTextures.FocusedItem;
                 int index = Convert.ToInt32(item.Name);

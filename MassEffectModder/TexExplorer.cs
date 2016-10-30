@@ -475,10 +475,17 @@ namespace MassEffectModder
                             if (tag != TextureModTag || version != TextureModVersion)
                             {
                                 fs.SeekBegin();
+                                richTextBoxInfo.Text = "";
                                 if (!checkTextureMod(fs))
                                 {
                                     MessageBox.Show("File " + file + " is not MOD, omitting...");
                                     continue;
+                                }
+                                if (richTextBoxInfo.Text != "")
+                                {
+                                    richTextBoxInfo.Show();
+                                    pictureBoxPreview.Hide();
+                                    MessageBox.Show("There were some errors while process.");
                                 }
                                 legacy = true;
                             }
@@ -639,7 +646,7 @@ namespace MassEffectModder
                     {
                         richTextBoxInfo.Show();
                         pictureBoxPreview.Hide();
-                        MessageBox.Show("There were some errors while process");
+                        MessageBox.Show("There were some errors while process.");
                     }
                 }
             }

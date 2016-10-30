@@ -159,6 +159,8 @@ namespace AmaroK86.ImageFormat
                 int mipMapCount = 1;
                 if ((header.dwFlags & DDSD_MIPMAPCOUNT) != 0)
                     mipMapCount = header.dwMipMapCount;
+                if (mipMapCount == 0)
+                    mipMapCount = 1;
 
                 mipMaps = new MipMap[mipMapCount];
 

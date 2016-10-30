@@ -127,6 +127,10 @@ namespace MassEffectModder
                         return false;
                     _mainWindow.updateStatusLabel2("Checking texture " + (i + 1) + " of " + numberOfTextures + " - " + textureName);
                     DDSImage image = new DDSImage(new MemoryStream(fs.ReadToBuffer(len)));
+                    if (!image.checkExistAllMipmaps())
+                    {
+                        richTextBoxInfo.Text += "Texture does not have all mipmaps: " + textureName + "\n";
+                    }
                 }
             }
             catch (Exception)
@@ -441,6 +445,10 @@ namespace MassEffectModder
                                 if (replace)
                                 {
                                     DDSImage image = new DDSImage(new MemoryStream(dst, 0, (int)dstLen));
+                                    if (!image.checkExistAllMipmaps())
+                                    {
+                                        richTextBoxInfo.Text += "Not all mipmaps exists in texture: " + name + "\n";
+                                    }
                                     replaceTexture(image, foundTexture.list);
                                 }
                                 else
@@ -511,10 +519,16 @@ namespace MassEffectModder
                         }
                         _mainWindow.updateStatusLabel2("Texture " + (n + 1) + " of " + files.Count() + ", Name: " + textureName);
 
+                        byte[] src = fs.ReadToBuffer((int)fs.Length);
+                        DDSImage image = new DDSImage(new MemoryStream(src));
+                        if (!image.checkExistAllMipmaps())
+                        {
+                            richTextBoxInfo.Text += "Texture does not have all mipmaps: " + Path.GetFileName(file) + "\n";
+                        }
+
+                        byte[] dst = ZlibHelper.Zlib.Compress(src);
                         outFs.WriteStringASCIINull(textureName);
                         outFs.WriteUInt32(crc);
-                        byte[] src = fs.ReadToBuffer((int)fs.Length);
-                        byte[] dst = ZlibHelper.Zlib.Compress(src);
                         outFs.WriteInt32(src.Length);
                         outFs.WriteInt32(dst.Length);
                         outFs.WriteFromBuffer(dst);
