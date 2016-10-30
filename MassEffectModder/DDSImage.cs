@@ -187,8 +187,8 @@ namespace AmaroK86.ImageFormat
                     byte[] data = r.ReadBytes(mipMapBytes);
                     mipMaps[i] = new MipMap(data, ddsFormat, w, h, origW, origH);
                 }
-                if (!bypassCheck && !checkExistAllMipmaps())
-                    throw new Exception("DDS doesn't have all mipmaps!");
+                //if (!bypassCheck && !checkExistAllMipmaps())
+                //    throw new Exception("DDS doesn't have all mipmaps!");
             }
         }
 
