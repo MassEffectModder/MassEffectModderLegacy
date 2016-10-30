@@ -368,7 +368,6 @@ namespace MassEffectModder
             selectFoundTexture(listViewResults.SelectedItems[0]);
         }
 
-
         private void replaceTextureToolStripMenuItem_Click(object sender, EventArgs e)
         {
             _mainWindow.updateStatusLabel("Replacing texture...");
@@ -634,7 +633,14 @@ namespace MassEffectModder
                 {
                     _mainWindow.updateStatusLabel("MOD packing...");
                     _mainWindow.updateStatusLabel2("");
+                    richTextBoxInfo.Text = "";
                     packTextureMod(modFile.SelectedPath, Path.Combine(Path.GetDirectoryName(modFile.SelectedPath), Path.GetFileName(modFile.SelectedPath)) + ".mod");
+                    if (richTextBoxInfo.Text != "")
+                    {
+                        richTextBoxInfo.Show();
+                        pictureBoxPreview.Hide();
+                        MessageBox.Show("There were some errors while process");
+                    }
                 }
             }
 

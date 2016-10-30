@@ -120,7 +120,7 @@ namespace MassEffectModder
                     textureName = f.name;
                     if (crc == 0)
                     {
-                        MessageBox.Show("Not able match texture: " + textureName + " in MOD");
+                        richTextBoxInfo.Text += "Not able match texture: " + textureName + "\n";
                     }
                     len = fs.ReadInt32();
                     if (len == 0)
@@ -471,7 +471,8 @@ namespace MassEffectModder
                 outFs.WriteUInt32(TextureModTag);
                 outFs.WriteUInt32(TextureModVersion);
                 outFs.WriteUInt32((uint)_gameSelected);
-                outFs.WriteInt32(files.Count());
+                outFs.WriteInt32(0); // filled later
+                int count = 0;
                 for (int n = 0; n < files.Count(); n++)
                 {
                     string file = files[n];
@@ -490,8 +491,8 @@ namespace MassEffectModder
                         uint crc = uint.Parse(crcStr, System.Globalization.NumberStyles.HexNumber);
                         if (crc == 0)
                         {
-                            MessageBox.Show("Wrong format of texture filename: " + file);
-                            return;
+                            richTextBoxInfo.Text += "Wrong format of texture filename: " + Path.GetFileName(file) + "\n";
+                            continue;
                         }
 
                         string textureName = "";
@@ -505,8 +506,8 @@ namespace MassEffectModder
                         }
                         if (textureName == "")
                         {
-                            MessageBox.Show("Texture not match: " + file);
-                            textureName = "!Unknown";
+                            richTextBoxInfo.Text += "Texture not matched: " + Path.GetFileName(file) + "\n";
+                            continue;
                         }
                         _mainWindow.updateStatusLabel2("Texture " + (n + 1) + " of " + files.Count() + ", Name: " + textureName);
 
@@ -517,10 +518,15 @@ namespace MassEffectModder
                         outFs.WriteInt32(src.Length);
                         outFs.WriteInt32(dst.Length);
                         outFs.WriteFromBuffer(dst);
+                        count++;
                     }
                 }
+                outFs.SeekBegin();
+                outFs.WriteUInt32(TextureModTag);
+                outFs.WriteUInt32(TextureModVersion);
+                outFs.WriteUInt32((uint)_gameSelected);
+                outFs.WriteInt32(count);
             }
         }
-
     }
 }
