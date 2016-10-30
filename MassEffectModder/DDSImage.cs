@@ -37,6 +37,7 @@ using System.IO;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using StreamHelpers;
+using System.Collections.Generic;
 
 namespace AmaroK86.ImageFormat
 {
@@ -124,7 +125,7 @@ namespace AmaroK86.ImageFormat
         private DDS_HEADER header = new DDS_HEADER();
         public DDSFormat ddsFormat { get; private set; }
 
-        public MipMap[] mipMaps;
+        public List<MipMap> mipMaps;
 
         public DDSImage(string ddsFileName, bool bypassCheck = false)
         {
@@ -162,7 +163,7 @@ namespace AmaroK86.ImageFormat
                 if (mipMapCount == 0)
                     mipMapCount = 1;
 
-                mipMaps = new MipMap[mipMapCount];
+                mipMaps = new List<MipMap>();
 
                 ddsFormat = getFormat();
 
@@ -205,7 +206,7 @@ namespace AmaroK86.ImageFormat
                     val /= 2;
                     count++;
                 } while (val != 0);
-                if (count == mipMaps.Length)
+                if (count == mipMaps.Count)
                     return true;
                 else
                     return false;
