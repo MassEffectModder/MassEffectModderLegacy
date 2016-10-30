@@ -86,11 +86,26 @@
     <Compile Include="ParallelCRC.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TexExplorerCachePkgMgr.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TexExplorerEmptyMipMaps.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TexExplorerProcess.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TexExplorerReplace.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="TexExplorer.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="TexExplorer.Designer.cs">
       <DependentUpon>TexExplorer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TexExplorerTree.cs">
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="TexProperties.cs" />
     <Compile Include="Texture.cs" />
