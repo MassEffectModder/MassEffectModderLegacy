@@ -474,13 +474,13 @@ namespace MassEffectModder
         {
             string[] files = Directory.GetFiles(inDir, "*.dds");
 
+            int count = 0;
             using (FileStream outFs = new FileStream(outFile, FileMode.Create, FileAccess.Write))
             {
                 outFs.WriteUInt32(TextureModTag);
                 outFs.WriteUInt32(TextureModVersion);
                 outFs.WriteUInt32((uint)_gameSelected);
                 outFs.WriteInt32(0); // filled later
-                int count = 0;
                 for (int n = 0; n < files.Count(); n++)
                 {
                     string file = files[n];
@@ -541,6 +541,8 @@ namespace MassEffectModder
                 outFs.WriteUInt32((uint)_gameSelected);
                 outFs.WriteInt32(count);
             }
+            if (count == 0)
+                File.Delete(outFile);
         }
     }
 }
