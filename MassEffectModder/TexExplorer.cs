@@ -446,8 +446,10 @@ namespace MassEffectModder
                 modFile.Title = "Please select Mod file";
                 modFile.Filter = "MOD file | *.mod; *.tpf";
                 modFile.Multiselect = true;
+                modFile.InitialDirectory = gameData.lastLoadMODPath;
                 if (modFile.ShowDialog() != DialogResult.OK)
                     return;
+                gameData.lastLoadMODPath = Path.GetDirectoryName(modFile.FileNames[0]);
 
                 EnableMenuOptions(false);
 
@@ -589,8 +591,10 @@ namespace MassEffectModder
 
             using (FolderBrowserDialog modFile = new FolderBrowserDialog())
             {
+                modFile.SelectedPath = gameData.lastSaveMODPath;
                 if (modFile.ShowDialog() == DialogResult.OK)
                 {
+                    gameData.lastSaveMODPath = modFile.SelectedPath;
                     foreach (ListViewItem item in listViewMods.SelectedItems)
                     {
                         _mainWindow.updateStatusLabel("MOD: " + item.Text + "saving...");
@@ -613,8 +617,10 @@ namespace MassEffectModder
 
             using (FolderBrowserDialog modFile = new FolderBrowserDialog())
             {
+                modFile.SelectedPath = gameData.lastExtractMODPath;
                 if (modFile.ShowDialog() == DialogResult.OK)
                 {
+                    gameData.lastExtractMODPath = modFile.SelectedPath;
                     foreach (ListViewItem item in listViewMods.SelectedItems)
                     {
                         string outDir = Path.Combine(modFile.SelectedPath, Path.GetFileNameWithoutExtension(item.Name));
@@ -636,8 +642,10 @@ namespace MassEffectModder
 
             using (FolderBrowserDialog modFile = new FolderBrowserDialog())
             {
+                modFile.SelectedPath = gameData.lastCreateMODPath;
                 if (modFile.ShowDialog() == DialogResult.OK)
                 {
+                    gameData.lastCreateMODPath = modFile.SelectedPath;
                     _mainWindow.updateStatusLabel("MOD packing...");
                     _mainWindow.updateStatusLabel2("");
                     richTextBoxInfo.Text = "";

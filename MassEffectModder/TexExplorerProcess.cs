@@ -365,7 +365,7 @@ namespace MassEffectModder
                     {
                         if (!legacy)
                         {
-                            File.Copy(filenameMod, Path.Combine(outDir, Path.GetFileName(filenameMod)));
+                            File.Copy(filenameMod, Path.Combine(outDir, Path.GetFileName(filenameMod)), true);
                             return;
                         }
                         outFile = new FileStream(Path.Combine(outDir, Path.GetFileName(filenameMod)), FileMode.Create, FileAccess.Write);
