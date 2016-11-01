@@ -333,16 +333,6 @@ namespace MassEffectModder
             return mipMapsList.Exists(b => b.width == width && b.height == height);
         }
 
-        public bool isBiggerOfTopMipmap(int width, int height)
-        {
-            int topWidth = getTopMipmap().width;
-            int topHeight = getTopMipmap().height;
-            if (width * height > topWidth * topHeight)
-                return true;
-            else
-                return false;
-        }
-
         public MipMap getMipmap(int width, int height)
         {
             return mipMapsList.Find(b => b.width == width && b.height == height);
