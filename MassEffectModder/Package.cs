@@ -84,6 +84,8 @@ namespace MassEffectModder
         List<NameEntry> namesTable;
         List<ImportEntry> importsTable;
         public List<ExportEntry> exportsTable;
+        List<int> dependsTable;
+        List<GuidEntry> guidsTable;
         List<string> extraNamesTable;
         int currentChunk = -1;
         MemoryStream chunkCache;
@@ -171,6 +173,11 @@ namespace MassEffectModder
             public byte[] newData;
             public uint id;
         }
+        public struct GuidEntry
+        {
+            public byte[] guid;
+            public int index;
+        }
 
         private uint tag
         {
@@ -194,6 +201,10 @@ namespace MassEffectModder
             {
                 return BitConverter.ToUInt32(packageHeader, packageHeaderFirstChunkSizeOffset);
             }
+            set
+            {
+                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, packageHeaderFirstChunkSizeOffset, sizeof(uint));
+            }
         }
 
         private int packageHeaderFlagsOffset
@@ -214,6 +225,10 @@ namespace MassEffectModder
             {
                 return BitConverter.ToUInt32(packageHeader, packageHeaderFlagsOffset);
             }
+            set
+            {
+                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, packageHeaderFlagsOffset, sizeof(uint));
+            }
         }
 
         public bool compressed
@@ -221,6 +236,14 @@ namespace MassEffectModder
             get
             {
                 return (flags & (uint)PackageFlags.compressed) != 0;
+            }
+            set
+            {
+                if (value)
+                    flags |= (uint)PackageFlags.compressed;
+                else
+                    flags &= ~(uint)PackageFlags.compressed;
+                Buffer.BlockCopy(BitConverter.GetBytes(flags), 0, packageHeader, packageHeaderFlagsOffset, sizeof(uint));
             }
         }
 
@@ -240,6 +263,10 @@ namespace MassEffectModder
             get
             {
                 return BitConverter.ToUInt32(packageHeader, tablesOffset + packageHeaderNamesCountTableOffset);
+            }
+            set
+            {
+                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, tablesOffset + packageHeaderNamesCountTableOffset, sizeof(uint));
             }
         }
 
@@ -261,6 +288,7 @@ namespace MassEffectModder
             {
                 return BitConverter.ToUInt32(packageHeader, tablesOffset + packageHeaderExportsCountTableOffset);
             }
+
         }
 
         private uint exportsOffset
@@ -268,6 +296,10 @@ namespace MassEffectModder
             get
             {
                 return BitConverter.ToUInt32(packageHeader, tablesOffset + packageHeaderExportsOffsetTableOffset);
+            }
+            set
+            {
+                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, tablesOffset + packageHeaderExportsOffsetTableOffset, sizeof(uint));
             }
         }
 
@@ -285,6 +317,10 @@ namespace MassEffectModder
             {
                 return BitConverter.ToUInt32(packageHeader, tablesOffset + packageHeaderImportsOffsetTableOffset);
             }
+            set
+            {
+                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, tablesOffset + packageHeaderImportsOffsetTableOffset, sizeof(uint));
+            }
         }
 
         private uint dependsOffset
@@ -293,6 +329,10 @@ namespace MassEffectModder
             {
                 return BitConverter.ToUInt32(packageHeader, tablesOffset + packageHeaderDependsOffsetTableOffset);
             }
+            set
+            {
+                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, tablesOffset + packageHeaderDependsOffsetTableOffset, sizeof(uint));
+            }
         }
 
         private uint guidsOffset
@@ -300,6 +340,10 @@ namespace MassEffectModder
             get
             {
                 return BitConverter.ToUInt32(packageHeader, tablesOffset + packageHeaderGuidsOffsetTableOffset);
+            }
+            set
+            {
+                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, tablesOffset + packageHeaderGuidsOffsetTableOffset, sizeof(uint));
             }
         }
 
@@ -433,13 +477,18 @@ namespace MassEffectModder
                 if (compressed) // allowed only uncompressed
                     throw new Exception();
                 loadNames(packageFile);
+                loadImports(packageFile);
             }
             else
             {
                 loadNames(packageData);
+                loadImports(packageData);
             }
-            loadImports(packageData);
             loadExports(packageData);
+            /* No need to load for this tool
+            loadDepends(packageData);
+            if (version == packageFileVersionME3)
+                loadGuids(packageData);*/
             loadImportsNames();
             loadExportsNames();
         }
@@ -761,6 +810,14 @@ namespace MassEffectModder
             }
         }
 
+        private void saveImports(Stream output)
+        {
+            for (int i = 0; i < importsTable.Count; i++)
+            {
+                output.WriteFromBuffer(importsTable[i].raw);
+            }
+        }
+
         private void loadExports(Stream input)
         {
             exportsTable = new List<ExportEntry>();
@@ -821,6 +878,43 @@ namespace MassEffectModder
             }
         }
 
+        private void loadDepends(Stream input)
+        {
+            dependsTable = new List<int>();
+            input.JumpTo(dependsOffset);
+            for (int i = 0; i < exportsCount; i++)
+                dependsTable.Add(input.ReadInt32());
+        }
+
+        private void saveDepends(Stream output)
+        {
+            for (int i = 0; i < exportsTable.Count; i++)
+                output.WriteInt32(dependsTable[i]);
+        }
+
+        private void loadGuids(Stream input)
+        {
+            guidsTable = new List<GuidEntry>();
+            input.JumpTo(guidsOffset);
+            for (int i = 0; i < guidsCount; i++)
+            {
+                GuidEntry entry = new GuidEntry();
+                entry.guid = input.ReadToBuffer(16);
+                entry.index = input.ReadInt32();
+                guidsTable.Add(entry);
+            }
+        }
+
+        private void saveGuids(Stream output)
+        {
+            for (int i = 0; i < guidsTable.Count; i++)
+            {
+                GuidEntry entry = guidsTable[i];
+                output.WriteFromBuffer(entry.guid);
+                output.WriteInt32(entry.index);
+            }
+        }
+
         public bool SaveToFile(bool forceZlib = false)
         {
             if (forceZlib && compressionType != CompressionType.Zlib)
@@ -875,13 +969,24 @@ namespace MassEffectModder
 
             tempOutput.JumpTo(exportsOffset);
             saveExports(tempOutput);
+
+            tempOutput.JumpTo(exportsEndOffset);
             if (endOfTablesOffset < namesOffset)
             {
                 if (compressed) // allowed only uncompressed
                     throw new Exception();
-                namesOffset = exportsEndOffset;
-                tempOutput.JumpTo(namesOffset);
+                namesOffset = (uint)tempOutput.Position;
                 saveNames(tempOutput);
+            }
+            if (endOfTablesOffset < importsOffset)
+            {
+                if (compressed) // allowed only uncompressed
+                    throw new Exception();
+                importsOffset = (uint)tempOutput.Position;
+                saveImports(tempOutput);
+            }
+            if (endOfTablesOffset < namesOffset || endOfTablesOffset < importsOffset)
+            {
                 packageFile.SeekBegin();
                 tempOutput.Write(packageHeader, 0, packageHeader.Length);
             }
