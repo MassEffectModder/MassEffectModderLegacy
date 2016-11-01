@@ -412,8 +412,10 @@ namespace MassEffectModder
                 {
                     modFile.Title = "Please select new name for Mod file";
                     modFile.Filter = "MOD file|*.mod";
+                    modFile.InitialDirectory = gameData.lastCreateMODPath;
                     if (modFile.ShowDialog() == DialogResult.OK)
                     {
+                        gameData.lastCreateMODPath = modFile.InitialDirectory;
                         File.Move(TempModFileName, modFile.FileName);
                     }
                 }
