@@ -99,23 +99,29 @@ namespace MassEffectModder
                     break;
                 }
 
+                // remove lower mipmaps from source image which not exist in game data
+                int mipmapSize = texture.mipMapsList[0].width * texture.mipMapsList[0].height;
+                for (int t = 0; t < image.mipMaps.Count(); t++)
+                {
+                    int size = image.mipMaps[t].origWidth * image.mipMaps[t].origHeight;
+                    if (size > mipmapSize)
+                        continue;
+                    if (!texture.mipMapsList.Exists(m => m.width == image.mipMaps[t].origWidth && m.height == image.mipMaps[t].origHeight))
+                    {
+                        image.mipMaps.RemoveAt(t--);
+                    }
+                }
+
+                // reuse lower mipmaps from game data which not exist in source image
                 for (int t = 0; t < texture.mipMapsList.Count; t++)
                 {
-                    if (texture.mipMapsList[t].width <= 4 ||
-                        texture.mipMapsList[t].height <= 4)
+                    int size = texture.mipMapsList[t].width * texture.mipMapsList[t].height;
+                    if (size > mipmapSize)
+                        continue;
+                    if (!image.mipMaps.Exists(m => m.origWidth == texture.mipMapsList[t].width && m.origHeight == texture.mipMapsList[t].height))
                     {
-                        if (!image.mipMaps.Exists(m => m.origWidth == texture.mipMapsList[t].width && m.origHeight == texture.mipMapsList[t].height))
-                        {
-                            int width = texture.mipMapsList[t].width;
-                            int height = texture.mipMapsList[t].height;
-                            if (ddsFormat == DDSFormat.DXT1 || ddsFormat == DDSFormat.DXT5)
-                            {
-                                width = 4;
-                                height = 4;
-                            }
-                            DDSImage.MipMap mipmap = new DDSImage.MipMap(texture.getMipMapData(texture.mipMapsList[t]), ddsFormat, width, height, texture.mipMapsList[t].width, texture.mipMapsList[t].height);
-                            image.mipMaps.Add(mipmap);
-                        }
+                        DDSImage.MipMap mipmap = new DDSImage.MipMap(texture.getMipMapData(texture.mipMapsList[t]), ddsFormat, texture.mipMapsList[t].width, texture.mipMapsList[t].height);
+                        image.mipMaps.Add(mipmap);
                     }
                 }
 
@@ -176,8 +182,8 @@ namespace MassEffectModder
                 for (int m = 0; m < image.mipMaps.Count(); m++)
                 {
                     Texture.MipMap mipmap = new Texture.MipMap();
-                    mipmap.width = image.mipMaps[m].width;
-                    mipmap.height = image.mipMaps[m].height;
+                    mipmap.width = image.mipMaps[m].origWidth;
+                    mipmap.height = image.mipMaps[m].origHeight;
                     if (texture.existMipmap(mipmap.width, mipmap.height))
                         mipmap.storageType = texture.getMipmap(mipmap.width, mipmap.height).storageType;
                     else
@@ -209,15 +215,6 @@ namespace MassEffectModder
                         mipmap.storageType = Texture.StorageTypes.extZlib;
                     if (mipmap.storageType == Texture.StorageTypes.pccLZO)
                         mipmap.storageType = Texture.StorageTypes.pccZlib;
-
-                    if (image.mipMaps[m].origWidth < 4 || image.mipMaps[m].origHeight < 4)
-                    {
-                        if (!texture.existMipmap(image.mipMaps[m].origWidth, image.mipMaps[m].origHeight) ||
-                            (mipmaps.Exists(b => b.width == image.mipMaps[m].origWidth && b.height == image.mipMaps[m].origHeight)))
-                        {
-                            continue;
-                        }
-                    }
 
                     mipmap.uncompressedSize = image.mipMaps[m].data.Length;
                     if (_gameSelected == MeType.ME1_TYPE)
@@ -310,6 +307,8 @@ namespace MassEffectModder
                         }
                     }
 
+                    mipmap.width = image.mipMaps[m].width;
+                    mipmap.height = image.mipMaps[m].height;
                     mipmaps.Add(mipmap);
                     if (texture.mipMapsList.Count() == 1)
                         break;

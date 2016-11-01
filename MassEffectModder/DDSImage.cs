@@ -94,8 +94,17 @@ namespace AmaroK86.ImageFormat
                 }
             }
 
-            public MipMap(byte[] data, DDSFormat format, int w, int h, int origW , int origH)
+            public MipMap(byte[] data, DDSFormat format, int w, int h)
             {
+                origWidth = w;
+                origHeight = h;
+
+                if (ddsFormat == DDSFormat.DXT1 || ddsFormat == DDSFormat.DXT5)
+                {
+                    w = (w < 4) ? 4 : w;
+                    h = (h < 4) ? 4 : h;
+                }
+
                 long requiredSize = (long)(w * h * getBytesPerPixel(format));
                 if (data.Length != requiredSize)
                     throw new InvalidDataException("Data size is not valid for selected format.\nActual: " + data.Length + " bytes\nRequired: " + requiredSize + " bytes");
@@ -104,8 +113,6 @@ namespace AmaroK86.ImageFormat
                 ddsFormat = format;
                 width = w;
                 height = h;
-                origWidth = origW;
-                origHeight = origH;
             }
         }
 
@@ -180,18 +187,16 @@ namespace AmaroK86.ImageFormat
                         origW = 1;
                     if (origH == 0 && origW != 0)
                         origH = 1;
+
                     if (ddsFormat == DDSFormat.DXT1 || ddsFormat == DDSFormat.DXT5)
                     {
                         w = (w < 4) ? 4 : w;
                         h = (h < 4) ? 4 : h;
                     }
-
                     int mipMapBytes = (int)(w * h * bytePerPixel);
                     byte[] data = r.ReadBytes(mipMapBytes);
-                    mipMaps.Add(new MipMap(data, ddsFormat, w, h, origW, origH));
+                    mipMaps.Add(new MipMap(data, ddsFormat, origW, origH));
                 }
-                //if (!bypassCheck && !checkExistAllMipmaps())
-                //    throw new Exception("DDS doesn't have all mipmaps!");
             }
         }
 
