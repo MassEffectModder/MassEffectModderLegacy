@@ -288,7 +288,6 @@ namespace MassEffectModder
             {
                 return BitConverter.ToUInt32(packageHeader, tablesOffset + packageHeaderExportsCountTableOffset);
             }
-
         }
 
         private uint exportsOffset
@@ -296,10 +295,6 @@ namespace MassEffectModder
             get
             {
                 return BitConverter.ToUInt32(packageHeader, tablesOffset + packageHeaderExportsOffsetTableOffset);
-            }
-            set
-            {
-                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, tablesOffset + packageHeaderExportsOffsetTableOffset, sizeof(uint));
             }
         }
 
@@ -329,10 +324,6 @@ namespace MassEffectModder
             {
                 return BitConverter.ToUInt32(packageHeader, tablesOffset + packageHeaderDependsOffsetTableOffset);
             }
-            set
-            {
-                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, tablesOffset + packageHeaderDependsOffsetTableOffset, sizeof(uint));
-            }
         }
 
         private uint guidsOffset
@@ -340,10 +331,6 @@ namespace MassEffectModder
             get
             {
                 return BitConverter.ToUInt32(packageHeader, tablesOffset + packageHeaderGuidsOffsetTableOffset);
-            }
-            set
-            {
-                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, tablesOffset + packageHeaderGuidsOffsetTableOffset, sizeof(uint));
             }
         }
 
@@ -485,10 +472,6 @@ namespace MassEffectModder
                 loadImports(packageData);
             }
             loadExports(packageData);
-            /* No need to load for this tool
-            loadDepends(packageData);
-            if (version == packageFileVersionME3)
-                loadGuids(packageData);*/
             loadImportsNames();
             loadExportsNames();
         }
