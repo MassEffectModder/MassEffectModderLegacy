@@ -395,8 +395,7 @@ namespace MassEffectModder
                             {
                                 using (MemoryStream tmpStream = new MemoryStream(fs.ReadToBuffer(mipmap.compressedSize)))
                                 {
-                                    mipMapData = decompressTexture(tmpStream,
-                                        mipmap.storageType, mipmap.uncompressedSize, mipmap.compressedSize);
+                                    mipMapData = decompressTexture(tmpStream, mipmap.storageType, mipmap.uncompressedSize, mipmap.compressedSize);
                                 }
                             }
                             else
