@@ -204,17 +204,18 @@ namespace AmaroK86.ImageFormat
         {
             if ((header.dwFlags & DDSD_MIPMAPCOUNT) != 0 && header.dwMipMapCount > 1)
             {
-                int val = Math.Max(mipMaps[0].origWidth, mipMaps[0].origHeight);
-                int count = 0;
-                do
+                int width = mipMaps[0].origWidth;
+                int height = mipMaps[0].origHeight;
+                for (int i = 0; i < mipMaps.Count; i++)
                 {
-                    val /= 2;
-                    count++;
-                } while (val != 0);
-                if (count == mipMaps.Count)
-                    return true;
-                else
-                    return false;
+                    if (mipMaps[i].origWidth < 4 || mipMaps[i].origHeight < 4)
+                        return true;
+                    if (mipMaps[i].origWidth != width && mipMaps[i].origHeight != height)
+                        return false;
+                    width /= 2;
+                    height /= 2;
+                }
+                return true;
             }
             else
             {
