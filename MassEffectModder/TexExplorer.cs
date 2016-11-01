@@ -636,7 +636,7 @@ namespace MassEffectModder
             _mainWindow.updateStatusLabel2("");
         }
 
-        private void packMODToolStripMenuItem_Click(object sender, EventArgs e)
+        private void createMODToolStripMenuItem_Click(object sender, EventArgs e)
         {
             EnableMenuOptions(false);
 

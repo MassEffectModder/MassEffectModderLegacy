@@ -379,8 +379,8 @@ namespace MassEffectModder
             // 
             this.packMODToolStripMenuItem.Name = "packMODToolStripMenuItem";
             this.packMODToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
-            this.packMODToolStripMenuItem.Text = "Pack MOD";
-            this.packMODToolStripMenuItem.Click += new System.EventHandler(this.packMODToolStripMenuItem_Click);
+            this.packMODToolStripMenuItem.Text = "Create MOD";
+            this.packMODToolStripMenuItem.Click += new System.EventHandler(this.createMODToolStripMenuItem_Click);
             // 
             // searchToolStripMenuItem
             // 
