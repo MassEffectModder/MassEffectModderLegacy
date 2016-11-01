@@ -189,7 +189,7 @@ namespace MassEffectModder
             using (OpenFileDialog modFile = new OpenFileDialog())
             {
                 modFile.Title = "Please select Mod file";
-                modFile.Filter = "MOD file | *.mod";
+                modFile.Filter = "MOD file | *.mod; *.mem";
                 if (modFile.ShowDialog() != DialogResult.OK)
                     return;
                 updateStatusLabel("Processing mod: " + modFile.FileName);

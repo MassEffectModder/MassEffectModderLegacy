@@ -411,7 +411,7 @@ namespace MassEffectModder
                 using (SaveFileDialog modFile = new SaveFileDialog())
                 {
                     modFile.Title = "Please select new name for Mod file";
-                    modFile.Filter = "MOD file|*.mod";
+                    modFile.Filter = "MOD file|*.mod; *.mem";
                     modFile.InitialDirectory = gameData.lastCreateMODPath;
                     if (modFile.ShowDialog() == DialogResult.OK)
                     {
@@ -446,7 +446,7 @@ namespace MassEffectModder
             using (OpenFileDialog modFile = new OpenFileDialog())
             {
                 modFile.Title = "Please select Mod file";
-                modFile.Filter = "MOD file | *.mod; *.tpf";
+                modFile.Filter = "MOD file | *.mod; *.mem; *.tpf";
                 modFile.Multiselect = true;
                 modFile.InitialDirectory = gameData.lastLoadMODPath;
                 if (modFile.ShowDialog() != DialogResult.OK)
@@ -651,7 +651,7 @@ namespace MassEffectModder
                     _mainWindow.updateStatusLabel("MOD packing...");
                     _mainWindow.updateStatusLabel2("");
                     richTextBoxInfo.Text = "";
-                    packTextureMod(modFile.SelectedPath, Path.Combine(Path.GetDirectoryName(modFile.SelectedPath), Path.GetFileName(modFile.SelectedPath)) + ".mod");
+                    createTextureMod(modFile.SelectedPath, Path.Combine(Path.GetDirectoryName(modFile.SelectedPath), Path.GetFileName(modFile.SelectedPath)) + ".mem");
                     if (richTextBoxInfo.Text != "")
                     {
                         richTextBoxInfo.Show();

@@ -215,7 +215,7 @@ namespace MassEffectModder
                     FileStream outFile = null;
                     if (store)
                     {
-                        outFile = new FileStream(Path.Combine(outDir, Path.GetFileNameWithoutExtension(filenameMod)) + ".mod", FileMode.Create, FileAccess.Write);
+                        outFile = new FileStream(Path.Combine(outDir, Path.GetFileNameWithoutExtension(filenameMod)) + ".mem", FileMode.Create, FileAccess.Write);
                         outFile.WriteUInt32(TextureModTag);
                         outFile.WriteUInt32(TextureModVersion);
                         outFile.WriteUInt32((uint)_gameSelected);
@@ -470,7 +470,7 @@ namespace MassEffectModder
             }
         }
 
-        void packTextureMod(string inDir, string outFile)
+        void createTextureMod(string inDir, string outFile)
         {
             string[] files = Directory.GetFiles(inDir, "*.dds");
 
