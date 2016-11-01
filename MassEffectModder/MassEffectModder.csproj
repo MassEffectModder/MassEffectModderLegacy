@@ -109,6 +109,7 @@
     </Compile>
     <Compile Include="TexProperties.cs" />
     <Compile Include="Texture.cs" />
+    <Compile Include="TOCFile.cs" />
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </EmbeddedResource>
