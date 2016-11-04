@@ -75,7 +75,7 @@ namespace MassEffectModder
                                     texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extUnc))
                                 {
                                     string textureName = package.exportsTable[l].objectName;
-                                    FoundTexture foundTexName = _textures.Find(s => s.name == textureName && s.packageName == texture.packageName);
+                                    FoundTexture foundTexName = _textures.Find(s => s.name == textureName && s.packageName == texture.packageName && s.crc == texture.getCrcMipmap());
                                     Package refPkg = new Package(GameData.GamePath + foundTexName.list[0].path, true);
                                     int refExportId = foundTexName.list[0].exportID;
                                     byte[] refData = refPkg.getExportData(refExportId);
