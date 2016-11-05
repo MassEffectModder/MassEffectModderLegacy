@@ -444,6 +444,8 @@ namespace MassEffectModder
                             {
                                 if (replace)
                                 {
+                                    if (legacy)
+                                        break;
                                     DDSImage image = new DDSImage(new MemoryStream(dst, 0, (int)dstLen));
                                     if (!image.checkExistAllMipmaps())
                                     {

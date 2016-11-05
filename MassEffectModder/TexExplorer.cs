@@ -496,9 +496,9 @@ namespace MassEffectModder
                     }
                     string desc;
                     if (legacy)
-                        desc = Path.GetFileNameWithoutExtension(file) + " (Legacy MOD)";
+                        desc = Path.GetFileNameWithoutExtension(file) + " (Legacy MOD - Read Only)";
                     else if (tpf)
-                        desc = Path.GetFileNameWithoutExtension(file) + " (TPF - View Only)";
+                        desc = Path.GetFileNameWithoutExtension(file) + " (TPF - Read Only)";
                     else
                         desc = Path.GetFileNameWithoutExtension(file);
                     ListViewItem item = new ListViewItem(desc);
