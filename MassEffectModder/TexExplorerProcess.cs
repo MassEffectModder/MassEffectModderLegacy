@@ -23,6 +23,7 @@ using AmaroK86.ImageFormat;
 using ICSharpCode.SharpZipLib.Zip;
 using StreamHelpers;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -487,54 +488,72 @@ namespace MassEffectModder
                 {
                     string file = files[n];
                     _mainWindow.updateStatusLabel("Processing MOD: " + Path.GetFileNameWithoutExtension(outFile));
-                    using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
+                    string crcStr = Path.GetFileNameWithoutExtension(file);
+                    if (crcStr.Contains("_0x"))
                     {
-                        string crcStr = Path.GetFileNameWithoutExtension(file);
-                        if (crcStr.Contains("_0x"))
+                        crcStr = Path.GetFileNameWithoutExtension(file).Split('_').Last().Substring(2, 8); // in case filename contain CRC 
+                    }
+                    else
+                    {
+                        crcStr = Path.GetFileNameWithoutExtension(file).Split('-').Last().Substring(2, 8); // in case filename contain CRC 
+                    }
+                    uint crc = uint.Parse(crcStr, System.Globalization.NumberStyles.HexNumber);
+                    if (crc == 0)
+                    {
+                        richTextBoxInfo.Text += "Wrong format of texture filename: " + Path.GetFileName(file) + "\n";
+                        continue;
+                    }
+
+                    string filename = Path.GetFileNameWithoutExtension(file);
+                    int idx = filename.IndexOf(crcStr);
+                    string name = filename.Substring(0, idx - "_0x".Length);
+
+                    string textureName = "";
+                    List<FoundTexture> foundCrcList = _textures.FindAll(s => s.crc == crc);
+                    FoundTexture foundTexture = _textures.Find(s => s.crc == crc && s.name == name);
+                    if (foundCrcList.Count == 0)
+                    {
+                        richTextBoxInfo.Text += "Texture not matched: " + Path.GetFileName(file) + "\n";
+                        continue;
+                    }
+
+                    int savedCount = count;
+                    for (int l = 0; l < foundCrcList.Count; l++)
+                    {
+                        if (foundTexture.crc == crc)
                         {
-                            crcStr = Path.GetFileNameWithoutExtension(file).Split('_').Last().Substring(2, 8); // in case filename contain CRC 
+                            if (l > 0)
+                                break;
+                            textureName = foundTexture.name;
                         }
                         else
                         {
-                            crcStr = Path.GetFileNameWithoutExtension(file).Split('-').Last().Substring(2, 8); // in case filename contain CRC 
+                            textureName = foundCrcList[l].name;
                         }
-                        uint crc = uint.Parse(crcStr, System.Globalization.NumberStyles.HexNumber);
-                        if (crc == 0)
+                        using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
                         {
-                            richTextBoxInfo.Text += "Wrong format of texture filename: " + Path.GetFileName(file) + "\n";
-                            continue;
-                        }
-
-                        string textureName = "";
-                        for (int l = 0; l < _textures.Count; l++)
-                        {
-                            FoundTexture foundTexture = _textures[l];
-                            if (crc != 0 && foundTexture.crc == crc)
+                            byte[] src = fs.ReadToBuffer((int)fs.Length);
+                            DDSImage image = new DDSImage(new MemoryStream(src));
+                            if (!image.checkExistAllMipmaps())
                             {
-                                textureName = foundTexture.name;
+                                richTextBoxInfo.Text += "Texture does not have all mipmaps: " + Path.GetFileName(file) + "\n";
                             }
-                        }
-                        if (textureName == "")
-                        {
-                            richTextBoxInfo.Text += "Texture not matched: " + Path.GetFileName(file) + "\n";
-                            continue;
-                        }
-                        _mainWindow.updateStatusLabel2("Texture " + (n + 1) + " of " + files.Count() + ", Name: " + textureName);
 
-                        byte[] src = fs.ReadToBuffer((int)fs.Length);
-                        DDSImage image = new DDSImage(new MemoryStream(src));
-                        if (!image.checkExistAllMipmaps())
-                        {
-                            richTextBoxInfo.Text += "Texture does not have all mipmaps: " + Path.GetFileName(file) + "\n";
-                        }
+                            _mainWindow.updateStatusLabel2("Texture " + (n + 1) + " of " + files.Count() + ", Name: " + textureName);
 
-                        byte[] dst = ZlibHelper.Zlib.Compress(src);
-                        outFs.WriteStringASCIINull(textureName);
-                        outFs.WriteUInt32(crc);
-                        outFs.WriteInt32(src.Length);
-                        outFs.WriteInt32(dst.Length);
-                        outFs.WriteFromBuffer(dst);
-                        count++;
+                            byte[] dst = ZlibHelper.Zlib.Compress(src);
+                            outFs.WriteStringASCIINull(textureName);
+                            outFs.WriteUInt32(crc);
+                            outFs.WriteInt32(src.Length);
+                            outFs.WriteInt32(dst.Length);
+                            outFs.WriteFromBuffer(dst);
+                            count++;
+                        }
+                    }
+                    if (count == savedCount)
+                    {
+                        richTextBoxInfo.Text += "Texture not matched: " + Path.GetFileName(file) + "\n";
+                        continue;
                     }
                 }
                 outFs.SeekBegin();
