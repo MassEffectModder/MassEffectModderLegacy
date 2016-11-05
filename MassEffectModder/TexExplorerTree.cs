@@ -79,6 +79,7 @@ namespace MassEffectModder
                     return;
                 }
 
+                GameData.packageFiles.Sort();
                 if (_gameSelected == MeType.ME1_TYPE)
                     sortPackagesME1();
                 for (int i = 0; i < GameData.packageFiles.Count; i++)
