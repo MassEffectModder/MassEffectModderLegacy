@@ -20,6 +20,7 @@
  */
 
 using StreamHelpers;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
@@ -216,13 +217,17 @@ namespace MassEffectModder
                                 foundTex.name = name;
                                 foundTex.crc = crc;
                                 foundTex.packageName = texture.packageName;
-                                foundTex.mipmapOffset = mipmap.dataOffset;
                                 _textures.Add(foundTex);
                             }
                         }
                         else
                         {
-                            FoundTexture foundTexName = _textures.Find(s => s.name == name && s.packageName == texture.packageName);
+                            FoundTexture foundTexName;
+                            List<FoundTexture> foundList = _textures.FindAll(s => s.name == name && s.packageName == texture.packageName);
+                            if (foundList.Count > 1)
+                                foundTexName = _textures.Find(s => s.name == name && s.packageName == texture.packageName && s.crc == texture.getCrcMipmap());
+                            else
+                                foundTexName = foundList[0];
                             foundTexName.list.Add(matchTexture);
                         }
                     }
@@ -242,7 +247,6 @@ namespace MassEffectModder
                             foundTex.name = name;
                             foundTex.crc = crc;
                             foundTex.packageName = texture.packageName;
-                            foundTex.mipmapOffset = mipmap.dataOffset;
                             _textures.Add(foundTex);
                         }
                     }

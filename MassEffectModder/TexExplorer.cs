@@ -52,7 +52,6 @@ namespace MassEffectModder
     {
         public string name;
         public uint crc;
-        public uint mipmapOffset;
         public string packageName;
         public string displayName;
         public List<MatchedTexture> list;

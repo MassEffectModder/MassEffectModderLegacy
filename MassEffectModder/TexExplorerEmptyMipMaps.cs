@@ -21,6 +21,7 @@
 
 using StreamHelpers;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -75,7 +76,26 @@ namespace MassEffectModder
                                     texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extUnc))
                                 {
                                     string textureName = package.exportsTable[l].objectName;
-                                    FoundTexture foundTexName = _textures.Find(s => s.name == textureName && s.packageName == texture.packageName && s.crc == texture.getCrcMipmap());
+                                    FoundTexture foundTexName;
+                                    List<FoundTexture> foundList = _textures.FindAll(s => s.name == textureName && s.packageName == texture.packageName);
+                                    if (foundList.Count > 1)
+                                    {
+                                        foundTexName = new FoundTexture();
+                                        for (int t = 0; t < foundList.Count; t++)
+                                        {
+                                            if (foundList[t].list.Exists(s => s.exportID == l))
+                                            {
+                                                foundTexName = foundList[t];
+                                                break;
+                                            }
+                                        }
+                                        if (foundTexName.crc == 0)
+                                            throw new Exception();
+                                    }
+                                    else
+                                    {
+                                        foundTexName = foundList[0];
+                                    }
                                     Package refPkg = new Package(GameData.GamePath + foundTexName.list[0].path, true);
                                     int refExportId = foundTexName.list[0].exportID;
                                     byte[] refData = refPkg.getExportData(refExportId);

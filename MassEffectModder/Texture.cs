@@ -310,13 +310,24 @@ namespace MassEffectModder
             return data;
         }
 
-        public uint getCrcMipmap()
+        private uint getCrcData(byte[] data)
         {
-            byte[] data = getImageData();
+            if (data == null)
+                return 0;
             if (properties.getProperty("Format").valueName == "PF_NormalMap_HQ") // only ME1 and ME2
                 return (uint)~ParallelCRC.Compute(data, 0, data.Length / 2);
             else
                 return (uint)~ParallelCRC.Compute(data);
+        }
+
+        public uint getCrcMipmap(MipMap mipmap)
+        {
+            return getCrcData(getMipMapData(mipmap));
+        }
+
+        public uint getCrcMipmap()
+        {
+            return getCrcData(getImageData());
         }
 
         public MipMap getTopMipmap()
