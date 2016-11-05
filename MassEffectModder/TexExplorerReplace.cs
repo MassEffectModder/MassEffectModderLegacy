@@ -113,6 +113,7 @@ namespace MassEffectModder
                 }
 
                 // reuse lower mipmaps from game data which not exist in source image
+                mipmapSize = image.mipMaps[0].origWidth * image.mipMaps[0].origHeight;
                 for (int t = 0; t < texture.mipMapsList.Count; t++)
                 {
                     int size = texture.mipMapsList[t].width * texture.mipMapsList[t].height;
