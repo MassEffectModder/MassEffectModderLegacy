@@ -155,6 +155,7 @@ namespace MassEffectModder
             treeViewPackages.EndUpdate();
             treeViewPackages.Nodes[0].Expand();
         }
+
         void sortPackagesME1()
         {
             _mainWindow.updateStatusLabel("Sorting packages...");

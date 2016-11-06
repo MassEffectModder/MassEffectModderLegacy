@@ -79,6 +79,7 @@ namespace MassEffectModder
             this.searchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miscToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeEmptyMipmapsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dumpAllTexturesInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStripTextures.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -367,7 +368,8 @@ namespace MassEffectModder
             // miscToolStripMenuItem
             // 
             this.miscToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.removeEmptyMipmapsToolStripMenuItem});
+            this.removeEmptyMipmapsToolStripMenuItem,
+            this.dumpAllTexturesInfoToolStripMenuItem});
             this.miscToolStripMenuItem.Name = "miscToolStripMenuItem";
             this.miscToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.miscToolStripMenuItem.Text = "Misc";
@@ -375,9 +377,16 @@ namespace MassEffectModder
             // removeEmptyMipmapsToolStripMenuItem
             // 
             this.removeEmptyMipmapsToolStripMenuItem.Name = "removeEmptyMipmapsToolStripMenuItem";
-            this.removeEmptyMipmapsToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.removeEmptyMipmapsToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
             this.removeEmptyMipmapsToolStripMenuItem.Text = "Remove empty mipmaps";
             this.removeEmptyMipmapsToolStripMenuItem.Click += new System.EventHandler(this.removeEmptyMipmapsToolStripMenuItem_Click);
+            // 
+            // dumpAllTexturesInfoToolStripMenuItem
+            // 
+            this.dumpAllTexturesInfoToolStripMenuItem.Name = "dumpAllTexturesInfoToolStripMenuItem";
+            this.dumpAllTexturesInfoToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
+            this.dumpAllTexturesInfoToolStripMenuItem.Text = "Dump all mapped textures info";
+            this.dumpAllTexturesInfoToolStripMenuItem.Click += new System.EventHandler(this.dumpAllTexturesInfoToolStripMenuItem_Click);
             // 
             // TexExplorer
             // 
@@ -437,5 +446,6 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripMenuItem packMODToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem miscToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem removeEmptyMipmapsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem dumpAllTexturesInfoToolStripMenuItem;
     }
 }
