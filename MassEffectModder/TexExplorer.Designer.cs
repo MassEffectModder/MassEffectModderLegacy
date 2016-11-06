@@ -80,6 +80,7 @@ namespace MassEffectModder
             this.miscToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeEmptyMipmapsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dumpAllTexturesInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dumpAllTexturesMipmapsInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStripTextures.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -369,7 +370,8 @@ namespace MassEffectModder
             // 
             this.miscToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.removeEmptyMipmapsToolStripMenuItem,
-            this.dumpAllTexturesInfoToolStripMenuItem});
+            this.dumpAllTexturesInfoToolStripMenuItem,
+            this.dumpAllTexturesMipmapsInfoToolStripMenuItem});
             this.miscToolStripMenuItem.Name = "miscToolStripMenuItem";
             this.miscToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.miscToolStripMenuItem.Text = "Misc";
@@ -387,6 +389,13 @@ namespace MassEffectModder
             this.dumpAllTexturesInfoToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
             this.dumpAllTexturesInfoToolStripMenuItem.Text = "Dump all mapped textures info";
             this.dumpAllTexturesInfoToolStripMenuItem.Click += new System.EventHandler(this.dumpAllTexturesInfoToolStripMenuItem_Click);
+            // 
+            // dumpAllTexturesMipmapsInfoToolStripMenuItem
+            // 
+            this.dumpAllTexturesMipmapsInfoToolStripMenuItem.Name = "dumpAllTexturesMipmapsInfoToolStripMenuItem";
+            this.dumpAllTexturesMipmapsInfoToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
+            this.dumpAllTexturesMipmapsInfoToolStripMenuItem.Text = "Dump all package textures info";
+            this.dumpAllTexturesMipmapsInfoToolStripMenuItem.Click += new System.EventHandler(this.dumpAllTexturesMipmapsInfoToolStripMenuItem_Click);
             // 
             // TexExplorer
             // 
@@ -447,5 +456,6 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripMenuItem miscToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem removeEmptyMipmapsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem dumpAllTexturesInfoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem dumpAllTexturesMipmapsInfoToolStripMenuItem;
     }
 }
