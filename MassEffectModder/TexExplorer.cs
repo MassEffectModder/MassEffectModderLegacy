@@ -626,5 +626,68 @@ namespace MassEffectModder
                 searchTexture(name, 0);
             }
         }
+
+        private void dumpAllTexturesInfoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (SaveFileDialog logFile = new SaveFileDialog())
+            {
+                logFile.Title = "Please select output TXT file";
+                logFile.Filter = "TXT file | *.txt";
+                if (logFile.ShowDialog() != DialogResult.OK)
+                    return;
+                string filename = logFile.FileName;
+                if (File.Exists(filename))
+                    File.Delete(filename);
+
+                _mainWindow.updateStatusLabel("Dump textures information...");
+                _mainWindow.updateStatusLabel2("");
+
+                using (FileStream fs = new FileStream(filename, FileMode.CreateNew, FileAccess.Write))
+                {
+                    for (int i = 0; i < nodeList.Count; i++)
+                    {
+                        PackageTreeNode node = nodeList[i];
+                        _mainWindow.updateStatusLabel("Dump textures information package: " + (i + 1) + " of " + nodeList.Count);
+                        _mainWindow.updateStatusLabel2("");
+                        fs.WriteStringASCII("--- Package: " + node.Text + " ---\n");
+                        for (int index = 0; index < node.textures.Count; index++)
+                        {
+                            MatchedTexture nodeTexture = node.textures[index].list[0];
+                            Package package = cachePackageMgr.OpenPackage(GameData.GamePath + nodeTexture.path);
+                            Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
+                            string text = "";
+
+                            text += "Texture name:  " + node.textures[index].name + "\n";
+                            text += "Texture original CRC:  " + string.Format("0x{0:X8}", node.textures[index].crc) + "\n";
+                            text += "Node name:     " + node.textures[index].displayName + "\n";
+                            text += "Package name:  " + node.textures[index].packageName + "\n";
+                            text += "Packages:\n";
+                            for (int l = 0; l < node.textures[index].list.Count; l++)
+                            {
+                                text += "  Export Id:     " + node.textures[index].list[l].exportID + "\n";
+                                text += "  Package path:  " + node.textures[index].list[l].path + "\n";
+                            }
+                            text += "Texture properties:\n";
+                            for (int l = 0; l < texture.properties.texPropertyList.Count; l++)
+                            {
+                                text += texture.properties.getDisplayString(l);
+                            }
+                            for (int l = 0; l < texture.mipMapsList.Count; l++)
+                            {
+                                text += "MipMap: " + l + ", " + texture.mipMapsList[l].width + "x" + texture.mipMapsList[l].height + "\n";
+                                text += "  StorageType: " + texture.mipMapsList[l].storageType + "\n";
+                                text += "  DataOffset:  " + (int)texture.mipMapsList[l].dataOffset + "\n";
+                                text += "  CompSize:    " + texture.mipMapsList[l].compressedSize + "\n";
+                                text += "  UnCompSize:  " + texture.mipMapsList[l].uncompressedSize + "\n";
+                            }
+                            fs.WriteStringASCII(text);
+                        }
+                    }
+                }
+                _mainWindow.updateStatusLabel("Dump textures information finished.");
+                _mainWindow.updateStatusLabel2("");
+            }
+        }
+
     }
 }
