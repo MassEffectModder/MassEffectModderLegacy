@@ -230,7 +230,6 @@ namespace MassEffectModder
                 else
                 {
                     string text = "";
-                    text += "Texture name:  " + node.textures[index].name + "\n";
                     text += "Texture original CRC:  " + string.Format("0x{0:X8}", node.textures[index].crc) + "\n";
                     text += "Node name:     " + node.textures[index].displayName + "\n";
                     text += "Package name:  " + node.textures[index].packageName + "\n";
@@ -240,6 +239,7 @@ namespace MassEffectModder
                         Package package = cachePackageMgr.OpenPackage(GameData.GamePath + nodeTexture.path);
                         Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
                         text += "\nTexture instance: " + (index2 + 1) + "\n";
+                        text += "  Texture name:  " + package.exportsTable[nodeTexture.exportID].objectName + "\n";
                         text += "  Export Id:     " + node.textures[index].list[index2].exportID + "\n";
                         text += "  Package path:  " + node.textures[index].list[index2].path + "\n";
                         text += "  Texture properties:\n";
@@ -656,14 +656,14 @@ namespace MassEffectModder
                         for (int index = 0; index < node.textures.Count; index++)
                         {
                             string text = "";
-                            text += "\nTexture name:  " + node.textures[index].name + "\n";
-                            text += "Texture original CRC:  " + string.Format("0x{0:X8}", node.textures[index].crc) + "\n";
+                            text += "\nTexture original CRC:  " + string.Format("0x{0:X8}", node.textures[index].crc) + "\n";
                             for (int index2 = 0; index2 < node.textures[index].list.Count; index2++)
                             {
                                 text += "\nTexture instance: " + (index2 + 1) + "\n";
                                 MatchedTexture nodeTexture = node.textures[index].list[index2];
                                 Package package = cachePackageMgr.OpenPackage(GameData.GamePath + nodeTexture.path);
                                 Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
+                                text += "  Texture name:  " + package.exportsTable[nodeTexture.exportID].objectName + "\n";
                                 text += "  Export Id:     " + node.textures[index].list[index2].exportID + "\n";
                                 text += "  Package path:  " + node.textures[index].list[index2].path + "\n";
                                 text += "  Texture properties:\n";
