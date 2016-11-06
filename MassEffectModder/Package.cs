@@ -977,7 +977,7 @@ namespace MassEffectModder
             }
             if (endOfTablesOffset < namesOffset || endOfTablesOffset < importsOffset)
             {
-                packageFile.SeekBegin();
+                tempOutput.SeekBegin();
                 tempOutput.Write(packageHeader, 0, packageHeader.Length);
             }
             packageFile.Close();
