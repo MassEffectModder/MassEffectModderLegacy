@@ -463,11 +463,19 @@ namespace MassEffectModder
                 if (compressed) // allowed only uncompressed
                     throw new Exception();
                 loadNames(packageFile);
-                loadImports(packageFile);
             }
             else
             {
                 loadNames(packageData);
+            }
+            if (endOfTablesOffset < importsOffset)
+            {
+                if (compressed) // allowed only uncompressed
+                    throw new Exception();
+                loadImports(packageFile);
+            }
+            else
+            {
                 loadImports(packageData);
             }
             loadExports(packageData);
