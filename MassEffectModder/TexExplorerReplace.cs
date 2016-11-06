@@ -107,29 +107,29 @@ namespace MassEffectModder
                 }
 
                 // remove lower mipmaps from source image which not exist in game data
-                int mipmapSize = texture.mipMapsList[0].width * texture.mipMapsList[0].height;
                 for (int t = 0; t < image.mipMaps.Count(); t++)
                 {
-                    int size = image.mipMaps[t].origWidth * image.mipMaps[t].origHeight;
-                    if (size > mipmapSize)
-                        continue;
-                    if (!texture.mipMapsList.Exists(m => m.width == image.mipMaps[t].origWidth && m.height == image.mipMaps[t].origHeight))
+                    if (image.mipMaps[t].origWidth <= texture.mipMapsList[0].width &&
+                        image.mipMaps[t].origHeight <= texture.mipMapsList[0].height)
                     {
-                        image.mipMaps.RemoveAt(t--);
+                        if (!texture.mipMapsList.Exists(m => m.width == image.mipMaps[t].origWidth && m.height == image.mipMaps[t].origHeight))
+                        {
+                            image.mipMaps.RemoveAt(t--);
+                        }
                     }
                 }
 
                 // reuse lower mipmaps from game data which not exist in source image
-                mipmapSize = image.mipMaps[0].origWidth * image.mipMaps[0].origHeight;
                 for (int t = 0; t < texture.mipMapsList.Count; t++)
                 {
-                    int size = texture.mipMapsList[t].width * texture.mipMapsList[t].height;
-                    if (size > mipmapSize)
-                        continue;
-                    if (!image.mipMaps.Exists(m => m.origWidth == texture.mipMapsList[t].width && m.origHeight == texture.mipMapsList[t].height))
+                    if (texture.mipMapsList[t].width <= image.mipMaps[0].origWidth &&
+                        texture.mipMapsList[t].height <= image.mipMaps[0].origHeight)
                     {
-                        DDSImage.MipMap mipmap = new DDSImage.MipMap(texture.getMipMapData(texture.mipMapsList[t]), ddsFormat, texture.mipMapsList[t].width, texture.mipMapsList[t].height);
-                        image.mipMaps.Add(mipmap);
+                        if (!image.mipMaps.Exists(m => m.origWidth == texture.mipMapsList[t].width && m.origHeight == texture.mipMapsList[t].height))
+                        {
+                            DDSImage.MipMap mipmap = new DDSImage.MipMap(texture.getMipMapData(texture.mipMapsList[t]), ddsFormat, texture.mipMapsList[t].width, texture.mipMapsList[t].height);
+                            image.mipMaps.Add(mipmap);
+                        }
                     }
                 }
 
