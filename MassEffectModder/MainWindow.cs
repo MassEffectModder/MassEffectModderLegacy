@@ -189,7 +189,7 @@ namespace MassEffectModder
             using (OpenFileDialog modFile = new OpenFileDialog())
             {
                 modFile.Title = "Please select Mod file";
-                modFile.Filter = "MOD file | *.mod; *.mem";
+                modFile.Filter = "MOD file | *.mem";
                 if (modFile.ShowDialog() != DialogResult.OK)
                     return;
                 updateStatusLabel("Processing mod: " + modFile.FileName);
@@ -210,17 +210,22 @@ namespace MassEffectModder
                         int expId = -1;
                         string package = "";
                         ParseLegacyScriptMod(scriptLegacy, ref package, ref expId);
-                        len = fs.ReadInt32();
-                        byte[] data = fs.ReadToBuffer(len);
                         if (expId != -1 && package != "")
                         {
                             string[] packages = Directory.GetFiles(GameData.MainData, package, SearchOption.AllDirectories);
                             if (packages.Count() != 0)
                             {
+                                len = fs.ReadInt32();
+                                byte[] data = fs.ReadToBuffer(len);
                                 Package pkg = new Package(packages[0]);
                                 pkg.setExportData(expId, data);
                                 pkg.SaveToFile();
                             }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Legacy Mod not compatible!");
+                            return;
                         }
                     }
                     else
