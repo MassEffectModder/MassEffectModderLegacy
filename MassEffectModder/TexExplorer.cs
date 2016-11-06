@@ -101,7 +101,7 @@ namespace MassEffectModder
         {
             MODsToolStripMenuItem.Enabled = enable;
             searchToolStripMenuItem.Enabled = enable;
-            removeEmptyMipmapsToolStripMenuItem.Enabled = enable;
+            miscToolStripMenuItem.Enabled = enable;
             treeViewPackages.Enabled = enable;
             listViewResults.Enabled = enable;
             listViewTextures.Enabled = enable;
@@ -377,7 +377,7 @@ namespace MassEffectModder
             loadMODsToolStripMenuItem.Enabled = !enable;
             clearMODsToolStripMenuItem.Enabled = false;
             packMODToolStripMenuItem.Enabled = !enable;
-            removeEmptyMipmapsToolStripMenuItem.Enabled = !enable;
+            miscToolStripMenuItem.Enabled = !enable;
             Application.DoEvents();
         }
 
@@ -387,7 +387,7 @@ namespace MassEffectModder
             clearMODsToolStripMenuItem.Enabled = enable;
             packMODToolStripMenuItem.Enabled = true;
             searchToolStripMenuItem.Enabled = !enable;
-            removeEmptyMipmapsToolStripMenuItem.Enabled = !enable;
+            miscToolStripMenuItem.Enabled = !enable;
             Application.DoEvents();
         }
 
