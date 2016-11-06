@@ -72,9 +72,6 @@ namespace MassEffectModder
         public static GameData gameData;
         List<FoundTexture> _textures;
         bool previewShow = true;
-        bool moddingEnable = false;
-        FileStream fileStreamMod;
-        uint numberOfTexturesMod;
         CachePackageMgr cachePackageMgr;
 
         public class PackageTreeNode : TreeNode
@@ -117,7 +114,6 @@ namespace MassEffectModder
             _mainWindow.updateStatusLabel("");
             _mainWindow.updateStatusLabel2("");
             EnableMenuOptions(false);
-            eNDModdingToolStripMenuItem.Enabled = false;
             clearMODsToolStripMenuItem.Enabled = false;
             listViewResults.Hide();
             listViewMods.Hide();
@@ -378,8 +374,6 @@ namespace MassEffectModder
 
         private void switchModMode(bool enable)
         {
-            sTARTModdingToolStripMenuItem.Enabled = !enable;
-            eNDModdingToolStripMenuItem.Enabled = enable;
             loadMODsToolStripMenuItem.Enabled = !enable;
             clearMODsToolStripMenuItem.Enabled = false;
             packMODToolStripMenuItem.Enabled = !enable;
@@ -387,51 +381,8 @@ namespace MassEffectModder
             Application.DoEvents();
         }
 
-        private void sTARTModdingToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            switchModMode(true);
-            numberOfTexturesMod = 0;
-            moddingEnable = true;
-            fileStreamMod = File.Create(TempModFileName);
-            fileStreamMod.Seek(TextureModHeaderLength, SeekOrigin.Begin);
-        }
-
-        private void eNDModdingToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            fileStreamMod.SeekBegin();
-            fileStreamMod.WriteUInt32(TextureModTag);
-            fileStreamMod.WriteUInt32(TextureModVersion);
-            fileStreamMod.WriteUInt32((uint)_gameSelected);
-            fileStreamMod.WriteUInt32(numberOfTexturesMod);
-            fileStreamMod.Close();
-
-            if (numberOfTexturesMod > 0)
-            {
-                using (SaveFileDialog modFile = new SaveFileDialog())
-                {
-                    modFile.Title = "Please select new name for Mod file";
-                    modFile.Filter = "MOD file|*.mod; *.mem";
-                    modFile.InitialDirectory = gameData.lastCreateMODPath;
-                    if (modFile.ShowDialog() == DialogResult.OK)
-                    {
-                        gameData.lastCreateMODPath = modFile.InitialDirectory;
-                        File.Move(TempModFileName, modFile.FileName);
-                    }
-                }
-            }
-            if (File.Exists(TempModFileName))
-                File.Delete(TempModFileName);
-
-            cachePackageMgr.CloseAllWithSave();
-
-            moddingEnable = false;
-            switchModMode(false);
-        }
-
         private void switchModsMode(bool enable)
         {
-            sTARTModdingToolStripMenuItem.Enabled = !enable;
-            eNDModdingToolStripMenuItem.Enabled = !enable;
             loadMODsToolStripMenuItem.Enabled = enable;
             clearMODsToolStripMenuItem.Enabled = enable;
             packMODToolStripMenuItem.Enabled = true;
@@ -580,32 +531,6 @@ namespace MassEffectModder
 
             listTextureMod(listViewMods.SelectedItems[0].Name);
             _mainWindow.updateStatusLabel("Done.");
-            _mainWindow.updateStatusLabel2("");
-        }
-
-        private void saveModsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (listViewMods.SelectedItems.Count == 0)
-                return;
-
-            EnableMenuOptions(false);
-
-            using (FolderBrowserDialog modFile = new FolderBrowserDialog())
-            {
-                modFile.SelectedPath = gameData.lastSaveMODPath;
-                if (modFile.ShowDialog() == DialogResult.OK)
-                {
-                    gameData.lastSaveMODPath = modFile.SelectedPath;
-                    foreach (ListViewItem item in listViewMods.SelectedItems)
-                    {
-                        _mainWindow.updateStatusLabel("MOD: " + item.Text + "saving...");
-                        saveTextureMod(item.Name, modFile.SelectedPath);
-                        _mainWindow.updateStatusLabel2("");
-                    }
-                }
-            }
-            EnableMenuOptions(true);
-            _mainWindow.updateStatusLabel("MODs saved.");
             _mainWindow.updateStatusLabel2("");
         }
 

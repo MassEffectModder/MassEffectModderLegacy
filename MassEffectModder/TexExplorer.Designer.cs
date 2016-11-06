@@ -63,7 +63,6 @@ namespace MassEffectModder
             this.contextMenuStripMods = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.applyModToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteModToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveModsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extractModsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.listViewResults = new System.Windows.Forms.ListView();
             this.columnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -74,8 +73,6 @@ namespace MassEffectModder
             this.richTextBoxInfo = new System.Windows.Forms.RichTextBox();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.MODsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.sTARTModdingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.eNDModdingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadMODsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearMODsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.packMODToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -188,10 +185,9 @@ namespace MassEffectModder
             this.contextMenuStripMods.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.applyModToolStripMenuItem,
             this.deleteModToolStripMenuItem,
-            this.saveModsToolStripMenuItem,
             this.extractModsToolStripMenuItem});
             this.contextMenuStripMods.Name = "contextMenuStripTextures";
-            this.contextMenuStripMods.Size = new System.Drawing.Size(143, 92);
+            this.contextMenuStripMods.Size = new System.Drawing.Size(143, 70);
             // 
             // applyModToolStripMenuItem
             // 
@@ -206,13 +202,6 @@ namespace MassEffectModder
             this.deleteModToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
             this.deleteModToolStripMenuItem.Text = "Delete Mods";
             this.deleteModToolStripMenuItem.Click += new System.EventHandler(this.deleteModToolStripMenuItem_Click);
-            // 
-            // saveModsToolStripMenuItem
-            // 
-            this.saveModsToolStripMenuItem.Name = "saveModsToolStripMenuItem";
-            this.saveModsToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
-            this.saveModsToolStripMenuItem.Text = "Save Mods";
-            this.saveModsToolStripMenuItem.Click += new System.EventHandler(this.saveModsToolStripMenuItem_Click);
             // 
             // extractModsToolStripMenuItem
             // 
@@ -338,28 +327,12 @@ namespace MassEffectModder
             // MODsToolStripMenuItem
             // 
             this.MODsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.sTARTModdingToolStripMenuItem,
-            this.eNDModdingToolStripMenuItem,
             this.loadMODsToolStripMenuItem,
             this.clearMODsToolStripMenuItem,
             this.packMODToolStripMenuItem});
             this.MODsToolStripMenuItem.Name = "MODsToolStripMenuItem";
             this.MODsToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
             this.MODsToolStripMenuItem.Text = "MODs";
-            // 
-            // sTARTModdingToolStripMenuItem
-            // 
-            this.sTARTModdingToolStripMenuItem.Name = "sTARTModdingToolStripMenuItem";
-            this.sTARTModdingToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
-            this.sTARTModdingToolStripMenuItem.Text = "START Modding";
-            this.sTARTModdingToolStripMenuItem.Click += new System.EventHandler(this.sTARTModdingToolStripMenuItem_Click);
-            // 
-            // eNDModdingToolStripMenuItem
-            // 
-            this.eNDModdingToolStripMenuItem.Name = "eNDModdingToolStripMenuItem";
-            this.eNDModdingToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
-            this.eNDModdingToolStripMenuItem.Text = "END Modding";
-            this.eNDModdingToolStripMenuItem.Click += new System.EventHandler(this.eNDModdingToolStripMenuItem_Click);
             // 
             // loadMODsToolStripMenuItem
             // 
@@ -445,8 +418,6 @@ namespace MassEffectModder
         private System.Windows.Forms.ColumnHeader columnHeader;
         private System.Windows.Forms.ToolStripMenuItem removeEmptyMipmapsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem MODsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem sTARTModdingToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem eNDModdingToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadMODsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem clearMODsToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip contextMenuStripMods;
@@ -454,7 +425,6 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripMenuItem deleteModToolStripMenuItem;
         private System.Windows.Forms.ListView listViewMods;
         private System.Windows.Forms.ColumnHeader columnHeader1;
-        private System.Windows.Forms.ToolStripMenuItem saveModsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem extractModsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem packMODToolStripMenuItem;
     }

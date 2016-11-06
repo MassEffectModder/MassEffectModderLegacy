@@ -372,8 +372,6 @@ namespace MassEffectModder
                         return;
                 }
 
-                bool startMod = sTARTModdingToolStripMenuItem.Enabled;
-                bool endMod = eNDModdingToolStripMenuItem.Enabled;
                 bool loadMod = loadMODsToolStripMenuItem.Enabled;
                 bool clearMod = clearMODsToolStripMenuItem.Enabled;
                 bool packMod = packMODToolStripMenuItem.Enabled;
@@ -385,33 +383,12 @@ namespace MassEffectModder
 
                 replaceTexture(image, node.textures[index].list);
 
-                if (moddingEnable)
-                {
-                    using (FileStream fs = new FileStream(selectDDS.FileName, FileMode.Open, FileAccess.Read))
-                    {
-                        fileStreamMod.WriteStringASCIINull(node.textures[index].name);
-                        fileStreamMod.WriteUInt32(node.textures[index].crc);
-                        byte[] src = fs.ReadToBuffer((int)fs.Length);
-                        byte[] dst = ZlibHelper.Zlib.Compress(src);
-                        fileStreamMod.WriteInt32(src.Length);
-                        fileStreamMod.WriteInt32(dst.Length);
-                        fileStreamMod.WriteFromBuffer(dst);
-                    }
-                    numberOfTexturesMod++;
-                }
-                else
-                {
-                    cachePackageMgr.CloseAllWithSave();
-                }
+                cachePackageMgr.CloseAllWithSave();
 
                 EnableMenuOptions(true);
-                sTARTModdingToolStripMenuItem.Enabled = startMod;
-                eNDModdingToolStripMenuItem.Enabled = endMod;
                 loadMODsToolStripMenuItem.Enabled = loadMod;
                 clearMODsToolStripMenuItem.Enabled = clearMod;
                 packMODToolStripMenuItem.Enabled = packMod;
-                if (moddingEnable)
-                    switchModMode(true);
                 listViewTextures.Focus();
                 item.Selected = false;
                 item.Selected = true;

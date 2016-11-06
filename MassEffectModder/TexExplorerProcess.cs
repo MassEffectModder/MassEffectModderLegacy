@@ -144,36 +144,31 @@ namespace MassEffectModder
 
         private void extractTextureMod(string filenameMod, string outDir)
         {
-            processTextureMod(filenameMod, -1, true, false, false, outDir);
-        }
-
-        private void saveTextureMod(string filenameMod, string outDir)
-        {
-            processTextureMod(filenameMod, -1, false, false, true, outDir);
+            processTextureMod(filenameMod, -1, true, false, outDir);
         }
 
         private void previewTextureMod(string filenameMod, int previewIndex)
         {
-            processTextureMod(filenameMod, previewIndex, false, false, false, "");
+            processTextureMod(filenameMod, previewIndex, false, false, "");
         }
 
         private void replaceTextureMod(string filenameMod)
         {
-            processTextureMod(filenameMod, -1, false, true, false, "");
+            processTextureMod(filenameMod, -1, false, true, "");
         }
 
         private void listTextureMod(string filenameMod)
         {
-            processTextureMod(filenameMod, -1, false, false, false, "");
+            processTextureMod(filenameMod, -1, false, false, "");
         }
 
-        private void processTextureMod(string filenameMod, int previewIndex, bool extract, bool replace, bool store, string outDir)
+        private void processTextureMod(string filenameMod, int previewIndex, bool extract, bool replace, string outDir)
         {
             using (FileStream fs = new FileStream(filenameMod, FileMode.Open, FileAccess.Read))
             {
                 bool legacy = false;
 
-                if (previewIndex == -1 && !store && !extract && !replace && !store)
+                if (previewIndex == -1 && !extract && !replace)
                 {
                     listViewTextures.BeginUpdate();
                 }
@@ -214,15 +209,6 @@ namespace MassEffectModder
                     string[] ddsList = Encoding.ASCII.GetString(listText).Trim('\0').Replace("\r", "").TrimEnd('\n').Split('\n');
 
                     FileStream outFile = null;
-                    if (store)
-                    {
-                        outFile = new FileStream(Path.Combine(outDir, Path.GetFileNameWithoutExtension(filenameMod)) + ".mem", FileMode.Create, FileAccess.Write);
-                        outFile.WriteUInt32(TextureModTag);
-                        outFile.WriteUInt32(TextureModVersion);
-                        outFile.WriteUInt32((uint)_gameSelected);
-                        outFile.WriteInt32(ddsList.Count());
-                    }
-
                     using (ZipInputStream zipFs = new ZipInputStream(fs, tpfXorKey))
                     {
                         zipFs.Password = password;
@@ -262,11 +248,6 @@ namespace MassEffectModder
                             _mainWindow.updateStatusLabel("Processing MOD: " +
                                     Path.GetFileNameWithoutExtension(filenameMod) + " - Texture: " + name);
 
-                            if (store)
-                            {
-                                outFile.WriteStringASCIINull(name);
-                                outFile.WriteUInt32(crc);
-                            }
                             if (extract)
                             {
                                 filename = name + "-" + string.Format("0x{0:X8}", crc) + ".dds";
@@ -287,24 +268,6 @@ namespace MassEffectModder
                                 DDSImage image = new DDSImage(outMem);
                                 pictureBoxPreview.Image = image.mipMaps[0].bitmap;
                                 break;
-                            }
-                            else if (store)
-                            {
-                                MemoryStream outMem = new MemoryStream();
-                                for (;;)
-                                {
-                                    int readed = zipFs.Read(buffer, 0, buffer.Length);
-                                    if (readed > 0)
-                                        outMem.Write(buffer, 0, readed);
-                                    else
-                                        break;
-                                }
-                                outMem.SeekBegin();
-                                byte[] src = outMem.ReadToBuffer(outMem.Length);
-                                byte[] dst = ZlibHelper.Zlib.Compress(src);
-                                outFile.WriteInt32(src.Length);
-                                outFile.WriteInt32(dst.Length);
-                                outFile.WriteFromBuffer(dst);
                             }
                             else if (extract)
                             {
@@ -340,8 +303,6 @@ namespace MassEffectModder
                             index++;
                         }
                     }
-                    if (store)
-                        outFile.Close();
                 }
                 else
                 {
@@ -361,22 +322,7 @@ namespace MassEffectModder
                             return;
                         }
                     }
-                    FileStream outFile = null;
-                    if (store)
-                    {
-                        if (!legacy)
-                        {
-                            File.Copy(filenameMod, Path.Combine(outDir, Path.GetFileName(filenameMod)), true);
-                            return;
-                        }
-                        outFile = new FileStream(Path.Combine(outDir, Path.GetFileName(filenameMod)), FileMode.Create, FileAccess.Write);
-                        outFile.WriteUInt32(TextureModTag);
-                        outFile.WriteUInt32(TextureModVersion);
-                        outFile.WriteUInt32((uint)_gameSelected);
-                    }
                     int numTextures = fs.ReadInt32();
-                    if (store)
-                        outFile.WriteInt32(numTextures);
                     for (int i = 0; i < numTextures; i++)
                     {
                         string name;
@@ -417,17 +363,6 @@ namespace MassEffectModder
                             }
                             continue;
                         }
-                        if (store)
-                        {
-                            outFile.WriteStringASCIINull(name);
-                            outFile.WriteUInt32(crc);
-                            outFile.WriteUInt32(decSize);
-                            byte[] src = fs.ReadToBuffer((int)fs.Length);
-                            dst = ZlibHelper.Zlib.Compress(src);
-                            outFile.WriteInt32(dst.Length);
-                            outFile.WriteFromBuffer(dst);
-                            continue;
-                        }
                         if (previewIndex != -1)
                         {
                             if (i != previewIndex)
@@ -463,10 +398,8 @@ namespace MassEffectModder
                             }
                         }
                     }
-                    if (store)
-                        outFile.Close();
                 }
-                if (previewIndex == -1 && !store && !extract && !replace && !store)
+                if (previewIndex == -1 && !extract && !replace)
                 {
                     listViewTextures.EndUpdate();
                 }
