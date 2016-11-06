@@ -472,6 +472,29 @@ namespace MassEffectModder
                                 richTextBoxInfo.Text += "Texture does not have all mipmaps: " + Path.GetFileName(file) + "\n";
                             }
 
+                            Package pkg = new Package(GameData.GamePath + foundCrcList[l].list[0].path);
+                            Texture texture = new Texture(pkg, foundCrcList[l].list[0].exportID, pkg.getExportData(foundCrcList[l].list[0].exportID));
+
+                            if (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1)
+                            {
+                                richTextBoxInfo.Text += "DDS file must have mipmaps: " + Path.GetFileName(file) + "\n";
+                                continue;
+                            }
+
+                            DDSFormat ddsFormat = DDSImage.convertFormat(texture.properties.getProperty("Format").valueName);
+                            if (image.ddsFormat != ddsFormat)
+                            {
+                                richTextBoxInfo.Text += "DDS file not match expected texture format: " + Path.GetFileName(file) + "\n";
+                                continue;
+                            }
+
+                            if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
+                                texture.mipMapsList[0].width / texture.mipMapsList[0].height)
+                            {
+                                richTextBoxInfo.Text += "DDS file not match game data texture aspect ratio: " + Path.GetFileName(file) + "\n";
+                                continue;
+                            }
+
                             _mainWindow.updateStatusLabel2("Texture " + (n + 1) + " of " + files.Count() + ", Name: " + textureName);
 
                             byte[] dst = ZlibHelper.Zlib.Compress(src);
