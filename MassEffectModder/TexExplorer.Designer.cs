@@ -377,6 +377,7 @@ namespace MassEffectModder
             this.removeEmptyMipmapsToolStripMenuItem.Name = "removeEmptyMipmapsToolStripMenuItem";
             this.removeEmptyMipmapsToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.removeEmptyMipmapsToolStripMenuItem.Text = "Remove empty mipmaps";
+            this.removeEmptyMipmapsToolStripMenuItem.Click += new System.EventHandler(this.removeEmptyMipmapsToolStripMenuItem_Click);
             // 
             // TexExplorer
             // 
