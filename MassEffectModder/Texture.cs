@@ -73,6 +73,7 @@ namespace MassEffectModder
         byte[] mipMapData = null;
         public string packageName;
         byte[] restOfData;
+        string packagePath;
 
         public Texture(Package package, int exportId, byte[] data, bool fixDim = true)
         {
@@ -80,6 +81,7 @@ namespace MassEffectModder
             if (data.Length == properties.propertyEndOffset)
                 return;
 
+            packagePath = package.packageFile.Name;
             packageName = Path.GetFileNameWithoutExtension(package.packageFile.Name).ToUpper();
             if (GameData.gameType == MeType.ME1_TYPE && package.compressed)
             {
@@ -395,8 +397,16 @@ namespace MassEffectModder
                         }
                         else
                         {
-                            string archive = properties.getProperty("TextureFileCacheName").valueName + ".tfc";
-                            filename = GameData.tfcFiles.Find(s => Path.GetFileName(s).Equals(archive, StringComparison.OrdinalIgnoreCase));
+                            string archive = properties.getProperty("TextureFileCacheName").valueName;
+                            filename = Path.Combine(GameData.MainData, archive + ".tfc");
+                            if (packagePath.Contains("\\DLC"))
+                            {
+                                string DLCArchiveFile = Path.Combine(Path.GetDirectoryName((packagePath)), archive + ".tfc");
+                                if (File.Exists(DLCArchiveFile))
+                                    filename = DLCArchiveFile;
+                                else if (GameData.gameType == MeType.ME2_TYPE)
+                                    filename = Path.Combine(GameData.MainData, "Textures.tfc");
+                            }
                         }
 
                         using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
