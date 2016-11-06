@@ -62,7 +62,7 @@ namespace MassEffectModder
         const uint textureMapBinTag = 0x5054454D;
         const uint textureMapBinVersion = 1;
         const string TempModFileName = "TextureMod.tmp";
-        const uint TextureModTag = 0x444F4D54;
+        public const uint TextureModTag = 0x444F4D54;
         const uint TextureModVersion = 1;
         const uint TextureModHeaderLength = 16;
 

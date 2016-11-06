@@ -197,6 +197,11 @@ namespace MassEffectModder
                 {
                     uint tag = fs.ReadUInt32();
                     uint version = fs.ReadUInt32();
+                    if (tag == TexExplorer.TextureModTag)
+                    {
+                        MessageBox.Show("This is textures Mod!");
+                        return;
+                    }
                     if (tag != ExportModTag || version != ExportModVersion)
                     {
                         fs.SeekBegin();
