@@ -398,7 +398,7 @@ namespace MassEffectModder
             using (OpenFileDialog modFile = new OpenFileDialog())
             {
                 modFile.Title = "Please select Mod file";
-                modFile.Filter = "MOD file | *.mod; *.mem; *.tpf";
+                modFile.Filter = "MOD file | *.mod; *.mem";
                 modFile.Multiselect = true;
                 modFile.InitialDirectory = gameData.lastLoadMODPath;
                 if (modFile.ShowDialog() != DialogResult.OK)
@@ -416,42 +416,32 @@ namespace MassEffectModder
                 foreach (string file in files)
                 {
                     bool legacy = false;
-                    bool tpf = false;
                     _mainWindow.updateStatusLabel("MOD: " + Path.GetFileNameWithoutExtension(file) + " loading...");
-                    if (Path.GetExtension(file).ToLower() == ".tpf")
+                    using (FileStream fs = new FileStream(file, FileMode.Open))
                     {
-                        tpf = true;
-                    }
-                    else
-                    {
-                        using (FileStream fs = new FileStream(file, FileMode.Open))
+                        uint tag = fs.ReadUInt32();
+                        uint version = fs.ReadUInt32();
+                        if (tag != TextureModTag || version != TextureModVersion)
                         {
-                            uint tag = fs.ReadUInt32();
-                            uint version = fs.ReadUInt32();
-                            if (tag != TextureModTag || version != TextureModVersion)
+                            fs.SeekBegin();
+                            richTextBoxInfo.Text = "";
+                            if (!checkTextureMod(fs))
                             {
-                                fs.SeekBegin();
-                                richTextBoxInfo.Text = "";
-                                if (!checkTextureMod(fs))
-                                {
-                                    MessageBox.Show("File " + file + " is not MOD, omitting...");
-                                    continue;
-                                }
-                                if (richTextBoxInfo.Text != "")
-                                {
-                                    richTextBoxInfo.Show();
-                                    pictureBoxPreview.Hide();
-                                    MessageBox.Show("There were some errors while process.");
-                                }
-                                legacy = true;
+                                MessageBox.Show("File " + file + " is not MOD, omitting...");
+                                continue;
                             }
+                            if (richTextBoxInfo.Text != "")
+                            {
+                                richTextBoxInfo.Show();
+                                pictureBoxPreview.Hide();
+                                MessageBox.Show("There were some errors while process.");
+                            }
+                            legacy = true;
                         }
                     }
                     string desc;
                     if (legacy)
                         desc = Path.GetFileNameWithoutExtension(file) + " (Legacy MOD - Read Only)";
-                    else if (tpf)
-                        desc = Path.GetFileNameWithoutExtension(file) + " (TPF - Read Only)";
                     else
                         desc = Path.GetFileNameWithoutExtension(file);
                     ListViewItem item = new ListViewItem(desc);

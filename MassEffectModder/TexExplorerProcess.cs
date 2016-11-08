@@ -20,13 +20,11 @@
  */
 
 using AmaroK86.ImageFormat;
-using ICSharpCode.SharpZipLib.Zip;
 using StreamHelpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
@@ -173,228 +171,94 @@ namespace MassEffectModder
                     listViewTextures.BeginUpdate();
                 }
 
-                if (Path.GetExtension(filenameMod).ToLower() == ".tpf")
+                uint tag = fs.ReadUInt32();
+                uint version = fs.ReadUInt32();
+                if (tag != TextureModTag || version != TextureModVersion)
                 {
-                    byte[] tpfXorKey = { 0xA4, 0x3F };
-                    ZipEntry entry;
-                    byte[] buffer = new byte[10000];
-                    byte[] password = {
-                            0x73, 0x2A, 0x63, 0x7D, 0x5F, 0x0A, 0xA6, 0xBD,
-                            0x7D, 0x65, 0x7E, 0x67, 0x61, 0x2A, 0x7F, 0x7F,
-                            0x74, 0x61, 0x67, 0x5B, 0x60, 0x70, 0x45, 0x74,
-                            0x5C, 0x22, 0x74, 0x5D, 0x6E, 0x6A, 0x73, 0x41,
-                            0x77, 0x6E, 0x46, 0x47, 0x77, 0x49, 0x0C, 0x4B,
-                            0x46, 0x6F
-                        };
-
-                    byte[] listText;
-                    using (FileStream zipList = new FileStream(filenameMod, FileMode.Open, FileAccess.Read))
-                    {
-                        using (ZipInputStream zipFs = new ZipInputStream(zipList, tpfXorKey))
-                        {
-                            zipFs.Password = password;
-                            while ((entry = zipFs.GetNextEntry()) != null)
-                            {
-                                if (entry.Name.ToLower() == "texmod.def")
-                                    break;
-                            }
-                            if (entry.Name.ToLower() != "texmod.def")
-                                throw new Exception("missing texmod.def in TPF file");
-
-                            listText = new byte[entry.Size];
-                            zipFs.Read(listText, 0, listText.Length);
-                        }
-                    }
-
-                    string[] ddsList = Encoding.ASCII.GetString(listText).Trim('\0').Replace("\r", "").TrimEnd('\n').Split('\n');
-
-                    FileStream outFile = null;
-                    using (ZipInputStream zipFs = new ZipInputStream(fs, tpfXorKey))
-                    {
-                        zipFs.Password = password;
-                        int index = 0;
-                        bool unique = true;
-                        while ((entry = zipFs.GetNextEntry()) != null)
-                        {
-                            uint crc = 0;
-                            string filename = Path.GetFileName(entry.Name);
-                            foreach (string dds in ddsList)
-                            {
-                                string ddsFile = dds.Split('|')[1];
-                                if (ddsFile.ToLower() != filename.ToLower())
-                                    continue;
-                                crc = uint.Parse(dds.Split('|')[0].Substring(2), System.Globalization.NumberStyles.HexNumber);
-                                break;
-                            }
-                            if (crc == 0)
-                                continue;
-
-                            string name = "";
-                            for (int i = 0; i < _textures.Count; i++)
-                            {
-                                if (_textures[i].crc == crc)
-                                {
-                                    if (name != "")
-                                    {
-                                        unique = false;
-                                        break;
-                                    }
-                                    name = _textures[i].name;
-                                }
-                            }
-                            if (name == "")
-                                name = "Unknown" + index;
-
-                            _mainWindow.updateStatusLabel("Processing MOD: " +
-                                    Path.GetFileNameWithoutExtension(filenameMod) + " - Texture: " + name);
-
-                            if (extract)
-                            {
-                                filename = name + "-" + string.Format("0x{0:X8}", crc) + ".dds";
-                                outFile = new FileStream(Path.Combine(outDir, Path.GetFileName(filename)), FileMode.Create, FileAccess.Write);
-                            }
-                            if (previewIndex == index)
-                            {
-                                MemoryStream outMem = new MemoryStream();
-                                for (;;)
-                                {
-                                    int readed = zipFs.Read(buffer, 0, buffer.Length);
-                                    if (readed > 0)
-                                        outMem.Write(buffer, 0, readed);
-                                    else
-                                        break;
-                                }
-                                outMem.SeekBegin();
-                                DDSImage image = new DDSImage(outMem);
-                                pictureBoxPreview.Image = image.mipMaps[0].bitmap;
-                                break;
-                            }
-                            else if (extract)
-                            {
-                                for (;;)
-                                {
-                                    int readed = zipFs.Read(buffer, 0, buffer.Length);
-                                    if (readed > 0)
-                                        outFile.Write(buffer, 0, readed);
-                                    else
-                                        break;
-                                }
-                                outFile.Close();
-                            }
-                            else if (previewIndex == -1)
-                            {
-                                FoundTexture foundTexture = _textures.Find(s => s.crc == crc && s.name == name);
-                                string display;
-                                if (foundTexture.crc != 0)
-                                {
-                                    if (unique)
-                                        display = foundTexture.displayName + " (" + foundTexture.packageName + ")";
-                                    else
-                                        display = foundTexture.displayName + " - Not unique - (" + foundTexture.packageName + ")";
-                                }
-                                else
-                                {
-                                    display = name + " (Not matched - CRC: " + string.Format("0x{0:X8}", crc) + ")";
-                                }
-                                ListViewItem item = new ListViewItem(display);
-                                item.Name = index.ToString();
-                                listViewTextures.Items.Add(item);
-                            }
-                            index++;
-                        }
-                    }
+                    fs.SeekBegin();
+                    legacy = true;
                 }
                 else
                 {
-                    uint tag = fs.ReadUInt32();
-                    uint version = fs.ReadUInt32();
-                    if (tag != TextureModTag || version != TextureModVersion)
+                    uint gameType = fs.ReadUInt32();
+                    if ((MeType)gameType != _gameSelected)
                     {
-                        fs.SeekBegin();
-                        legacy = true;
+                        MessageBox.Show("Mod for different game!");
+                        return;
+                    }
+                }
+                int numTextures = fs.ReadInt32();
+                for (int i = 0; i < numTextures; i++)
+                {
+                    string name;
+                    uint crc, size, dstLen = 0, decSize = 0;
+                    byte[] dst = null;
+                    if (legacy)
+                    {
+                        int len = fs.ReadInt32();
+                        name = fs.ReadStringASCII(len);
+                        name = name.Split(' ').Last();
+                        len = fs.ReadInt32();
+                        string scriptLegacy = fs.ReadStringASCII(len);
+                        FoundTexture f = ParseLegacyScriptMod(scriptLegacy, name);
+                        crc = f.crc;
+                        name = f.name;
+                        decSize = dstLen = size = fs.ReadUInt32();
+                        dst = fs.ReadToBuffer(size);
                     }
                     else
                     {
-                        uint gameType = fs.ReadUInt32();
-                        if ((MeType)gameType != _gameSelected)
-                        {
-                            MessageBox.Show("Mod for different game!");
-                            return;
-                        }
+                        name = fs.ReadStringASCIINull();
+                        crc = fs.ReadUInt32();
+                        decSize = fs.ReadUInt32();
+                        size = fs.ReadUInt32();
+                        byte[] src = fs.ReadToBuffer(size);
+                        dst = new byte[decSize];
+                        dstLen = ZlibHelper.Zlib.Decompress(src, size, dst);
                     }
-                    int numTextures = fs.ReadInt32();
-                    for (int i = 0; i < numTextures; i++)
-                    {
-                        string name;
-                        uint crc, size, dstLen = 0, decSize = 0;
-                        byte[] dst = null;
-                        if (legacy)
-                        {
-                            int len = fs.ReadInt32();
-                            name = fs.ReadStringASCII(len);
-                            name = name.Split(' ').Last();
-                            len = fs.ReadInt32();
-                            string scriptLegacy = fs.ReadStringASCII(len);
-                            FoundTexture f = ParseLegacyScriptMod(scriptLegacy, name);
-                            crc = f.crc;
-                            name = f.name;
-                            decSize = dstLen = size = fs.ReadUInt32();
-                            dst = fs.ReadToBuffer(size);
-                        }
-                        else
-                        {
-                            name = fs.ReadStringASCIINull();
-                            crc = fs.ReadUInt32();
-                            decSize = fs.ReadUInt32();
-                            size = fs.ReadUInt32();
-                            byte[] src = fs.ReadToBuffer(size);
-                            dst = new byte[decSize];
-                            dstLen = ZlibHelper.Zlib.Decompress(src, size, dst);
-                        }
 
-                        _mainWindow.updateStatusLabel("Processing MOD " + Path.GetFileNameWithoutExtension(filenameMod) +
-                            " - Texture " + (i + 1) + " of " + numTextures + " - " + name);
-                        if (extract)
+                    _mainWindow.updateStatusLabel("Processing MOD " + Path.GetFileNameWithoutExtension(filenameMod) +
+                        " - Texture " + (i + 1) + " of " + numTextures + " - " + name);
+                    if (extract)
+                    {
+                        string filename = name + "-" + string.Format("0x{0:X8}", crc) + ".dds";
+                        using (FileStream output = new FileStream(Path.Combine(outDir, Path.GetFileName(filename)), FileMode.Create, FileAccess.Write))
                         {
-                            string filename = name + "-" + string.Format("0x{0:X8}", crc) + ".dds";
-                            using (FileStream output = new FileStream(Path.Combine(outDir, Path.GetFileName(filename)), FileMode.Create, FileAccess.Write))
-                            {
-                                output.Write(dst, 0, (int)dstLen);
-                            }
+                            output.Write(dst, 0, (int)dstLen);
+                        }
+                        continue;
+                    }
+                    if (previewIndex != -1)
+                    {
+                        if (i != previewIndex)
+                        {
                             continue;
                         }
-                        if (previewIndex != -1)
+                        DDSImage image = new DDSImage(new MemoryStream(dst, 0, (int)dstLen));
+                        pictureBoxPreview.Image = image.mipMaps[0].bitmap;
+                        break;
+                    }
+                    else
+                    {
+                        FoundTexture foundTexture = _textures.Find(s => s.crc == crc && s.name == name);
+                        if (foundTexture.crc != 0)
                         {
-                            if (i != previewIndex)
+                            if (replace)
                             {
-                                continue;
+                                if (legacy)
+                                    break;
+                                DDSImage image = new DDSImage(new MemoryStream(dst, 0, (int)dstLen));
+                                if (!image.checkExistAllMipmaps())
+                                {
+                                    richTextBoxInfo.Text += "Not all mipmaps exists in texture: " + name + "\n";
+                                }
+                                replaceTexture(image, foundTexture.list);
                             }
-                            DDSImage image = new DDSImage(new MemoryStream(dst, 0, (int)dstLen));
-                            pictureBoxPreview.Image = image.mipMaps[0].bitmap;
-                            break;
-                        }
-                        else
-                        {
-                            FoundTexture foundTexture = _textures.Find(s => s.crc == crc && s.name == name);
-                            if (foundTexture.crc != 0)
+                            else
                             {
-                                if (replace)
-                                {
-                                    if (legacy)
-                                        break;
-                                    DDSImage image = new DDSImage(new MemoryStream(dst, 0, (int)dstLen));
-                                    if (!image.checkExistAllMipmaps())
-                                    {
-                                        richTextBoxInfo.Text += "Not all mipmaps exists in texture: " + name + "\n";
-                                    }
-                                    replaceTexture(image, foundTexture.list);
-                                }
-                                else
-                                {
-                                    ListViewItem item = new ListViewItem(foundTexture.displayName + " (" + foundTexture.packageName + ")");
-                                    item.Name = i.ToString();
-                                    listViewTextures.Items.Add(item);
-                                }
+                                ListViewItem item = new ListViewItem(foundTexture.displayName + " (" + foundTexture.packageName + ")");
+                                item.Name = i.ToString();
+                                listViewTextures.Items.Add(item);
                             }
                         }
                     }
