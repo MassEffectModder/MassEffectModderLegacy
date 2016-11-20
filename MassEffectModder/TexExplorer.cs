@@ -26,6 +26,7 @@ using System.Windows.Forms;
 using StreamHelpers;
 using AmaroK86.ImageFormat;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace MassEffectModder
 {
@@ -270,8 +271,27 @@ namespace MassEffectModder
             for (int l = 0; l < _textures.Count; l++)
             {
                 FoundTexture foundTexture = _textures[l];
-                if ((name != null && foundTexture.name == name) ||
-                    (crc != 0 && foundTexture.crc == crc))
+                bool found = false;
+                if (name != null)
+                {
+                    if (name.Contains("*"))
+                    {
+                        Regex regex = new Regex("^" + Regex.Escape(name).Replace("\\*", ".*") + "$", RegexOptions.IgnoreCase);
+                        if (regex.IsMatch(foundTexture.name))
+                        {
+                            found = true;
+                        }
+                    }
+                    else if (foundTexture.name == name)
+                    {
+                        found = true;
+                    }
+                }
+                else if (crc != 0 && foundTexture.crc == crc)
+                {
+                    found = true;
+                }
+                if (found)
                 {
                     ListViewItem item = new ListViewItem(foundTexture.displayName + " (" + foundTexture.packageName + ")");
                     item.Name = l.ToString();
