@@ -107,6 +107,8 @@ namespace MassEffectModder
             listViewResults.Enabled = enable;
             listViewTextures.Enabled = enable;
             listViewMods.Enabled = enable;
+            replaceTextureToolStripMenuItem.Enabled = enable;
+            viewToolStripMenuItem.Enabled = enable;
             Application.DoEvents();
         }
 
@@ -334,6 +336,8 @@ namespace MassEffectModder
 
         private void listViewTextures_DoubleClick(object sender, EventArgs e)
         {
+            if (!replaceTextureToolStripMenuItem.Enabled)
+                return;
             _mainWindow.updateStatusLabel("Replacing texture...");
             _mainWindow.updateStatusLabel2("");
             replaceTexture();
@@ -410,6 +414,8 @@ namespace MassEffectModder
             packMODToolStripMenuItem.Enabled = true;
             searchToolStripMenuItem.Enabled = !enable;
             miscToolStripMenuItem.Enabled = !enable;
+            replaceTextureToolStripMenuItem.Enabled = !enable;
+            viewToolStripMenuItem.Enabled = !enable;
             Application.DoEvents();
         }
 
