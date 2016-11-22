@@ -649,6 +649,144 @@ namespace MassEffectModder
         {
             using (SaveFileDialog logFile = new SaveFileDialog())
             {
+                logFile.Title = "Please select output CSV file";
+                logFile.Filter = "CSV file | *.csv";
+                if (logFile.ShowDialog() != DialogResult.OK)
+                    return;
+                string filename = logFile.FileName;
+                if (File.Exists(filename))
+                    File.Delete(filename);
+
+                EnableMenuOptions(false);
+                _mainWindow.updateStatusLabel("Dump textures information...");
+                _mainWindow.updateStatusLabel2("");
+
+                using (FileStream fs = new FileStream(filename, FileMode.CreateNew, FileAccess.Write))
+                {
+                    fs.WriteStringASCII("Package;CRC;Instance;Name;ExportID;" +
+                        "Mipmap1Resolution;Mipmap1StorageType;Mimpmap1DataOffset;Mipmap2Resolution;Mipmap2StorageType;Mimpmap2DataOffset;" +
+                        "Mipmap3Resolution;Mipmap3StorageType;Mimpmap3DataOffset;Mipmap4Resolution;Mipmap4StorageType;Mimpmap4DataOffset;" +
+                        "Mipmap5Resolution;Mipmap5StorageType;Mimpmap5DataOffset;Mipmap6Resolution;Mipmap6StorageType;Mimpmap6DataOffset;" +
+                        "Mipmap7Resolution;Mipmap7StorageType;Mimpmap7DataOffset;Mipmap8Resolution;Mipmap8StorageType;Mimpmap8DataOffset;" +
+                        "Mipmap9Resolution;Mipmap9StorageType;Mimpmap9DataOffset;Mipmap10Resolution;Mipmap10StorageType;Mimpmap10DataOffset;" +
+                        "Mipmap11Resolution;Mipmap11StorageType;Mimpmap11DataOffset;Mipmap12Resolution;Mipmap12StorageType;Mimpmap12DataOffset;" +
+                        "Mipmap13Resolution;Mipmap13StorageType;Mimpmap13DataOffset\n");
+                    for (int i = 0; i < nodeList.Count; i++)
+                    {
+                        PackageTreeNode node = nodeList[i];
+                        _mainWindow.updateStatusLabel("Dump textures information from package: " + (i + 1) + " of " + nodeList.Count);
+                        _mainWindow.updateStatusLabel2("");
+                        for (int index = 0; index < node.textures.Count; index++)
+                        {
+                            string text = "";
+                            for (int index2 = 0; index2 < node.textures[index].list.Count; index2++)
+                            {
+                                MatchedTexture nodeTexture = node.textures[index].list[index2];
+                                Package package = cachePackageMgr.OpenPackage(GameData.GamePath + nodeTexture.path);
+                                Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
+                                text += node.Text + ";";
+                                text += string.Format("0x{0:X8}", node.textures[index].crc) + ";";
+                                text += (index2 + 1) + ";";
+                                text += package.exportsTable[nodeTexture.exportID].objectName + ";";
+                                text += node.textures[index].list[index2].exportID + ";";
+                                for (int l = 0; l < 13; l++)
+                                {
+                                    if (l >= texture.mipMapsList.Count)
+                                        text += ";;;";
+                                    else
+                                    {
+                                        text += texture.mipMapsList[l].width + "x" + texture.mipMapsList[l].height + ";";
+                                        text += texture.mipMapsList[l].storageType + ";";
+                                        text += (int)texture.mipMapsList[l].dataOffset + ";";
+                                    }
+                                }
+                                text += "\n";
+                                package.Dispose();
+                            }
+                            fs.WriteStringASCII(text);
+                        }
+                    }
+                }
+                _mainWindow.updateStatusLabel("Dump textures information finished.");
+                _mainWindow.updateStatusLabel2("");
+                EnableMenuOptions(true);
+            }
+        }
+
+        private void dumpAllTexturesMipmapsInfoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (SaveFileDialog logFile = new SaveFileDialog())
+            {
+                logFile.Title = "Please select output TXT file";
+                logFile.Filter = "CSV file | *.csv";
+                if (logFile.ShowDialog() != DialogResult.OK)
+                    return;
+                string filename = logFile.FileName;
+                if (File.Exists(filename))
+                    File.Delete(filename);
+
+                EnableMenuOptions(false);
+                _mainWindow.updateStatusLabel("Dump textures information...");
+                _mainWindow.updateStatusLabel2("");
+
+                GameData.packageFiles.Sort();
+                if (_gameSelected == MeType.ME1_TYPE)
+                    sortPackagesME1();
+
+                using (FileStream fs = new FileStream(filename, FileMode.CreateNew, FileAccess.Write))
+                {
+                    fs.WriteStringASCII("Package;Name;" +
+                        "Mipmap1Resolution;Mipmap1CRC;Mipmap2Resolution;Mipmap2CRC;Mipmap3Resolution;Mipmap3CRC;" +
+                        "Mipmap4Resolution;Mipmap4CRC;Mipmap5Resolution;Mipmap5CRC;Mipmap6Resolution;Mipmap6CRC;" +
+                        "Mipmap7Resolution;Mipmap7CRC;Mipmap8Resolution;Mipmap8CRC;Mipmap9Resolution;Mipmap9CRC;" +
+                        "Mipmap10Resolution;Mipmap10CRC;Mipmap11Resolution;Mipmap11CRC;Mipmap12Resolution;Mipmap12CRC;" +
+                        "Mipmap13Resolution;Mipmap13CRC\n");
+                    for (int l = 0; l < GameData.packageFiles.Count; l++)
+                    {
+                        _mainWindow.updateStatusLabel("Dump textures information from package " + (l + 1) + " of " + GameData.packageFiles.Count);
+                        _mainWindow.updateStatusLabel2("");
+                        Package package = new Package(GameData.packageFiles[l]);
+                        for (int i = 0; i < package.exportsTable.Count; i++)
+                        {
+                            int id = package.getClassNameId(package.exportsTable[i].classId);
+                            if (id == package.nameIdTexture2D ||
+                                id == package.nameIdLightMapTexture2D ||
+                                id == package.nameIdShadowMapTexture2D ||
+                                id == package.nameIdTextureFlipBook)
+                            {
+                                Texture texture = new Texture(package, i, package.getExportData(i));
+                                if (!texture.hasImageData())
+                                    continue;
+
+                                string text = "";
+                                for (int m = 0; m < 13; m++)
+                                {
+                                    if (m >= texture.mipMapsList.Count)
+                                        text += ";;;;";
+                                    else
+                                    {
+                                        text += Path.GetFileName(GameData.packageFiles[l]) + ";";
+                                        text += package.exportsTable[i].objectName + ";";
+                                        text += texture.mipMapsList[m].width + "x" + texture.mipMapsList[m].height + ";";
+                                        text += string.Format("0x{0:X8}", texture.getCrcMipmap(texture.mipMapsList[m])) + ";";
+                                    }
+                                }
+                                fs.WriteStringASCII(text + "\n");
+                            }
+                        }
+                        package.Dispose();
+                    }
+                }
+                _mainWindow.updateStatusLabel("Dump textures information finished.");
+                _mainWindow.updateStatusLabel2("");
+                EnableMenuOptions(true);
+            }
+        }
+
+        private void dumpAllTexturesInfoTXTToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (SaveFileDialog logFile = new SaveFileDialog())
+            {
                 logFile.Title = "Please select output TXT file";
                 logFile.Filter = "TXT file | *.txt";
                 if (logFile.ShowDialog() != DialogResult.OK)
@@ -698,64 +836,6 @@ namespace MassEffectModder
                             }
                             fs.WriteStringASCII(text);
                         }
-                    }
-                }
-                _mainWindow.updateStatusLabel("Dump textures information finished.");
-                _mainWindow.updateStatusLabel2("");
-                EnableMenuOptions(true);
-            }
-        }
-
-        private void dumpAllTexturesMipmapsInfoToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            using (SaveFileDialog logFile = new SaveFileDialog())
-            {
-                logFile.Title = "Please select output TXT file";
-                logFile.Filter = "TXT file | *.txt";
-                if (logFile.ShowDialog() != DialogResult.OK)
-                    return;
-                string filename = logFile.FileName;
-                if (File.Exists(filename))
-                    File.Delete(filename);
-
-                EnableMenuOptions(false);
-                _mainWindow.updateStatusLabel("Dump textures information...");
-                _mainWindow.updateStatusLabel2("");
-
-                GameData.packageFiles.Sort();
-                if (_gameSelected == MeType.ME1_TYPE)
-                    sortPackagesME1();
-
-                using (FileStream fs = new FileStream(filename, FileMode.CreateNew, FileAccess.Write))
-                {
-                    for (int l = 0; l < GameData.packageFiles.Count; l++)
-                    {
-                        _mainWindow.updateStatusLabel("Dump textures information from package " + (l + 1) + " of " + GameData.packageFiles.Count);
-                        _mainWindow.updateStatusLabel2("");
-                        Package package = new Package(GameData.packageFiles[l]);
-                        fs.WriteStringASCII("--- Package: " + Path.GetFileName(GameData.packageFiles[l]) + " ---\n");
-                        for (int i = 0; i < package.exportsTable.Count; i++)
-                        {
-                            int id = package.getClassNameId(package.exportsTable[i].classId);
-                            if (id == package.nameIdTexture2D ||
-                                id == package.nameIdLightMapTexture2D ||
-                                id == package.nameIdShadowMapTexture2D ||
-                                id == package.nameIdTextureFlipBook)
-                            {
-                                Texture texture = new Texture(package, i, package.getExportData(i));
-                                if (!texture.hasImageData())
-                                    continue;
-
-                                fs.WriteStringASCII("Texture: " + package.exportsTable[i].objectName);
-                                for (int m = 0; m < texture.mipMapsList.Count; m++)
-                                {
-                                    fs.WriteStringASCII(", " + texture.mipMapsList[m].width + " x " + texture.mipMapsList[m].height +
-                                        " CRC: " + string.Format("0x{0:X8}", texture.getCrcMipmap(texture.mipMapsList[m])));
-                                }
-                                fs.WriteStringASCII("\n");
-                            }
-                        }
-                        package.Dispose();
                     }
                 }
                 _mainWindow.updateStatusLabel("Dump textures information finished.");
