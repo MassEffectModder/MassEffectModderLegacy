@@ -663,7 +663,7 @@ namespace MassEffectModder
 
                 using (FileStream fs = new FileStream(filename, FileMode.CreateNew, FileAccess.Write))
                 {
-                    fs.WriteStringASCII("Package;CRC;Instance;Name;ExportID;" +
+                    fs.WriteStringASCII("Package;Name;CRC;" +
                         "Mipmap1Resolution;Mipmap1StorageType;Mimpmap1DataOffset;Mipmap2Resolution;Mipmap2StorageType;Mimpmap2DataOffset;" +
                         "Mipmap3Resolution;Mipmap3StorageType;Mimpmap3DataOffset;Mipmap4Resolution;Mipmap4StorageType;Mimpmap4DataOffset;" +
                         "Mipmap5Resolution;Mipmap5StorageType;Mimpmap5DataOffset;Mipmap6Resolution;Mipmap6StorageType;Mimpmap6DataOffset;" +
@@ -679,30 +679,25 @@ namespace MassEffectModder
                         for (int index = 0; index < node.textures.Count; index++)
                         {
                             string text = "";
-                            for (int index2 = 0; index2 < node.textures[index].list.Count; index2++)
+                            MatchedTexture nodeTexture = node.textures[index].list[0];
+                            Package package = cachePackageMgr.OpenPackage(GameData.GamePath + nodeTexture.path);
+                            Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
+                            text += node.Text + ";";
+                            text += package.exportsTable[nodeTexture.exportID].objectName + ";";
+                            text += string.Format("0x{0:X8}", node.textures[index].crc) + ";";
+                            for (int l = 0; l < 13; l++)
                             {
-                                MatchedTexture nodeTexture = node.textures[index].list[index2];
-                                Package package = cachePackageMgr.OpenPackage(GameData.GamePath + nodeTexture.path);
-                                Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
-                                text += node.Text + ";";
-                                text += string.Format("0x{0:X8}", node.textures[index].crc) + ";";
-                                text += (index2 + 1) + ";";
-                                text += package.exportsTable[nodeTexture.exportID].objectName + ";";
-                                text += node.textures[index].list[index2].exportID + ";";
-                                for (int l = 0; l < 13; l++)
+                                if (l >= texture.mipMapsList.Count)
+                                    text += ";;;";
+                                else
                                 {
-                                    if (l >= texture.mipMapsList.Count)
-                                        text += ";;;";
-                                    else
-                                    {
-                                        text += texture.mipMapsList[l].width + "x" + texture.mipMapsList[l].height + ";";
-                                        text += texture.mipMapsList[l].storageType + ";";
-                                        text += (int)texture.mipMapsList[l].dataOffset + ";";
-                                    }
+                                    text += texture.mipMapsList[l].width + "x" + texture.mipMapsList[l].height + ";";
+                                    text += texture.mipMapsList[l].storageType + ";";
+                                    text += (int)texture.mipMapsList[l].dataOffset + ";";
                                 }
-                                text += "\n";
-                                package.DisposeCache();
                             }
+                            text += "\n";
+                            package.DisposeCache();
                             fs.WriteStringASCII(text);
                         }
                     }
@@ -810,31 +805,21 @@ namespace MassEffectModder
                         for (int index = 0; index < node.textures.Count; index++)
                         {
                             string text = "";
-                            text += "\nTexture original CRC:  " + string.Format("0x{0:X8}", node.textures[index].crc) + "\n";
-                            for (int index2 = 0; index2 < node.textures[index].list.Count; index2++)
+                            MatchedTexture nodeTexture = node.textures[index].list[0];
+                            Package package = cachePackageMgr.OpenPackage(GameData.GamePath + nodeTexture.path);
+                            Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
+                            text += "  Texture name:  " + package.exportsTable[nodeTexture.exportID].objectName + "\n";
+                            text += "  Texture original CRC:  " + string.Format("0x{0:X8}", node.textures[index].crc) + "\n";
+                            text += "  Texture properties:\n";
+                            for (int l = 0; l < texture.properties.texPropertyList.Count; l++)
                             {
-                                text += "\nTexture instance: " + (index2 + 1) + "\n";
-                                MatchedTexture nodeTexture = node.textures[index].list[index2];
-                                Package package = cachePackageMgr.OpenPackage(GameData.GamePath + nodeTexture.path);
-                                Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
-                                text += "  Texture name:  " + package.exportsTable[nodeTexture.exportID].objectName + "\n";
-                                text += "  Export Id:     " + node.textures[index].list[index2].exportID + "\n";
-                                text += "  Package path:  " + node.textures[index].list[index2].path + "\n";
-                                text += "  Texture properties:\n";
-                                for (int l = 0; l < texture.properties.texPropertyList.Count; l++)
-                                {
-                                    text += "  " + texture.properties.getDisplayString(l);
-                                }
-                                for (int l = 0; l < texture.mipMapsList.Count; l++)
-                                {
-                                    text += "  MipMap: " + l + ", " + texture.mipMapsList[l].width + "x" + texture.mipMapsList[l].height + "\n";
-                                    text += "    StorageType: " + texture.mipMapsList[l].storageType + "\n";
-                                    text += "    DataOffset:  " + (int)texture.mipMapsList[l].dataOffset + "\n";
-                                    text += "    CompSize:    " + texture.mipMapsList[l].compressedSize + "\n";
-                                    text += "    UnCompSize:  " + texture.mipMapsList[l].uncompressedSize + "\n";
-                                }
-                                package.DisposeCache();
+                                text += "  " + texture.properties.getDisplayString(l);
                             }
+                            for (int l = 0; l < texture.mipMapsList.Count; l++)
+                            {
+                                text += "  MipMap: " + l + ", " + texture.mipMapsList[l].width + "x" + texture.mipMapsList[l].height + "\n";
+                            }
+                            package.DisposeCache();
                             fs.WriteStringASCII(text);
                         }
                     }
