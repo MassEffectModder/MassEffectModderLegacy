@@ -424,7 +424,7 @@ namespace MassEffectModder
             using (OpenFileDialog modFile = new OpenFileDialog())
             {
                 modFile.Title = "Please select Mod file";
-                modFile.Filter = "MOD file | *.mod; *.mem";
+                modFile.Filter = "MOD file | *.mem";
                 modFile.Multiselect = true;
                 modFile.InitialDirectory = gameData.lastLoadMODPath;
                 if (modFile.ShowDialog() != DialogResult.OK)
@@ -441,7 +441,6 @@ namespace MassEffectModder
                 string[] files = modFile.FileNames;
                 foreach (string file in files)
                 {
-                    bool legacy = false;
                     _mainWindow.updateStatusLabel("MOD: " + Path.GetFileNameWithoutExtension(file) + " loading...");
                     using (FileStream fs = new FileStream(file, FileMode.Open))
                     {
@@ -449,27 +448,11 @@ namespace MassEffectModder
                         uint version = fs.ReadUInt32();
                         if (tag != TextureModTag || version != TextureModVersion)
                         {
-                            fs.SeekBegin();
-                            richTextBoxInfo.Text = "";
-                            if (!checkTextureMod(fs))
-                            {
-                                MessageBox.Show("File " + file + " is not MOD, omitting...");
-                                continue;
-                            }
-                            if (richTextBoxInfo.Text != "")
-                            {
-                                richTextBoxInfo.Show();
-                                pictureBoxPreview.Hide();
-                                MessageBox.Show("There were some errors while process.");
-                            }
-                            legacy = true;
+                            MessageBox.Show("File " + file + " is not a MOD, omitting...");
+                            continue;
                         }
                     }
-                    string desc;
-                    if (legacy)
-                        desc = Path.GetFileNameWithoutExtension(file) + " (Legacy MOD - Read Only)";
-                    else
-                        desc = Path.GetFileNameWithoutExtension(file);
+                    string desc = Path.GetFileNameWithoutExtension(file);
                     ListViewItem item = new ListViewItem(desc);
                     item.Name = file;
                     listViewMods.Items.Add(item);

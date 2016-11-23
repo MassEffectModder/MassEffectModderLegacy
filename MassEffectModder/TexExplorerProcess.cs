@@ -21,125 +21,15 @@
 
 using AmaroK86.ImageFormat;
 using StreamHelpers;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace MassEffectModder
 {
     public partial class TexExplorer : Form
     {
-        private FoundTexture ParseLegacyScriptMod(string script, string textureName)
-        {
-            Regex parts = new Regex("pccs.Add[(]\"[A-z,0-9/,..]*\"");
-            Match match = parts.Match(script);
-            if (match.Success)
-            {
-                string packageName;
-                if (_gameSelected == MeType.ME3_TYPE)
-                    packageName = match.ToString().Split('\"')[1].Split('\\').Last().Split('.')[0];
-                else
-                    packageName = match.ToString().Split('\"')[1].Split('/').Last().Split('.')[0];
-                parts = new Regex("IDs.Add[(][0-9]*[)];");
-                match = parts.Match(script);
-                if (match.Success)
-                {
-                    int exportId = int.Parse(match.ToString().Split('(')[1].Split(')')[0]);
-                    if (exportId != 0)
-                    {
-                        for (int i = 0; i < _textures.Count; i++)
-                        {
-                            if (_textures[i].name == textureName)
-                            {
-                                for (int l = 0; l < _textures[i].list.Count; l++)
-                                {
-                                    if (_textures[i].list[l].exportID == exportId)
-                                    {
-                                        string pkg = _textures[i].list[l].path.Split('\\').Last().Split('.')[0];
-                                        if (pkg == packageName)
-                                        {
-                                            return _textures[i];
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        // search again but without name match
-                        for (int i = 0; i < _textures.Count; i++)
-                        {
-                            for (int l = 0; l < _textures[i].list.Count; l++)
-                            {
-                                if (_textures[i].list[l].exportID == exportId)
-                                {
-                                    string pkg = _textures[i].list[l].path.Split('\\').Last().Split('.')[0];
-                                    if (pkg == packageName)
-                                    {
-                                        return _textures[i];
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            return new FoundTexture();
-        }
-
-        private bool checkTextureMod(FileStream fs)
-        {
-            uint tag = fs.ReadUInt32();
-            uint version = fs.ReadUInt32();
-            if (tag == TextureModTag && version == TextureModVersion)
-                return true;
-
-            fs.SeekBegin();
-            uint numberOfTextures = fs.ReadUInt32();
-            if (numberOfTextures == 0)
-                return false;
-
-            try
-            {
-                for (int i = 0; i < numberOfTextures; i++)
-                {
-                    int len = fs.ReadInt32();
-                    string textureName = fs.ReadStringASCII(len);
-                    textureName = textureName.Split(' ').Last();
-                    if (textureName == "")
-                        return false;
-                    len = fs.ReadInt32();
-                    string script = fs.ReadStringASCII(len);
-                    if (script == "")
-                        return false;
-                    FoundTexture f = ParseLegacyScriptMod(script, textureName);
-                    uint crc = f.crc;
-                    textureName = f.name;
-                    if (crc == 0)
-                    {
-                        richTextBoxInfo.Text += "Not able match texture: " + textureName + "\n";
-                    }
-                    len = fs.ReadInt32();
-                    if (len == 0)
-                        return false;
-                    _mainWindow.updateStatusLabel2("Checking texture " + (i + 1) + " of " + numberOfTextures + " - " + textureName);
-                    DDSImage image = new DDSImage(new MemoryStream(fs.ReadToBuffer(len)));
-                    if (!image.checkExistAllMipmaps())
-                    {
-                        richTextBoxInfo.Text += "Texture does not have all mipmaps: " + textureName + "\n";
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
         private void extractTextureMod(string filenameMod, string outDir)
         {
             processTextureMod(filenameMod, -1, true, false, outDir);
@@ -164,8 +54,6 @@ namespace MassEffectModder
         {
             using (FileStream fs = new FileStream(filenameMod, FileMode.Open, FileAccess.Read))
             {
-                bool legacy = false;
-
                 if (previewIndex == -1 && !extract && !replace)
                 {
                     listViewTextures.BeginUpdate();
@@ -175,8 +63,8 @@ namespace MassEffectModder
                 uint version = fs.ReadUInt32();
                 if (tag != TextureModTag || version != TextureModVersion)
                 {
-                    fs.SeekBegin();
-                    legacy = true;
+                    MessageBox.Show("Not a Mod!");
+                    return;
                 }
                 else
                 {
@@ -193,29 +81,13 @@ namespace MassEffectModder
                     string name;
                     uint crc, size, dstLen = 0, decSize = 0;
                     byte[] dst = null;
-                    if (legacy)
-                    {
-                        int len = fs.ReadInt32();
-                        name = fs.ReadStringASCII(len);
-                        name = name.Split(' ').Last();
-                        len = fs.ReadInt32();
-                        string scriptLegacy = fs.ReadStringASCII(len);
-                        FoundTexture f = ParseLegacyScriptMod(scriptLegacy, name);
-                        crc = f.crc;
-                        name = f.name;
-                        decSize = dstLen = size = fs.ReadUInt32();
-                        dst = fs.ReadToBuffer(size);
-                    }
-                    else
-                    {
-                        name = fs.ReadStringASCIINull();
-                        crc = fs.ReadUInt32();
-                        decSize = fs.ReadUInt32();
-                        size = fs.ReadUInt32();
-                        byte[] src = fs.ReadToBuffer(size);
-                        dst = new byte[decSize];
-                        dstLen = ZlibHelper.Zlib.Decompress(src, size, dst);
-                    }
+                    name = fs.ReadStringASCIINull();
+                    crc = fs.ReadUInt32();
+                    decSize = fs.ReadUInt32();
+                    size = fs.ReadUInt32();
+                    byte[] src = fs.ReadToBuffer(size);
+                    dst = new byte[decSize];
+                    dstLen = ZlibHelper.Zlib.Decompress(src, size, dst);
 
                     _mainWindow.updateStatusLabel("Processing MOD " + Path.GetFileNameWithoutExtension(filenameMod) +
                         " - Texture " + (i + 1) + " of " + numTextures + " - " + name);
@@ -245,8 +117,6 @@ namespace MassEffectModder
                         {
                             if (replace)
                             {
-                                if (legacy)
-                                    break;
                                 DDSImage image = new DDSImage(new MemoryStream(dst, 0, (int)dstLen));
                                 if (!image.checkExistAllMipmaps())
                                 {
