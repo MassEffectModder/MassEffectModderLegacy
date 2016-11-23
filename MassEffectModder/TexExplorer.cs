@@ -680,7 +680,7 @@ namespace MassEffectModder
                         {
                             string text = "";
                             MatchedTexture nodeTexture = node.textures[index].list[0];
-                            Package package = cachePackageMgr.OpenPackage(GameData.GamePath + nodeTexture.path);
+                            Package package = new Package(GameData.GamePath + nodeTexture.path);
                             Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
                             text += node.Text + ";";
                             text += package.exportsTable[nodeTexture.exportID].objectName + ";";
@@ -697,7 +697,7 @@ namespace MassEffectModder
                                 }
                             }
                             text += "\n";
-                            package.DisposeCache();
+                            package.Dispose();
                             fs.WriteStringASCII(text);
                         }
                     }
@@ -806,7 +806,7 @@ namespace MassEffectModder
                         {
                             string text = "";
                             MatchedTexture nodeTexture = node.textures[index].list[0];
-                            Package package = cachePackageMgr.OpenPackage(GameData.GamePath + nodeTexture.path);
+                            Package package = new Package(GameData.GamePath + nodeTexture.path);
                             Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
                             text += "  Texture name:  " + package.exportsTable[nodeTexture.exportID].objectName + "\n";
                             text += "  Texture original CRC:  " + string.Format("0x{0:X8}", node.textures[index].crc) + "\n";
@@ -819,7 +819,7 @@ namespace MassEffectModder
                             {
                                 text += "  MipMap: " + l + ", " + texture.mipMapsList[l].width + "x" + texture.mipMapsList[l].height + "\n";
                             }
-                            package.DisposeCache();
+                            package.Dispose();
                             fs.WriteStringASCII(text);
                         }
                     }
