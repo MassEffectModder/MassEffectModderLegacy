@@ -274,7 +274,7 @@ namespace MassEffectModder
             {
                 FoundTexture foundTexture = _textures[l];
                 bool found = false;
-                if (name != null)
+                if (name != "")
                 {
                     if (name.Contains("*"))
                     {
