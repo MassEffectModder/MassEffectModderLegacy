@@ -646,14 +646,10 @@ namespace MassEffectModder
 
                 using (FileStream fs = new FileStream(filename, FileMode.CreateNew, FileAccess.Write))
                 {
-                    fs.WriteStringASCII("Package;Name;CRC;" +
-                        "Mipmap1Resolution;Mipmap1StorageType;Mimpmap1DataOffset;Mipmap2Resolution;Mipmap2StorageType;Mimpmap2DataOffset;" +
-                        "Mipmap3Resolution;Mipmap3StorageType;Mimpmap3DataOffset;Mipmap4Resolution;Mipmap4StorageType;Mimpmap4DataOffset;" +
-                        "Mipmap5Resolution;Mipmap5StorageType;Mimpmap5DataOffset;Mipmap6Resolution;Mipmap6StorageType;Mimpmap6DataOffset;" +
-                        "Mipmap7Resolution;Mipmap7StorageType;Mimpmap7DataOffset;Mipmap8Resolution;Mipmap8StorageType;Mimpmap8DataOffset;" +
-                        "Mipmap9Resolution;Mipmap9StorageType;Mimpmap9DataOffset;Mipmap10Resolution;Mipmap10StorageType;Mimpmap10DataOffset;" +
-                        "Mipmap11Resolution;Mipmap11StorageType;Mimpmap11DataOffset;Mipmap12Resolution;Mipmap12StorageType;Mimpmap12DataOffset;" +
-                        "Mipmap13Resolution;Mipmap13StorageType;Mimpmap13DataOffset\n");
+                    fs.WriteStringASCII("Package;Name;CRC;Resolution;Format;LODGroup;NumMipmaps;" +
+                        "Mipmap1Resolution;Mipmap2Resolution;Mipmap3Resolution;Mipmap4Resolution;" +
+                        "Mipmap5Resolution;Mipmap6Resolution;Mipmap7Resolution;Mipmap8Resolution;" +
+                        "Mipmap9Resolution;Mipmap10Resolution;Mipmap11Resolution;Mipmap12Resolution;Mipmap13Resolution;\n");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
                         PackageTreeNode node = nodeList[i];
@@ -668,15 +664,20 @@ namespace MassEffectModder
                             text += node.Text + ";";
                             text += package.exportsTable[nodeTexture.exportID].objectName + ";";
                             text += string.Format("0x{0:X8}", node.textures[index].crc) + ";";
+                            text += texture.properties.getProperty("SizeX").valueInt + "x" + texture.properties.getProperty("SizeY").valueInt + ";";
+                            text += texture.properties.getProperty("Format").valueName + ";";
+                            if (texture.properties.exists("LODGroup"))
+                                text += texture.properties.getProperty("LODGroup").valueName + ";";
+                            else
+                                text += "None;";
+                            text += texture.mipMapsList.Count + ";";
                             for (int l = 0; l < 13; l++)
                             {
                                 if (l >= texture.mipMapsList.Count)
-                                    text += ";;;";
+                                    text += ";";
                                 else
                                 {
                                     text += texture.mipMapsList[l].width + "x" + texture.mipMapsList[l].height + ";";
-                                    text += texture.mipMapsList[l].storageType + ";";
-                                    text += (int)texture.mipMapsList[l].dataOffset + ";";
                                 }
                             }
                             text += "\n";
