@@ -106,7 +106,7 @@ namespace MassEffectModder
 
             public void updateDLCsTOC()
             {
-                List<string> DLCs = Directory.GetDirectories(GameData.DLCData, "DLC_*").ToList();
+                List<string> DLCs = Directory.GetDirectories(GameData.DLCData).ToList();
                 for (int i = 0; i < DLCs.Count; i++)
                 {
                     List<string> dlcFiles = Directory.GetFiles(DLCs[i], "*.pcc", SearchOption.AllDirectories).ToList();

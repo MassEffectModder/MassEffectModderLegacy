@@ -387,7 +387,13 @@ namespace MassEffectModder
                 MessageBox.Show("You need unpack SFAR files first.");
                 return;
             }
-            List<string> DLCs = Directory.GetDirectories(GameData.DLCData, "DLC_*").ToList();
+            List<string> DLCs = Directory.GetDirectories(GameData.DLCData).ToList();
+            for (int i = 0; i < DLCs.Count; i++)
+            {
+                List<string> pccs = Directory.GetFiles(DLCs[i], "*.pcc", SearchOption.AllDirectories).ToList();
+                if (pccs.Count == 0)
+                    DLCs.RemoveAt(i--);
+            }
             for (int i = 0; i < DLCs.Count; i++)
             {
                 string DLCname = Path.GetFileName(DLCs[i]);

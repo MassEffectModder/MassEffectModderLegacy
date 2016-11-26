@@ -339,7 +339,7 @@ namespace MassEffectModder
                 {
                     if (pccs.Count() != 0 && sfars.Count() != 0)
                     {
-                        MessageBox.Show("Detected PCC files and Sfar file in DLC folder. Aborting...");
+                        MessageBox.Show("Detected packed and unpacked in DLC folder. Aborting...");
                         return false;
                     }
                     MessageBox.Show("You need exract DLC packages first");
