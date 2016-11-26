@@ -342,6 +342,9 @@ namespace MassEffectModder
                 List<string> DLCs = Directory.GetDirectories(DLCData).ToList();
                 for (int i = 0; i < DLCs.Count; i++)
                 {
+                    List<string> sfars = Directory.GetFiles(DLCs[i], "Default.sfar", SearchOption.AllDirectories).ToList();
+                    if (sfars.Count == 0)
+                        continue;
                     List<string> dlcs = Directory.GetFiles(DLCs[i], "Mount.dlc", SearchOption.AllDirectories).ToList();
                     if (dlcs.Count() == 0)
                     {
