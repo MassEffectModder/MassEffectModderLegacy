@@ -334,17 +334,22 @@ namespace MassEffectModder
             else if (gameType == MeType.ME3_TYPE)
             {
                 List<string> pccs = Directory.GetFiles(DLCData, "*.pcc", SearchOption.AllDirectories).ToList();
-                List<string> sfars = Directory.GetFiles(DLCData, "*.sfar", SearchOption.AllDirectories).ToList();
-                if (pccs.Count() == 0 || sfars.Count() != 0)
+                if (pccs.Count() == 0)
                 {
-                    if (pccs.Count() != 0 && sfars.Count() != 0)
+                    MessageBox.Show("You need exract DLC packages first");
+                    return false;
+                }
+                List<string> DLCs = Directory.GetDirectories(DLCData).ToList();
+                for (int i = 0; i < DLCs.Count; i++)
+                {
+                    List<string> dlcs = Directory.GetFiles(DLCs[i], "Mount.dlc", SearchOption.AllDirectories).ToList();
+                    if (dlcs.Count() == 0)
                     {
                         MessageBox.Show("Detected packed and unpacked in DLC folder. Aborting...");
                         return false;
                     }
-                    MessageBox.Show("You need exract DLC packages first");
-                    return false;
                 }
+
                 packageFiles = Directory.GetFiles(MainData, "*.pcc", SearchOption.AllDirectories).ToList();
                 packageFiles.AddRange(pccs);
                 packageFiles.RemoveAll(s => s.Contains("GuidCache"));

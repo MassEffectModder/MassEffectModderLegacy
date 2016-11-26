@@ -381,17 +381,17 @@ namespace MassEffectModder
         private void PackAllME3DLC()
         {
             GameData gameData = new GameData(MeType.ME3_TYPE, _configIni);
-            List<string> dlcs = Directory.GetFiles(GameData.DLCData, "*.pcc", SearchOption.AllDirectories).ToList();
+            List<string> dlcs = Directory.GetFiles(GameData.DLCData, "Mount.dlc", SearchOption.AllDirectories).ToList();
             if (dlcs.Count() == 0)
             {
-                MessageBox.Show("You need unpack SFAR files first.");
+                MessageBox.Show("There is nothing to pack.");
                 return;
             }
             List<string> DLCs = Directory.GetDirectories(GameData.DLCData).ToList();
             for (int i = 0; i < DLCs.Count; i++)
             {
-                List<string> pccs = Directory.GetFiles(DLCs[i], "*.pcc", SearchOption.AllDirectories).ToList();
-                if (pccs.Count == 0)
+                List<string> files = Directory.GetFiles(DLCs[i], "Mount.dlc", SearchOption.AllDirectories).ToList();
+                if (files.Count == 0)
                     DLCs.RemoveAt(i--);
             }
             for (int i = 0; i < DLCs.Count; i++)
