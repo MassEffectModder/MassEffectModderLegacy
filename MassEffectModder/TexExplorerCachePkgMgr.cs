@@ -106,10 +106,12 @@ namespace MassEffectModder
 
             public void updateDLCsTOC()
             {
-                List<string> DLCs = Directory.GetDirectories(GameData.DLCData).ToList();
+                List<string> DLCs = Directory.GetDirectories(GameData.DLCData, "DLC_*").ToList();
                 for (int i = 0; i < DLCs.Count; i++)
                 {
                     List<string> dlcFiles = Directory.GetFiles(DLCs[i], "*.pcc", SearchOption.AllDirectories).ToList();
+                    if (dlcFiles.Count == 0)
+                        continue;
                     dlcFiles.AddRange(Directory.GetFiles(DLCs[i], "*.tfc", SearchOption.AllDirectories).ToList());
                     string DLCname = Path.GetFileName(DLCs[i]);
                     TOCBinFile tocDLC = new TOCBinFile(Path.Combine(GameData.DLCData, DLCname, "PCConsoleTOC.bin"));
