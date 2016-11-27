@@ -103,7 +103,7 @@ namespace MassEffectModder
             this.replaceTextureToolStripMenuItem,
             this.viewToolStripMenuItem});
             this.contextMenuStripTextures.Name = "contextMenuStripTextures";
-            this.contextMenuStripTextures.Size = new System.Drawing.Size(198, 48);
+            this.contextMenuStripTextures.Size = new System.Drawing.Size(198, 70);
             // 
             // replaceTextureToolStripMenuItem
             // 
@@ -125,14 +125,16 @@ namespace MassEffectModder
             // previewTextureToolStripMenuItem
             // 
             this.previewTextureToolStripMenuItem.Name = "previewTextureToolStripMenuItem";
-            this.previewTextureToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
+            this.previewTextureToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
+            this.previewTextureToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.previewTextureToolStripMenuItem.Text = "Preview";
             this.previewTextureToolStripMenuItem.Click += new System.EventHandler(this.previewToolStripMenuItem_Click);
             // 
             // infoTextureToolStripMenuItem
             // 
             this.infoTextureToolStripMenuItem.Name = "infoTextureToolStripMenuItem";
-            this.infoTextureToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
+            this.infoTextureToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+            this.infoTextureToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.infoTextureToolStripMenuItem.Text = "Info";
             this.infoTextureToolStripMenuItem.Click += new System.EventHandler(this.infoToolStripMenuItem_Click);
             // 
