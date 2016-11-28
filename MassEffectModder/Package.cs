@@ -119,29 +119,30 @@ namespace MassEffectModder
             public string name;
             public ulong flags;
         }
+
         public struct ImportEntry
         {
-            public int packageFileId;
-            public string packageFile;
+            //public int packageFileId;
+            //public string packageFile; // not used - save RAM
             public int classId;
-            public string className;
+            //public string className; // not used - save RAM
             public int linkId;
             public int objectNameId;
             public string objectName;
             public byte[] raw;
         }
+
         public struct ExportEntry
         {
             const int DataOffsetSize = 32;
             const int DataOffsetOffset = 36;
             public int classId;
-            public string className;
-            public int classParentId;
+            //public string className; // not used - save RAM
+            //public int classParentId; // not used - save RAM
             public int linkId;
             public int objectNameId;
             public string objectName;
-            public int suffixNameId;
-            public int archTypeNameId;
+            //public int suffixNameId; // not used - save RAM
             public uint dataSize
             {
                 get
@@ -164,9 +165,7 @@ namespace MassEffectModder
                     Buffer.BlockCopy(BitConverter.GetBytes(value), 0, raw, DataOffsetOffset, sizeof(uint));
                 }
             }
-            public ulong objectFlags;
-            public uint exportflags;
-            public uint packageflags;
+            //public ulong objectFlags; // not used - save RAM
             public byte[] raw;
             public bool updatedData;
             public byte[] newData;
@@ -479,8 +478,8 @@ namespace MassEffectModder
                 loadImports(packageData);
             }
             loadExports(packageData);
-            loadImportsNames();
-            loadExportsNames();
+            //loadImportsNames(); // not used by tool
+            //loadExportsNames(); // not used by tool
         }
 
         private void getData(uint offset, uint length, Stream output)
@@ -772,8 +771,8 @@ namespace MassEffectModder
                 ImportEntry entry = new ImportEntry();
 
                 long start = input.Position;
-                entry.packageFileId = input.ReadInt32();
-                entry.packageFile = namesTable[entry.packageFileId].name;
+                input.SkipInt32(); // entry.packageFileId = input.ReadInt32(); // not used, save RAM
+                //entry.packageFile = namesTable[packageFileId].name; // not used, save RAM
                 input.SkipInt32(); // const 0
                 entry.classId = input.ReadInt32();
                 input.SkipInt32(); // const 0
@@ -795,7 +794,7 @@ namespace MassEffectModder
             for (int i = 0; i < importsCount; i++)
             {
                 ImportEntry entry = importsTable[i];
-                entry.className = getClassName(entry.classId);
+                //entry.className = getClassName(entry.classId); // disabled for now - save RAM
                 importsTable[i] = entry;
             }
         }
@@ -819,13 +818,13 @@ namespace MassEffectModder
 
                 long start = input.Position;
                 entry.classId = input.ReadInt32();
-                entry.classParentId = input.ReadInt32();
+                input.SkipInt32(); // entry.classParentId = input.ReadInt32();
                 entry.linkId = input.ReadInt32();
                 entry.objectNameId = input.ReadInt32();
                 entry.objectName = namesTable[entry.objectNameId].name;
-                entry.suffixNameId = input.ReadInt32();
+                input.SkipInt32(); // entry.suffixNameId = input.ReadInt32();
                 input.SkipInt32();
-                entry.objectFlags = input.ReadUInt64();
+                input.SkipInt64(); // entry.objectFlags = input.ReadUInt64();
                 input.SkipInt32(); // dataSize
                 input.SkipInt32(); // dataOffset
                 if (version != packageFileVersionME3)
@@ -833,7 +832,7 @@ namespace MassEffectModder
                     count = input.ReadUInt32();
                     input.Skip(count * 12); // skip entries
                 }
-                input.ReadUInt32();
+                input.SkipInt32();
                 count = input.ReadUInt32();
                 input.Skip(count * 4); // skip entries
                 input.Skip(16); // skip guid
@@ -850,12 +849,13 @@ namespace MassEffectModder
                 exportsTable.Add(entry);
             }
         }
+
         private void loadExportsNames()
         {
             for (int i = 0; i < exportsCount; i++)
             {
                 ExportEntry entry = exportsTable[i];
-                entry.className = getClassName(entry.classId);
+                //entry.className = getClassName(entry.classId); // disabled for now - save RAM
                 exportsTable[i] = entry;
             }
         }
