@@ -204,6 +204,7 @@ namespace MassEffectModder
                             if (!image.checkExistAllMipmaps())
                             {
                                 richTextBoxInfo.Text += "Texture does not have all mipmaps: " + Path.GetFileName(file) + "\n";
+                                continue;
                             }
 
                             Package pkg = new Package(GameData.GamePath + foundCrcList[l].list[0].path);
@@ -242,7 +243,6 @@ namespace MassEffectModder
                     }
                     if (count == savedCount)
                     {
-                        richTextBoxInfo.Text += "Texture not matched: " + Path.GetFileName(file) + "\n";
                         continue;
                     }
                 }
