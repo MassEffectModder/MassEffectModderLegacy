@@ -311,6 +311,10 @@ namespace MassEffectModder
                 listViewTextures.Focus();
                 selectFoundTexture(listViewResults.Items[0]);
             }
+            if (listViewResults.Items.Count == 0)
+            {
+                MessageBox.Show("Texture not found.");
+            }
         }
 
         private void infoToolStripMenuItem_Click(object sender, EventArgs e)
