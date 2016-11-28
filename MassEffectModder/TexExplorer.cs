@@ -580,11 +580,11 @@ namespace MassEffectModder
                     _mainWindow.updateStatusLabel("MOD packing...");
                     _mainWindow.updateStatusLabel2("");
                     richTextBoxInfo.Text = "";
+                    richTextBoxInfo.Show();
+                    pictureBoxPreview.Hide();
                     createTextureMod(modFile.SelectedPath, Path.Combine(Path.GetDirectoryName(modFile.SelectedPath), Path.GetFileName(modFile.SelectedPath)) + ".mem");
                     if (richTextBoxInfo.Text != "")
                     {
-                        richTextBoxInfo.Show();
-                        pictureBoxPreview.Hide();
                         MessageBox.Show("There were some errors while process.");
                     }
                 }
