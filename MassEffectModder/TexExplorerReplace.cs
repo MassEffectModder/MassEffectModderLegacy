@@ -80,7 +80,6 @@ namespace MassEffectModder
                 MatchedTexture nodeTexture = list[n];
                 Package package = cachePackageMgr.OpenPackage(GameData.GamePath + nodeTexture.path);
                 Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
-                package.DisposeCache();
                 while (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty))
                 {
                     texture.mipMapsList.Remove(texture.mipMapsList.First(s => s.storageType == Texture.StorageTypes.empty));
@@ -132,6 +131,8 @@ namespace MassEffectModder
                         }
                     }
                 }
+
+                package.DisposeCache();
 
                 bool triggerCacheArc = false, triggerCacheCpr = false;
                 string archiveFile = "";
