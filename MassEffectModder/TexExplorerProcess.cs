@@ -112,7 +112,11 @@ namespace MassEffectModder
                     }
                     else
                     {
-                        FoundTexture foundTexture = _textures.Find(s => s.crc == crc && s.name == name);
+                        FoundTexture foundTexture;
+                        if (_gameSelected == MeType.ME1_TYPE)
+                            foundTexture = _textures.Find(s => s.crc == crc && s.name == name);
+                        else
+                            foundTexture = _textures.Find(s => s.crc == crc);
                         if (foundTexture.crc != 0)
                         {
                             if (replace)
