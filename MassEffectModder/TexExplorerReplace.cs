@@ -184,9 +184,6 @@ namespace MassEffectModder
                     }
                 }
 
-                if (n == 0)
-                    _mainWindow.updateStatusLabel2("Preparing texture...");
-
                 List<Texture.MipMap> mipmaps = new List<Texture.MipMap>();
                 for (int m = 0; m < image.mipMaps.Count(); m++)
                 {
@@ -328,7 +325,6 @@ namespace MassEffectModder
                 if (texture.properties.exists("MipTailBaseIdx"))
                     texture.properties.setIntValue("MipTailBaseIdx", texture.mipMapsList.Count() - 1);
 
-                _mainWindow.updateStatusLabel2("Applying package " + (n + 1) + " of " + list.Count + " - " + nodeTexture.path);
                 using (MemoryStream newData = new MemoryStream())
                 {
                     newData.WriteFromBuffer(texture.properties.toArray());
