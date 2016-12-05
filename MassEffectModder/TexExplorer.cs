@@ -494,6 +494,7 @@ namespace MassEffectModder
                 return;
 
             EnableMenuOptions(false);
+            richTextBoxInfo.Text = "";
             foreach (ListViewItem item in listViewMods.SelectedItems)
             {
                 replaceTextureMod(item.Name);
@@ -507,6 +508,12 @@ namespace MassEffectModder
             _mainWindow.updateStatusLabel2("");
             if (listViewMods.Items.Count == 0)
                 clearMODsView();
+            if (richTextBoxInfo.Text != "")
+            {
+                richTextBoxInfo.Show();
+                pictureBoxPreview.Hide();
+                MessageBox.Show("There were some errors while process.");
+            }
         }
 
         private void deleteModToolStripMenuItem_Click(object sender, EventArgs e)
@@ -534,9 +541,16 @@ namespace MassEffectModder
             if (listViewMods.SelectedItems.Count != 1)
                 return;
 
+            richTextBoxInfo.Text = "";
             listTextureMod(listViewMods.SelectedItems[0].Name);
             _mainWindow.updateStatusLabel("Done.");
             _mainWindow.updateStatusLabel2("");
+            if (richTextBoxInfo.Text != "")
+            {
+                richTextBoxInfo.Show();
+                pictureBoxPreview.Hide();
+                MessageBox.Show("There were some errors while process.");
+            }
         }
 
         private void extractModsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -552,6 +566,7 @@ namespace MassEffectModder
                 if (modFile.ShowDialog() == DialogResult.OK)
                 {
                     gameData.lastExtractMODPath = modFile.SelectedPath;
+                    richTextBoxInfo.Text = "";
                     foreach (ListViewItem item in listViewMods.SelectedItems)
                     {
                         string outDir = Path.Combine(modFile.SelectedPath, Path.GetFileNameWithoutExtension(item.Name));
@@ -560,10 +575,18 @@ namespace MassEffectModder
                         _mainWindow.updateStatusLabel("MOD: " + item.Text + "extracting...");
                         _mainWindow.updateStatusLabel2("");
                     }
+                    _mainWindow.updateStatusLabel("MODs extracted.");
+                    _mainWindow.updateStatusLabel2("");
+                    if (richTextBoxInfo.Text != "")
+                    {
+                        richTextBoxInfo.Show();
+                        pictureBoxPreview.Hide();
+                        MessageBox.Show("There were some errors while process.");
+                    }
                 }
             }
             EnableMenuOptions(true);
-            _mainWindow.updateStatusLabel("MODs extracted.");
+            _mainWindow.updateStatusLabel("");
             _mainWindow.updateStatusLabel2("");
         }
 

@@ -125,6 +125,7 @@ namespace MassEffectModder
                                 if (!image.checkExistAllMipmaps())
                                 {
                                     richTextBoxInfo.Text += "Not all mipmaps exists in texture: " + name + "\n";
+                                    continue;
                                 }
                                 replaceTexture(image, foundTexture.list);
                             }
@@ -134,6 +135,10 @@ namespace MassEffectModder
                                 item.Name = i.ToString();
                                 listViewTextures.Items.Add(item);
                             }
+                        }
+                        else
+                        {
+                            richTextBoxInfo.Text += "Not matched texture: " + name + "\n";
                         }
                     }
                 }
