@@ -375,7 +375,7 @@ namespace MassEffectModder
                     updateListViewTextures(node);
                     for (int i = 0; i < node.textures.Count; i++)
                     {
-                        if (node.textures[i].name == item.Text.Split(' ')[0])
+                        if (node.textures[i].displayName == item.Text.Split(' ')[0])
                         {
                             listViewTextures.FocusedItem = listViewTextures.Items[i];
                             listViewTextures.Items[i].Selected = true;
