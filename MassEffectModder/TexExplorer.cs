@@ -629,7 +629,10 @@ namespace MassEffectModder
                     gameData.lastCreateMODPath = modFile.SelectedPath;
                     List<string> listDirs = Directory.GetDirectories(modFile.SelectedPath).ToList();
                     if (listDirs.Count == 0)
+                    {
+                        EnableMenuOptions(true);
                         return;
+                    }
 
                     _mainWindow.updateStatusLabel("MODs packing...");
                     _mainWindow.updateStatusLabel2("");
