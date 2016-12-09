@@ -134,24 +134,45 @@ namespace MassEffectModder
 
         public struct ExportEntry
         {
-            const int DataOffsetSize = 32;
-            const int DataOffsetOffset = 36;
-            public int classId;
+            const int ClassIdOffset = 0;
+            const int LinkIdOffset = 8;
+            const int ObjectNameIdOffset = 12;
+            const int DataSizeOffset = 32;
+            public const int DataOffsetOffset = 36;
+            public int classId
+            {
+                get
+                {
+                    return BitConverter.ToInt32(raw, ClassIdOffset);
+                }
+            }
             //public string className; // not used - save RAM
             //public int classParentId; // not used - save RAM
-            public int linkId;
-            public int objectNameId;
+            public int linkId
+            {
+                get
+                {
+                    return BitConverter.ToInt32(raw, LinkIdOffset);
+                }
+            }
+            public int objectNameId
+            {
+                get
+                {
+                    return BitConverter.ToInt32(raw, ObjectNameIdOffset);
+                }
+            }
             public string objectName;
             //public int suffixNameId; // not used - save RAM
             public uint dataSize
             {
                 get
                 {
-                    return BitConverter.ToUInt32(raw, DataOffsetSize);
+                    return BitConverter.ToUInt32(raw, DataSizeOffset);
                 }
                 set
                 {
-                    Buffer.BlockCopy(BitConverter.GetBytes(value), 0, raw, DataOffsetSize, sizeof(uint));
+                    Buffer.BlockCopy(BitConverter.GetBytes(value), 0, raw, DataSizeOffset, sizeof(uint));
                 }
             }
             public uint dataOffset
@@ -813,30 +834,16 @@ namespace MassEffectModder
             input.JumpTo(exportsOffset);
             for (int i = 0; i < exportsCount; i++)
             {
-                uint count;
                 ExportEntry entry = new ExportEntry();
 
                 long start = input.Position;
-                entry.classId = input.ReadInt32();
-                input.SkipInt32(); // entry.classParentId = input.ReadInt32();
-                entry.linkId = input.ReadInt32();
-                entry.objectNameId = input.ReadInt32();
-                entry.objectName = namesTable[entry.objectNameId].name;
-                input.SkipInt32(); // entry.suffixNameId = input.ReadInt32();
-                input.SkipInt32();
-                input.SkipInt64(); // entry.objectFlags = input.ReadUInt64();
-                input.SkipInt32(); // dataSize
-                input.SkipInt32(); // dataOffset
+                input.Skip(ExportEntry.DataOffsetOffset + 4);
                 if (version != packageFileVersionME3)
                 {
-                    count = input.ReadUInt32();
-                    input.Skip(count * 12); // skip entries
+                    input.Skip(input.ReadUInt32() * 12); // skip entries
                 }
                 input.SkipInt32();
-                count = input.ReadUInt32();
-                input.Skip(count * 4); // skip entries
-                input.Skip(16); // skip guid
-                input.SkipInt32();
+                input.Skip(input.ReadUInt32() * 4 + 16 + 4); // skip entries + skip guid + some
 
                 long len = input.Position - start;
                 input.JumpTo(start);
@@ -845,6 +852,7 @@ namespace MassEffectModder
                 if ((entry.dataOffset + entry.dataSize) > exportsEndOffset)
                     exportsEndOffset = entry.dataOffset + entry.dataSize;
 
+                entry.objectName = namesTable[entry.objectNameId].name;
                 entry.id = (uint)i;
                 exportsTable.Add(entry);
             }
