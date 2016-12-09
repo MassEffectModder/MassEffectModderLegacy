@@ -119,22 +119,11 @@ namespace MassEffectModder
             PackageTreeNode rootNode = new PackageTreeNode("All Packages");
             for (int l = 0; l < _textures.Count; l++)
             {
-                string displayName = _textures[l].name;
-                FoundTexture texture = _textures[l];
-                texture.displayName = displayName;
-                _textures[l] = texture;
                 bool found = false;
                 for (int i = 0; i < nodeList.Count; i++)
                 {
                     if (nodeList[i].Name == _textures[l].packageName)
                     {
-                        for (int j = 0; j < nodeList[i].textures.Count; j++)
-                        {
-                            if (nodeList[i].textures[j].name == _textures[l].name)
-                                displayName = nodeList[i].textures[j].name + "!" + nodeList[i].textures.Count;
-                        }
-                        texture.displayName = displayName;
-                        _textures[l] = texture;
                         nodeList[i].textures.Add(_textures[l]);
                         found = true;
                     }

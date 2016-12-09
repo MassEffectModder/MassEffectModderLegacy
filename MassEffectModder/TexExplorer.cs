@@ -54,7 +54,6 @@ namespace MassEffectModder
         public string name;
         public uint crc;
         public string packageName;
-        public string displayName;
         public List<MatchedTexture> list;
     }
 
@@ -173,7 +172,7 @@ namespace MassEffectModder
                 FoundTexture texture = node.textures[i];
                 ListViewItem item = new ListViewItem();
                 item.Name = i.ToString();
-                item.Text = texture.displayName;
+                item.Text = texture.name;
                 listViewTextures.Items.Add(item);
             }
             listViewTextures.EndUpdate();
@@ -233,7 +232,7 @@ namespace MassEffectModder
                 {
                     string text = "";
                     text += "Texture original CRC:  " + string.Format("0x{0:X8}", node.textures[index].crc) + "\n";
-                    text += "Node name:     " + node.textures[index].displayName + "\n";
+                    text += "Node name:     " + node.textures[index].name + "\n";
                     text += "Package name:  " + node.textures[index].packageName + "\n";
                     for (int index2 = 0; index2 < node.textures[index].list.Count; index2++)
                     {
@@ -295,7 +294,7 @@ namespace MassEffectModder
                 }
                 if (found)
                 {
-                    ListViewItem item = new ListViewItem(foundTexture.displayName + " (" + foundTexture.packageName + ")");
+                    ListViewItem item = new ListViewItem(foundTexture.name + " (" + foundTexture.packageName + ")");
                     item.Name = l.ToString();
                     listViewResults.Items.Add(item);
                 }
@@ -375,7 +374,7 @@ namespace MassEffectModder
                     updateListViewTextures(node);
                     for (int i = 0; i < node.textures.Count; i++)
                     {
-                        if (node.textures[i].displayName == item.Text.Split(' ')[0])
+                        if (node.textures[i].name == item.Text.Split(' ')[0])
                         {
                             listViewTextures.FocusedItem = listViewTextures.Items[i];
                             listViewTextures.Items[i].Selected = true;

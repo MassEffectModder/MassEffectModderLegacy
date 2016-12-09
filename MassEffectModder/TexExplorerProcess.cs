@@ -131,7 +131,7 @@ namespace MassEffectModder
                             }
                             else
                             {
-                                ListViewItem item = new ListViewItem(foundTexture.displayName + " (" + foundTexture.packageName + ")");
+                                ListViewItem item = new ListViewItem(foundTexture.name + " (" + foundTexture.packageName + ")");
                                 item.Name = i.ToString();
                                 listViewTextures.Items.Add(item);
                             }
