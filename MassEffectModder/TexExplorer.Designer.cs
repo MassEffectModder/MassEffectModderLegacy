@@ -83,6 +83,7 @@ namespace MassEffectModder
             this.dumpAllTexturesInfoCSVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dumpAllTexturesMipmapsInfoTXTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dumpAllTexturesMipmapsInfoCSVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createMODBatchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStripTextures.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -103,7 +104,7 @@ namespace MassEffectModder
             this.replaceTextureToolStripMenuItem,
             this.viewToolStripMenuItem});
             this.contextMenuStripTextures.Name = "contextMenuStripTextures";
-            this.contextMenuStripTextures.Size = new System.Drawing.Size(198, 70);
+            this.contextMenuStripTextures.Size = new System.Drawing.Size(198, 48);
             // 
             // replaceTextureToolStripMenuItem
             // 
@@ -336,7 +337,8 @@ namespace MassEffectModder
             this.MODsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.loadMODsToolStripMenuItem,
             this.clearMODsToolStripMenuItem,
-            this.packMODToolStripMenuItem});
+            this.packMODToolStripMenuItem,
+            this.createMODBatchToolStripMenuItem});
             this.MODsToolStripMenuItem.Name = "MODsToolStripMenuItem";
             this.MODsToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
             this.MODsToolStripMenuItem.Text = "MODs";
@@ -344,21 +346,21 @@ namespace MassEffectModder
             // loadMODsToolStripMenuItem
             // 
             this.loadMODsToolStripMenuItem.Name = "loadMODsToolStripMenuItem";
-            this.loadMODsToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.loadMODsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.loadMODsToolStripMenuItem.Text = "Load MODs";
             this.loadMODsToolStripMenuItem.Click += new System.EventHandler(this.loadMODsToolStripMenuItem_Click);
             // 
             // clearMODsToolStripMenuItem
             // 
             this.clearMODsToolStripMenuItem.Name = "clearMODsToolStripMenuItem";
-            this.clearMODsToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.clearMODsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.clearMODsToolStripMenuItem.Text = "Clear MODs";
             this.clearMODsToolStripMenuItem.Click += new System.EventHandler(this.clearMODsToolStripMenuItem_Click);
             // 
             // packMODToolStripMenuItem
             // 
             this.packMODToolStripMenuItem.Name = "packMODToolStripMenuItem";
-            this.packMODToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.packMODToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.packMODToolStripMenuItem.Text = "Create MOD";
             this.packMODToolStripMenuItem.Click += new System.EventHandler(this.createMODToolStripMenuItem_Click);
             // 
@@ -416,6 +418,13 @@ namespace MassEffectModder
             this.dumpAllTexturesMipmapsInfoCSVToolStripMenuItem.Size = new System.Drawing.Size(269, 22);
             this.dumpAllTexturesMipmapsInfoCSVToolStripMenuItem.Text = "Dump all package textures info - CSV";
             this.dumpAllTexturesMipmapsInfoCSVToolStripMenuItem.Click += new System.EventHandler(this.dumpAllTexturesMipmapsInfoToolStripMenuItem_Click);
+            // 
+            // createMODBatchToolStripMenuItem
+            // 
+            this.createMODBatchToolStripMenuItem.Name = "createMODBatchToolStripMenuItem";
+            this.createMODBatchToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.createMODBatchToolStripMenuItem.Text = "Create MOD - Batch";
+            this.createMODBatchToolStripMenuItem.Click += new System.EventHandler(this.createMODBatchToolStripMenuItem_Click);
             // 
             // TexExplorer
             // 
@@ -479,5 +488,6 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripMenuItem dumpAllTexturesMipmapsInfoCSVToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem dumpAllTexturesInfoTXTToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem dumpAllTexturesMipmapsInfoTXTToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem createMODBatchToolStripMenuItem;
     }
 }

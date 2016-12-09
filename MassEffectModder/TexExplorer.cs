@@ -617,6 +617,41 @@ namespace MassEffectModder
             _mainWindow.updateStatusLabel2("");
         }
 
+        private void createMODBatchToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            EnableMenuOptions(false);
+
+            using (FolderBrowserDialog modFile = new FolderBrowserDialog())
+            {
+                modFile.SelectedPath = gameData.lastCreateMODPath;
+                if (modFile.ShowDialog() == DialogResult.OK)
+                {
+                    gameData.lastCreateMODPath = modFile.SelectedPath;
+                    List<string> listDirs = Directory.GetDirectories(modFile.SelectedPath).ToList();
+                    if (listDirs.Count == 0)
+                        return;
+
+                    _mainWindow.updateStatusLabel("MODs packing...");
+                    _mainWindow.updateStatusLabel2("");
+                    richTextBoxInfo.Text = "";
+                    richTextBoxInfo.Show();
+                    pictureBoxPreview.Hide();
+                    for (int i = 0; i < listDirs.Count; i++)
+                    {
+                        createTextureMod(listDirs[i], Path.Combine(Path.GetDirectoryName(listDirs[i]), Path.GetFileName(listDirs[i])) + ".mem");
+                    }
+                    if (richTextBoxInfo.Text != "")
+                    {
+                        MessageBox.Show("There were some errors while process.");
+                    }
+                    _mainWindow.updateStatusLabel("MODs packed.");
+                }
+            }
+
+            EnableMenuOptions(true);
+            _mainWindow.updateStatusLabel2("");
+        }
+
         private void searchToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string name = Microsoft.VisualBasic.Interaction.InputBox("Please enter texture name or CRC", "", "", 0, 0);
@@ -898,4 +933,5 @@ namespace MassEffectModder
             }
         }
     }
+
 }
