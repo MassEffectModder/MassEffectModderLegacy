@@ -62,7 +62,6 @@ namespace MassEffectModder
     {
         const uint textureMapBinTag = 0x5054454D;
         const uint textureMapBinVersion = 1;
-        const string TempModFileName = "TextureMod.tmp";
         public const uint TextureModTag = 0x444F4D54;
         const uint TextureModVersion = 1;
         const uint TextureModHeaderLength = 16;
@@ -250,6 +249,7 @@ namespace MassEffectModder
                         {
                             text += "  " + texture.properties.getDisplayString(l);
                         }
+                        text += "\n";
                         for (int l = 0; l < texture.mipMapsList.Count; l++)
                         {
                             text += "  MipMap: " + l + ", " + texture.mipMapsList[l].width + "x" + texture.mipMapsList[l].height + "\n";
