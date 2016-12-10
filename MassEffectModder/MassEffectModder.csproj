@@ -95,6 +95,9 @@
     <Compile Include="TexExplorerProcess.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="TexExplorerRepack.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="TexExplorerReplace.cs">
       <SubType>Form</SubType>
     </Compile>

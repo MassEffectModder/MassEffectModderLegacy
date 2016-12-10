@@ -935,6 +935,13 @@ namespace MassEffectModder
                 EnableMenuOptions(true);
             }
         }
+
+        private void repackTexturesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            EnableMenuOptions(false);
+            RepackTexturesTFC();
+            EnableMenuOptions(true);
+        }
     }
 
 }
