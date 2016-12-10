@@ -71,7 +71,7 @@ namespace MassEffectModder
             }
         };
 
-        private void replaceTexture(DDSImage image, List<MatchedTexture> list)
+        private void replaceTexture(DDSImage image, List<MatchedTexture> list, string textureName)
         {
             Texture firstTexture = null, arcTexture = null, cprTexture = null;
 
@@ -208,10 +208,18 @@ namespace MassEffectModder
                         {
                             if (texture.properties.exists("TextureFileCacheName") && texture.mipMapsList.Count > 1)
                             {
-                                mipmap.storageType = Texture.StorageTypes.extLZO;
                                 // for unknown reason engine not able accept more mipmaps properly
-                                if (texture.mipMapsList.Count < 6)
-                                    continue;
+                                if (texture.mipMapsList.Count < 6 && textureName == "Rust_Diff")
+                                {
+                                    if (image.mipMaps[m].width < 256)
+                                        mipmap.storageType = Texture.StorageTypes.pccUnc;
+                                    else
+                                        continue;
+                                }
+                                else
+                                {
+                                    mipmap.storageType = Texture.StorageTypes.extLZO;
+                                }
                             }
                         }
                         else if (_gameSelected == MeType.ME3_TYPE)
@@ -394,7 +402,7 @@ namespace MassEffectModder
                 ListViewItem item = listViewTextures.FocusedItem;
                 int index = Convert.ToInt32(item.Name);
 
-                replaceTexture(image, node.textures[index].list);
+                replaceTexture(image, node.textures[index].list, node.textures[index].name);
 
                 cachePackageMgr.CloseAllWithSave();
 

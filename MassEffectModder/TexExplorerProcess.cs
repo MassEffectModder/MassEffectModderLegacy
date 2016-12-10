@@ -127,7 +127,7 @@ namespace MassEffectModder
                                     richTextBoxInfo.Text += "Not all mipmaps exists in texture: " + name + "\n";
                                     continue;
                                 }
-                                replaceTexture(image, foundTexture.list);
+                                replaceTexture(image, foundTexture.list, foundTexture.name);
                             }
                             else
                             {
