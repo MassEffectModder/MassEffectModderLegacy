@@ -195,7 +195,16 @@ namespace MassEffectModder
                     else
                     {
                         mipmap.storageType = texture.getTopMipmap().storageType;
-                        if (_gameSelected == MeType.ME2_TYPE)
+                        if (_gameSelected == MeType.ME1_TYPE && n > 0)
+                        {
+                            if (mipmap.storageType == Texture.StorageTypes.pccUnc ||
+                                mipmap.storageType == Texture.StorageTypes.pccLZO ||
+                                mipmap.storageType == Texture.StorageTypes.pccZlib)
+                            {
+                                mipmap.storageType = Texture.StorageTypes.extLZO;
+                            }
+                        }
+                        else if (_gameSelected == MeType.ME2_TYPE)
                         {
                             if (texture.properties.exists("TextureFileCacheName") && texture.mipMapsList.Count > 1)
                             {
