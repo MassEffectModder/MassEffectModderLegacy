@@ -269,6 +269,25 @@ namespace MassEffectModder
             texPropertyList[texPropertyList.FindIndex(s => s.name == name)] = texProperty;
         }
 
+        public void addBoolValue(string name, bool value)
+        {
+            TexPropertyEntry texProperty = new TexPropertyEntry();
+            if (GameData.gameType == MeType.ME3_TYPE)
+                texProperty.valueRaw = new byte[1];
+            else
+                texProperty.valueRaw = new byte[4];
+            texProperty.type = "BoolProperty";
+            package.getNameId(name);
+            texProperty.name = name;
+            texProperty.fetched = true;
+            if (value)
+                texProperty.valueRaw[0] = 1;
+            else
+                texProperty.valueRaw[0] = 0;
+            texProperty.valueBool = value;
+            texPropertyList.Insert(0, texProperty);
+        }
+
         public void setNameValue(string name, string valueName, int valueInt = 0)
         {
             TexPropertyEntry texProperty = texPropertyList.Find(s => s.name == name);
