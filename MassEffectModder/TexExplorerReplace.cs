@@ -209,7 +209,10 @@ namespace MassEffectModder
                             if (texture.properties.exists("TextureFileCacheName") && texture.mipMapsList.Count > 1)
                             {
                                 // for unknown reason engine not able accept more mipmaps properly
-                                if (texture.mipMapsList.Count < 6 && textureName == "Rust_Diff")
+                                if (texture.mipMapsList.Count < 6 && 
+                                    (textureName == "Rust_Diff" || 
+                                    textureName == "HGR_VISOR_HOLOGRAM"))
+                                    // Bend_Norm, fx_Tech01, Ground_Sand02_Norm
                                 {
                                     if (image.mipMaps[m].width < 256)
                                         mipmap.storageType = Texture.StorageTypes.pccUnc;
