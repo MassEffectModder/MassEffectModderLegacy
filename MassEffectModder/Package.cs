@@ -784,7 +784,6 @@ namespace MassEffectModder
                     {
                         entry.raw = input.ReadToBuffer(len);
                     }
-                    extraNamesTable.Add(entry);
                 }
                 else
                 {
@@ -799,25 +798,25 @@ namespace MassEffectModder
                     }
                     name = name.Trim('\0');
                     entry.name = name;
-                    extraNamesTable.Add(entry);
                 }
+                extraNamesTable.Add(entry);
             }
         }
 
         private void saveExtraNames(Stream output, bool rawMode = true)
         {
-            if (!modified)
+            output.WriteInt32(extraNamesTable.Count);
+            for (int c = 0; c < extraNamesTable.Count; c++)
             {
-                output.WriteInt32(extraNamesTable.Count);
-                for (int c = 0; c < extraNamesTable.Count; c++)
+                if (rawMode)
                 {
+                    if (packageFileVersion == packageFileVersionME3)
+                        output.WriteInt32(-(extraNamesTable[c].raw.Length / 2));
+                    else
+                        output.WriteInt32(extraNamesTable[c].raw.Length);
                     output.WriteFromBuffer(extraNamesTable[c].raw);
                 }
-            }
-            else
-            {
-                output.WriteInt32(extraNamesTable.Count);
-                for (int c = 0; c < extraNamesTable.Count; c++)
+                else
                 {
                     if (packageFileVersion == packageFileVersionME3)
                     {
