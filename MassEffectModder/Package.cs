@@ -81,11 +81,13 @@ namespace MassEffectModder
         MemoryStream packageData;
         List<Chunk> chunks;
         List<NameEntry> namesTable;
+        uint namesTableEnd;
         List<ImportEntry> importsTable;
+        uint importsTableEnd;
         public List<ExportEntry> exportsTable;
         List<int> dependsTable;
         List<GuidEntry> guidsTable;
-        List<string> extraNamesTable;
+        List<ExtraNameEntry> extraNamesTable;
         int currentChunk = -1;
         MemoryStream chunkCache;
         bool modified;
@@ -196,6 +198,12 @@ namespace MassEffectModder
         {
             public byte[] guid;
             public int index;
+        }
+
+        public struct ExtraNameEntry
+        {
+            public string name;
+            public byte[] raw;
         }
 
         private uint tag
@@ -661,11 +669,16 @@ namespace MassEffectModder
 
         public int getNameId(string name)
         {
-            for (int i = 0; i < namesTable.Count; i++)
-                if (namesTable[i].name == name)
-                    return i;
+            int i = namesTable.FindIndex(s => s.name == name);
+            if (i == -1)
+                throw new Exception();
+            else
+                return i;
+        }
 
-            throw new Exception();
+        public bool existsNameId(string name)
+        {
+            return namesTable.Exists(s => s.name == name);
         }
 
         public string getName(int id)
@@ -720,65 +733,102 @@ namespace MassEffectModder
 
                 namesTable.Add(entry);
             }
+            namesTableEnd = (uint)input.Position;
         }
 
-        private void saveNames(Stream output)
+        private void saveNames(Stream output, bool modified = false)
         {
-            for (int i = 0; i < namesTable.Count; i++)
+            if (!modified)
             {
-                NameEntry entry = namesTable[i];
-                if (packageFileVersion == packageFileVersionME3)
+                packageFile.JumpTo(namesOffset);
+                output.WriteFromStream(packageFile, namesTableEnd - namesOffset);
+            }
+            else
+            {
+                for (int i = 0; i < namesTable.Count; i++)
                 {
-                    output.WriteInt32(-(entry.name.Length + 1));
-                    output.WriteStringUnicodeNull(entry.name);
+                    NameEntry entry = namesTable[i];
+                    if (packageFileVersion == packageFileVersionME3)
+                    {
+                        output.WriteInt32(-(entry.name.Length + 1));
+                        output.WriteStringUnicodeNull(entry.name);
+                    }
+                    else
+                    {
+                        output.WriteInt32(entry.name.Length + 1);
+                        output.WriteStringASCIINull(entry.name);
+                    }
+                    if (version == packageFileVersionME1)
+                        output.WriteUInt64(entry.flags);
+                    if (version == packageFileVersionME2)
+                        output.WriteUInt32((uint)entry.flags);
                 }
-                else
-                {
-                    output.WriteInt32(entry.name.Length + 1);
-                    output.WriteStringASCIINull(entry.name);
-                }
-                if (version == packageFileVersionME1)
-                    output.WriteUInt64(entry.flags);
-                if (version == packageFileVersionME2)
-                    output.WriteUInt32((uint)entry.flags);
             }
         }
 
-        private void loadExtraNames(Stream input)
+        private void loadExtraNames(Stream input, bool rawMode = true)
         {
-            extraNamesTable = new List<string>();
+            extraNamesTable = new List<ExtraNameEntry>();
             uint extraNamesCount = input.ReadUInt32();
             for (int c = 0; c < extraNamesCount; c++)
             {
+                ExtraNameEntry entry = new ExtraNameEntry();
                 int len = input.ReadInt32();
-                string name;
-                if (len < 0)
+                if (rawMode)
                 {
-                    name = input.ReadStringUnicode(-len * 2);
+                    if (len < 0)
+                    {
+                        entry.raw = input.ReadToBuffer(-len * 2);
+                    }
+                    else
+                    {
+                        entry.raw = input.ReadToBuffer(len);
+                    }
+                    extraNamesTable.Add(entry);
                 }
                 else
                 {
-                    name = input.ReadStringASCII(len);
+                    string name;
+                    if (len < 0)
+                    {
+                        name = input.ReadStringUnicode(-len * 2);
+                    }
+                    else
+                    {
+                        name = input.ReadStringASCII(len);
+                    }
+                    name = name.Trim('\0');
+                    entry.name = name;
+                    extraNamesTable.Add(entry);
                 }
-                name = name.Trim('\0');
-                extraNamesTable.Add(name);
             }
         }
 
-        private void saveExtraNames(Stream output)
+        private void saveExtraNames(Stream output, bool rawMode = true)
         {
-            output.WriteInt32(extraNamesTable.Count);
-            for (int c = 0; c < extraNamesTable.Count; c++)
+            if (!modified)
             {
-                if (packageFileVersion == packageFileVersionME3)
+                output.WriteInt32(extraNamesTable.Count);
+                for (int c = 0; c < extraNamesTable.Count; c++)
                 {
-                    output.WriteInt32(-(extraNamesTable[c].Length + 1));
-                    output.WriteStringUnicodeNull(extraNamesTable[c]);
+                    output.WriteFromBuffer(extraNamesTable[c].raw);
                 }
-                else
+            }
+            else
+            {
+                output.WriteInt32(extraNamesTable.Count);
+                for (int c = 0; c < extraNamesTable.Count; c++)
                 {
-                    output.WriteInt32(extraNamesTable[c].Length + 1);
-                    output.WriteStringASCIINull(extraNamesTable[c]);
+                    if (packageFileVersion == packageFileVersionME3)
+                    {
+                        output.WriteInt32(-(extraNamesTable[c].name.Length + 1));
+                        output.WriteStringUnicodeNull(extraNamesTable[c].name);
+                    }
+                    else
+                    {
+                        output.WriteInt32(extraNamesTable[c].name.Length + 1);
+                        output.WriteStringASCIINull(extraNamesTable[c].name);
+                    }
                 }
             }
         }
@@ -808,6 +858,7 @@ namespace MassEffectModder
 
                 importsTable.Add(entry);
             }
+            importsTableEnd = (uint)input.Position;
         }
 
         private void loadImportsNames()
@@ -820,11 +871,19 @@ namespace MassEffectModder
             }
         }
 
-        private void saveImports(Stream output)
+        private void saveImports(Stream output, bool modified = false)
         {
-            for (int i = 0; i < importsTable.Count; i++)
+            if (!modified)
             {
-                output.WriteFromBuffer(importsTable[i].raw);
+                packageFile.JumpTo(importsOffset);
+                output.WriteFromStream(packageFile, importsTableEnd - importsOffset);
+            }
+            else
+            {
+                for (int i = 0; i < importsTable.Count; i++)
+                {
+                    output.WriteFromBuffer(importsTable[i].raw);
+                }
             }
         }
 

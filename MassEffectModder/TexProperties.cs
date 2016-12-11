@@ -277,7 +277,8 @@ namespace MassEffectModder
             else
                 texProperty.valueRaw = new byte[4];
             texProperty.type = "BoolProperty";
-            package.getNameId(name);
+            if (!package.existsNameId(name))
+                throw new Exception("Not able to add property: " + name);
             texProperty.name = name;
             texProperty.fetched = true;
             if (value)
