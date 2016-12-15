@@ -109,7 +109,8 @@ namespace MassEffectModder
                 for (int t = 0; t < image.mipMaps.Count(); t++)
                 {
                     if (image.mipMaps[t].origWidth <= texture.mipMapsList[0].width &&
-                        image.mipMaps[t].origHeight <= texture.mipMapsList[0].height)
+                        image.mipMaps[t].origHeight <= texture.mipMapsList[0].height &&
+                        texture.mipMapsList.Count > 1)
                     {
                         if (!texture.mipMapsList.Exists(m => m.width == image.mipMaps[t].origWidth && m.height == image.mipMaps[t].origHeight))
                         {
