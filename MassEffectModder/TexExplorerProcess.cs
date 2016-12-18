@@ -93,7 +93,7 @@ namespace MassEffectModder
                         " - Texture " + (i + 1) + " of " + numTextures + " - " + name);
                     if (extract)
                     {
-                        string filename = name + "-" + string.Format("0x{0:X8}", crc) + ".dds";
+                        string filename = name + "_" + string.Format("0x{0:X8}", crc) + ".dds";
                         using (FileStream output = new FileStream(Path.Combine(outDir, Path.GetFileName(filename)), FileMode.Create, FileAccess.Write))
                         {
                             output.Write(dst, 0, (int)dstLen);
