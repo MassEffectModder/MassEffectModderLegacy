@@ -828,8 +828,8 @@ namespace AmaroK86.ImageFormat
         {
             s.WriteInt32(DDS_HEADER_size);
             s.WriteUInt32(DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_MIPMAPCOUNT | DDSD_PIXELFORMAT | DDSD_LINEARSIZE);
-            s.WriteInt32(mipMaps[0].width);
             s.WriteInt32(mipMaps[0].height);
+            s.WriteInt32(mipMaps[0].width);
             s.WriteInt32((int)getBytesPerPixel(mipMaps[0].ddsFormat) * mipMaps[0].width * mipMaps[0].height);
             s.WriteUInt32(0); // dwDepth
             s.WriteInt32(mipMaps.Count);
