@@ -186,34 +186,8 @@ namespace MassEffectModder
                     }
                     if (tag != ExportModTag || version != ExportModVersion)
                     {
-                        fs.SeekBegin();
-                        int len = fs.ReadInt32();
-                        fs.ReadStringASCII(len); // version
-                        int numEntries = fs.ReadInt32();
-                        len = fs.ReadInt32();
-                        fs.ReadStringASCII(len); // description
-                        len = fs.ReadInt32();
-                        string scriptLegacy = fs.ReadStringASCII(len);
-                        int expId = -1;
-                        string package = "";
-                        ParseLegacyScriptMod(scriptLegacy, ref package, ref expId);
-                        if (expId != -1 && package != "")
-                        {
-                            string[] packages = Directory.GetFiles(GameData.MainData, package, SearchOption.AllDirectories);
-                            if (packages.Count() != 0)
-                            {
-                                len = fs.ReadInt32();
-                                byte[] data = fs.ReadToBuffer(len);
-                                Package pkg = new Package(packages[0]);
-                                pkg.setExportData(expId, data);
-                                pkg.SaveToFile();
-                            }
-                        }
-                        else
-                        {
-                            MessageBox.Show("Legacy Mod not compatible!");
-                            return;
-                        }
+                        MessageBox.Show("Mod not compatible!");
+                        return;
                     }
                     else
                     {
