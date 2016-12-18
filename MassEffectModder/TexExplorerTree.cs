@@ -86,7 +86,6 @@ namespace MassEffectModder
                 for (int i = 0; i < GameData.packageFiles.Count; i++)
                 {
                     _mainWindow.updateStatusLabel("Find textures in package " + (i + 1) + " of " + GameData.packageFiles.Count);
-                    _mainWindow.updateStatusLabel2("");
                     FindTextures(GameData.packageFiles[i]);
                 }
 
