@@ -33,11 +33,11 @@ namespace MassEffectModder
         string _iniPath;
 
         [DllImport("kernel32")]
-        private static extern UInt32 GetPrivateProfileString(string section, string key,
+        private static extern uint GetPrivateProfileString(string section, string key,
                 string def, StringBuilder value, int size, string filename);
 
         [DllImport("kernel32")]
-        private static extern Boolean WritePrivateProfileString(string section, string key,
+        private static extern bool WritePrivateProfileString(string section, string key,
                 string value, string filename);
 
         public ConfIni(string iniPath = null)
