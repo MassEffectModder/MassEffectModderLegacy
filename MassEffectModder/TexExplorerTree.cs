@@ -197,7 +197,7 @@ namespace MassEffectModder
                             mipmap.storageType == Texture.StorageTypes.pccLZO ||
                             mipmap.storageType == Texture.StorageTypes.pccZlib)
                         {
-                            uint crc = texture.getCrcMipmap();
+                            uint crc = texture.getCrcTopMipmap();
                             FoundTexture foundTexName = _textures.Find(s => s.crc == crc);
                             if (foundTexName.name != null && package.compressed)
                             {
@@ -219,7 +219,7 @@ namespace MassEffectModder
                             FoundTexture foundTexName;
                             List<FoundTexture> foundList = _textures.FindAll(s => s.name == name && s.packageName == texture.packageName);
                             if (foundList.Count > 1)
-                                foundTexName = _textures.Find(s => s.name == name && s.packageName == texture.packageName && s.crc == texture.getCrcMipmap());
+                                foundTexName = _textures.Find(s => s.name == name && s.packageName == texture.packageName && s.crc == texture.getCrcTopMipmap());
                             else
                                 foundTexName = foundList[0];
                             foundTexName.list.Add(matchTexture);
@@ -227,7 +227,7 @@ namespace MassEffectModder
                     }
                     else
                     {
-                        uint crc = texture.getCrcMipmap();
+                        uint crc = texture.getCrcTopMipmap();
                         FoundTexture foundTexName = _textures.Find(s => s.crc == crc);
                         if (foundTexName.crc != 0)
                         {

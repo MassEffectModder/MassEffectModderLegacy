@@ -327,9 +327,9 @@ namespace MassEffectModder
             return getCrcData(getMipMapData(mipmap));
         }
 
-        public uint getCrcMipmap()
+        public uint getCrcTopMipmap()
         {
-            return getCrcData(getImageData());
+            return getCrcData(getTopImageData());
         }
 
         public MipMap getTopMipmap()
@@ -358,7 +358,7 @@ namespace MassEffectModder
             return true;
         }
 
-        public byte[] getImageData()
+        public byte[] getTopImageData()
         {
             if (textureData == null || mipMapsList.Count == 0)
                 return null;
