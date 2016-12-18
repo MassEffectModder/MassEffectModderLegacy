@@ -23,6 +23,7 @@ using StreamHelpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace MassEffectModder
@@ -32,7 +33,11 @@ namespace MassEffectModder
         private void PrepareListOfTextures()
         {
             _textures = new List<FoundTexture>();
-            string filename = "me" + (int)_gameSelected + "map.bin";
+            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    Assembly.GetExecutingAssembly().GetName().Name);
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            string filename = Path.Combine(path, "me" + (int)_gameSelected + "map.bin");
             if (File.Exists(filename))
             {
                 using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
