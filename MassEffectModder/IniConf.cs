@@ -45,8 +45,8 @@ namespace MassEffectModder
             if (iniPath != null)
                 _iniPath = iniPath;
             else
-                _iniPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath),
-                    Assembly.GetExecutingAssembly().GetName().Name + ".ini");
+                _iniPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                        Assembly.GetExecutingAssembly().GetName().Name + ".ini");
         }
 
         public string Read(string key, string section)
