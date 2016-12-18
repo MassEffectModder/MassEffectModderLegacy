@@ -739,9 +739,9 @@ namespace AmaroK86.ImageFormat
                             bitmapStream.Seek(((s + i) * w * bytesPerPixel) + (t * bytesPerPixel), SeekOrigin.Begin);
                             for (int j = 0; j < 4; j++)
                             {
-                                //for (int k = 0; k < 3; k++)
-                                for (int k = 2; k >= 0; k--)
-                                    bitmapStream.WriteByte(rgbVals[k][(i * 4) + j]);
+                                bitmapStream.WriteByte(rgbVals[2][(i * 4) + j]);
+                                bitmapStream.WriteByte(rgbVals[0][(i * 4) + j]);
+                                bitmapStream.WriteByte(rgbVals[1][(i * 4) + j]);
                             }
                         }
                     }
