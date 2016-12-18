@@ -67,7 +67,7 @@ namespace AmaroK86.ImageFormat
             public int height;
             public int origWidth;
             public int origHeight;
-            DDSFormat ddsFormat;
+            public DDSFormat ddsFormat { get; private set; }
             private byte[] _data;
             public byte[] data
             {
@@ -116,13 +116,23 @@ namespace AmaroK86.ImageFormat
             }
         }
 
+        private const int DDS_HEADER_size = 124;
+        private const int DDS_PIXELFORMAT_size = 32;
         private const int DDPF_ALPHAPIXELS = 0x00000001;
         private const int DDPF_ALPHA = 0x00000002;
         private const int DDPF_FOURCC = 0x00000004;
         private const int DDPF_RGB = 0x00000040;
         private const int DDPF_YUV = 0x00000200;
         private const int DDPF_LUMINANCE = 0x00020000;
+        private const int DDSD_CAPS = 0x00000001;
+        private const int DDSD_HEIGHT = 0x00000002;
+        private const int DDSD_WIDTH = 0x00000004;
+        private const int DDSD_PIXELFORMAT = 0x00001000;
         private const int DDSD_MIPMAPCOUNT = 0x00020000;
+        private const int DDSD_LINEARSIZE = 0x00080000;
+        private const int DDSCAPS_COMPLEX = 0x00000008;
+        private const int DDSCAPS_MIPMAP = 0x00400000;
+        private const int DDSCAPS_TEXTURE = 0x00001000;
         private const int FOURCC_DXT1 = 0x31545844;
         private const int FOURCC_DX10 = 0x30315844;
         private const int FOURCC_DXT5 = 0x35545844;
@@ -133,6 +143,11 @@ namespace AmaroK86.ImageFormat
         public DDSFormat ddsFormat { get; private set; }
 
         public List<MipMap> mipMaps;
+
+        public DDSImage(List<MipMap> mips)
+        {
+            mipMaps = mips;
+        }
 
         public DDSImage(string ddsFileName, bool bypassCheck = false)
         {
@@ -145,6 +160,16 @@ namespace AmaroK86.ImageFormat
         public DDSImage(MemoryStream ddsStream, bool bypassCheck = false)
         {
             LoadDDSImage(ddsStream, bypassCheck);
+        }
+
+        public void SaveDDSImage(Stream ddsStream)
+        {
+            ddsStream.WriteUInt32(0x20534444);
+            Write_DDS_HEADER(ddsStream);
+            for (int i = 0; i < mipMaps.Count; i++)
+            {
+                ddsStream.WriteFromBuffer(mipMaps[i].data);
+            }
         }
 
         private void LoadDDSImage(MemoryStream ddsStream, bool bypassCheck = false)
@@ -262,6 +287,61 @@ namespace AmaroK86.ImageFormat
             throw new Exception("invalid texture format");
         }
 
+        private DDS_PIXELFORMAT getDDSPixelFormat(DDSFormat format)
+        {
+            DDS_PIXELFORMAT pixelFormat = new DDS_PIXELFORMAT();
+            switch (format)
+            {
+                case DDSFormat.DXT1:
+                    pixelFormat.dwFlags = DDPF_FOURCC;
+                    pixelFormat.dwFourCC = FOURCC_DXT1;
+                    break;
+                case DDSFormat.DXT5:
+                    pixelFormat.dwFlags = DDPF_FOURCC;
+                    pixelFormat.dwFourCC = FOURCC_DXT5;
+                    break;
+                case DDSFormat.ATI2:
+                    pixelFormat.dwFlags = DDPF_FOURCC;
+                    pixelFormat.dwFourCC = FOURCC_ATI2;
+                    break;
+                case DDSFormat.V8U8:
+                    pixelFormat.dwFlags = 0x80000;
+                    pixelFormat.dwRGBBitCount = 0x10;
+                    pixelFormat.dwRBitMask = 0xFF;
+                    pixelFormat.dwGBitMask = 0xFF00;
+                    pixelFormat.dwBBitMask = 0x00;
+                    pixelFormat.dwABitMask = 0x00;
+                    break;
+                case DDSFormat.G8:
+                    pixelFormat.dwFlags = DDPF_LUMINANCE;
+                    pixelFormat.dwRGBBitCount = 0x08;
+                    pixelFormat.dwRBitMask = 0xFF;
+                    pixelFormat.dwGBitMask = 0x00;
+                    pixelFormat.dwBBitMask = 0x00;
+                    pixelFormat.dwABitMask = 0x00;
+                    break;
+                case DDSFormat.ARGB:
+                    pixelFormat.dwFlags = DDPF_ALPHAPIXELS | DDPF_RGB;
+                    pixelFormat.dwRGBBitCount = 0x20;
+                    pixelFormat.dwRBitMask = 0xFF0000;
+                    pixelFormat.dwGBitMask = 0xFF00;
+                    pixelFormat.dwBBitMask = 0xFF;
+                    pixelFormat.dwABitMask = 0xFF000000;
+                    break;
+                case DDSFormat.RGB:
+                    pixelFormat.dwFlags = DDPF_RGB;
+                    pixelFormat.dwRGBBitCount = 0x18;
+                    pixelFormat.dwRBitMask = 0xFF0000;
+                    pixelFormat.dwGBitMask = 0xFF00;
+                    pixelFormat.dwBBitMask = 0xFF;
+                    pixelFormat.dwABitMask = 0x00;
+                    break;
+                default:
+                    throw new Exception("invalid texture format " + ddsFormat);
+            }
+            return pixelFormat;
+        }
+
         public static double getBytesPerPixel(DDSFormat ddsFormat)
         {
             switch (ddsFormat)
@@ -273,8 +353,9 @@ namespace AmaroK86.ImageFormat
                 case DDSFormat.V8U8: return 2;
                 case DDSFormat.ARGB: return 4;
                 case DDSFormat.RGB: return 3;
+                default:
+                    throw new Exception("invalid texture format " + ddsFormat);
             }
-            throw new Exception("invalid texture format");
         }
 
         public static DDSFormat convertFormat(string format)
@@ -311,8 +392,9 @@ namespace AmaroK86.ImageFormat
                 case DDSFormat.G8: return ViewG8(imgData, w, h);
                 case DDSFormat.ARGB: return View32Bit(imgData, w, h);
                 case DDSFormat.RGB: return View24Bit(imgData, w, h);
+                default:
+                    throw new Exception("invalid texture format " + ddsFormat);
             }
-            throw new Exception("invalid texture format " + ddsFormat);
         }
 
         #region DXT1
@@ -742,6 +824,24 @@ namespace AmaroK86.ImageFormat
             h.dwReserved2 = r.ReadInt32();
         }
 
+        private void Write_DDS_HEADER(Stream s)
+        {
+            s.WriteInt32(DDS_HEADER_size);
+            s.WriteUInt32(DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_MIPMAPCOUNT | DDSD_PIXELFORMAT | DDSD_LINEARSIZE);
+            s.WriteInt32(mipMaps[0].width);
+            s.WriteInt32(mipMaps[0].height);
+            s.WriteInt32((int)getBytesPerPixel(mipMaps[0].ddsFormat) * mipMaps[0].width * mipMaps[0].height);
+            s.WriteUInt32(0); // dwDepth
+            s.WriteInt32(mipMaps.Count);
+            s.WriteZeros(44); // dwReserved1
+            Write_DDS_PIXELFORMAT(mipMaps[0].ddsFormat, s);
+            s.WriteInt32(DDSCAPS_COMPLEX | DDSCAPS_MIPMAP | DDSCAPS_TEXTURE);
+            s.WriteUInt32(0); // dwCaps2
+            s.WriteUInt32(0); // dwCaps3
+            s.WriteUInt32(0); // dwCaps4
+            s.WriteUInt32(0); // dwReserved2
+        }
+
         private void Read_DDS_PIXELFORMAT(DDS_PIXELFORMAT p, BinaryReader r)
         {
             p.dwSize = r.ReadUInt32();
@@ -752,6 +852,19 @@ namespace AmaroK86.ImageFormat
             p.dwGBitMask = r.ReadUInt32();
             p.dwBBitMask = r.ReadUInt32();
             p.dwABitMask = r.ReadUInt32();
+        }
+
+        private void Write_DDS_PIXELFORMAT(DDSFormat p, Stream s)
+        {
+            DDS_PIXELFORMAT fmt = getDDSPixelFormat(p);
+            s.WriteInt32(DDS_PIXELFORMAT_size);
+            s.WriteUInt32(fmt.dwFlags);
+            s.WriteUInt32(fmt.dwFourCC);
+            s.WriteUInt32(fmt.dwRGBBitCount);
+            s.WriteUInt32(fmt.dwRBitMask);
+            s.WriteUInt32(fmt.dwGBitMask);
+            s.WriteUInt32(fmt.dwBBitMask);
+            s.WriteUInt32(fmt.dwABitMask);
         }
     }
 

@@ -369,6 +369,14 @@ namespace MassEffectModder
             return getMipMapData(getTopMipmap());
         }
 
+        public byte[] getMipMapDataByIndex(int index)
+        {
+            if (textureData == null || mipMapsList.Count == 0 || index < 0 || index > mipMapsList.Count)
+                return null;
+
+            return getMipMapData(mipMapsList[index]);
+        }
+
         public byte[] getMipMapData(MipMap mipmap)
         {
             switch (mipmap.storageType)

@@ -53,6 +53,7 @@ namespace MassEffectModder
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TexExplorer));
             this.contextMenuStripTextures = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.replaceTextureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.extractToDDSFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.previewTextureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.infoTextureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -85,6 +86,7 @@ namespace MassEffectModder
             this.dumpAllTexturesInfoCSVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dumpAllTexturesMipmapsInfoTXTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dumpAllTexturesMipmapsInfoCSVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.extractAllMappedTexturesToDDSFilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStripTextures.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -103,17 +105,26 @@ namespace MassEffectModder
             // 
             this.contextMenuStripTextures.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.replaceTextureToolStripMenuItem,
+            this.extractToDDSFileToolStripMenuItem,
             this.viewToolStripMenuItem});
             this.contextMenuStripTextures.Name = "contextMenuStripTextures";
-            this.contextMenuStripTextures.Size = new System.Drawing.Size(198, 48);
+            this.contextMenuStripTextures.Size = new System.Drawing.Size(209, 70);
             // 
             // replaceTextureToolStripMenuItem
             // 
             this.replaceTextureToolStripMenuItem.Name = "replaceTextureToolStripMenuItem";
             this.replaceTextureToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
-            this.replaceTextureToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.replaceTextureToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
             this.replaceTextureToolStripMenuItem.Text = "Replace Texture";
             this.replaceTextureToolStripMenuItem.Click += new System.EventHandler(this.replaceTextureToolStripMenuItem_Click);
+            // 
+            // extractToDDSFileToolStripMenuItem
+            // 
+            this.extractToDDSFileToolStripMenuItem.Name = "extractToDDSFileToolStripMenuItem";
+            this.extractToDDSFileToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
+            this.extractToDDSFileToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.extractToDDSFileToolStripMenuItem.Text = "Extract to DDS file";
+            this.extractToDDSFileToolStripMenuItem.Click += new System.EventHandler(this.extractToDDSFileToolStripMenuItem_Click);
             // 
             // viewToolStripMenuItem
             // 
@@ -121,7 +132,7 @@ namespace MassEffectModder
             this.previewTextureToolStripMenuItem,
             this.infoTextureToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
-            this.viewToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
             this.viewToolStripMenuItem.Text = "View";
             // 
             // previewTextureToolStripMenuItem
@@ -385,6 +396,7 @@ namespace MassEffectModder
             this.miscToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.removeEmptyMipmapsToolStripMenuItem,
             this.repackTexturesToolStripMenuItem,
+            this.extractAllMappedTexturesToDDSFilesToolStripMenuItem,
             this.dumpAllTexturesInfoTXTToolStripMenuItem,
             this.dumpAllTexturesInfoCSVToolStripMenuItem,
             this.dumpAllTexturesMipmapsInfoTXTToolStripMenuItem,
@@ -396,44 +408,51 @@ namespace MassEffectModder
             // removeEmptyMipmapsToolStripMenuItem
             // 
             this.removeEmptyMipmapsToolStripMenuItem.Name = "removeEmptyMipmapsToolStripMenuItem";
-            this.removeEmptyMipmapsToolStripMenuItem.Size = new System.Drawing.Size(269, 22);
+            this.removeEmptyMipmapsToolStripMenuItem.Size = new System.Drawing.Size(278, 22);
             this.removeEmptyMipmapsToolStripMenuItem.Text = "Remove empty mipmaps";
             this.removeEmptyMipmapsToolStripMenuItem.Click += new System.EventHandler(this.removeEmptyMipmapsToolStripMenuItem_Click);
             // 
             // repackTexturesToolStripMenuItem
             // 
             this.repackTexturesToolStripMenuItem.Name = "repackTexturesToolStripMenuItem";
-            this.repackTexturesToolStripMenuItem.Size = new System.Drawing.Size(269, 22);
+            this.repackTexturesToolStripMenuItem.Size = new System.Drawing.Size(278, 22);
             this.repackTexturesToolStripMenuItem.Text = "Repack Textures";
             this.repackTexturesToolStripMenuItem.Click += new System.EventHandler(this.repackTexturesToolStripMenuItem_Click);
             // 
             // dumpAllTexturesInfoTXTToolStripMenuItem
             // 
             this.dumpAllTexturesInfoTXTToolStripMenuItem.Name = "dumpAllTexturesInfoTXTToolStripMenuItem";
-            this.dumpAllTexturesInfoTXTToolStripMenuItem.Size = new System.Drawing.Size(269, 22);
+            this.dumpAllTexturesInfoTXTToolStripMenuItem.Size = new System.Drawing.Size(278, 22);
             this.dumpAllTexturesInfoTXTToolStripMenuItem.Text = "Dump all mapped textures info - TXT";
             this.dumpAllTexturesInfoTXTToolStripMenuItem.Click += new System.EventHandler(this.dumpAllTexturesInfoTXTToolStripMenuItem_Click);
             // 
             // dumpAllTexturesInfoCSVToolStripMenuItem
             // 
             this.dumpAllTexturesInfoCSVToolStripMenuItem.Name = "dumpAllTexturesInfoCSVToolStripMenuItem";
-            this.dumpAllTexturesInfoCSVToolStripMenuItem.Size = new System.Drawing.Size(269, 22);
+            this.dumpAllTexturesInfoCSVToolStripMenuItem.Size = new System.Drawing.Size(278, 22);
             this.dumpAllTexturesInfoCSVToolStripMenuItem.Text = "Dump all mapped textures info - CSV";
             this.dumpAllTexturesInfoCSVToolStripMenuItem.Click += new System.EventHandler(this.dumpAllTexturesInfoToolStripMenuItem_Click);
             // 
             // dumpAllTexturesMipmapsInfoTXTToolStripMenuItem
             // 
             this.dumpAllTexturesMipmapsInfoTXTToolStripMenuItem.Name = "dumpAllTexturesMipmapsInfoTXTToolStripMenuItem";
-            this.dumpAllTexturesMipmapsInfoTXTToolStripMenuItem.Size = new System.Drawing.Size(269, 22);
+            this.dumpAllTexturesMipmapsInfoTXTToolStripMenuItem.Size = new System.Drawing.Size(278, 22);
             this.dumpAllTexturesMipmapsInfoTXTToolStripMenuItem.Text = "Dump all package textures info - TXT";
             this.dumpAllTexturesMipmapsInfoTXTToolStripMenuItem.Click += new System.EventHandler(this.dumpAllTexturesMipmapsInfoTXTToolStripMenuItem_Click);
             // 
             // dumpAllTexturesMipmapsInfoCSVToolStripMenuItem
             // 
             this.dumpAllTexturesMipmapsInfoCSVToolStripMenuItem.Name = "dumpAllTexturesMipmapsInfoCSVToolStripMenuItem";
-            this.dumpAllTexturesMipmapsInfoCSVToolStripMenuItem.Size = new System.Drawing.Size(269, 22);
+            this.dumpAllTexturesMipmapsInfoCSVToolStripMenuItem.Size = new System.Drawing.Size(278, 22);
             this.dumpAllTexturesMipmapsInfoCSVToolStripMenuItem.Text = "Dump all package textures info - CSV";
             this.dumpAllTexturesMipmapsInfoCSVToolStripMenuItem.Click += new System.EventHandler(this.dumpAllTexturesMipmapsInfoToolStripMenuItem_Click);
+            // 
+            // extractAllMappedTexturesToDDSFilesToolStripMenuItem
+            // 
+            this.extractAllMappedTexturesToDDSFilesToolStripMenuItem.Name = "extractAllMappedTexturesToDDSFilesToolStripMenuItem";
+            this.extractAllMappedTexturesToDDSFilesToolStripMenuItem.Size = new System.Drawing.Size(278, 22);
+            this.extractAllMappedTexturesToDDSFilesToolStripMenuItem.Text = "Extract all mapped textures to DDS files";
+            this.extractAllMappedTexturesToDDSFilesToolStripMenuItem.Click += new System.EventHandler(this.extractAllMappedTexturesToDDSFilesToolStripMenuItem_Click);
             // 
             // TexExplorer
             // 
@@ -499,5 +518,7 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripMenuItem dumpAllTexturesMipmapsInfoTXTToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem createMODBatchToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem repackTexturesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem extractToDDSFileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem extractAllMappedTexturesToDDSFilesToolStripMenuItem;
     }
 }

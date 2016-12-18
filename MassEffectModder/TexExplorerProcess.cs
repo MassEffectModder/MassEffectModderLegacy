@@ -264,5 +264,28 @@ namespace MassEffectModder
             if (count == 0)
                 File.Delete(outFile);
         }
+
+        public void extractTextureToDDS(string outputFile, string packagePath, int exportID)
+        {
+            Package package = new Package(packagePath);
+            Texture texture = new Texture(package, exportID, package.getExportData(exportID));
+            while (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty))
+            {
+                texture.mipMapsList.Remove(texture.mipMapsList.First(s => s.storageType == Texture.StorageTypes.empty));
+            }
+            List<DDSImage.MipMap> mipmaps = new List<DDSImage.MipMap>();
+            DDSFormat format = DDSImage.convertFormat(texture.properties.getProperty("Format").valueName);
+            for (int i = 0; i < texture.mipMapsList.Count; i++)
+            {
+                mipmaps.Add(new DDSImage.MipMap(texture.getMipMapDataByIndex(i), format, texture.mipMapsList[i].width, texture.mipMapsList[i].height));
+            }
+            DDSImage dds = new DDSImage(mipmaps);
+            if (File.Exists(outputFile))
+                File.Delete(outputFile);
+            using (FileStream fs = new FileStream(outputFile, FileMode.CreateNew, FileAccess.Write))
+            {
+                dds.SaveDDSImage(fs);
+            }
+        }
     }
 }

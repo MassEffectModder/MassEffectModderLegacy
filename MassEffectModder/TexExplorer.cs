@@ -107,6 +107,7 @@ namespace MassEffectModder
             listViewMods.Enabled = enable;
             replaceTextureToolStripMenuItem.Enabled = enable;
             viewToolStripMenuItem.Enabled = enable;
+            extractToDDSFileToolStripMenuItem.Enabled = enable;
             Application.DoEvents();
         }
 
@@ -419,6 +420,7 @@ namespace MassEffectModder
             miscToolStripMenuItem.Enabled = !enable;
             replaceTextureToolStripMenuItem.Enabled = !enable;
             viewToolStripMenuItem.Enabled = !enable;
+            extractToDDSFileToolStripMenuItem.Enabled = !enable;
             Application.DoEvents();
         }
 
@@ -941,6 +943,52 @@ namespace MassEffectModder
             EnableMenuOptions(false);
             RepackTexturesTFC();
             EnableMenuOptions(true);
+        }
+
+        private void extractToDDSFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            EnableMenuOptions(false);
+            if (listViewTextures.SelectedItems.Count == 0)
+                return;
+
+            using (SaveFileDialog saveFile = new SaveFileDialog())
+            {
+                PackageTreeNode node = (PackageTreeNode)treeViewPackages.SelectedNode;
+                ListViewItem item = listViewTextures.FocusedItem;
+                int index = Convert.ToInt32(item.Name);
+                MatchedTexture nodeTexture = node.textures[index].list[0];
+                saveFile.Title = "Please select output DDS file";
+                saveFile.Filter = "DDS file | *.dds";
+                saveFile.FileName = node.textures[index].name + string.Format("_0x{0:X8}", node.textures[index].crc) + ".dds";
+                if (saveFile.ShowDialog() == DialogResult.OK)
+                {
+                    extractTextureToDDS(saveFile.FileName, GameData.GamePath + nodeTexture.path, nodeTexture.exportID);
+                }
+            }
+            EnableMenuOptions(true);
+        }
+
+        private void extractAllMappedTexturesToDDSFilesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            EnableMenuOptions(false);
+
+            using (FolderBrowserDialog extractDir = new FolderBrowserDialog())
+            {
+                if (extractDir.ShowDialog() == DialogResult.OK)
+                {
+                    for (int i = 0; i < _textures.Count; i++)
+                    {
+                        _mainWindow.updateStatusLabel("Extracting textures...");
+                        _mainWindow.updateStatusLabel2("Texture: " + (i + 1) + " of " + _textures.Count + " - " + _textures[i].name);
+                        extractTextureToDDS(Path.Combine(extractDir.SelectedPath, _textures[i].name + string.Format("_0x{0:X8}", _textures[i].crc) + ".dds"),
+                            GameData.GamePath + _textures[i].list[0].path, _textures[i].list[0].exportID);
+                    }
+                    _mainWindow.updateStatusLabel("Textures extracted.");
+                }
+            }
+
+            EnableMenuOptions(true);
+            _mainWindow.updateStatusLabel2("");
         }
     }
 
