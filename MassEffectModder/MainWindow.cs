@@ -165,24 +165,6 @@ namespace MassEffectModder
             return true;
         }
 
-        private void ParseLegacyScriptMod(string script, ref string package, ref int expId)
-        {
-            Regex parts = new Regex("int objidx = [0-9]*");
-            Match match = parts.Match(script);
-            if (match.Success)
-            {
-                expId = int.Parse(match.ToString().Split(' ').Last());
-                parts = new Regex("string filename = \"[A-z,0-9,.]*\";");
-                match = parts.Match(script);
-                if (match.Success)
-                {
-                    package = match.ToString().Split('\"')[1];
-                    return;
-                }
-            }
-            MessageBox.Show("Wrong Legacy Mod");
-        }
-
         private void replaceExportDataMod(MeType gameType)
         {
             GameData gameData = new GameData(gameType, _configIni);
