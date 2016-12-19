@@ -709,7 +709,7 @@ namespace AmaroK86.ImageFormat
         {
             byte[] imageData = UncompressDXT1(imgData, w, h);
             PngBitmapEncoder png = new PngBitmapEncoder();
-            BitmapSource image = BitmapSource.Create(w, h, 96, 96, PixelFormats.Bgr24, null, imageData, w * 4);
+            BitmapSource image = BitmapSource.Create(w, h, 96, 96, PixelFormats.Bgr24, null, imageData, w * 3);
             png.Frames.Add(BitmapFrame.Create(image));
             return png;
         }
