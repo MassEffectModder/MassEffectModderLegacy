@@ -38,6 +38,8 @@ using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using StreamHelpers;
 using System.Collections.Generic;
+using System.Windows.Media.Imaging;
+using System.Windows.Media;
 
 namespace AmaroK86.ImageFormat
 {
@@ -385,10 +387,10 @@ namespace AmaroK86.ImageFormat
         {
             switch (ddsFormat)
             {
-                case DDSFormat.DXT1: return UncompressDXT1(imgData, w, h);
-                case DDSFormat.DXT5: return UncompressDXT5(imgData, w, h);
-                case DDSFormat.ATI2: return UncompressATI2(imgData, w, h);
-                case DDSFormat.V8U8: return UncompressV8U8(imgData, w, h);
+                case DDSFormat.DXT1: return DXT1ToBitmap(imgData, w, h);
+                case DDSFormat.DXT5: return DXT5ToBitmap(imgData, w, h);
+                case DDSFormat.ATI2: return ATI2ToBitmap(imgData, w, h);
+                case DDSFormat.V8U8: return V8U8ToBitmap(imgData, w, h);
                 case DDSFormat.G8: return ViewG8(imgData, w, h);
                 case DDSFormat.ARGB: return View32Bit(imgData, w, h);
                 case DDSFormat.RGB: return View24Bit(imgData, w, h);
@@ -397,8 +399,50 @@ namespace AmaroK86.ImageFormat
             }
         }
 
+        public static PngBitmapEncoder ToPng(byte[] imgData, DDSFormat ddsFormat, int w, int h)
+        {
+            switch (ddsFormat)
+            {
+                case DDSFormat.DXT1: return DXT1ToPng(imgData, w, h);
+                case DDSFormat.DXT5: return DXT5ToPng(imgData, w, h);
+                case DDSFormat.ATI2: return ATI2ToPng(imgData, w, h);
+                case DDSFormat.V8U8: return V8U8ToPng(imgData, w, h);
+                case DDSFormat.G8: return G8ToPng(imgData, w, h);
+                case DDSFormat.ARGB: return RGBAToPng(imgData, w, h);
+                case DDSFormat.RGB: return RGBToPng(imgData, w, h);
+                default:
+                    throw new Exception("invalid texture format " + ddsFormat);
+            }
+        }
+
         #region DXT1
-        private static Bitmap UncompressDXT1(byte[] imgData, int w, int h)
+        private static Bitmap DXT1ToBitmap(byte[] imgData, int w, int h)
+        {
+            byte[] imageData = UncompressDXT1(imgData, w, h);
+            var bmp = new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            {
+                BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0,
+                                                    bmp.Width,
+                                                    bmp.Height),
+                                      ImageLockMode.WriteOnly,
+                                      bmp.PixelFormat);
+
+                Marshal.Copy(imageData, 0, bmpData.Scan0, imageData.Length);
+                bmp.UnlockBits(bmpData);
+            }
+            return bmp;
+        }
+
+        private static PngBitmapEncoder DXT1ToPng(byte[] imgData, int w, int h)
+        {
+            byte[] imageData = UncompressDXT1(imgData, w, h);
+            PngBitmapEncoder png = new PngBitmapEncoder();
+            BitmapSource image = BitmapSource.Create(w, h, 96, 96, PixelFormats.Bgr32, null, imageData, w * 4);
+            png.Frames.Add(BitmapFrame.Create(image));
+            return png;
+        }
+
+        private static byte[] UncompressDXT1(byte[] imgData, int w, int h)
         {
             const int bufferSize = 8;
             byte[] blockStorage = new byte[bufferSize];
@@ -489,25 +533,38 @@ namespace AmaroK86.ImageFormat
                     }
                 }
 
-                byte[] imageData = bitmapStream.ToArray();
-                var bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
-                {
-                    BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0,
-                                                        bmp.Width,
-                                                        bmp.Height),
-                                          ImageLockMode.WriteOnly,
-                                          bmp.PixelFormat);
-
-                    Marshal.Copy(imageData, 0, bmpData.Scan0, imageData.Length);
-                    bmp.UnlockBits(bmpData);
-                }
-
-                return bmp;
+                return bitmapStream.ToArray();
             }
         }
         #endregion
         #region DXT5
-        private static Bitmap UncompressDXT5(byte[] imgData, int w, int h)
+        private static Bitmap DXT5ToBitmap(byte[] imgData, int w, int h)
+        {
+            byte[] imageData = UncompressDXT5(imgData, w, h);
+            var bmp = new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            {
+                BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0,
+                                                    bmp.Width,
+                                                    bmp.Height),
+                                      ImageLockMode.WriteOnly,
+                                      bmp.PixelFormat);
+
+                Marshal.Copy(imageData, 0, bmpData.Scan0, imageData.Length);
+                bmp.UnlockBits(bmpData);
+            }
+            return bmp;
+        }
+
+        private static PngBitmapEncoder DXT5ToPng(byte[] imgData, int w, int h)
+        {
+            byte[] imageData = UncompressDXT5(imgData, w, h);
+            PngBitmapEncoder png = new PngBitmapEncoder();
+            BitmapSource image = BitmapSource.Create(w, h, 96, 96, PixelFormats.Bgr32, null, imageData, w * 4);
+            png.Frames.Add(BitmapFrame.Create(image));
+            return png;
+        }
+
+        private static byte[] UncompressDXT5(byte[] imgData, int w, int h)
         {
             const int bufferSize = 16;
             byte[] blockStorage = new byte[bufferSize];
@@ -576,26 +633,39 @@ namespace AmaroK86.ImageFormat
                         }
                     }
 
-                    byte[] imageData = bitmapStream.ToArray();
-                    var bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
-                    {
-                        BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0,
-                                                            bmp.Width,
-                                                            bmp.Height),
-                                              ImageLockMode.WriteOnly,
-                                              bmp.PixelFormat);
-
-                        Marshal.Copy(imageData, 0, bmpData.Scan0, imageData.Length);
-                        bmp.UnlockBits(bmpData);
-                    }
-
-                    return bmp;
+                    return bitmapStream.ToArray();
                 }
             }
         }
         #endregion
         #region V8U8
-        private static Bitmap UncompressV8U8(byte[] imgData, int w, int h)
+        private static Bitmap V8U8ToBitmap(byte[] imgData, int w, int h)
+        {
+            byte[] imageData = UncompressV8U8(imgData, w, h);
+            var bmp = new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            {
+                BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0,
+                                                    bmp.Width,
+                                                    bmp.Height),
+                                      ImageLockMode.WriteOnly,
+                                      bmp.PixelFormat);
+
+                Marshal.Copy(imageData, 0, bmpData.Scan0, imageData.Length);
+                bmp.UnlockBits(bmpData);
+            }
+            return bmp;
+        }
+
+        private static PngBitmapEncoder V8U8ToPng(byte[] imgData, int w, int h)
+        {
+            byte[] imageData = UncompressDXT1(imgData, w, h);
+            PngBitmapEncoder png = new PngBitmapEncoder();
+            BitmapSource image = BitmapSource.Create(w, h, 96, 96, PixelFormats.Bgr32, null, imgData, w * 4);
+            png.Frames.Add(BitmapFrame.Create(image));
+            return png;
+        }
+
+        private static byte[] UncompressV8U8(byte[] imgData, int w, int h)
         {
             using (MemoryStream bitmapStream = new MemoryStream(w * h * 2))
             {
@@ -616,26 +686,35 @@ namespace AmaroK86.ImageFormat
                         }
                     }
 
-                    byte[] imageData = bitmapStream.ToArray();
-                    var bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
-                    {
-                        BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0,
-                                                            bmp.Width,
-                                                            bmp.Height),
-                                              ImageLockMode.WriteOnly,
-                                              bmp.PixelFormat);
-
-                        Marshal.Copy(imageData, 0, bmpData.Scan0, imageData.Length);
-                        bmp.UnlockBits(bmpData);
-                    }
-
-                    return bmp;
+                    return bitmapStream.ToArray();
                 }
             }
         }
         #endregion
         #region ATI2
-        private static Bitmap UncompressATI2(byte[] imgData, int w, int h)
+        private static Bitmap ATI2ToBitmap(byte[] imgData, int w, int h)
+        {
+            const int bytesPerPixel = 3;
+            byte[] imageData = UncompressATI2(imgData, w, h);
+            if (imageData.Length != (w * h * bytesPerPixel))
+                throw new FormatException("Incorect length of generated data array");
+            var bmp = new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+            BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.WriteOnly, bmp.PixelFormat);
+            Marshal.Copy(imageData, 0, bmpData.Scan0, imageData.Length);
+            bmp.UnlockBits(bmpData);
+            return bmp;
+        }
+
+        private static PngBitmapEncoder ATI2ToPng(byte[] imgData, int w, int h)
+        {
+            byte[] imageData = UncompressDXT1(imgData, w, h);
+            PngBitmapEncoder png = new PngBitmapEncoder();
+            BitmapSource image = BitmapSource.Create(w, h, 96, 96, PixelFormats.Bgr32, null, imageData, w * 4);
+            png.Frames.Add(BitmapFrame.Create(image));
+            return png;
+        }
+
+        private static byte[] UncompressATI2(byte[] imgData, int w, int h)
         {
             const int bufferSize = 16;
             const int bytesPerPixel = 3;
@@ -659,7 +738,6 @@ namespace AmaroK86.ImageFormat
                             ulong longRep = BitConverter.ToUInt64(blockStorage, j * 8);
                             byte[] colVals = new byte[bufferSize];
 
-                            //for (int k = 0; k < bufferSize; k++)
                             for (int k = bufferSize - 1; k >= 0; k--)
                             {
                                 ulong tempLong = longRep | (ulong)ATI2BitCodes.interpColor5; // Set all trailing bits to 1
@@ -716,7 +794,6 @@ namespace AmaroK86.ImageFormat
                                 }
                                 else
                                 {
-                                    //MessageBox.Show("Error. Bitwise value not found."); // Safety catch. Shouldn't ever be encountered
                                     throw new FormatException("Unknown bit value found. This shouldn't be possible...");
                                 }
                                 longRep <<= 3;
@@ -747,15 +824,7 @@ namespace AmaroK86.ImageFormat
                     }
                 }
 
-                byte[] imageData = bitmapStream.ToArray();
-                if (imageData.Length != (w * h * bytesPerPixel))
-                    throw new FormatException("Incorect length of generated data array");
-                var bmp = new Bitmap(w, h, PixelFormat.Format24bppRgb);
-                BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.WriteOnly, bmp.PixelFormat);
-                Marshal.Copy(imageData, 0, bmpData.Scan0, imageData.Length);
-                bmp.UnlockBits(bmpData);
-
-                return bmp;
+                return bitmapStream.ToArray();
             }
         }
         #endregion
@@ -764,23 +833,42 @@ namespace AmaroK86.ImageFormat
         {
             if (imgData.Length != (w * h * 4))
                 throw new ArgumentException("Input array is not correct size");
-            var bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
+            var bmp = new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.WriteOnly, bmp.PixelFormat);
             Marshal.Copy(imgData, 0, bmpData.Scan0, imgData.Length);
             bmp.UnlockBits(bmpData);
             return bmp;
         }
+
+        private static PngBitmapEncoder RGBAToPng(byte[] imgData, int w, int h)
+        {
+            byte[] imageData = UncompressDXT1(imgData, w, h);
+            PngBitmapEncoder png = new PngBitmapEncoder();
+            BitmapSource image = BitmapSource.Create(w, h, 96, 96, PixelFormats.Bgr32, null, imageData, w * 4);
+            png.Frames.Add(BitmapFrame.Create(image));
+            return png;
+        }
+
         #endregion
         #region R8G8B8
         public static Bitmap View24Bit(byte[] imgData, int w, int h)
         {
             if (imgData.Length != (w * h * 3))
                 throw new ArgumentException("Input array is not correct size");
-            var bmp = new Bitmap(w, h, PixelFormat.Format24bppRgb);
+            var bmp = new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
             BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.WriteOnly, bmp.PixelFormat);
             Marshal.Copy(imgData, 0, bmpData.Scan0, imgData.Length);
             bmp.UnlockBits(bmpData);
             return bmp;
+        }
+
+        private static PngBitmapEncoder RGBToPng(byte[] imgData, int w, int h)
+        {
+            byte[] imageData = UncompressDXT1(imgData, w, h);
+            PngBitmapEncoder png = new PngBitmapEncoder();
+            BitmapSource image = BitmapSource.Create(w, h, 96, 96, PixelFormats.Rgb24, null, imageData, w * 3);
+            png.Frames.Add(BitmapFrame.Create(image));
+            return png;
         }
         #endregion
         #region G8
@@ -795,11 +883,28 @@ namespace AmaroK86.ImageFormat
                     buff[(3 * i) + j] = imgData[i];
             }
             
-            var bmp = new Bitmap(w, h, PixelFormat.Format24bppRgb);
+            var bmp = new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
             BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.WriteOnly, bmp.PixelFormat);
             Marshal.Copy(buff, 0, bmpData.Scan0, buff.Length);
             bmp.UnlockBits(bmpData);
             return bmp;
+        }
+
+        private static PngBitmapEncoder G8ToPng(byte[] imgData, int w, int h)
+        {
+            byte[] imageData = UncompressDXT1(imgData, w, h);
+            if (imgData.Length != (w * h))
+                throw new ArgumentException("Input array is not correct size");
+            byte[] buff = new byte[w * h * 3];
+            for (int i = 0; i < (w * h); i++)
+            {
+                for (int j = 0; j < 3; j++)
+                    buff[(3 * i) + j] = imgData[i];
+            }
+            PngBitmapEncoder png = new PngBitmapEncoder();
+            BitmapSource image = BitmapSource.Create(w, h, 96, 96, PixelFormats.Rgb24, null, buff, w * 3);
+            png.Frames.Add(BitmapFrame.Create(image));
+            return png;
         }
         #endregion
 

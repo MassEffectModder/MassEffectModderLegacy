@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using System.Windows.Media.Imaging;
 
 namespace MassEffectModder
 {
@@ -285,6 +286,21 @@ namespace MassEffectModder
             using (FileStream fs = new FileStream(outputFile, FileMode.CreateNew, FileAccess.Write))
             {
                 dds.SaveDDSImage(fs);
+            }
+        }
+
+        public void extractTextureToPng(string outputFile, string packagePath, int exportID)
+        {
+            Package package = new Package(packagePath);
+            Texture texture = new Texture(package, exportID, package.getExportData(exportID));
+            DDSFormat format = DDSImage.convertFormat(texture.properties.getProperty("Format").valueName);
+            Texture.MipMap mipmap = texture.getTopMipmap();
+            PngBitmapEncoder image = DDSImage.ToPng(texture.getTopImageData(), format, mipmap.width, mipmap.height);
+            if (File.Exists(outputFile))
+                File.Delete(outputFile);
+            using (FileStream fs = new FileStream(outputFile, FileMode.CreateNew, FileAccess.Write))
+            {
+                image.Save(fs);
             }
         }
     }

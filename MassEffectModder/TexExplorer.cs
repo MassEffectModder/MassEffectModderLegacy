@@ -990,6 +990,29 @@ namespace MassEffectModder
             EnableMenuOptions(true);
             _mainWindow.updateStatusLabel2("");
         }
+
+        private void extractAllMappedTexturesToPNGFilesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            EnableMenuOptions(false);
+
+            using (FolderBrowserDialog extractDir = new FolderBrowserDialog())
+            {
+                if (extractDir.ShowDialog() == DialogResult.OK)
+                {
+                    for (int i = 0; i < _textures.Count; i++)
+                    {
+                        _mainWindow.updateStatusLabel("Extracting textures...");
+                        _mainWindow.updateStatusLabel2("Texture: " + (i + 1) + " of " + _textures.Count + " - " + _textures[i].name);
+                        extractTextureToPng(Path.Combine(extractDir.SelectedPath, _textures[i].name + string.Format("_0x{0:X8}", _textures[i].crc) + ".png"),
+                            GameData.GamePath + _textures[i].list[0].path, _textures[i].list[0].exportID);
+                    }
+                    _mainWindow.updateStatusLabel("Textures extracted.");
+                }
+            }
+
+            EnableMenuOptions(true);
+            _mainWindow.updateStatusLabel2("");
+        }
     }
 
 }
