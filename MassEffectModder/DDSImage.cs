@@ -892,7 +892,6 @@ namespace AmaroK86.ImageFormat
 
         private static PngBitmapEncoder G8ToPng(byte[] imgData, int w, int h)
         {
-            byte[] imageData = UncompressDXT1(imgData, w, h);
             if (imgData.Length != (w * h))
                 throw new ArgumentException("Input array is not correct size");
             byte[] buff = new byte[w * h * 3];
