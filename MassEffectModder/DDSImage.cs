@@ -842,9 +842,10 @@ namespace AmaroK86.ImageFormat
 
         private static PngBitmapEncoder RGBAToPng(byte[] imgData, int w, int h)
         {
-            byte[] imageData = UncompressDXT1(imgData, w, h);
+            if (imgData.Length != (w * h * 4))
+                throw new ArgumentException("Input array is not correct size");
             PngBitmapEncoder png = new PngBitmapEncoder();
-            BitmapSource image = BitmapSource.Create(w, h, 96, 96, PixelFormats.Bgr32, null, imageData, w * 4);
+            BitmapSource image = BitmapSource.Create(w, h, 96, 96, PixelFormats.Bgr32, null, imgData, w * 4);
             png.Frames.Add(BitmapFrame.Create(image));
             return png;
         }
@@ -864,9 +865,8 @@ namespace AmaroK86.ImageFormat
 
         private static PngBitmapEncoder RGBToPng(byte[] imgData, int w, int h)
         {
-            byte[] imageData = UncompressDXT1(imgData, w, h);
             PngBitmapEncoder png = new PngBitmapEncoder();
-            BitmapSource image = BitmapSource.Create(w, h, 96, 96, PixelFormats.Rgb24, null, imageData, w * 3);
+            BitmapSource image = BitmapSource.Create(w, h, 96, 96, PixelFormats.Rgb24, null, imgData, w * 3);
             png.Frames.Add(BitmapFrame.Create(image));
             return png;
         }
