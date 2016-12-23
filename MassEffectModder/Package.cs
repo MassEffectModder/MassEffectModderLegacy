@@ -436,7 +436,6 @@ namespace MassEffectModder
             if (!File.Exists(filename))
                 throw new Exception("File not found: " + filename);
 
-            packageData = new MemoryStream();
             packageFile = new FileStream(filename, FileMode.Open, FileAccess.Read);
             packageHeader = packageFile.ReadToBuffer(packageHeaderSize);
             if (tag != packageTag)
@@ -482,31 +481,41 @@ namespace MassEffectModder
             if (compressed && dataOffset != chunks[0].uncomprOffset)
                 throw new Exception();
 
-            uint length = endOfTablesOffset - (uint)dataOffset;
-            packageData.JumpTo(dataOffset);
-            getData((uint)dataOffset, length, packageData);
+            if (compressed)
+            {
+                packageData = new MemoryStream();
+                uint length = endOfTablesOffset - (uint)dataOffset;
+                packageData.JumpTo(dataOffset);
+                getData((uint)dataOffset, length, packageData);
+            }
+
+            if (compressed)
+                loadNames(packageData);
+            else
+                loadNames(packageFile);
 
             if (endOfTablesOffset < namesOffset)
             {
                 if (compressed) // allowed only uncompressed
                     throw new Exception();
-                loadNames(packageFile);
             }
+
+            if (compressed)
+                loadImports(packageData);
             else
-            {
-                loadNames(packageData);
-            }
+                loadImports(packageFile);
+
             if (endOfTablesOffset < importsOffset)
             {
                 if (compressed) // allowed only uncompressed
                     throw new Exception();
-                loadImports(packageFile);
             }
+
+            if (compressed)
+                loadExports(packageData);
             else
-            {
-                loadImports(packageData);
-            }
-            loadExports(packageData);
+                loadExports(packageFile);
+
             //loadImportsNames(); // not used by tool
             //loadExportsNames(); // not used by tool
         }
@@ -981,18 +990,18 @@ namespace MassEffectModder
 
             MemoryStream tempOutput = new MemoryStream();
 
+            List<ExportEntry> sortedExports = exportsTable.OrderBy(s => s.dataOffset).ToList();
+
             if (!compressed)
             {
                 packageFile.SeekBegin();
-                tempOutput.WriteFromStream(packageFile, endOfTablesOffset);
+                tempOutput.WriteFromStream(packageFile, sortedExports[0].dataOffset);
             }
             else
             {
                 packageData.SeekBegin();
                 tempOutput.WriteFromStream(packageData, packageData.Length);
             }
-
-            List<ExportEntry> sortedExports = exportsTable.OrderBy(s => s.dataOffset).ToList();
 
             for (int i = 0; i < exportsCount; i++)
             {
@@ -1032,14 +1041,14 @@ namespace MassEffectModder
                 if (compressed) // allowed only uncompressed
                     throw new Exception();
                 namesOffset = (uint)tempOutput.Position;
-                saveNames(tempOutput);
+                saveNames(tempOutput, true);
             }
             if (endOfTablesOffset < importsOffset)
             {
                 if (compressed) // allowed only uncompressed
                     throw new Exception();
                 importsOffset = (uint)tempOutput.Position;
-                saveImports(tempOutput);
+                saveImports(tempOutput, true);
             }
             if (endOfTablesOffset < namesOffset || endOfTablesOffset < importsOffset)
             {
@@ -1067,7 +1076,7 @@ namespace MassEffectModder
                         chunks = new List<Chunk>();
                     chunks.Clear();
                     Chunk chunk = new Chunk();
-                    chunk.uncomprSize = endOfTablesOffset - (uint)dataOffset;
+                    chunk.uncomprSize = sortedExports[0].dataOffset - (uint)dataOffset;
                     chunk.uncomprOffset = (uint)dataOffset;
                     for (int i = 0; i < exportsCount; i++)
                     {
@@ -1212,8 +1221,11 @@ namespace MassEffectModder
         {
             if (chunkCache != null)
                 chunkCache.Dispose();
-            packageData.Close();
-            packageData.Dispose();
+            if (packageData != null)
+            {
+                packageData.Close();
+                packageData.Dispose();
+            }
             packageFile.Close();
             packageFile.Dispose();
             if (!memoryMode && Directory.Exists(packagePath + "-exports"))

@@ -150,6 +150,11 @@ namespace MassEffectModder
                             archiveFile = DLCArchiveFile;
                         else if (_gameSelected == MeType.ME2_TYPE)
                             archiveFile = Path.Combine(GameData.MainData, "Textures.tfc");
+                        else if (GameData.gameType == MeType.ME3_TYPE)
+                        {
+                            if (!File.Exists(archiveFile))
+                                archiveFile = Directory.GetFiles(GameData.bioGamePath, archive + ".tfc", SearchOption.AllDirectories)[0];
+                        }
                     }
                     long fileLength = new FileInfo(archiveFile).Length;
                     if (fileLength + 0x3000000 > 0x80000000)
