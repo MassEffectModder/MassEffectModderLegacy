@@ -323,6 +323,10 @@ namespace MassEffectModder
             {
                 return BitConverter.ToUInt32(packageHeader, tablesOffset + packageHeaderExportsOffsetTableOffset);
             }
+            set
+            {
+                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, packageHeader, tablesOffset + packageHeaderExportsOffsetTableOffset, sizeof(uint));
+            }
         }
 
         private uint importsCount
@@ -1032,8 +1036,19 @@ namespace MassEffectModder
                 tempOutput.WriteZeros(dataLeft);
             }
 
-            tempOutput.JumpTo(exportsOffset);
-            saveExports(tempOutput);
+            if (endOfTablesOffset < exportsOffset)
+            {
+                if (compressed) // allowed only uncompressed
+                    throw new Exception();
+                exportsOffset = (uint)tempOutput.Position;
+                saveExports(tempOutput);
+                exportsEndOffset = (uint)tempOutput.Position;
+            }
+            else
+            {
+                tempOutput.JumpTo(exportsOffset);
+                saveExports(tempOutput);
+            }
 
             tempOutput.JumpTo(exportsEndOffset);
             if (endOfTablesOffset < namesOffset)
@@ -1050,7 +1065,7 @@ namespace MassEffectModder
                 importsOffset = (uint)tempOutput.Position;
                 saveImports(tempOutput, true);
             }
-            if (endOfTablesOffset < namesOffset || endOfTablesOffset < importsOffset)
+            if (endOfTablesOffset < namesOffset || endOfTablesOffset < importsOffset || endOfTablesOffset < exportsOffset)
             {
                 tempOutput.SeekBegin();
                 tempOutput.Write(packageHeader, 0, packageHeader.Length);
