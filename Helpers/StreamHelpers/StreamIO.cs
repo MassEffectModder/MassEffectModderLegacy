@@ -124,73 +124,73 @@ namespace StreamHelpers
             stream.WriteStringUnicode(str + "\0");
         }
 
-        public static UInt64 ReadUInt64(this Stream stream)
+        public static ulong ReadUInt64(this Stream stream)
         {
-            byte[] buffer = new byte[sizeof(UInt64)];
-            if (stream.Read(buffer, 0, sizeof(UInt64)) != sizeof(UInt64))
+            byte[] buffer = new byte[sizeof(ulong)];
+            if (stream.Read(buffer, 0, sizeof(ulong)) != sizeof(ulong))
                 throw new Exception();
             return BitConverter.ToUInt32(buffer, 0);
         }
 
-        public static Int64 ReadInt64(this Stream stream)
+        public static long ReadInt64(this Stream stream)
         {
-            return (Int64)stream.ReadUInt64();
+            return (long)stream.ReadUInt64();
         }
 
-        public static void WriteUInt64(this Stream stream, UInt64 data)
+        public static void WriteUInt64(this Stream stream, ulong data)
         {
-            stream.Write(BitConverter.GetBytes(data), 0, sizeof(UInt64));
+            stream.Write(BitConverter.GetBytes(data), 0, sizeof(ulong));
         }
 
-        public static void WriteInt64(this Stream stream, Int64 data)
+        public static void WriteInt64(this Stream stream, long data)
         {
-            stream.Write(BitConverter.GetBytes(data), 0, sizeof(Int64));
+            stream.Write(BitConverter.GetBytes(data), 0, sizeof(long));
         }
 
-        public static UInt32 ReadUInt32(this Stream stream)
+        public static uint ReadUInt32(this Stream stream)
         {
-            byte[] buffer = new byte[sizeof(UInt32)];
-            if (stream.Read(buffer, 0, sizeof(UInt32)) != sizeof(UInt32))
+            byte[] buffer = new byte[sizeof(uint)];
+            if (stream.Read(buffer, 0, sizeof(uint)) != sizeof(uint))
                 throw new Exception();
             return BitConverter.ToUInt32(buffer, 0);
         }
 
-        public static Int32 ReadInt32(this Stream stream)
+        public static int ReadInt32(this Stream stream)
         {
-            return (Int32)stream.ReadUInt32();
+            return (int)stream.ReadUInt32();
         }
 
-        public static void WriteUInt32(this Stream stream, UInt32 data)
+        public static void WriteUInt32(this Stream stream, uint data)
         {
-            stream.Write(BitConverter.GetBytes(data), 0, sizeof(UInt32));
+            stream.Write(BitConverter.GetBytes(data), 0, sizeof(uint));
         }
 
-        public static void WriteInt32(this Stream stream, Int32 data)
+        public static void WriteInt32(this Stream stream, int data)
         {
-            stream.Write(BitConverter.GetBytes(data), 0, sizeof(Int32));
+            stream.Write(BitConverter.GetBytes(data), 0, sizeof(int));
         }
 
-        public static UInt16 ReadUInt16(this Stream stream)
+        public static ushort ReadUInt16(this Stream stream)
         {
-            byte[] buffer = new byte[sizeof(UInt16)];
-            if (stream.Read(buffer, 0, sizeof(UInt16)) != sizeof(UInt16))
+            byte[] buffer = new byte[sizeof(ushort)];
+            if (stream.Read(buffer, 0, sizeof(ushort)) != sizeof(ushort))
                 throw new Exception();
             return BitConverter.ToUInt16(buffer, 0);
         }
 
-        public static Int16 ReadInt16(this Stream stream)
+        public static short ReadInt16(this Stream stream)
         {
-            return (Int16)stream.ReadUInt16();
+            return (short)stream.ReadUInt16();
         }
 
-        public static void WriteUInt16(this Stream stream, UInt16 data)
+        public static void WriteUInt16(this Stream stream, ushort data)
         {
-            stream.Write(BitConverter.GetBytes(data), 0, sizeof(UInt16));
+            stream.Write(BitConverter.GetBytes(data), 0, sizeof(ushort));
         }
 
-        public static void WriteInt16(this Stream stream, Int16 data)
+        public static void WriteInt16(this Stream stream, short data)
         {
-            stream.Write(BitConverter.GetBytes(data), 0, sizeof(Int16));
+            stream.Write(BitConverter.GetBytes(data), 0, sizeof(short));
         }
 
         public static void WriteZeros(this Stream stream, uint count)
