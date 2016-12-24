@@ -14,6 +14,7 @@ namespace MassEffectModder
         ConfIni _configIni;
         List<List<FoundTexture>> _textures;
         string[] lines;
+        bool zoom = false;
 
         public Comparator(MainWindow main)
         {
@@ -185,14 +186,41 @@ namespace MassEffectModder
 
             new GameData((MeType)gameId, _configIni);
             List<FoundTexture> foundCrcList = _textures[gameId - 1].FindAll(s => s.crc == crc);
+            if (foundCrcList.Count == 0)
+            {
+                MessageBox.Show("Texture not exist in game data");
+                return;
+            }
             MatchedTexture nodeTexture = foundCrcList[0].list[0];
             Package package = new Package(GameData.GamePath + nodeTexture.path);
             Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
             byte[] textureData = texture.getTopImageData();
             int width = texture.getTopMipmap().width;
             int height = texture.getTopMipmap().height;
+            textBoxResolution.Text = width + " x " + height;
             DDSFormat format = DDSImage.convertFormat(texture.properties.getProperty("Format").valueName);
             pictureBox.Image = DDSImage.ToBitmap(textureData, format, width, height);
+        }
+
+        private void pictureBox_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (pictureBox.Image == null)
+                return;
+
+            if (zoom)
+            {
+                pictureBox.Width = 512;
+                pictureBox.Height = 512;
+                pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+                zoom = false;
+            }
+            else
+            {
+                pictureBox.Width = Math.Max(512, pictureBox.Image.Width);
+                pictureBox.Height = Math.Max(512, pictureBox.Image.Height);
+                pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+                zoom = true;
+            }
         }
     }
 }
