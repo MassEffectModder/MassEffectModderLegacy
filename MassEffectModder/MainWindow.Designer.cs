@@ -70,6 +70,7 @@ namespace MassEffectModder
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.statusStrip2 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.comparatorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuGame.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.statusStrip2.SuspendLayout();
@@ -80,7 +81,8 @@ namespace MassEffectModder
             this.menuGame.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuME1,
             this.toolStripMenuME2,
-            this.toolStripMenuME3});
+            this.toolStripMenuME3,
+            this.comparatorToolStripMenuItem});
             this.menuGame.Location = new System.Drawing.Point(0, 0);
             this.menuGame.Name = "menuGame";
             this.menuGame.Size = new System.Drawing.Size(1177, 24);
@@ -240,6 +242,13 @@ namespace MassEffectModder
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
             this.toolStripStatusLabel2.Size = new System.Drawing.Size(0, 17);
             // 
+            // comparatorToolStripMenuItem
+            // 
+            this.comparatorToolStripMenuItem.Name = "comparatorToolStripMenuItem";
+            this.comparatorToolStripMenuItem.Size = new System.Drawing.Size(83, 20);
+            this.comparatorToolStripMenuItem.Text = "Comparator";
+            this.comparatorToolStripMenuItem.Click += new System.EventHandler(this.comparatorToolStripMenuItem_Click);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -287,6 +296,7 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripMenuItem modME2ExportDataToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem modME1ExportDataToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem modME3ExportDataToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem comparatorToolStripMenuItem;
     }
 }
 

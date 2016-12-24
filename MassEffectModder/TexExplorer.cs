@@ -59,8 +59,8 @@ namespace MassEffectModder
 
     public partial class TexExplorer : Form
     {
-        const uint textureMapBinTag = 0x5054454D;
-        const uint textureMapBinVersion = 1;
+        public const uint textureMapBinTag = 0x5054454D;
+        public const uint textureMapBinVersion = 1;
         public const uint TextureModTag = 0x444F4D54;
         const uint TextureModVersion = 1;
         const uint TextureModHeaderLength = 16;

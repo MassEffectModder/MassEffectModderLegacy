@@ -20,21 +20,24 @@
  */
 
 using System;
+using System.IO;
 using System.Windows.Forms;
 
 namespace MassEffectModder
 {
     static class Program
     {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
         [STAThread]
         static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainWindow());
+
+            string iniPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "installer.ini");
+            if (File.Exists(iniPath))
+                Application.Run(new MainWindow());
+            else
+                Application.Run(new MainWindow());
         }
     }
 }

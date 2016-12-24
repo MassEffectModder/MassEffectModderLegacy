@@ -74,6 +74,12 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Comparator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Comparator.Designer.cs">
+      <DependentUpon>Comparator.cs</DependentUpon>
+    </Compile>
     <Compile Include="DDSImage.cs" />
     <Compile Include="DLC.cs" />
     <Compile Include="GameDataPath.cs" />
@@ -115,6 +121,9 @@
     <Compile Include="TexProperties.cs" />
     <Compile Include="Texture.cs" />
     <Compile Include="TOCFile.cs" />
+    <EmbeddedResource Include="Comparator.resx">
+      <DependentUpon>Comparator.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </EmbeddedResource>

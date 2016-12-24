@@ -48,6 +48,7 @@ namespace MassEffectModder
             toolStripMenuME1.Enabled = enable;
             toolStripMenuME2.Enabled = enable;
             toolStripMenuME3.Enabled = enable;
+            comparatorToolStripMenuItem.Enabled = enable;
         }
 
         public void updateStatusLabel(string text)
@@ -408,6 +409,16 @@ namespace MassEffectModder
             enableGameDataMenu(false);
             replaceExportDataMod(MeType.ME3_TYPE);
             enableGameDataMenu(true);
+        }
+
+        private void comparatorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            enableGameDataMenu(false);
+            Comparator comparator = new Comparator(this);
+            comparator.Text = "Texture Comparator";
+            comparator.MdiParent = this;
+            comparator.WindowState = FormWindowState.Maximized;
+            comparator.Show();
         }
     }
 }
