@@ -67,7 +67,7 @@ namespace MassEffectModder
             for (int i = 1; i < lines.Length; i++)
             {
                 string[] str = lines[i].Split(';');
-                uint groupId = uint.Parse(str[0]);
+                string groupId = str[0];
                 uint gameId;
                 if (str[1] == "ME1")
                     gameId = 1;
@@ -167,7 +167,7 @@ namespace MassEffectModder
             }
 
             string[] str = lines[index].Split(';');
-            uint groupId = uint.Parse(str[0]);
+            string groupId = str[0];
             int gameId;
             if (str[1] == "ME1")
                 gameId = 1;
