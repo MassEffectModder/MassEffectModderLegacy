@@ -1,4 +1,6 @@
-﻿using System;
+﻿using AmaroK86.ImageFormat;
+using StreamHelpers;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -114,7 +116,7 @@ namespace MassEffectModder
 
 
             updateStatusMipMaps("Progress...");
-//            mipMaps.removeMipMaps(textures, cachePackageMgr, null, this);
+            mipMaps.removeMipMaps(textures, cachePackageMgr, null, this);
             checkBoxMipMaps.Checked = true;
             updateStatusMipMaps("");
 
@@ -123,8 +125,59 @@ namespace MassEffectModder
             string errors = "";
             for (int i = 0; i < modFiles.Count; i++)
             {
-                mipMaps.replaceTextureMod(modFiles[i], errors, textures, cachePackageMgr, null);
-                updateStatusTextures("Progress... " + (i * 100 / GameData.packageFiles.Count) + " % ");
+                using (FileStream fs = new FileStream(modFiles[i], FileMode.Open, FileAccess.Read))
+                {
+                    uint tag = fs.ReadUInt32();
+                    uint version = fs.ReadUInt32();
+                    if (tag != TexExplorer.TextureModTag || version != TexExplorer.TextureModVersion)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        uint gameType = fs.ReadUInt32();
+                        if ((MeType)gameType != GameData.gameType)
+                        {
+                            return;
+                        }
+                    }
+                    int numTextures = fs.ReadInt32();
+                    for (int l = 0; l < numTextures; l++)
+                    {
+                        string name;
+                        uint crc, size, dstLen = 0, decSize = 0;
+                        byte[] dst = null;
+                        name = fs.ReadStringASCIINull();
+                        crc = fs.ReadUInt32();
+                        decSize = fs.ReadUInt32();
+                        size = fs.ReadUInt32();
+                        byte[] src = fs.ReadToBuffer(size);
+                        dst = new byte[decSize];
+                        dstLen = ZlibHelper.Zlib.Decompress(src, size, dst);
+
+                        updateStatusTextures("MOD: " + (i + 1) + " of " + modFiles.Count + " - Progress... " + ((l + 1) * 100 / numTextures) + " % ");
+
+                        FoundTexture foundTexture;
+                        if (GameData.gameType == MeType.ME1_TYPE)
+                            foundTexture = textures.Find(s => s.crc == crc && s.name == name);
+                        else
+                            foundTexture = textures.Find(s => s.crc == crc);
+                        if (foundTexture.crc != 0)
+                        {
+                            DDSImage image = new DDSImage(new MemoryStream(dst, 0, (int)dstLen));
+                            if (!image.checkExistAllMipmaps())
+                            {
+                                errors += "Not all mipmaps exists in texture: " + name + "\n";
+                                continue;
+                            }
+                            mipMaps.replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, errors);
+                        }
+                        else
+                        {
+                            errors += "Not matched texture: " + name + "\n";
+                        }
+                    }
+                }
             }
             checkBoxTextures.Checked = true;
             updateStatusTextures("");
