@@ -30,7 +30,7 @@ using System.Windows.Forms;
 
 namespace MassEffectModder
 {
-    public partial class TexExplorer : Form
+    public partial class MipMaps
     {
         TFCTexture[] guids = new TFCTexture[]
         {
@@ -71,7 +71,7 @@ namespace MassEffectModder
             }
         };
 
-        private void replaceTexture(DDSImage image, List<MatchedTexture> list, string textureName)
+        public void replaceTexture(DDSImage image, List<MatchedTexture> list, CachePackageMgr cachePackageMgr, string textureName, string errors)
         {
             Texture firstTexture = null, arcTexture = null, cprTexture = null;
 
@@ -87,21 +87,21 @@ namespace MassEffectModder
 
                 if (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1)
                 {
-                    richTextBoxInfo.Text += "DDS file must have mipmaps, skiping...";
+                    errors += "DDS file must have mipmaps, skiping...";
                     break;
                 }
 
                 DDSFormat ddsFormat = DDSImage.convertFormat(texture.properties.getProperty("Format").valueName);
                 if (image.ddsFormat != ddsFormat)
                 {
-                    richTextBoxInfo.Text += "DDS file not match expected texture format, skiping...";
+                    errors += "DDS file not match expected texture format, skiping...";
                     break;
                 }
 
                 if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
                     texture.mipMapsList[0].width / texture.mipMapsList[0].height)
                 {
-                    richTextBoxInfo.Text += "DDS file not match game data texture aspect ratio, skiping...";
+                    errors += "DDS file not match game data texture aspect ratio, skiping...";
                     break;
                 }
 
@@ -148,7 +148,7 @@ namespace MassEffectModder
                         string DLCArchiveFile = Path.Combine(Path.GetDirectoryName(GameData.GamePath + nodeTexture.path), archive + ".tfc");
                         if (File.Exists(DLCArchiveFile))
                             archiveFile = DLCArchiveFile;
-                        else if (_gameSelected == MeType.ME2_TYPE)
+                        else if (GameData.gameType == MeType.ME2_TYPE)
                             archiveFile = Path.Combine(GameData.MainData, "Textures.tfc");
                         else if (GameData.gameType == MeType.ME3_TYPE)
                         {
@@ -201,7 +201,7 @@ namespace MassEffectModder
                     else
                     {
                         mipmap.storageType = texture.getTopMipmap().storageType;
-                        if (_gameSelected == MeType.ME1_TYPE && n > 0)
+                        if (GameData.gameType == MeType.ME1_TYPE && n > 0)
                         {
                             if (mipmap.storageType == Texture.StorageTypes.pccUnc ||
                                 mipmap.storageType == Texture.StorageTypes.pccLZO ||
@@ -210,7 +210,7 @@ namespace MassEffectModder
                                 mipmap.storageType = Texture.StorageTypes.extLZO;
                             }
                         }
-                        else if (_gameSelected == MeType.ME2_TYPE)
+                        else if (GameData.gameType == MeType.ME2_TYPE)
                         {
                             if (texture.properties.exists("TextureFileCacheName") && texture.mipMapsList.Count > 1)
                             {
@@ -226,7 +226,7 @@ namespace MassEffectModder
                                 }
                             }
                         }
-                        else if (_gameSelected == MeType.ME3_TYPE)
+                        else if (GameData.gameType == MeType.ME3_TYPE)
                         {
                             if (texture.properties.exists("TextureFileCacheName") && texture.mipMapsList.Count > 1)
                             {
@@ -244,7 +244,7 @@ namespace MassEffectModder
                         mipmap.storageType = Texture.StorageTypes.pccZlib;
 
                     mipmap.uncompressedSize = image.mipMaps[m].data.Length;
-                    if (_gameSelected == MeType.ME1_TYPE)
+                    if (GameData.gameType == MeType.ME1_TYPE)
                     {
                         if (mipmap.storageType == Texture.StorageTypes.pccLZO ||
                             mipmap.storageType == Texture.StorageTypes.pccZlib)
@@ -360,7 +360,7 @@ namespace MassEffectModder
                     package.setExportData(nodeTexture.exportID, newData.ToArray());
                 }
 
-                if (_gameSelected == MeType.ME1_TYPE)
+                if (GameData.gameType == MeType.ME1_TYPE)
                 {
                     if (n == 0)
                         firstTexture = texture;
@@ -376,7 +376,10 @@ namespace MassEffectModder
             }
             firstTexture = arcTexture = cprTexture = null;
         }
+    }
 
+    public partial class TexExplorer : Form
+    {
         private void replaceTexture()
         {
             if (listViewTextures.SelectedItems.Count == 0)
@@ -406,7 +409,8 @@ namespace MassEffectModder
                 ListViewItem item = listViewTextures.FocusedItem;
                 int index = Convert.ToInt32(item.Name);
 
-                replaceTexture(image, node.textures[index].list, node.textures[index].name);
+                MipMaps mipMaps = new MipMaps();
+                mipMaps.replaceTexture(image, node.textures[index].list, cachePackageMgr,  node.textures[index].name, richTextBoxInfo.Text);
 
                 cachePackageMgr.CloseAllWithSave();
 

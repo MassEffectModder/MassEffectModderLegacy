@@ -27,102 +27,105 @@ using System.Windows.Forms;
 
 namespace MassEffectModder
 {
-    public partial class TexExplorer : Form
+    public class CachePackageMgr
     {
-        public class CachePackageMgr
+        public List<Package> packages;
+        MainWindow mainWindow;
+        Installer _installer;
+
+        public CachePackageMgr(MainWindow main, Installer installer)
         {
-            public List<Package> packages;
-            MainWindow mainWindow;
+            packages = new List<Package>();
+            mainWindow = main;
+            _installer = installer;
+        }
 
-            public CachePackageMgr(MainWindow main)
+        public Package OpenPackage(string path, bool headerOnly = false)
+        {
+            if (!packages.Exists(p => p.packagePath == path))
             {
-                packages = new List<Package>();
-                mainWindow = main;
+                Package pkg = new Package(path, headerOnly);
+                packages.Add(pkg);
+                return pkg;
             }
-
-            public Package OpenPackage(string path, bool headerOnly = false)
+            else
             {
-                if (!packages.Exists(p => p.packagePath == path))
-                {
-                    Package pkg = new Package(path, headerOnly);
-                    packages.Add(pkg);
-                    return pkg;
-                }
-                else
-                {
-                    return packages.Find(p => p.packagePath == path);
-                }
+                return packages.Find(p => p.packagePath == path);
             }
+        }
 
-            public void ClosePackageWithoutSave(Package package)
+        public void ClosePackageWithoutSave(Package package)
+        {
+            int index = packages.IndexOf(package);
+            packages[index].Dispose();
+            packages.RemoveAt(index);
+        }
+
+        public void CloseAllWithoutSave()
+        {
+            foreach (Package pkg in packages)
             {
-                int index = packages.IndexOf(package);
-                packages[index].Dispose();
-                packages.RemoveAt(index);
+                pkg.Dispose();
             }
+            packages.Clear();
+        }
 
-            public void CloseAllWithoutSave()
+        public void CloseAllWithSave()
+        {
+            for (int i = 0; i < packages.Count; i++)
             {
-                foreach (Package pkg in packages)
-                {
-                    pkg.Dispose();
-                }
-                packages.Clear();
-            }
-
-            public void CloseAllWithSave()
-            {
-                for (int i = 0; i < packages.Count; i++)
-                {
-                    Package pkg = packages[i];
+                Package pkg = packages[i];
+                if (mainWindow != null)
                     mainWindow.updateStatusLabel2("Saving package " + (i + 1) + " of " + packages.Count + " - " + pkg.packagePath);
-                    pkg.SaveToFile();
-                    pkg.Dispose();
-                }
+                if (_installer != null)
+                    _installer.updateStatusStore("Progress... " + (i * 100 / packages.Count) + " % ");
+                pkg.SaveToFile();
+                pkg.Dispose();
+            }
 
-                if (GameData.gameType == MeType.ME3_TYPE)
-                {
-                    updateMainTOC();
-                    updateDLCsTOC();
-                }
+            if (GameData.gameType == MeType.ME3_TYPE)
+            {
+                updateMainTOC();
+                updateDLCsTOC();
+            }
 
+            if (mainWindow != null)
                 mainWindow.updateStatusLabel2("");
-                packages.Clear();
-            }
+            packages.Clear();
+        }
 
-            public void updateMainTOC()
+        public void updateMainTOC()
+        {
+            List<string> mainFiles = Directory.GetFiles(GameData.MainData, "*.pcc", SearchOption.AllDirectories).ToList();
+            mainFiles.AddRange(Directory.GetFiles(GameData.MainData, "*.tfc", SearchOption.AllDirectories).ToList());
+            TOCBinFile tocFile = new TOCBinFile(Path.Combine(GameData.bioGamePath, "PCConsoleTOC.bin"));
+            for (int i = 0; i < mainFiles.Count; i++)
             {
-                List<string> mainFiles = Directory.GetFiles(GameData.MainData, "*.pcc", SearchOption.AllDirectories).ToList();
-                mainFiles.AddRange(Directory.GetFiles(GameData.MainData, "*.tfc", SearchOption.AllDirectories).ToList());
-                TOCBinFile tocFile = new TOCBinFile(Path.Combine(GameData.bioGamePath, "PCConsoleTOC.bin"));
-                for (int i = 0; i < mainFiles.Count; i++)
-                {
-                    int pos = mainFiles[i].IndexOf("BioGame", StringComparison.OrdinalIgnoreCase);
-                    string filename = mainFiles[i].Substring(pos);
-                    tocFile.updateFile(filename, mainFiles[i]);
-                }
-                tocFile.saveToFile(Path.Combine(GameData.bioGamePath, @"PCConsoleTOC.bin"));
+                int pos = mainFiles[i].IndexOf("BioGame", StringComparison.OrdinalIgnoreCase);
+                string filename = mainFiles[i].Substring(pos);
+                tocFile.updateFile(filename, mainFiles[i]);
             }
+            tocFile.saveToFile(Path.Combine(GameData.bioGamePath, @"PCConsoleTOC.bin"));
+        }
 
-            public void updateDLCsTOC()
+        public void updateDLCsTOC()
+        {
+            List<string> DLCs = Directory.GetDirectories(GameData.DLCData).ToList();
+            for (int i = 0; i < DLCs.Count; i++)
             {
-                List<string> DLCs = Directory.GetDirectories(GameData.DLCData).ToList();
-                for (int i = 0; i < DLCs.Count; i++)
+                List<string> dlcFiles = Directory.GetFiles(DLCs[i], "*.pcc", SearchOption.AllDirectories).ToList();
+                if (dlcFiles.Count == 0)
+                    continue;
+                dlcFiles.AddRange(Directory.GetFiles(DLCs[i], "*.tfc", SearchOption.AllDirectories).ToList());
+                string DLCname = Path.GetFileName(DLCs[i]);
+                TOCBinFile tocDLC = new TOCBinFile(Path.Combine(GameData.DLCData, DLCname, "PCConsoleTOC.bin"));
+                for (int f = 0; f < dlcFiles.Count; f++)
                 {
-                    List<string> dlcFiles = Directory.GetFiles(DLCs[i], "*.pcc", SearchOption.AllDirectories).ToList();
-                    if (dlcFiles.Count == 0)
-                        continue;
-                    dlcFiles.AddRange(Directory.GetFiles(DLCs[i], "*.tfc", SearchOption.AllDirectories).ToList());
-                    string DLCname = Path.GetFileName(DLCs[i]);
-                    TOCBinFile tocDLC = new TOCBinFile(Path.Combine(GameData.DLCData, DLCname, "PCConsoleTOC.bin"));
-                    for (int f = 0; f < dlcFiles.Count; f++)
-                    {
-                        int pos = dlcFiles[f].IndexOf(DLCname + "\\", StringComparison.OrdinalIgnoreCase);
-                        string filename = dlcFiles[f].Substring(pos + DLCname.Length + 1);
-                        tocDLC.updateFile(filename, dlcFiles[f]);
-                    }
-                    tocDLC.saveToFile(Path.Combine(GameData.DLCData, DLCname, "PCConsoleTOC.bin"));
+                    int pos = dlcFiles[f].IndexOf(DLCname + "\\", StringComparison.OrdinalIgnoreCase);
+                    string filename = dlcFiles[f].Substring(pos + DLCname.Length + 1);
+                    tocDLC.updateFile(filename, dlcFiles[f]);
                 }
+                tocDLC.saveToFile(Path.Combine(GameData.DLCData, DLCname, "PCConsoleTOC.bin"));
             }
         }
     }

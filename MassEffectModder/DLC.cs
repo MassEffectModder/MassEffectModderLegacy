@@ -260,7 +260,8 @@ namespace MassEffectModder
                 if (filesList[i].filenamePath == null)
                     throw new Exception("filename missing");
 
-                mainWindow.updateStatusLabel2("File " + (i + 1) + " of " + filesList.Count() + " - " + Path.GetFileName(filesList[i].filenamePath));
+                if (mainWindow != null)
+                    mainWindow.updateStatusLabel2("File " + (i + 1) + " of " + filesList.Count() + " - " + Path.GetFileName(filesList[i].filenamePath));
 
                 int pos = filesList[i].filenamePath.IndexOf("\\BIOGame\\DLC\\", StringComparison.CurrentCultureIgnoreCase);
                 string filename = filesList[i].filenamePath.Substring(pos + ("\\BIOGame\\DLC\\").Length).Replace('/', '\\');
@@ -477,6 +478,37 @@ namespace MassEffectModder
                     throw new Exception();
             }
             File.Delete(inPath + @"\TOC");
+        }
+
+        static public void unpackAllDLC(MainWindow mainWindow, Installer installer)
+        {
+            string tmpDlcDir = Path.Combine(GameData.GamePath, "BIOGame", "DLCTemp");
+            List<string> dlcs = Directory.GetFiles(GameData.DLCData, "*.pcc", SearchOption.AllDirectories).ToList();
+            if (dlcs.Count() == 0)
+            {
+                if (Directory.Exists(tmpDlcDir))
+                    Directory.Delete(tmpDlcDir, true);
+                Directory.CreateDirectory(tmpDlcDir);
+                List<string> sfarFiles = Directory.GetFiles(GameData.DLCData, "Default.sfar", SearchOption.AllDirectories).ToList();
+                for (int i = 0; i < sfarFiles.Count; i++)
+                {
+                    string DLCname = Path.GetFileName(Path.GetDirectoryName(Path.GetDirectoryName(sfarFiles[i])));
+                    string outPath = Path.Combine(tmpDlcDir, DLCname);
+                    Directory.CreateDirectory(outPath);
+                    ME3DLC dlc = new ME3DLC(mainWindow);
+                    if (mainWindow != null)
+                    {
+                        mainWindow.updateStatusLabel("SFAR unpacking - DLC " + (i + 1) + " of " + sfarFiles.Count);
+                    }
+                    if (installer != null)
+                    {
+                        installer.updateStatusPrepare("SFAR unpacking... " + (i * 100 / GameData.packageFiles.Count) + " % ");
+                    }
+                    dlc.extract(sfarFiles[i], outPath);
+                }
+                Directory.Delete(GameData.DLCData, true);
+                Directory.Move(tmpDlcDir, GameData.DLCData);
+            }
         }
     }
 }

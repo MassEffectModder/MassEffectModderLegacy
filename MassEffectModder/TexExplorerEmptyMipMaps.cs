@@ -28,25 +28,22 @@ using System.Windows.Forms;
 
 namespace MassEffectModder
 {
-    public partial class TexExplorer : Form
+    public partial class MipMaps
     {
-        private void removeEmptyMipmapsToolStripMenuItem_Click(object sender, EventArgs e)
+        public void removeMipMaps(List<FoundTexture> textures, CachePackageMgr cachePackageMgr, MainWindow mainWindow, Installer installer)
         {
-            DialogResult result = MessageBox.Show("Are you sure to proceed?", "Remove empty mipmaps", MessageBoxButtons.YesNo);
-            if (result == DialogResult.No)
-                return;
-
-            EnableMenuOptions(false);
-
-            _mainWindow.GetPackages(gameData);
-            if (_gameSelected == MeType.ME1_TYPE)
-                sortPackagesME1();
-
             for (int i = 0; i < GameData.packageFiles.Count; i++)
             {
                 bool modified = false;
-                _mainWindow.updateStatusLabel("Remove empty mipmaps, package " + (i + 1) + " of " + GameData.packageFiles.Count);
-                _mainWindow.updateStatusLabel2("");
+                if (mainWindow != null)
+                {
+                    mainWindow.updateStatusLabel("Remove empty mipmaps, package " + (i + 1) + " of " + GameData.packageFiles.Count);
+                    mainWindow.updateStatusLabel2("");
+                }
+                if (installer != null)
+                {
+                    installer.updateStatusMipMaps("Progress... " + (i * 100 / GameData.packageFiles.Count) + " % ");
+                }
                 Package package = new Package(GameData.packageFiles[i], true);
                 for (int l = 0; l < package.exportsTable.Count; l++)
                 {
@@ -69,7 +66,7 @@ namespace MassEffectModder
                             texture.properties.setIntValue("SizeY", texture.mipMapsList.First().height);
                             texture.properties.setIntValue("MipTailBaseIdx", texture.mipMapsList.Count() - 1);
 
-                            if (_gameSelected == MeType.ME1_TYPE && package.compressed)
+                            if (GameData.gameType == MeType.ME1_TYPE && package.compressed)
                             {
                                 if (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extLZO) ||
                                     texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extZlib) ||
@@ -77,7 +74,7 @@ namespace MassEffectModder
                                 {
                                     string textureName = package.exportsTable[l].objectName;
                                     FoundTexture foundTexName;
-                                    List<FoundTexture> foundList = _textures.FindAll(s => s.name == textureName && s.packageName == texture.packageName);
+                                    List<FoundTexture> foundList = textures.FindAll(s => s.name == textureName && s.packageName == texture.packageName);
                                     if (foundList.Count > 1)
                                     {
                                         foundTexName = new FoundTexture();
@@ -139,6 +136,25 @@ namespace MassEffectModder
                 cachePackageMgr.updateMainTOC();
                 cachePackageMgr.updateDLCsTOC();
             }
+        }
+    }
+
+    public partial class TexExplorer : Form
+    {
+        private void removeEmptyMipmapsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show("Are you sure to proceed?", "Remove empty mipmaps", MessageBoxButtons.YesNo);
+            if (result == DialogResult.No)
+                return;
+
+            EnableMenuOptions(false);
+
+            _mainWindow.GetPackages(gameData);
+            if (_gameSelected == MeType.ME1_TYPE)
+                treeScan.sortPackagesME1(_mainWindow, null);
+
+            MipMaps mipmaps = new MipMaps();
+            mipmaps.removeMipMaps(_textures, cachePackageMgr, _mainWindow, null);
 
             EnableMenuOptions(true);
             _mainWindow.updateStatusLabel("Done.");

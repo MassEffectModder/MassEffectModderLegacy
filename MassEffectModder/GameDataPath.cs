@@ -306,7 +306,7 @@ namespace MassEffectModder
             }
         }
 
-        public bool getPackages()
+        public bool getPackages(bool gui = true)
         {
             if (packageFiles != null && packageFiles.Count != 0)
                 return true;

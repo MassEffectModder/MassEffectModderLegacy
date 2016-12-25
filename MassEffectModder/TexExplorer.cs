@@ -62,16 +62,18 @@ namespace MassEffectModder
         public const uint textureMapBinTag = 0x5054454D;
         public const uint textureMapBinVersion = 1;
         public const uint TextureModTag = 0x444F4D54;
-        const uint TextureModVersion = 1;
-        const uint TextureModHeaderLength = 16;
+        public const uint TextureModVersion = 1;
+        public const uint TextureModHeaderLength = 16;
 
         MeType _gameSelected;
-        MainWindow _mainWindow;
+        public MainWindow _mainWindow;
         ConfIni _configIni;
         public static GameData gameData;
         List<FoundTexture> _textures;
         bool previewShow = true;
         CachePackageMgr cachePackageMgr;
+        TreeScan treeScan;
+        MipMaps mipMaps;
 
         public class PackageTreeNode : TreeNode
         {
@@ -93,7 +95,9 @@ namespace MassEffectModder
             _gameSelected = gameType;
             _configIni = main._configIni;
             gameData = new GameData(_gameSelected, _configIni);
-            cachePackageMgr = new CachePackageMgr(main);
+            cachePackageMgr = new CachePackageMgr(main, null);
+            treeScan = new TreeScan();
+            mipMaps = new MipMaps();
         }
 
         public void EnableMenuOptions(bool enable)
@@ -124,7 +128,7 @@ namespace MassEffectModder
             richTextBoxInfo.Clear();
 
             if (_gameSelected == MeType.ME1_TYPE)
-                _mainWindow.VerifyME1Exe(gameData);
+                Misc.VerifyME1Exe(gameData);
 
             if (!_mainWindow.GetPackages(gameData))
             {
@@ -135,7 +139,7 @@ namespace MassEffectModder
             {
                 _mainWindow.updateStatusLabel("");
                 _mainWindow.updateStatusLabel("Preparing tree...");
-                PrepareListOfTextures();
+                _textures = treeScan.PrepareListOfTextures(this, _mainWindow, null);
                 _mainWindow.updateStatusLabel("Done.");
                 _mainWindow.updateStatusLabel("");
             }
@@ -207,7 +211,7 @@ namespace MassEffectModder
             {
                 previewShow = true;
                 int index = Convert.ToInt32(listViewTextures.FocusedItem.Name);
-                previewTextureMod(listViewMods.SelectedItems[0].Name, index);
+                mipMaps.previewTextureMod(listViewMods.SelectedItems[0].Name, index, null, _textures, cachePackageMgr, this);
                 _mainWindow.updateStatusLabel("Done.");
                 pictureBoxPreview.Show();
                 richTextBoxInfo.Hide();
@@ -498,7 +502,7 @@ namespace MassEffectModder
             richTextBoxInfo.Text = "";
             foreach (ListViewItem item in listViewMods.SelectedItems)
             {
-                replaceTextureMod(item.Name);
+                mipMaps.replaceTextureMod(item.Name, richTextBoxInfo.Text, _textures, cachePackageMgr, this);
                 _mainWindow.updateStatusLabel("MOD: " + item.Text + " applying...");
                 listViewMods.Items.Remove(item);
             }
@@ -543,7 +547,7 @@ namespace MassEffectModder
                 return;
 
             richTextBoxInfo.Text = "";
-            listTextureMod(listViewMods.SelectedItems[0].Name);
+            mipMaps.listTextureMod(listViewMods.SelectedItems[0].Name, richTextBoxInfo.Text, _textures, cachePackageMgr, this);
             _mainWindow.updateStatusLabel("Done.");
             _mainWindow.updateStatusLabel2("");
             if (richTextBoxInfo.Text != "")
@@ -572,7 +576,7 @@ namespace MassEffectModder
                     {
                         string outDir = Path.Combine(modFile.SelectedPath, Path.GetFileNameWithoutExtension(item.Name));
                         Directory.CreateDirectory(outDir);
-                        extractTextureMod(item.Name, outDir);
+                        mipMaps.extractTextureMod(item.Name, outDir, richTextBoxInfo.Text, _textures, cachePackageMgr, this);
                         _mainWindow.updateStatusLabel("MOD: " + item.Text + "extracting...");
                         _mainWindow.updateStatusLabel2("");
                     }
@@ -606,7 +610,8 @@ namespace MassEffectModder
                     richTextBoxInfo.Text = "";
                     richTextBoxInfo.Show();
                     pictureBoxPreview.Hide();
-                    createTextureMod(modFile.SelectedPath, Path.Combine(Path.GetDirectoryName(modFile.SelectedPath), Path.GetFileName(modFile.SelectedPath)) + ".mem");
+                    mipMaps.createTextureMod(modFile.SelectedPath, Path.Combine(Path.GetDirectoryName(modFile.SelectedPath), Path.GetFileName(modFile.SelectedPath)) + ".mem",
+                        richTextBoxInfo.Text, _textures, _mainWindow);
                     if (richTextBoxInfo.Text != "")
                     {
                         MessageBox.Show("There were some errors while process.");
@@ -643,7 +648,8 @@ namespace MassEffectModder
                     pictureBoxPreview.Hide();
                     for (int i = 0; i < listDirs.Count; i++)
                     {
-                        createTextureMod(listDirs[i], Path.Combine(Path.GetDirectoryName(listDirs[i]), Path.GetFileName(listDirs[i])) + ".mem");
+                        mipMaps.createTextureMod(listDirs[i], Path.Combine(Path.GetDirectoryName(listDirs[i]), Path.GetFileName(listDirs[i])) + ".mem",
+                            richTextBoxInfo.Text, _textures, _mainWindow);
                     }
                     if (richTextBoxInfo.Text != "")
                     {
@@ -776,7 +782,7 @@ namespace MassEffectModder
 
                 GameData.packageFiles.Sort();
                 if (_gameSelected == MeType.ME1_TYPE)
-                    sortPackagesME1();
+                    treeScan.sortPackagesME1(_mainWindow, null);
 
                 using (FileStream fs = new FileStream(filename, FileMode.CreateNew, FileAccess.Write))
                 {
@@ -898,7 +904,7 @@ namespace MassEffectModder
 
                 GameData.packageFiles.Sort();
                 if (_gameSelected == MeType.ME1_TYPE)
-                    sortPackagesME1();
+                    treeScan.sortPackagesME1(_mainWindow, null);
 
                 using (FileStream fs = new FileStream(filename, FileMode.CreateNew, FileAccess.Write))
                 {
@@ -962,7 +968,7 @@ namespace MassEffectModder
                 saveFile.FileName = node.textures[index].name + string.Format("_0x{0:X8}", node.textures[index].crc) + ".dds";
                 if (saveFile.ShowDialog() == DialogResult.OK)
                 {
-                    extractTextureToDDS(saveFile.FileName, GameData.GamePath + nodeTexture.path, nodeTexture.exportID);
+                    mipMaps.extractTextureToDDS(saveFile.FileName, GameData.GamePath + nodeTexture.path, nodeTexture.exportID);
                 }
             }
             EnableMenuOptions(true);
@@ -980,7 +986,7 @@ namespace MassEffectModder
                     {
                         _mainWindow.updateStatusLabel("Extracting textures...");
                         _mainWindow.updateStatusLabel2("Texture: " + (i + 1) + " of " + _textures.Count + " - " + _textures[i].name);
-                        extractTextureToDDS(Path.Combine(extractDir.SelectedPath, _textures[i].name + string.Format("_0x{0:X8}", _textures[i].crc) + ".dds"),
+                        mipMaps.extractTextureToDDS(Path.Combine(extractDir.SelectedPath, _textures[i].name + string.Format("_0x{0:X8}", _textures[i].crc) + ".dds"),
                             GameData.GamePath + _textures[i].list[0].path, _textures[i].list[0].exportID);
                     }
                     _mainWindow.updateStatusLabel("Textures extracted.");
@@ -1003,7 +1009,7 @@ namespace MassEffectModder
                     {
                         _mainWindow.updateStatusLabel("Extracting textures...");
                         _mainWindow.updateStatusLabel2("Texture: " + (i + 1) + " of " + _textures.Count + " - " + _textures[i].name);
-                        extractTextureToPng(Path.Combine(extractDir.SelectedPath, _textures[i].name + string.Format("_0x{0:X8}", _textures[i].crc) + ".png"),
+                        mipMaps.extractTextureToPng(Path.Combine(extractDir.SelectedPath, _textures[i].name + string.Format("_0x{0:X8}", _textures[i].crc) + ".png"),
                             GameData.GamePath + _textures[i].list[0].path, _textures[i].list[0].exportID);
                     }
                     _mainWindow.updateStatusLabel("Textures extracted.");

@@ -29,50 +29,56 @@ using System.Windows.Media.Imaging;
 
 namespace MassEffectModder
 {
-    public partial class TexExplorer : Form
+    public partial class MipMaps
     {
-        private void extractTextureMod(string filenameMod, string outDir)
+        public void extractTextureMod(string filenameMod, string outDir, string errors, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer)
         {
-            processTextureMod(filenameMod, -1, true, false, outDir);
+            processTextureMod(filenameMod, -1, true, false, outDir, errors, textures, cachePackageMgr, texExplorer);
         }
 
-        private void previewTextureMod(string filenameMod, int previewIndex)
+        public void previewTextureMod(string filenameMod, int previewIndex, string errors, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer)
         {
-            processTextureMod(filenameMod, previewIndex, false, false, "");
+            processTextureMod(filenameMod, previewIndex, false, false, "", errors, textures, cachePackageMgr, texExplorer);
         }
 
-        private void replaceTextureMod(string filenameMod)
+        public void replaceTextureMod(string filenameMod, string errors, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer)
         {
-            processTextureMod(filenameMod, -1, false, true, "");
+            processTextureMod(filenameMod, -1, false, true, "", errors, textures, cachePackageMgr, texExplorer);
         }
 
-        private void listTextureMod(string filenameMod)
+        public void listTextureMod(string filenameMod, string errors, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer)
         {
-            processTextureMod(filenameMod, -1, false, false, "");
+            processTextureMod(filenameMod, -1, false, false, "", errors, textures, cachePackageMgr, texExplorer);
         }
 
-        private void processTextureMod(string filenameMod, int previewIndex, bool extract, bool replace, string outDir)
+        private void processTextureMod(string filenameMod, int previewIndex, bool extract, bool replace, string outDir, string errors, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer)
         {
             using (FileStream fs = new FileStream(filenameMod, FileMode.Open, FileAccess.Read))
             {
                 if (previewIndex == -1 && !extract && !replace)
                 {
-                    listViewTextures.BeginUpdate();
+                    texExplorer.listViewTextures.BeginUpdate();
                 }
 
                 uint tag = fs.ReadUInt32();
                 uint version = fs.ReadUInt32();
-                if (tag != TextureModTag || version != TextureModVersion)
+                if (tag != TexExplorer.TextureModTag || version != TexExplorer.TextureModVersion)
                 {
-                    MessageBox.Show("Not a Mod!");
+                    if (texExplorer != null)
+                    {
+                        MessageBox.Show("Not a Mod!");
+                    }
                     return;
                 }
                 else
                 {
                     uint gameType = fs.ReadUInt32();
-                    if ((MeType)gameType != _gameSelected)
+                    if ((MeType)gameType != GameData.gameType)
                     {
-                        MessageBox.Show("Mod for different game!");
+                        if (texExplorer != null)
+                        {
+                            MessageBox.Show("Mod for different game!");
+                        }
                         return;
                     }
                 }
@@ -90,8 +96,11 @@ namespace MassEffectModder
                     dst = new byte[decSize];
                     dstLen = ZlibHelper.Zlib.Decompress(src, size, dst);
 
-                    _mainWindow.updateStatusLabel("Processing MOD " + Path.GetFileNameWithoutExtension(filenameMod) +
-                        " - Texture " + (i + 1) + " of " + numTextures + " - " + name);
+                    if (texExplorer != null)
+                    {
+                        texExplorer._mainWindow.updateStatusLabel("Processing MOD " + Path.GetFileNameWithoutExtension(filenameMod) +
+                            " - Texture " + (i + 1) + " of " + numTextures + " - " + name);
+                    }
                     if (extract)
                     {
                         string filename = name + "_" + string.Format("0x{0:X8}", crc) + ".dds";
@@ -108,16 +117,16 @@ namespace MassEffectModder
                             continue;
                         }
                         DDSImage image = new DDSImage(new MemoryStream(dst, 0, (int)dstLen));
-                        pictureBoxPreview.Image = image.mipMaps[0].bitmap;
+                        texExplorer.pictureBoxPreview.Image = image.mipMaps[0].bitmap;
                         break;
                     }
                     else
                     {
                         FoundTexture foundTexture;
-                        if (_gameSelected == MeType.ME1_TYPE)
-                            foundTexture = _textures.Find(s => s.crc == crc && s.name == name);
+                        if (GameData.gameType == MeType.ME1_TYPE)
+                            foundTexture = textures.Find(s => s.crc == crc && s.name == name);
                         else
-                            foundTexture = _textures.Find(s => s.crc == crc);
+                            foundTexture = textures.Find(s => s.crc == crc);
                         if (foundTexture.crc != 0)
                         {
                             if (replace)
@@ -125,46 +134,47 @@ namespace MassEffectModder
                                 DDSImage image = new DDSImage(new MemoryStream(dst, 0, (int)dstLen));
                                 if (!image.checkExistAllMipmaps())
                                 {
-                                    richTextBoxInfo.Text += "Not all mipmaps exists in texture: " + name + "\n";
+                                    errors += "Not all mipmaps exists in texture: " + name + "\n";
                                     continue;
                                 }
-                                replaceTexture(image, foundTexture.list, foundTexture.name);
+                                replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, errors);
                             }
                             else
                             {
                                 ListViewItem item = new ListViewItem(foundTexture.name + " (" + foundTexture.packageName + ")");
                                 item.Name = i.ToString();
-                                listViewTextures.Items.Add(item);
+                                texExplorer.listViewTextures.Items.Add(item);
                             }
                         }
                         else
                         {
-                            richTextBoxInfo.Text += "Not matched texture: " + name + "\n";
+                            errors += "Not matched texture: " + name + "\n";
                         }
                     }
                 }
                 if (previewIndex == -1 && !extract && !replace)
                 {
-                    listViewTextures.EndUpdate();
+                    texExplorer.listViewTextures.EndUpdate();
                 }
             }
         }
 
-        void createTextureMod(string inDir, string outFile)
+        public void createTextureMod(string inDir, string outFile, string errors, List<FoundTexture> textures, MainWindow mainWindow)
         {
             string[] files = Directory.GetFiles(inDir, "*.dds");
 
             int count = 0;
             using (FileStream outFs = new FileStream(outFile, FileMode.Create, FileAccess.Write))
             {
-                outFs.WriteUInt32(TextureModTag);
-                outFs.WriteUInt32(TextureModVersion);
-                outFs.WriteUInt32((uint)_gameSelected);
+                outFs.WriteUInt32(TexExplorer.TextureModTag);
+                outFs.WriteUInt32(TexExplorer.TextureModVersion);
+                outFs.WriteUInt32((uint)GameData.gameType);
                 outFs.WriteInt32(0); // filled later
                 for (int n = 0; n < files.Count(); n++)
                 {
                     string file = files[n];
-                    _mainWindow.updateStatusLabel("Processing MOD: " + Path.GetFileNameWithoutExtension(outFile));
+                    if (mainWindow != null)
+                        mainWindow.updateStatusLabel("Processing MOD: " + Path.GetFileNameWithoutExtension(outFile));
                     string crcStr = Path.GetFileNameWithoutExtension(file);
                     if (crcStr.Contains("_0x"))
                     {
@@ -177,7 +187,7 @@ namespace MassEffectModder
                     uint crc = uint.Parse(crcStr, System.Globalization.NumberStyles.HexNumber);
                     if (crc == 0)
                     {
-                        richTextBoxInfo.Text += "Wrong format of texture filename: " + Path.GetFileName(file) + "\n";
+                        errors += "Wrong format of texture filename: " + Path.GetFileName(file) + "\n";
                         continue;
                     }
 
@@ -186,11 +196,11 @@ namespace MassEffectModder
                     string name = filename.Substring(0, idx - "_0x".Length);
 
                     string textureName = "";
-                    List<FoundTexture> foundCrcList = _textures.FindAll(s => s.crc == crc);
-                    FoundTexture foundTexture = _textures.Find(s => s.crc == crc && s.name == name);
+                    List<FoundTexture> foundCrcList = textures.FindAll(s => s.crc == crc);
+                    FoundTexture foundTexture = textures.Find(s => s.crc == crc && s.name == name);
                     if (foundCrcList.Count == 0)
                     {
-                        richTextBoxInfo.Text += "Texture not matched: " + Path.GetFileName(file) + "\n";
+                        errors += "Texture not matched: " + Path.GetFileName(file) + "\n";
                         continue;
                     }
 
@@ -213,7 +223,7 @@ namespace MassEffectModder
                             DDSImage image = new DDSImage(new MemoryStream(src));
                             if (!image.checkExistAllMipmaps())
                             {
-                                richTextBoxInfo.Text += "Texture does not have all mipmaps: " + Path.GetFileName(file) + "\n";
+                                errors += "Texture does not have all mipmaps: " + Path.GetFileName(file) + "\n";
                                 continue;
                             }
 
@@ -222,25 +232,26 @@ namespace MassEffectModder
 
                             if (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1)
                             {
-                                richTextBoxInfo.Text += "DDS file must have mipmaps: " + Path.GetFileName(file) + "\n";
+                                errors += "DDS file must have mipmaps: " + Path.GetFileName(file) + "\n";
                                 continue;
                             }
 
                             DDSFormat ddsFormat = DDSImage.convertFormat(texture.properties.getProperty("Format").valueName);
                             if (image.ddsFormat != ddsFormat)
                             {
-                                richTextBoxInfo.Text += "DDS file not match expected texture format: " + Path.GetFileName(file) + "\n";
+                                errors += "DDS file not match expected texture format: " + Path.GetFileName(file) + "\n";
                                 continue;
                             }
 
                             if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
                                 texture.mipMapsList[0].width / texture.mipMapsList[0].height)
                             {
-                                richTextBoxInfo.Text += "DDS file not match game data texture aspect ratio: " + Path.GetFileName(file) + "\n";
+                                errors += "DDS file not match game data texture aspect ratio: " + Path.GetFileName(file) + "\n";
                                 continue;
                             }
 
-                            _mainWindow.updateStatusLabel2("Texture " + (n + 1) + " of " + files.Count() + ", Name: " + textureName);
+                            if (mainWindow != null)
+                                mainWindow.updateStatusLabel2("Texture " + (n + 1) + " of " + files.Count() + ", Name: " + textureName);
 
                             byte[] dst = ZlibHelper.Zlib.Compress(src);
                             outFs.WriteStringASCIINull(textureName);
@@ -257,9 +268,9 @@ namespace MassEffectModder
                     }
                 }
                 outFs.SeekBegin();
-                outFs.WriteUInt32(TextureModTag);
-                outFs.WriteUInt32(TextureModVersion);
-                outFs.WriteUInt32((uint)_gameSelected);
+                outFs.WriteUInt32(TexExplorer.TextureModTag);
+                outFs.WriteUInt32(TexExplorer.TextureModVersion);
+                outFs.WriteUInt32((uint)GameData.gameType);
                 outFs.WriteInt32(count);
             }
             if (count == 0)

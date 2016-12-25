@@ -499,9 +499,9 @@ namespace MassEffectModder
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.MenuStrip menuStrip;
-        private System.Windows.Forms.ListView listViewTextures;
+        public System.Windows.Forms.ListView listViewTextures;
         private System.Windows.Forms.RichTextBox richTextBoxInfo;
-        private System.Windows.Forms.PictureBox pictureBoxPreview;
+        public System.Windows.Forms.PictureBox pictureBoxPreview;
         public System.Windows.Forms.TreeView treeViewPackages;
         private System.Windows.Forms.ListView listViewResults;
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
