@@ -502,7 +502,7 @@ namespace MassEffectModder
                     }
                     if (installer != null)
                     {
-                        installer.updateStatusPrepare("SFAR unpacking... " + (i * 100 / GameData.packageFiles.Count) + " % ");
+                        installer.updateStatusPrepare("Unpacking DLC " + (i + 1) + " of " + sfarFiles.Count);
                     }
                     dlc.extract(sfarFiles[i], outPath);
                 }

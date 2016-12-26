@@ -21,6 +21,7 @@
 
 using AmaroK86.ImageFormat;
 using StreamHelpers;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -64,10 +65,7 @@ namespace MassEffectModder
                 uint version = fs.ReadUInt32();
                 if (tag != TexExplorer.TextureModTag || version != TexExplorer.TextureModVersion)
                 {
-                    if (texExplorer != null)
-                    {
-                        MessageBox.Show("Not a Mod!");
-                    }
+                    errors += "File " + filenameMod + " is not a Mod!" + Environment.NewLine;
                     return;
                 }
                 else
@@ -75,10 +73,7 @@ namespace MassEffectModder
                     uint gameType = fs.ReadUInt32();
                     if ((MeType)gameType != GameData.gameType)
                     {
-                        if (texExplorer != null)
-                        {
-                            MessageBox.Show("Mod for different game!");
-                        }
+                        errors += "File " + filenameMod + " is a Mod for different game!" + Environment.NewLine;
                         return;
                     }
                 }
@@ -134,7 +129,7 @@ namespace MassEffectModder
                                 DDSImage image = new DDSImage(new MemoryStream(dst, 0, (int)dstLen));
                                 if (!image.checkExistAllMipmaps())
                                 {
-                                    errors += "Not all mipmaps exists in texture: " + name + "\n";
+                                    errors += "Not all mipmaps exists in texture: " + name + string.Format("_0x{0:X8}", crc) + Environment.NewLine;
                                     continue;
                                 }
                                 replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, errors);
@@ -148,7 +143,7 @@ namespace MassEffectModder
                         }
                         else
                         {
-                            errors += "Not matched texture: " + name + "\n";
+                            errors += "Not matched texture: " + name + string.Format("_0x{0:X8}", crc) + Environment.NewLine;
                         }
                     }
                 }

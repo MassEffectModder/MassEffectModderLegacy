@@ -87,21 +87,22 @@ namespace MassEffectModder
 
                 if (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1)
                 {
-                    errors += "DDS file must have mipmaps, skiping...";
+                    errors += "Texture: " + textureName + " must have mipmaps, skipping..." + Environment.NewLine;
                     break;
                 }
 
-                DDSFormat ddsFormat = DDSImage.convertFormat(texture.properties.getProperty("Format").valueName);
+                string fmt = texture.properties.getProperty("Format").valueName;
+                DDSFormat ddsFormat = DDSImage.convertFormat(fmt);
                 if (image.ddsFormat != ddsFormat)
                 {
-                    errors += "DDS file not match expected texture format, skiping...";
+                    errors += "Texture: " + textureName + " not match expected texture format: " + fmt + ", skipping..." + Environment.NewLine;
                     break;
                 }
 
                 if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
                     texture.mipMapsList[0].width / texture.mipMapsList[0].height)
                 {
-                    errors += "DDS file not match game data texture aspect ratio, skiping...";
+                    errors += "Texture: " + textureName + " not match game data texture aspect ratio, skipping..." + Environment.NewLine;
                     break;
                 }
 

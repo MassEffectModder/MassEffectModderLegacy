@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -187,6 +188,18 @@ namespace MassEffectModder
             cachePackageMgr.CloseAllWithSave();
             checkBoxStore.Checked = true;
             updateStatusStore("");
+
+            string filename = "errors.txt";
+            File.Delete(filename);
+            if (errors != "")
+            {
+                using (FileStream fs = new FileStream(filename, FileMode.CreateNew))
+                {
+                    fs.WriteStringASCII(errors);
+                }
+                MessageBox.Show("There were some errors while process.");
+                Process.Start(filename);
+            }
         }
 
         public void updateStatusPrepare(string text)
