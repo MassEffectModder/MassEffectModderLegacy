@@ -73,20 +73,20 @@ namespace MassEffectModder
             buttonSTART.Enabled = false;
 
 
-            labelStatusDetected.Text = "Progress...";
+            labelStatusDetected.Text = "In progress...";
             configIni = new ConfIni();
             gameData = new GameData((MeType)gameId, configIni);
             checkBoxDetected.Checked = true;
             labelStatusDetected.Text = "";
 
 
-            labelStatusLOD.Text = "Progress...";
+            labelStatusLOD.Text = "In progress...";
             LODSettings.updateLOD((MeType)gameId, configIni);
             checkBoxLOD.Checked = true;
             labelStatusLOD.Text = "";
 
 
-            updateStatusPrepare("Progress...");
+            updateStatusPrepare("In progress...");
             if (GameData.gameType == MeType.ME1_TYPE)
                 Misc.VerifyME1Exe(gameData, false);
 
@@ -110,19 +110,19 @@ namespace MassEffectModder
             updateStatusPrepare("");
 
 
-            updateStatusScan("Progress...");
+            updateStatusScan("In progress...");
             textures = treeScan.PrepareListOfTextures(null, null, this);
             checkBoxScan.Checked = true;
             updateStatusScan("");
 
 
-            updateStatusMipMaps("Progress...");
+            updateStatusMipMaps("In progress...");
             mipMaps.removeMipMaps(textures, cachePackageMgr, null, this);
             checkBoxMipMaps.Checked = true;
             updateStatusMipMaps("");
 
 
-            updateStatusTextures("Progress...");
+            updateStatusTextures("In progress...");
             string errors = "";
             for (int i = 0; i < modFiles.Count; i++)
             {
@@ -156,7 +156,7 @@ namespace MassEffectModder
                         dst = new byte[decSize];
                         dstLen = ZlibHelper.Zlib.Decompress(src, size, dst);
 
-                        updateStatusTextures("MOD: " + (i + 1) + " of " + modFiles.Count + " - Progress... " + ((l + 1) * 100 / numTextures) + " % ");
+                        updateStatusTextures("Mod: " + (i + 1) + " of " + modFiles.Count + " - in progress: " + ((l + 1) * 100 / numTextures) + " % ");
 
                         FoundTexture foundTexture;
                         if (GameData.gameType == MeType.ME1_TYPE)
@@ -168,14 +168,14 @@ namespace MassEffectModder
                             DDSImage image = new DDSImage(new MemoryStream(dst, 0, (int)dstLen));
                             if (!image.checkExistAllMipmaps())
                             {
-                                errors += "Not all mipmaps exists in texture: " + name + "\n";
+                                errors += "Not all mipmaps exists in texture: " + name + string.Format("_0x{0:X8}", crc) + Environment.NewLine;
                                 continue;
                             }
                             mipMaps.replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, errors);
                         }
                         else
                         {
-                            errors += "Not matched texture: " + name + "\n";
+                            errors += "Not matched texture: " + name + string.Format("_0x{0:X8}", crc) + Environment.NewLine;
                         }
                     }
                 }
