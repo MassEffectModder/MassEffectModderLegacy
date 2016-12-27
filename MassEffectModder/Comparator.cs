@@ -3,6 +3,7 @@ using StreamHelpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 
@@ -13,8 +14,12 @@ namespace MassEffectModder
         MainWindow _main;
         ConfIni _configIni;
         List<List<FoundTexture>> _textures;
+        List<string> ddsFilesME1;
+        List<string> ddsFilesME2;
+        List<string> ddsFilesME3;
         string[] lines;
         bool zoom = false;
+        int mode;
 
         public Comparator(MainWindow main)
         {
@@ -33,7 +38,28 @@ namespace MassEffectModder
                     return;
                 lines = File.ReadAllLines(csvFile.FileName);
             }
-            if (lines[0] != "GroupId;Game;CRC;Ok")
+            if (lines[0] == "GroupId;Game;CRC;Ok")
+            {
+                mode = 1;
+            }
+            else if (lines[0] == "GroupId;Game;CRC;Modded;Ok")
+            {
+                mode = 2;
+                if (!Directory.Exists("ME1") || !Directory.Exists("ME2") || !Directory.Exists("ME3"))
+                {
+                    MessageBox.Show("Missing MEx directories!");
+                    return;
+                }
+                ddsFilesME1 = Directory.GetFiles("ME1", "*.dds", SearchOption.AllDirectories).ToList();
+                ddsFilesME2 = Directory.GetFiles("ME2", "*.dds", SearchOption.AllDirectories).ToList();
+                ddsFilesME3 = Directory.GetFiles("ME3", "*.dds", SearchOption.AllDirectories).ToList();
+                if (ddsFilesME1.Count == 0 || ddsFilesME2.Count == 0 || ddsFilesME3.Count == 0)
+                {
+                    MessageBox.Show("Missing DDS files in MEx directories!");
+                    return;
+                }
+            }
+            else
             {
                 MessageBox.Show("Wrong CSV format!");
                 return;
@@ -64,7 +90,10 @@ namespace MassEffectModder
 
             checkedListBox.Items.Clear();
             checkedListBox.BeginUpdate();
-            checkedListBox.Items.Add("Ok | GroupId | Game | CRC", false);
+            if (mode == 1)
+                checkedListBox.Items.Add("Ok | GroupId |  Game  | CRC", false);
+            else
+                checkedListBox.Items.Add("Ok | GroupId |  Game  | CRC        | Modded", false);
             for (int i = 1; i < lines.Length; i++)
             {
                 string[] str = lines[i].Split(';');
@@ -80,11 +109,20 @@ namespace MassEffectModder
                     throw new Exception("Not expected game id, must be: ME1, ME2, ME3");
                 if (str[2].Contains("0x"))
                 {
-                    str[2] = str[2].Substring(2, 8); 
+                    str[2] = str[2].Substring(2, 8);
                 }
                 uint crc = uint.Parse(str[2], System.Globalization.NumberStyles.HexNumber);
-                bool ok = uint.Parse(str[3]) == 1;
-                checkedListBox.Items.Add("   | " + string.Format("{0,7}", groupId) + " |   " + gameId + "  | " + string.Format("0x{0:X8}", crc), ok);
+                if (mode == 1)
+                {
+                    bool ok = uint.Parse(str[3]) == 1;
+                    checkedListBox.Items.Add("   | " + string.Format("{0,7}", groupId) + " |   " + "ME" + gameId + "  | " + string.Format("0x{0:X8}", crc), ok);
+                }
+                else
+                {
+                    int modded = int.Parse(str[3]);
+                    bool ok = uint.Parse(str[4]) == 1;
+                    checkedListBox.Items.Add("   | " + string.Format("{0,7}", groupId) + " |   " + "ME" + gameId + "  | " + string.Format("0x{0:X8} | ", crc) + ((modded == 1) ? "Modded" : "Vanilla"), ok);
+                }
             }
             checkedListBox.EndUpdate();
         }
@@ -151,11 +189,22 @@ namespace MassEffectModder
                 return;
 
             string[] str = lines[e.Index].Split(';');
-            if (e.NewValue == CheckState.Checked)
-                str[3] = "1";
+            if (mode == 1)
+            {
+                if (e.NewValue == CheckState.Checked)
+                    str[3] = "1";
+                else
+                    str[3] = "0";
+                lines[e.Index] = str[0] + ";" + str[1] + ";" + str[2] + ";" + str[3];
+            }
             else
-                str[3] = "0";
-            lines[e.Index] = str[0] + ";" + str[1] + ";" + str[2] + ";" + str[3];
+            {
+                if (e.NewValue == CheckState.Checked)
+                    str[4] = "1";
+                else
+                    str[4] = "0";
+                lines[e.Index] = str[0] + ";" + str[1] + ";" + str[2] + ";" + str[3] + ";" + str[4];
+            }
         }
 
         private void checkedListBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -184,22 +233,55 @@ namespace MassEffectModder
             }
             uint crc = uint.Parse(str[2], System.Globalization.NumberStyles.HexNumber);
 
-            new GameData((MeType)gameId, _configIni);
-            List<FoundTexture> foundCrcList = _textures[gameId - 1].FindAll(s => s.crc == crc);
-            if (foundCrcList.Count == 0)
+            int modded = 0;
+            if (mode == 2)
             {
-                MessageBox.Show("Texture not exist in game data");
-                return;
+                modded = int.Parse(str[3]);
             }
-            MatchedTexture nodeTexture = foundCrcList[0].list[0];
-            Package package = new Package(GameData.GamePath + nodeTexture.path);
-            Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
-            byte[] textureData = texture.getTopImageData();
-            int width = texture.getTopMipmap().width;
-            int height = texture.getTopMipmap().height;
-            textBoxResolution.Text = width + " x " + height;
-            DDSFormat format = DDSImage.convertFormat(texture.properties.getProperty("Format").valueName);
-            pictureBox.Image = DDSImage.ToBitmap(textureData, format, width, height);
+
+            if (modded == 0)
+            {
+                new GameData((MeType)gameId, _configIni);
+                List<FoundTexture> foundCrcList = _textures[gameId - 1].FindAll(s => s.crc == crc);
+                if (foundCrcList.Count == 0)
+                {
+                    MessageBox.Show("Texture not exist in game data");
+                    return;
+                }
+                MatchedTexture nodeTexture = foundCrcList[0].list[0];
+                Package package = new Package(GameData.GamePath + nodeTexture.path);
+                Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
+                byte[] textureData = texture.getTopImageData();
+                int width = texture.getTopMipmap().width;
+                int height = texture.getTopMipmap().height;
+                textBoxResolution.Text = width + " x " + height;
+                DDSFormat format = DDSImage.convertFormat(texture.properties.getProperty("Format").valueName);
+                pictureBox.Image = DDSImage.ToBitmap(textureData, format, width, height);
+            }
+            else
+            {
+                string ddsFileName;
+                if (gameId == 1)
+                    ddsFileName = ddsFilesME1.Find(s => s.Contains(string.Format("0x{0:X8}", crc)));
+                else if (gameId == 2)
+                    ddsFileName = ddsFilesME2.Find(s => s.Contains(string.Format("0x{0:X8}", crc)));
+                else
+                    ddsFileName = ddsFilesME3.Find(s => s.Contains(string.Format("0x{0:X8}", crc)));
+                if (ddsFileName != null)
+                {
+                    DDSImage image = new DDSImage(ddsFileName, true);
+                    int width = image.mipMaps[0].width;
+                    int height = image.mipMaps[0].height;
+                    textBoxResolution.Text = width + " x " + height;
+                    pictureBox.Image = new DDSImage(ddsFileName, true).mipMaps[0].bitmap;
+                }
+                else
+                {
+                    textBoxResolution.Text = "Missing DDS file!";
+                    pictureBox.Image = null;
+                }
+            }
+
         }
 
         private void pictureBox_MouseClick(object sender, MouseEventArgs e)

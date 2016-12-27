@@ -29,12 +29,12 @@
         private void InitializeComponent()
         {
             this.splitContainer = new System.Windows.Forms.SplitContainer();
+            this.textBoxResolution = new System.Windows.Forms.TextBox();
             this.checkedListBox = new System.Windows.Forms.CheckedListBox();
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.textBoxResolution = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -58,9 +58,19 @@
             // 
             this.splitContainer.Panel2.AutoScroll = true;
             this.splitContainer.Panel2.Controls.Add(this.pictureBox);
-            this.splitContainer.Size = new System.Drawing.Size(745, 567);
-            this.splitContainer.SplitterDistance = 197;
+            this.splitContainer.Size = new System.Drawing.Size(843, 567);
+            this.splitContainer.SplitterDistance = 295;
             this.splitContainer.TabIndex = 0;
+            // 
+            // textBoxResolution
+            // 
+            this.textBoxResolution.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.textBoxResolution.Location = new System.Drawing.Point(13, 535);
+            this.textBoxResolution.Name = "textBoxResolution";
+            this.textBoxResolution.ReadOnly = true;
+            this.textBoxResolution.Size = new System.Drawing.Size(167, 20);
+            this.textBoxResolution.TabIndex = 1;
+            this.textBoxResolution.TabStop = false;
             // 
             // checkedListBox
             // 
@@ -72,7 +82,7 @@
             this.checkedListBox.Location = new System.Drawing.Point(3, 0);
             this.checkedListBox.Name = "checkedListBox";
             this.checkedListBox.ScrollAlwaysVisible = true;
-            this.checkedListBox.Size = new System.Drawing.Size(191, 526);
+            this.checkedListBox.Size = new System.Drawing.Size(289, 526);
             this.checkedListBox.TabIndex = 0;
             this.checkedListBox.TabStop = false;
             this.checkedListBox.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.checkedListBox_ItemCheck);
@@ -96,7 +106,7 @@
             this.saveToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(745, 24);
+            this.menuStrip.Size = new System.Drawing.Size(843, 24);
             this.menuStrip.TabIndex = 1;
             this.menuStrip.Text = "menuStrip1";
             // 
@@ -114,21 +124,11 @@
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
-            // textBoxResolution
-            // 
-            this.textBoxResolution.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.textBoxResolution.Location = new System.Drawing.Point(13, 535);
-            this.textBoxResolution.Name = "textBoxResolution";
-            this.textBoxResolution.ReadOnly = true;
-            this.textBoxResolution.Size = new System.Drawing.Size(167, 20);
-            this.textBoxResolution.TabIndex = 1;
-            this.textBoxResolution.TabStop = false;
-            // 
             // Comparator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(745, 591);
+            this.ClientSize = new System.Drawing.Size(843, 591);
             this.Controls.Add(this.splitContainer);
             this.Controls.Add(this.menuStrip);
             this.Name = "Comparator";
