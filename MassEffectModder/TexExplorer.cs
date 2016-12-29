@@ -606,12 +606,12 @@ namespace MassEffectModder
                     gameData.lastCreateMODPath = modFile.SelectedPath;
                     _mainWindow.updateStatusLabel("MOD packing...");
                     _mainWindow.updateStatusLabel2("");
-                    richTextBoxInfo.Show();
-                    pictureBoxPreview.Hide();
                     richTextBoxInfo.Text = mipMaps.createTextureMod(modFile.SelectedPath, Path.Combine(Path.GetDirectoryName(modFile.SelectedPath), Path.GetFileName(modFile.SelectedPath)) + ".mem",
                         _textures, _mainWindow);
                     if (richTextBoxInfo.Text != "")
                     {
+                        richTextBoxInfo.Show();
+                        pictureBoxPreview.Hide();
                         MessageBox.Show("There were some errors while process.");
                     }
                 }
