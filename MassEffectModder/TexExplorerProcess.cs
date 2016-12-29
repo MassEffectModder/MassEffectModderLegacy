@@ -163,6 +163,7 @@ namespace MassEffectModder
             int count = 0;
 
             string[] files = Directory.GetFiles(inDir, "*.dds");
+            Array.Sort(files);
             using (FileStream outFs = new FileStream(outFile, FileMode.Create, FileAccess.Write))
             {
                 outFs.WriteUInt32(TexExplorer.TextureModTag);
