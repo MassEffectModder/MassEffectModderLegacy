@@ -32,28 +32,30 @@ namespace MassEffectModder
 {
     public partial class MipMaps
     {
-        public void extractTextureMod(string filenameMod, string outDir, string errors, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer)
+        public string extractTextureMod(string filenameMod, string outDir, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer)
         {
-            processTextureMod(filenameMod, -1, true, false, outDir, errors, textures, cachePackageMgr, texExplorer);
+            return processTextureMod(filenameMod, -1, true, false, outDir, textures, cachePackageMgr, texExplorer);
         }
 
-        public void previewTextureMod(string filenameMod, int previewIndex, string errors, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer)
+        public string previewTextureMod(string filenameMod, int previewIndex, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer)
         {
-            processTextureMod(filenameMod, previewIndex, false, false, "", errors, textures, cachePackageMgr, texExplorer);
+            return processTextureMod(filenameMod, previewIndex, false, false, "", textures, cachePackageMgr, texExplorer);
         }
 
-        public void replaceTextureMod(string filenameMod, string errors, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer)
+        public string replaceTextureMod(string filenameMod, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer)
         {
-            processTextureMod(filenameMod, -1, false, true, "", errors, textures, cachePackageMgr, texExplorer);
+            return processTextureMod(filenameMod, -1, false, true, "", textures, cachePackageMgr, texExplorer);
         }
 
-        public void listTextureMod(string filenameMod, string errors, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer)
+        public string listTextureMod(string filenameMod, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer)
         {
-            processTextureMod(filenameMod, -1, false, false, "", errors, textures, cachePackageMgr, texExplorer);
+            return processTextureMod(filenameMod, -1, false, false, "", textures, cachePackageMgr, texExplorer);
         }
 
-        private void processTextureMod(string filenameMod, int previewIndex, bool extract, bool replace, string outDir, string errors, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer)
+        private string processTextureMod(string filenameMod, int previewIndex, bool extract, bool replace, string outDir, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer)
         {
+            string errors = "";
+
             using (FileStream fs = new FileStream(filenameMod, FileMode.Open, FileAccess.Read))
             {
                 if (previewIndex == -1 && !extract && !replace)
@@ -66,7 +68,7 @@ namespace MassEffectModder
                 if (tag != TexExplorer.TextureModTag || version != TexExplorer.TextureModVersion)
                 {
                     errors += "File " + filenameMod + " is not a Mod!" + Environment.NewLine;
-                    return;
+                    return errors;
                 }
                 else
                 {
@@ -74,7 +76,7 @@ namespace MassEffectModder
                     if ((MeType)gameType != GameData.gameType)
                     {
                         errors += "File " + filenameMod + " is a Mod for different game!" + Environment.NewLine;
-                        return;
+                        return errors;
                     }
                 }
                 int numTextures = fs.ReadInt32();
@@ -152,13 +154,15 @@ namespace MassEffectModder
                     texExplorer.listViewTextures.EndUpdate();
                 }
             }
+            return errors;
         }
 
-        public void createTextureMod(string inDir, string outFile, string errors, List<FoundTexture> textures, MainWindow mainWindow)
+        public string createTextureMod(string inDir, string outFile, List<FoundTexture> textures, MainWindow mainWindow)
         {
-            string[] files = Directory.GetFiles(inDir, "*.dds");
-
+            string errors = "";
             int count = 0;
+
+            string[] files = Directory.GetFiles(inDir, "*.dds");
             using (FileStream outFs = new FileStream(outFile, FileMode.Create, FileAccess.Write))
             {
                 outFs.WriteUInt32(TexExplorer.TextureModTag);
@@ -270,6 +274,7 @@ namespace MassEffectModder
             }
             if (count == 0)
                 File.Delete(outFile);
+            return errors;
         }
 
         public void extractTextureToDDS(string outputFile, string packagePath, int exportID)

@@ -211,7 +211,7 @@ namespace MassEffectModder
             {
                 previewShow = true;
                 int index = Convert.ToInt32(listViewTextures.FocusedItem.Name);
-                mipMaps.previewTextureMod(listViewMods.SelectedItems[0].Name, index, null, _textures, cachePackageMgr, this);
+                mipMaps.previewTextureMod(listViewMods.SelectedItems[0].Name, index, _textures, cachePackageMgr, this);
                 _mainWindow.updateStatusLabel("Done.");
                 pictureBoxPreview.Show();
                 richTextBoxInfo.Hide();
@@ -502,7 +502,7 @@ namespace MassEffectModder
             richTextBoxInfo.Text = "";
             foreach (ListViewItem item in listViewMods.SelectedItems)
             {
-                mipMaps.replaceTextureMod(item.Name, richTextBoxInfo.Text, _textures, cachePackageMgr, this);
+                richTextBoxInfo.Text += mipMaps.replaceTextureMod(item.Name, _textures, cachePackageMgr, this);
                 _mainWindow.updateStatusLabel("MOD: " + item.Text + " applying...");
                 listViewMods.Items.Remove(item);
             }
@@ -546,8 +546,7 @@ namespace MassEffectModder
             if (listViewMods.SelectedItems.Count != 1)
                 return;
 
-            richTextBoxInfo.Text = "";
-            mipMaps.listTextureMod(listViewMods.SelectedItems[0].Name, richTextBoxInfo.Text, _textures, cachePackageMgr, this);
+            richTextBoxInfo.Text = mipMaps.listTextureMod(listViewMods.SelectedItems[0].Name, _textures, cachePackageMgr, this);
             _mainWindow.updateStatusLabel("Done.");
             _mainWindow.updateStatusLabel2("");
             if (richTextBoxInfo.Text != "")
@@ -576,7 +575,7 @@ namespace MassEffectModder
                     {
                         string outDir = Path.Combine(modFile.SelectedPath, Path.GetFileNameWithoutExtension(item.Name));
                         Directory.CreateDirectory(outDir);
-                        mipMaps.extractTextureMod(item.Name, outDir, richTextBoxInfo.Text, _textures, cachePackageMgr, this);
+                        richTextBoxInfo.Text += mipMaps.extractTextureMod(item.Name, outDir, _textures, cachePackageMgr, this);
                         _mainWindow.updateStatusLabel("MOD: " + item.Text + "extracting...");
                         _mainWindow.updateStatusLabel2("");
                     }
@@ -607,11 +606,10 @@ namespace MassEffectModder
                     gameData.lastCreateMODPath = modFile.SelectedPath;
                     _mainWindow.updateStatusLabel("MOD packing...");
                     _mainWindow.updateStatusLabel2("");
-                    richTextBoxInfo.Text = "";
                     richTextBoxInfo.Show();
                     pictureBoxPreview.Hide();
-                    mipMaps.createTextureMod(modFile.SelectedPath, Path.Combine(Path.GetDirectoryName(modFile.SelectedPath), Path.GetFileName(modFile.SelectedPath)) + ".mem",
-                        richTextBoxInfo.Text, _textures, _mainWindow);
+                    richTextBoxInfo.Text = mipMaps.createTextureMod(modFile.SelectedPath, Path.Combine(Path.GetDirectoryName(modFile.SelectedPath), Path.GetFileName(modFile.SelectedPath)) + ".mem",
+                        _textures, _mainWindow);
                     if (richTextBoxInfo.Text != "")
                     {
                         MessageBox.Show("There were some errors while process.");
@@ -648,8 +646,8 @@ namespace MassEffectModder
                     pictureBoxPreview.Hide();
                     for (int i = 0; i < listDirs.Count; i++)
                     {
-                        mipMaps.createTextureMod(listDirs[i], Path.Combine(Path.GetDirectoryName(listDirs[i]), Path.GetFileName(listDirs[i])) + ".mem",
-                            richTextBoxInfo.Text, _textures, _mainWindow);
+                        richTextBoxInfo.Text += mipMaps.createTextureMod(listDirs[i], Path.Combine(Path.GetDirectoryName(listDirs[i]), Path.GetFileName(listDirs[i])) + ".mem",
+                            _textures, _mainWindow);
                     }
                     if (richTextBoxInfo.Text != "")
                     {
