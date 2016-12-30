@@ -85,19 +85,52 @@ namespace MassEffectModder
                     string name;
                     uint crc, size, dstLen = 0, decSize = 0;
                     byte[] dst = null;
+                    byte[] src = null;
                     name = fs.ReadStringASCIINull();
                     crc = fs.ReadUInt32();
                     decSize = fs.ReadUInt32();
                     size = fs.ReadUInt32();
-                    byte[] src = fs.ReadToBuffer(size);
-                    dst = new byte[decSize];
-                    dstLen = ZlibHelper.Zlib.Decompress(src, size, dst);
 
                     if (texExplorer != null)
                     {
                         texExplorer._mainWindow.updateStatusLabel("Processing MOD " + Path.GetFileNameWithoutExtension(filenameMod) +
                             " - Texture " + (i + 1) + " of " + numTextures + " - " + name);
                     }
+
+                    if (previewIndex != -1 && i != previewIndex)
+                    {
+                        fs.Skip(size);
+                        continue;
+                    }
+
+                    if (previewIndex == -1 && !extract && !replace)
+                    {
+                        fs.Skip(size);
+                        FoundTexture foundTexture;
+                        if (GameData.gameType == MeType.ME1_TYPE)
+                            foundTexture = textures.Find(s => s.crc == crc && s.name == name);
+                        else
+                            foundTexture = textures.Find(s => s.crc == crc);
+                        if (foundTexture.crc != 0)
+                        {
+                            ListViewItem item = new ListViewItem(foundTexture.name + " (" + foundTexture.packageName + ")");
+                            item.Name = i.ToString();
+                            texExplorer.listViewTextures.Items.Add(item);
+                        }
+                        else
+                        {
+                            ListViewItem item = new ListViewItem(name + " (" + "Not matched texture: " + name + string.Format("_0x{0:X8}", crc) + ")");
+                            item.Name = i.ToString();
+                            texExplorer.listViewTextures.Items.Add(item);
+                            errors += "Not matched texture: " + name + string.Format("_0x{0:X8}", crc) + Environment.NewLine;
+                        }
+                        continue;
+                    }
+
+                    src = fs.ReadToBuffer(size);
+                    dst = new byte[decSize];
+                    dstLen = ZlibHelper.Zlib.Decompress(src, size, dst);
+
                     if (extract)
                     {
                         string filename = name + "_" + string.Format("0x{0:X8}", crc) + ".dds";
@@ -109,10 +142,6 @@ namespace MassEffectModder
                     }
                     if (previewIndex != -1)
                     {
-                        if (i != previewIndex)
-                        {
-                            continue;
-                        }
                         DDSImage image = new DDSImage(new MemoryStream(dst, 0, (int)dstLen));
                         texExplorer.pictureBoxPreview.Image = image.mipMaps[0].bitmap;
                         break;
@@ -135,12 +164,6 @@ namespace MassEffectModder
                                     continue;
                                 }
                                 replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, errors);
-                            }
-                            else
-                            {
-                                ListViewItem item = new ListViewItem(foundTexture.name + " (" + foundTexture.packageName + ")");
-                                item.Name = i.ToString();
-                                texExplorer.listViewTextures.Items.Add(item);
                             }
                         }
                         else
