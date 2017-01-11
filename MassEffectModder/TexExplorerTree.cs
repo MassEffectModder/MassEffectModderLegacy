@@ -98,7 +98,7 @@ namespace MassEffectModder
                 {
                     if (mainWindow != null)
                     {
-                        mainWindow.updateStatusLabel("Find textures in package " + (i + 1) + " of " + GameData.packageFiles.Count + " - " + Path.GetFileName(GameData.packageFiles[i]));
+                        mainWindow.updateStatusLabel("Find textures in package " + (i + 1) + " of " + GameData.packageFiles.Count + " - " + GameData.packageFiles[i]);
                     }
                     if (installer != null)
                     {
