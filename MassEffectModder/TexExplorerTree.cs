@@ -1,7 +1,7 @@
 /*
  * MassEffectModder
  *
- * Copyright (C) 2014-2016 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2014-2017 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -98,7 +98,7 @@ namespace MassEffectModder
                 {
                     if (mainWindow != null)
                     {
-                        mainWindow.updateStatusLabel("Find textures in package " + (i + 1) + " of " + GameData.packageFiles.Count);
+                        mainWindow.updateStatusLabel("Find textures in package " + (i + 1) + " of " + GameData.packageFiles.Count + " - " + Path.GetFileName(GameData.packageFiles[i]));
                     }
                     if (installer != null)
                     {

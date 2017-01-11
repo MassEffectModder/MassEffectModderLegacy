@@ -1,7 +1,7 @@
 /*
  * MassEffectModder
  *
- * Copyright (C) 2014-2016 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2014-2017 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,7 +23,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
 
 namespace MassEffectModder
 {
@@ -110,6 +109,9 @@ namespace MassEffectModder
 
         public void updateDLCsTOC()
         {
+            if (!Directory.Exists(GameData.DLCData))
+                return;
+
             List<string> DLCs = Directory.GetDirectories(GameData.DLCData).ToList();
             for (int i = 0; i < DLCs.Count; i++)
             {

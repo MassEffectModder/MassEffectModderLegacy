@@ -1,7 +1,7 @@
 /*
  * MassEffectModder
  *
- * Copyright (C) 2014-2016 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2014-2017 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -318,43 +318,52 @@ namespace MassEffectModder
                     StringComparison.OrdinalIgnoreCase) ||
                     s.EndsWith(".u", StringComparison.OrdinalIgnoreCase) ||
                     s.EndsWith(".sfm", StringComparison.OrdinalIgnoreCase)).ToList();
-                packageFiles.AddRange(Directory.GetFiles(DLCData, "*.*",
+                if (Directory.Exists(DLCData))
+                {
+                    packageFiles.AddRange(Directory.GetFiles(DLCData, "*.*",
                     SearchOption.AllDirectories).Where(s => s.EndsWith(".upk",
                         StringComparison.OrdinalIgnoreCase) ||
                         s.EndsWith(".u", StringComparison.OrdinalIgnoreCase) ||
                         s.EndsWith(".sfm", StringComparison.OrdinalIgnoreCase)));
+                }
                 packageFiles.RemoveAll(s => s.Contains("LocalShaderCache-PC-D3D-SM3.upk"));
                 packageFiles.RemoveAll(s => s.Contains("RefShaderCache-PC-D3D-SM3.upk"));
             }
             else if (gameType == MeType.ME2_TYPE)
             {
                 packageFiles = Directory.GetFiles(MainData, "*.pcc", SearchOption.AllDirectories).ToList();
-                packageFiles.AddRange(Directory.GetFiles(DLCData, "*.pcc", SearchOption.AllDirectories));
+                if (Directory.Exists(DLCData))
+                    packageFiles.AddRange(Directory.GetFiles(DLCData, "*.pcc", SearchOption.AllDirectories));
             }
             else if (gameType == MeType.ME3_TYPE)
             {
-                List<string> pccs = Directory.GetFiles(DLCData, "*.pcc", SearchOption.AllDirectories).ToList();
-                if (pccs.Count() == 0)
+                List<string> pccs = null;
+                if (Directory.Exists(DLCData))
                 {
-                    MessageBox.Show("You need exract DLC packages first");
-                    return false;
-                }
-                List<string> DLCs = Directory.GetDirectories(DLCData).ToList();
-                for (int i = 0; i < DLCs.Count; i++)
-                {
-                    List<string> sfars = Directory.GetFiles(DLCs[i], "Default.sfar", SearchOption.AllDirectories).ToList();
-                    if (sfars.Count == 0)
-                        continue;
-                    List<string> dlcs = Directory.GetFiles(DLCs[i], "Mount.dlc", SearchOption.AllDirectories).ToList();
-                    if (dlcs.Count() == 0)
+                    pccs = Directory.GetFiles(DLCData, "*.pcc", SearchOption.AllDirectories).ToList();
+                    if (pccs.Count() == 0)
                     {
-                        MessageBox.Show("Detected packed and unpacked DLCs in DLC folder. Aborting...");
+                        MessageBox.Show("You need exract DLC packages first");
                         return false;
+                    }
+                    List<string> DLCs = Directory.GetDirectories(DLCData).ToList();
+                    for (int i = 0; i < DLCs.Count; i++)
+                    {
+                        List<string> sfars = Directory.GetFiles(DLCs[i], "Default.sfar", SearchOption.AllDirectories).ToList();
+                        if (sfars.Count == 0)
+                            continue;
+                        List<string> dlcs = Directory.GetFiles(DLCs[i], "Mount.dlc", SearchOption.AllDirectories).ToList();
+                        if (dlcs.Count() == 0)
+                        {
+                            MessageBox.Show("Detected packed and unpacked DLCs in DLC folder. Aborting...");
+                            return false;
+                        }
                     }
                 }
 
                 packageFiles = Directory.GetFiles(MainData, "*.pcc", SearchOption.AllDirectories).ToList();
-                packageFiles.AddRange(pccs);
+                if (pccs != null)
+                    packageFiles.AddRange(pccs);
                 packageFiles.RemoveAll(s => s.Contains("GuidCache"));
             }
             return true;

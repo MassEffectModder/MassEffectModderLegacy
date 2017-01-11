@@ -1,7 +1,7 @@
 /*
  * MassEffectModder
  *
- * Copyright (C) 2015-2016 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2015-2017 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -28,6 +28,7 @@ using System.Security.Cryptography;
 using System.Text;
 using StreamHelpers;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace MassEffectModder
 {
@@ -482,6 +483,13 @@ namespace MassEffectModder
 
         static public void unpackAllDLC(MainWindow mainWindow, Installer installer)
         {
+            if (!Directory.Exists(GameData.DLCData))
+            {
+                if (mainWindow != null)
+                    MessageBox.Show("There is nothing to unpack.");
+                return;
+            }
+
             string tmpDlcDir = Path.Combine(GameData.GamePath, "BIOGame", "DLCTemp");
             List<string> dlcs = Directory.GetFiles(GameData.DLCData, "*.pcc", SearchOption.AllDirectories).ToList();
             if (dlcs.Count() == 0)
