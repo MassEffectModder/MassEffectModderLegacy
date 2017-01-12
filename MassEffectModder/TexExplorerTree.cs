@@ -30,7 +30,7 @@ namespace MassEffectModder
 {
     public partial class TreeScan
     {
-        public List<FoundTexture> PrepareListOfTextures(TexExplorer texEplorer, MainWindow mainWindow, Installer installer)
+        public List<FoundTexture> PrepareListOfTextures(TexExplorer texEplorer, MainWindow mainWindow, Installer installer, bool force = false)
         {
             List<FoundTexture> textures = new List<FoundTexture>();
             string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
@@ -38,6 +38,9 @@ namespace MassEffectModder
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
             string filename = Path.Combine(path, "me" + (int)GameData.gameType + "map.bin");
+            if (force && File.Exists(filename))
+                File.Delete(filename);
+
             if (File.Exists(filename))
             {
                 using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read))

@@ -1017,6 +1017,21 @@ namespace MassEffectModder
             EnableMenuOptions(true);
             _mainWindow.updateStatusLabel2("");
         }
+
+        private void generateTexturesTreeMenuItem_Click(object sender, EventArgs e)
+        {
+            EnableMenuOptions(false);
+
+            _mainWindow.updateStatusLabel("");
+            _mainWindow.updateStatusLabel("Preparing tree...");
+            _textures = treeScan.PrepareListOfTextures(this, _mainWindow, null, true);
+            _mainWindow.updateStatusLabel("Done.");
+            _mainWindow.updateStatusLabel("");
+
+            PrepareTreeList();
+
+            EnableMenuOptions(true);
+        }
     }
 
 }
