@@ -22,6 +22,7 @@
 using StreamHelpers;
 using System;
 using System.IO;
+using System.Security.Principal;
 using System.Windows.Forms;
 
 namespace MassEffectModder
@@ -130,6 +131,26 @@ namespace MassEffectModder
                     fs.WriteUInt16(flag); // write LAA flag
                 }
             }
+        }
+
+        static public bool checkWriteAccess(string path)
+        {
+            try
+            {
+                using (FileStream fs = File.Create(Path.Combine(GameData.GamePath, Path.GetRandomFileName()), 1, FileOptions.DeleteOnClose))
+                {
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        static public bool isRunAsAdministrator()
+        {
+            return (new WindowsPrincipal(WindowsIdentity.GetCurrent())).IsInRole(WindowsBuiltInRole.Administrator);
         }
     }
 }

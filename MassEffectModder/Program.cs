@@ -33,6 +33,11 @@ namespace MassEffectModder
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
+            if (Misc.isRunAsAdministrator())
+            {
+                MessageBox.Show("Warning: Tool started with Administrator rights!");
+            }
+
             string iniPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "installer.ini");
             if (File.Exists(iniPath))
             {

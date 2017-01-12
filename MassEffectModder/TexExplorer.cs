@@ -134,6 +134,13 @@ namespace MassEffectModder
                 return;
             }
 
+            if (Misc.checkWriteAccess(GameData.GamePath))
+            {
+                MessageBox.Show("Tool doesn't have write access to game data!");
+                Close();
+                return;
+            }
+
             if (_gameSelected == MeType.ME1_TYPE)
                 Misc.VerifyME1Exe(gameData);
 
