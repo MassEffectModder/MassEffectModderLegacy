@@ -66,11 +66,11 @@ namespace MassEffectModder
             this.packME3DLCPackagesLZMAToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updateME3ConfigToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modME3ExportDataToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.comparatorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.statusStrip2 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.comparatorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuGame.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.statusStrip2.SuspendLayout();
@@ -124,7 +124,7 @@ namespace MassEffectModder
             // 
             this.modME1ExportDataToolStripMenuItem.Name = "modME1ExportDataToolStripMenuItem";
             this.modME1ExportDataToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
-            this.modME1ExportDataToolStripMenuItem.Text = "Mod Export Data";
+            this.modME1ExportDataToolStripMenuItem.Text = "Load Data Mod";
             this.modME1ExportDataToolStripMenuItem.Click += new System.EventHandler(this.modME1ExportDataToolStripMenuItem_Click);
             // 
             // toolStripMenuME2
@@ -163,7 +163,7 @@ namespace MassEffectModder
             // 
             this.modME2ExportDataToolStripMenuItem.Name = "modME2ExportDataToolStripMenuItem";
             this.modME2ExportDataToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
-            this.modME2ExportDataToolStripMenuItem.Text = "Mod Export Data";
+            this.modME2ExportDataToolStripMenuItem.Text = "Load Data Mod";
             this.modME2ExportDataToolStripMenuItem.Click += new System.EventHandler(this.modME2ExportDataToolStripMenuItem_Click);
             // 
             // toolStripMenuME3
@@ -210,8 +210,15 @@ namespace MassEffectModder
             // 
             this.modME3ExportDataToolStripMenuItem1.Name = "modME3ExportDataToolStripMenuItem1";
             this.modME3ExportDataToolStripMenuItem1.Size = new System.Drawing.Size(187, 22);
-            this.modME3ExportDataToolStripMenuItem1.Text = "Mod Export Data";
+            this.modME3ExportDataToolStripMenuItem1.Text = "Load Data Mod";
             this.modME3ExportDataToolStripMenuItem1.Click += new System.EventHandler(this.modME3ExportDataToolStripMenuItem1_Click);
+            // 
+            // comparatorToolStripMenuItem
+            // 
+            this.comparatorToolStripMenuItem.Name = "comparatorToolStripMenuItem";
+            this.comparatorToolStripMenuItem.Size = new System.Drawing.Size(83, 20);
+            this.comparatorToolStripMenuItem.Text = "Comparator";
+            this.comparatorToolStripMenuItem.Click += new System.EventHandler(this.comparatorToolStripMenuItem_Click);
             // 
             // toolStripStatusLabel
             // 
@@ -241,13 +248,6 @@ namespace MassEffectModder
             // 
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
             this.toolStripStatusLabel2.Size = new System.Drawing.Size(0, 17);
-            // 
-            // comparatorToolStripMenuItem
-            // 
-            this.comparatorToolStripMenuItem.Name = "comparatorToolStripMenuItem";
-            this.comparatorToolStripMenuItem.Size = new System.Drawing.Size(83, 20);
-            this.comparatorToolStripMenuItem.Text = "Comparator";
-            this.comparatorToolStripMenuItem.Click += new System.EventHandler(this.comparatorToolStripMenuItem_Click);
             // 
             // MainWindow
             // 
