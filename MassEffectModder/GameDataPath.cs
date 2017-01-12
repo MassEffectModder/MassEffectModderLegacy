@@ -48,7 +48,10 @@ namespace MassEffectModder
             if (path != null && path != "" && !force)
             {
                 _path = path.TrimEnd(Path.DirectorySeparatorChar);
-                return;
+                if (File.Exists(GameExePath))
+                    return;
+                else
+                    _path = null;
             }
 
             string softwareKey = @"HKEY_LOCAL_MACHINE\SOFTWARE\";
@@ -70,8 +73,13 @@ namespace MassEffectModder
             if (path != null && !force)
             {
                 _path = path.TrimEnd(Path.DirectorySeparatorChar);
-                configIni.Write(key, _path, "GameDataPath");
-                return;
+                if (File.Exists(GameExePath))
+                {
+                    configIni.Write(key, _path, "GameDataPath");
+                    return;
+                }
+                else
+                    _path = null;
             }
 
             OpenFileDialog selectExe = new OpenFileDialog();
