@@ -127,6 +127,13 @@ namespace MassEffectModder
             listViewTextures.Clear();
             richTextBoxInfo.Clear();
 
+            if (!Directory.Exists(GameData.GamePath))
+            {
+                MessageBox.Show("Gama data path not set!");
+                Close();
+                return;
+            }
+
             if (_gameSelected == MeType.ME1_TYPE)
                 Misc.VerifyME1Exe(gameData);
 
@@ -144,8 +151,14 @@ namespace MassEffectModder
                 _mainWindow.updateStatusLabel("");
             }
 
-            PrepareTreeList();
+            if (_textures == null)
+            {
+                EnableMenuOptions(true);
+                Close();
+                return;
+            }
 
+            PrepareTreeList();
             EnableMenuOptions(true);
         }
 

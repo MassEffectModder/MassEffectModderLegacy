@@ -94,9 +94,12 @@ namespace MassEffectModder
             buttonSTART.Enabled = false;
 
 
-            labelStatusDetected.Text = "In progress...";
             configIni = new ConfIni();
             gameData = new GameData((MeType)gameId, configIni);
+            if (!Directory.Exists(GameData.GamePath))
+                return;
+
+            labelStatusDetected.Text = "In progress...";
             checkBoxDetected.Checked = true;
             labelStatusDetected.Text = "";
 

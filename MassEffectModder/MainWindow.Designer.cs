@@ -54,17 +54,20 @@ namespace MassEffectModder
             this.massEffect1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.repackME1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updateME1ConfigToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.changeGamePathME1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modME1ExportDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuME2 = new System.Windows.Forms.ToolStripMenuItem();
             this.massEffect2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.repackME2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updateME2ConfigToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.changeGamePathME2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modME2ExportDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuME3 = new System.Windows.Forms.ToolStripMenuItem();
             this.massEffect3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extractME3DLCPackagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.packME3DLCPackagesLZMAToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updateME3ConfigToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.changeGamePathME3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modME3ExportDataToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.comparatorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
@@ -94,6 +97,7 @@ namespace MassEffectModder
             this.massEffect1ToolStripMenuItem,
             this.repackME1ToolStripMenuItem,
             this.updateME1ConfigToolStripMenuItem,
+            this.changeGamePathME1ToolStripMenuItem,
             this.modME1ExportDataToolStripMenuItem});
             this.toolStripMenuME1.Name = "toolStripMenuME1";
             this.toolStripMenuME1.Size = new System.Drawing.Size(88, 20);
@@ -120,6 +124,13 @@ namespace MassEffectModder
             this.updateME1ConfigToolStripMenuItem.Text = "Update LOD Settings";
             this.updateME1ConfigToolStripMenuItem.Click += new System.EventHandler(this.updateME1ConfigToolStripMenuItem_Click);
             // 
+            // changeGamePathME1ToolStripMenuItem
+            // 
+            this.changeGamePathME1ToolStripMenuItem.Name = "changeGamePathME1ToolStripMenuItem";
+            this.changeGamePathME1ToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.changeGamePathME1ToolStripMenuItem.Text = "Change Game Path";
+            this.changeGamePathME1ToolStripMenuItem.Click += new System.EventHandler(this.changeGamePathME1ToolStripMenuItem_Click);
+            // 
             // modME1ExportDataToolStripMenuItem
             // 
             this.modME1ExportDataToolStripMenuItem.Name = "modME1ExportDataToolStripMenuItem";
@@ -133,6 +144,7 @@ namespace MassEffectModder
             this.massEffect2ToolStripMenuItem,
             this.repackME2ToolStripMenuItem,
             this.updateME2ConfigToolStripMenuItem,
+            this.changeGamePathME2ToolStripMenuItem,
             this.modME2ExportDataToolStripMenuItem});
             this.toolStripMenuME2.Name = "toolStripMenuME2";
             this.toolStripMenuME2.Size = new System.Drawing.Size(88, 20);
@@ -159,6 +171,13 @@ namespace MassEffectModder
             this.updateME2ConfigToolStripMenuItem.Text = "Update LOD Settings";
             this.updateME2ConfigToolStripMenuItem.Click += new System.EventHandler(this.updateME2ConfigToolStripMenuItem_Click);
             // 
+            // changeGamePathME2ToolStripMenuItem
+            // 
+            this.changeGamePathME2ToolStripMenuItem.Name = "changeGamePathME2ToolStripMenuItem";
+            this.changeGamePathME2ToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.changeGamePathME2ToolStripMenuItem.Text = "Change Game Path";
+            this.changeGamePathME2ToolStripMenuItem.Click += new System.EventHandler(this.changeGamePathME2ToolStripMenuItem_Click);
+            // 
             // modME2ExportDataToolStripMenuItem
             // 
             this.modME2ExportDataToolStripMenuItem.Name = "modME2ExportDataToolStripMenuItem";
@@ -173,6 +192,7 @@ namespace MassEffectModder
             this.extractME3DLCPackagesToolStripMenuItem,
             this.packME3DLCPackagesLZMAToolStripMenuItem,
             this.updateME3ConfigToolStripMenuItem,
+            this.changeGamePathME3ToolStripMenuItem,
             this.modME3ExportDataToolStripMenuItem1});
             this.toolStripMenuME3.Name = "toolStripMenuME3";
             this.toolStripMenuME3.Size = new System.Drawing.Size(88, 20);
@@ -205,6 +225,13 @@ namespace MassEffectModder
             this.updateME3ConfigToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
             this.updateME3ConfigToolStripMenuItem.Text = "Update LOD Settings";
             this.updateME3ConfigToolStripMenuItem.Click += new System.EventHandler(this.updateME3ConfigToolStripMenuItem_Click);
+            // 
+            // changeGamePathME3ToolStripMenuItem
+            // 
+            this.changeGamePathME3ToolStripMenuItem.Name = "changeGamePathME3ToolStripMenuItem";
+            this.changeGamePathME3ToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.changeGamePathME3ToolStripMenuItem.Text = "Change Game Path";
+            this.changeGamePathME3ToolStripMenuItem.Click += new System.EventHandler(this.changeGamePathME3ToolStripMenuItem_Click);
             // 
             // modME3ExportDataToolStripMenuItem1
             // 
@@ -297,6 +324,9 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripMenuItem modME1ExportDataToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem modME3ExportDataToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem comparatorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem changeGamePathME1ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem changeGamePathME2ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem changeGamePathME3ToolStripMenuItem;
     }
 }
 

@@ -105,6 +105,8 @@ namespace MassEffectModder
 
         public bool GetPackages(GameData gameData)
         {
+            if (!Directory.Exists(GameData.GamePath))
+                return false;
             updateStatusLabel("Finding packages in game data...");
             if (!gameData.getPackages())
             {
@@ -127,6 +129,8 @@ namespace MassEffectModder
         private void replaceExportDataMod(MeType gameType)
         {
             GameData gameData = new GameData(gameType, _configIni);
+            if (!Directory.Exists(GameData.GamePath))
+                return;
             using (OpenFileDialog modFile = new OpenFileDialog())
             {
                 modFile.Title = "Please select Mod file";
@@ -239,6 +243,8 @@ namespace MassEffectModder
         {
             enableGameDataMenu(false);
             GameData gameData = new GameData(MeType.ME3_TYPE, _configIni);
+            if (!Directory.Exists(GameData.GamePath))
+                return;
             ME3DLC.unpackAllDLC(this, null);
             updateStatusLabel("Done");
             updateStatusLabel2("");
@@ -248,6 +254,8 @@ namespace MassEffectModder
         private void PackME3DLC(string inPath, string DLCname)
         {
             GameData gameData = new GameData(MeType.ME3_TYPE, _configIni);
+            if (!Directory.Exists(GameData.GamePath))
+                return;
             string outPath = Path.Combine(Path.Combine(GameData.GamePath, "BIOGame", "DLCTemp"), DLCname, "CookedPCConsole", "Default.sfar");
             ME3DLC dlc = new ME3DLC(this);
             dlc.fullRePack(inPath, outPath, DLCname);
@@ -256,6 +264,8 @@ namespace MassEffectModder
         private void PackAllME3DLC()
         {
             GameData gameData = new GameData(MeType.ME3_TYPE, _configIni);
+            if (!Directory.Exists(GameData.GamePath))
+                return;
             List<string> dlcs = Directory.GetFiles(GameData.DLCData, "Mount.dlc", SearchOption.AllDirectories).ToList();
             if (dlcs.Count() == 0)
             {
@@ -318,6 +328,27 @@ namespace MassEffectModder
             comparator.MdiParent = this;
             comparator.WindowState = FormWindowState.Maximized;
             comparator.Show();
+        }
+
+        private void changeGamePathME1ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            enableGameDataMenu(false);
+            GameData gameData = new GameData(MeType.ME1_TYPE, _configIni, true);
+            enableGameDataMenu(true);
+        }
+
+        private void changeGamePathME2ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            enableGameDataMenu(false);
+            GameData gameData = new GameData(MeType.ME2_TYPE, _configIni, true);
+            enableGameDataMenu(true);
+        }
+
+        private void changeGamePathME3ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            enableGameDataMenu(false);
+            GameData gameData = new GameData(MeType.ME3_TYPE, _configIni, true);
+            enableGameDataMenu(true);
         }
     }
 }

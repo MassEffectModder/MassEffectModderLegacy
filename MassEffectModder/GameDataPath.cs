@@ -38,14 +38,14 @@ namespace MassEffectModder
 
         public bool DLCDataCacheDone = false;
 
-        public GameData(MeType type, ConfIni configIni)
+        public GameData(MeType type, ConfIni configIni, bool force = false)
         {
             gameType = type;
             _configIni = configIni;
 
             string key = "ME" + (int)gameType;
             string path = configIni.Read(key, "GameDataPath");
-            if (path != null && path != "")
+            if (path != null && path != "" && !force)
             {
                 _path = path.TrimEnd(Path.DirectorySeparatorChar);
                 return;
@@ -67,7 +67,7 @@ namespace MassEffectModder
             path = (string)Registry.GetValue(softwareKey + gameKey, entry, null);
             if (path == null)
                 path = (string)Registry.GetValue(softwareKey + key64 + gameKey, entry, null);
-            if (path != null)
+            if (path != null && !force)
             {
                 _path = path.TrimEnd(Path.DirectorySeparatorChar);
                 configIni.Write(key, _path, "GameDataPath");
@@ -76,6 +76,8 @@ namespace MassEffectModder
 
             OpenFileDialog selectExe = new OpenFileDialog();
             selectExe.Title = "Please select the Mass Effect " + (int)gameType + " executable file";
+            if (_path != null)
+                selectExe.FileName = _path;
             switch (gameType)
             {
                 case MeType.ME1_TYPE:
