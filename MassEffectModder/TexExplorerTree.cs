@@ -43,7 +43,7 @@ namespace MassEffectModder
 
             if (File.Exists(filename))
             {
-                using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
+                using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.ReadWrite))
                 {
                     uint tag = fs.ReadUInt32();
                     uint version = fs.ReadUInt32();
@@ -51,7 +51,7 @@ namespace MassEffectModder
                     {
                         if (mainWindow != null)
                         {
-                            MessageBox.Show("Abort! Wrong " + filename + " file!");
+                            MessageBox.Show("Wrong " + filename + " file!");
                             mainWindow.updateStatusLabel("");
                             mainWindow.updateStatusLabel2("");
                             texEplorer.Close();
@@ -76,6 +76,25 @@ namespace MassEffectModder
                             texture.list.Add(matched);
                         }
                         textures.Add(texture);
+                    }
+                    if (fs.Position < new FileInfo(filename).Length)
+                    {
+                        List<string> packages = new List<string>();
+                        int numPackages = fs.ReadInt32();
+                        for (int i = 0; i < numPackages; i++)
+                        {
+                            string pkgPath = fs.ReadStringASCIINull();
+                            packages.Add(Path.Combine(GameData.GamePath, pkgPath));
+                        }
+                    }
+                    else
+                    {
+                        fs.SeekEnd();
+                        fs.WriteInt32(GameData.packageFiles.Count);
+                        for (int i = 0; i < GameData.packageFiles.Count; i++)
+                        {
+                            fs.WriteStringASCIINull(GameData.RelativeGameData(GameData.packageFiles[i]));
+                        }
                     }
                 }
             }
@@ -126,6 +145,11 @@ namespace MassEffectModder
                             fs.WriteInt32(textures[i].list[k].exportID);
                             fs.WriteStringASCIINull(textures[i].list[k].path);
                         }
+                    }
+                    fs.WriteInt32(GameData.packageFiles.Count);
+                    for (int i = 0; i < GameData.packageFiles.Count; i++)
+                    {
+                        fs.WriteStringASCIINull(GameData.RelativeGameData(GameData.packageFiles[i]));
                     }
                 }
                 if (mainWindow != null)
