@@ -525,7 +525,7 @@ namespace MassEffectModder
             long diskUsage = 0;
             foreach (ListViewItem item in listViewMods.SelectedItems)
             {
-                diskUsage += Misc.getDirectorySize(item.Name);
+                diskUsage += Misc.getDirectorySize(Path.GetDirectoryName(item.Name));
             }
             if (diskUsage * 2 < diskFreeSpace)
             {
