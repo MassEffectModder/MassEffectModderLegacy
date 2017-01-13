@@ -97,7 +97,9 @@ namespace MassEffectModder
             string path = gameData.EngineConfigIniPath;
             bool exist = File.Exists(path);
             if (!exist)
-                return;
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+            }
             ConfIni engineConf = new ConfIni(path);
             LODSettings.updateLOD(MeType.ME1_TYPE, engineConf);
             enableGameDataMenu(true);
@@ -106,7 +108,10 @@ namespace MassEffectModder
         public bool GetPackages(GameData gameData)
         {
             if (!Directory.Exists(GameData.GamePath))
+            {
+                MessageBox.Show("Wrong game path!");
                 return false;
+            }
             updateStatusLabel("Finding packages in game data...");
             if (!gameData.getPackages())
             {
@@ -130,7 +135,10 @@ namespace MassEffectModder
         {
             GameData gameData = new GameData(gameType, _configIni);
             if (!Directory.Exists(GameData.GamePath))
+            {
+                MessageBox.Show("Wrong game path!");
                 return;
+            }
             using (OpenFileDialog modFile = new OpenFileDialog())
             {
                 modFile.Title = "Please select Mod file";
@@ -186,6 +194,11 @@ namespace MassEffectModder
         public void repackME12(MeType gametype)
         {
             GameData gameData = new GameData(gametype, _configIni);
+            if (!Directory.Exists(GameData.GamePath))
+            {
+                MessageBox.Show("Wrong game path!");
+                return;
+            }
             GetPackages(gameData);
             for (int i = 0; i < GameData.packageFiles.Count; i++)
             {
@@ -226,7 +239,9 @@ namespace MassEffectModder
             string path = gameData.EngineConfigIniPath;
             bool exist = File.Exists(path);
             if (!exist)
-                return;
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+            }
             ConfIni engineConf = new ConfIni(path);
             LODSettings.updateLOD(MeType.ME2_TYPE, engineConf);
             enableGameDataMenu(true);
@@ -244,7 +259,10 @@ namespace MassEffectModder
             enableGameDataMenu(false);
             GameData gameData = new GameData(MeType.ME3_TYPE, _configIni);
             if (!Directory.Exists(GameData.GamePath))
+            {
+                MessageBox.Show("Wrong game path!");
                 return;
+            }
             ME3DLC.unpackAllDLC(this, null);
             updateStatusLabel("Done");
             updateStatusLabel2("");
@@ -255,7 +273,10 @@ namespace MassEffectModder
         {
             GameData gameData = new GameData(MeType.ME3_TYPE, _configIni);
             if (!Directory.Exists(GameData.GamePath))
+            {
+                MessageBox.Show("Wrong game path!");
                 return;
+            }
             string outPath = Path.Combine(Path.Combine(GameData.GamePath, "BIOGame", "DLCTemp"), DLCname, "CookedPCConsole", "Default.sfar");
             ME3DLC dlc = new ME3DLC(this);
             dlc.fullRePack(inPath, outPath, DLCname);
@@ -265,7 +286,10 @@ namespace MassEffectModder
         {
             GameData gameData = new GameData(MeType.ME3_TYPE, _configIni);
             if (!Directory.Exists(GameData.GamePath))
+            {
+                MessageBox.Show("Wrong game path!");
                 return;
+            }
             List<string> dlcs = Directory.GetFiles(GameData.DLCData, "Mount.dlc", SearchOption.AllDirectories).ToList();
             if (dlcs.Count() == 0)
             {
@@ -307,7 +331,9 @@ namespace MassEffectModder
             string path = gameData.EngineConfigIniPath;
             bool exist = File.Exists(path);
             if (!exist)
-                return;
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+            }
             ConfIni engineConf = new ConfIni(path);
             LODSettings.updateLOD(MeType.ME3_TYPE, engineConf);
             enableGameDataMenu(true);

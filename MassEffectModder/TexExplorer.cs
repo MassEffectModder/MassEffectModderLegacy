@@ -129,12 +129,12 @@ namespace MassEffectModder
 
             if (!Directory.Exists(GameData.GamePath))
             {
-                MessageBox.Show("Gama data path not set!");
+                MessageBox.Show("Wrong game path!");
                 Close();
                 return;
             }
 
-            if (Misc.checkWriteAccess(GameData.GamePath))
+            if (!Misc.checkWriteAccess(GameData.GamePath))
             {
                 MessageBox.Show("Tool doesn't have write access to game data!");
                 Close();
@@ -520,25 +520,39 @@ namespace MassEffectModder
 
             EnableMenuOptions(false);
             richTextBoxInfo.Text = "";
+
+            long diskFreeSpace = Misc.getDiskFreeSpace(GameData.GamePath);
+            long diskUsage = 0;
             foreach (ListViewItem item in listViewMods.SelectedItems)
             {
-                richTextBoxInfo.Text += mipMaps.replaceTextureMod(item.Name, _textures, cachePackageMgr, this);
-                _mainWindow.updateStatusLabel("MOD: " + item.Text + " applying...");
-                listViewMods.Items.Remove(item);
+                diskUsage += Misc.getDirectorySize(item.Name);
             }
-            _mainWindow.updateStatusLabel("");
-            cachePackageMgr.CloseAllWithSave();
-            EnableMenuOptions(true);
-            _mainWindow.updateStatusLabel("MODs applied.");
-            _mainWindow.updateStatusLabel2("");
-            if (listViewMods.Items.Count == 0)
-                clearMODsView();
-            if (richTextBoxInfo.Text != "")
+            if (diskUsage * 2 < diskFreeSpace)
             {
-                richTextBoxInfo.Show();
-                pictureBoxPreview.Hide();
-                MessageBox.Show("There were some errors while process.");
+                foreach (ListViewItem item in listViewMods.SelectedItems)
+                {
+                    richTextBoxInfo.Text += mipMaps.replaceTextureMod(item.Name, _textures, cachePackageMgr, this);
+                    _mainWindow.updateStatusLabel("MOD: " + item.Text + " applying...");
+                    listViewMods.Items.Remove(item);
+                }
+                _mainWindow.updateStatusLabel("");
+                cachePackageMgr.CloseAllWithSave();
+                _mainWindow.updateStatusLabel("MODs applied.");
+                _mainWindow.updateStatusLabel2("");
+                if (listViewMods.Items.Count == 0)
+                    clearMODsView();
+                if (richTextBoxInfo.Text != "")
+                {
+                    richTextBoxInfo.Show();
+                    pictureBoxPreview.Hide();
+                    MessageBox.Show("There were some errors while process.");
+                }
             }
+            else
+            {
+                MessageBox.Show("You need about " + Misc.getBytesFormat(diskUsage * 2) + " free disk space");
+            }
+            EnableMenuOptions(true);
         }
 
         private void deleteModToolStripMenuItem_Click(object sender, EventArgs e)
@@ -590,22 +604,36 @@ namespace MassEffectModder
                 if (modFile.ShowDialog() == DialogResult.OK)
                 {
                     gameData.lastExtractMODPath = modFile.SelectedPath;
-                    richTextBoxInfo.Text = "";
+                    long diskFreeSpace = Misc.getDiskFreeSpace(modFile.SelectedPath);
+                    long diskUsage = 0;
                     foreach (ListViewItem item in listViewMods.SelectedItems)
                     {
                         string outDir = Path.Combine(modFile.SelectedPath, Path.GetFileNameWithoutExtension(item.Name));
-                        Directory.CreateDirectory(outDir);
-                        richTextBoxInfo.Text += mipMaps.extractTextureMod(item.Name, outDir, _textures, cachePackageMgr, this);
-                        _mainWindow.updateStatusLabel("MOD: " + item.Text + "extracting...");
-                        _mainWindow.updateStatusLabel2("");
+                        diskUsage += Misc.getDirectorySize(outDir);
                     }
-                    _mainWindow.updateStatusLabel("MODs extracted.");
-                    _mainWindow.updateStatusLabel2("");
-                    if (richTextBoxInfo.Text != "")
+                    if (diskUsage * 2.1 < diskFreeSpace)
                     {
-                        richTextBoxInfo.Show();
-                        pictureBoxPreview.Hide();
-                        MessageBox.Show("There were some errors while process.");
+                        richTextBoxInfo.Text = "";
+                        foreach (ListViewItem item in listViewMods.SelectedItems)
+                        {
+                            string outDir = Path.Combine(modFile.SelectedPath, Path.GetFileNameWithoutExtension(item.Name));
+                            Directory.CreateDirectory(outDir);
+                            richTextBoxInfo.Text += mipMaps.extractTextureMod(item.Name, outDir, _textures, cachePackageMgr, this);
+                            _mainWindow.updateStatusLabel("MOD: " + item.Text + "extracting...");
+                            _mainWindow.updateStatusLabel2("");
+                        }
+                        _mainWindow.updateStatusLabel("MODs extracted.");
+                        _mainWindow.updateStatusLabel2("");
+                        if (richTextBoxInfo.Text != "")
+                        {
+                            richTextBoxInfo.Show();
+                            pictureBoxPreview.Hide();
+                            MessageBox.Show("There were some errors while process.");
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("You need about " + Misc.getBytesFormat((long)(diskUsage * 2.1)) + " free disk space");
                     }
                 }
             }
@@ -624,15 +652,24 @@ namespace MassEffectModder
                 if (modFile.ShowDialog() == DialogResult.OK)
                 {
                     gameData.lastCreateMODPath = modFile.SelectedPath;
-                    _mainWindow.updateStatusLabel("MOD packing...");
-                    _mainWindow.updateStatusLabel2("");
-                    richTextBoxInfo.Text = mipMaps.createTextureMod(modFile.SelectedPath, Path.Combine(Path.GetDirectoryName(modFile.SelectedPath), Path.GetFileName(modFile.SelectedPath)) + ".mem",
-                        _textures, _mainWindow);
-                    if (richTextBoxInfo.Text != "")
+                    long diskUsage = Misc.getDirectorySize(modFile.SelectedPath);
+                    long diskFreeSpace = Misc.getDiskFreeSpace(modFile.SelectedPath);
+                    if (diskUsage / 1.9 < diskFreeSpace)
                     {
-                        richTextBoxInfo.Show();
-                        pictureBoxPreview.Hide();
-                        MessageBox.Show("There were some errors while process.");
+                        _mainWindow.updateStatusLabel("MOD packing...");
+                        _mainWindow.updateStatusLabel2("");
+                        richTextBoxInfo.Text = mipMaps.createTextureMod(modFile.SelectedPath, Path.Combine(Path.GetDirectoryName(modFile.SelectedPath), Path.GetFileName(modFile.SelectedPath)) + ".mem",
+                            _textures, _mainWindow);
+                        if (richTextBoxInfo.Text != "")
+                        {
+                            richTextBoxInfo.Show();
+                            pictureBoxPreview.Hide();
+                            MessageBox.Show("There were some errors while process.");
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("You need about " + Misc.getBytesFormat((long)(diskUsage / 1.9)) + " free disk space");
                     }
                 }
             }
@@ -655,25 +692,40 @@ namespace MassEffectModder
                     List<string> listDirs = Directory.GetDirectories(modFile.SelectedPath).ToList();
                     if (listDirs.Count == 0)
                     {
+                        MessageBox.Show("Empty subdirectory!");
                         EnableMenuOptions(true);
                         return;
                     }
 
-                    _mainWindow.updateStatusLabel("MODs packing...");
-                    _mainWindow.updateStatusLabel2("");
-                    richTextBoxInfo.Text = "";
-                    richTextBoxInfo.Show();
-                    pictureBoxPreview.Hide();
+                    long diskFreeSpace = Misc.getDiskFreeSpace(modFile.SelectedPath);
+                    long diskUsage = 0;
                     for (int i = 0; i < listDirs.Count; i++)
                     {
-                        richTextBoxInfo.Text += mipMaps.createTextureMod(listDirs[i], Path.Combine(Path.GetDirectoryName(listDirs[i]), Path.GetFileName(listDirs[i])) + ".mem",
-                            _textures, _mainWindow);
+                        diskUsage += Misc.getDirectorySize(listDirs[i]);
                     }
-                    if (richTextBoxInfo.Text != "")
+
+                    if (diskUsage / 1.9 < diskFreeSpace)
                     {
-                        MessageBox.Show("There were some errors while process.");
+                        _mainWindow.updateStatusLabel("MODs packing...");
+                        _mainWindow.updateStatusLabel2("");
+                        richTextBoxInfo.Text = "";
+                        richTextBoxInfo.Show();
+                        pictureBoxPreview.Hide();
+                        for (int i = 0; i < listDirs.Count; i++)
+                        {
+                            richTextBoxInfo.Text += mipMaps.createTextureMod(listDirs[i], Path.Combine(Path.GetDirectoryName(listDirs[i]), Path.GetFileName(listDirs[i])) + ".mem",
+                                _textures, _mainWindow);
+                        }
+                        if (richTextBoxInfo.Text != "")
+                        {
+                            MessageBox.Show("There were some errors while process.");
+                        }
+                        _mainWindow.updateStatusLabel("MODs packed.");
                     }
-                    _mainWindow.updateStatusLabel("MODs packed.");
+                    else
+                    {
+                        MessageBox.Show("You need about " + Misc.getBytesFormat((long)(diskUsage / 1.9)) + " free disk space");
+                    }
                 }
             }
 
@@ -715,192 +767,6 @@ namespace MassEffectModder
             {
                 name = name.Split('.')[0]; // in case filename
                 searchTexture(name, 0);
-            }
-        }
-
-        private void dumpAllTexturesInfoToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            using (SaveFileDialog logFile = new SaveFileDialog())
-            {
-                logFile.Title = "Please select output CSV file";
-                logFile.Filter = "CSV file | *.csv";
-                if (logFile.ShowDialog() != DialogResult.OK)
-                    return;
-                string filename = logFile.FileName;
-                if (File.Exists(filename))
-                    File.Delete(filename);
-
-                EnableMenuOptions(false);
-                _mainWindow.updateStatusLabel("Dump textures information...");
-                _mainWindow.updateStatusLabel2("");
-
-                using (FileStream fs = new FileStream(filename, FileMode.CreateNew, FileAccess.Write))
-                {
-                    fs.WriteStringASCII("Package;Name;CRC;Resolution;Format;LODGroup;NumMipmaps;" +
-                        "Mipmap1Resolution;Mipmap2Resolution;Mipmap3Resolution;Mipmap4Resolution;" +
-                        "Mipmap5Resolution;Mipmap6Resolution;Mipmap7Resolution;Mipmap8Resolution;" +
-                        "Mipmap9Resolution;Mipmap10Resolution;Mipmap11Resolution;Mipmap12Resolution;Mipmap13Resolution;\n");
-                    for (int i = 0; i < nodeList.Count; i++)
-                    {
-                        PackageTreeNode node = nodeList[i];
-                        _mainWindow.updateStatusLabel("Dump textures information from package: " + (i + 1) + " of " + nodeList.Count);
-                        _mainWindow.updateStatusLabel2("");
-                        for (int index = 0; index < node.textures.Count; index++)
-                        {
-                            string text = "";
-                            MatchedTexture nodeTexture = node.textures[index].list[0];
-                            Package package = new Package(GameData.GamePath + nodeTexture.path);
-                            Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
-                            text += node.Text + ";";
-                            text += package.exportsTable[nodeTexture.exportID].objectName + ";";
-                            text += string.Format("0x{0:X8}", node.textures[index].crc) + ";";
-                            text += texture.properties.getProperty("SizeX").valueInt + "x" + texture.properties.getProperty("SizeY").valueInt + ";";
-                            text += texture.properties.getProperty("Format").valueName + ";";
-                            if (texture.properties.exists("LODGroup"))
-                                text += texture.properties.getProperty("LODGroup").valueName + ";";
-                            else
-                                text += "None;";
-                            text += texture.mipMapsList.Count + ";";
-                            for (int l = 0; l < 13; l++)
-                            {
-                                if (l >= texture.mipMapsList.Count)
-                                    text += ";";
-                                else
-                                {
-                                    text += texture.mipMapsList[l].width + "x" + texture.mipMapsList[l].height + ";";
-                                }
-                            }
-                            text += "\n";
-                            package.Dispose();
-                            fs.WriteStringASCII(text);
-                        }
-                    }
-                }
-                _mainWindow.updateStatusLabel("Dump textures information finished.");
-                _mainWindow.updateStatusLabel2("");
-                EnableMenuOptions(true);
-            }
-        }
-
-        private void dumpAllTexturesMipmapsInfoToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            using (SaveFileDialog logFile = new SaveFileDialog())
-            {
-                logFile.Title = "Please select output CSV file";
-                logFile.Filter = "CSV file | *.csv";
-                if (logFile.ShowDialog() != DialogResult.OK)
-                    return;
-                string filename = logFile.FileName;
-                if (File.Exists(filename))
-                    File.Delete(filename);
-
-                EnableMenuOptions(false);
-                _mainWindow.updateStatusLabel("Dump textures information...");
-                _mainWindow.updateStatusLabel2("");
-
-                GameData.packageFiles.Sort();
-                if (_gameSelected == MeType.ME1_TYPE)
-                    treeScan.sortPackagesME1(_mainWindow, null);
-
-                using (FileStream fs = new FileStream(filename, FileMode.CreateNew, FileAccess.Write))
-                {
-                    fs.WriteStringASCII("Package;Name;" +
-                        "Mipmap1Resolution;Mipmap1CRC;Mipmap2Resolution;Mipmap2CRC;Mipmap3Resolution;Mipmap3CRC;" +
-                        "Mipmap4Resolution;Mipmap4CRC;Mipmap5Resolution;Mipmap5CRC;Mipmap6Resolution;Mipmap6CRC;" +
-                        "Mipmap7Resolution;Mipmap7CRC;Mipmap8Resolution;Mipmap8CRC;Mipmap9Resolution;Mipmap9CRC;" +
-                        "Mipmap10Resolution;Mipmap10CRC;Mipmap11Resolution;Mipmap11CRC;Mipmap12Resolution;Mipmap12CRC;" +
-                        "Mipmap13Resolution;Mipmap13CRC\n");
-                    for (int l = 0; l < GameData.packageFiles.Count; l++)
-                    {
-                        _mainWindow.updateStatusLabel("Dump textures information from package " + (l + 1) + " of " + GameData.packageFiles.Count);
-                        _mainWindow.updateStatusLabel2("");
-                        Package package = new Package(GameData.packageFiles[l]);
-                        for (int i = 0; i < package.exportsTable.Count; i++)
-                        {
-                            int id = package.getClassNameId(package.exportsTable[i].classId);
-                            if (id == package.nameIdTexture2D ||
-                                id == package.nameIdLightMapTexture2D ||
-                                id == package.nameIdShadowMapTexture2D ||
-                                id == package.nameIdTextureFlipBook)
-                            {
-                                Texture texture = new Texture(package, i, package.getExportData(i));
-                                if (!texture.hasImageData())
-                                    continue;
-
-                                string text = "";
-                                text += Path.GetFileName(GameData.packageFiles[l]) + ";";
-                                text += package.exportsTable[i].objectName + ";";
-                                for (int m = 0; m < 13; m++)
-                                {
-                                    if (m >= texture.mipMapsList.Count)
-                                        text += ";;";
-                                    else
-                                    {
-                                        text += texture.mipMapsList[m].width + "x" + texture.mipMapsList[m].height + ";";
-                                        text += string.Format("0x{0:X8}", texture.getCrcMipmap(texture.mipMapsList[m])) + ";";
-                                    }
-                                }
-                                fs.WriteStringASCII(text + "\n");
-                            }
-                        }
-                        package.Dispose();
-                    }
-                }
-                _mainWindow.updateStatusLabel("Dump textures information finished.");
-                _mainWindow.updateStatusLabel2("");
-                EnableMenuOptions(true);
-            }
-        }
-
-        private void dumpAllTexturesInfoTXTToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            using (SaveFileDialog logFile = new SaveFileDialog())
-            {
-                logFile.Title = "Please select output TXT file";
-                logFile.Filter = "TXT file | *.txt";
-                if (logFile.ShowDialog() != DialogResult.OK)
-                    return;
-                string filename = logFile.FileName;
-                if (File.Exists(filename))
-                    File.Delete(filename);
-
-                EnableMenuOptions(false);
-                _mainWindow.updateStatusLabel("Dump textures information...");
-                _mainWindow.updateStatusLabel2("");
-
-                using (FileStream fs = new FileStream(filename, FileMode.CreateNew, FileAccess.Write))
-                {
-                    for (int i = 0; i < nodeList.Count; i++)
-                    {
-                        PackageTreeNode node = nodeList[i];
-                        _mainWindow.updateStatusLabel("Dump textures information from package: " + (i + 1) + " of " + nodeList.Count);
-                        _mainWindow.updateStatusLabel2("");
-                        fs.WriteStringASCII("--- Package: " + node.Text + " ---\n");
-                        for (int index = 0; index < node.textures.Count; index++)
-                        {
-                            string text = "";
-                            MatchedTexture nodeTexture = node.textures[index].list[0];
-                            Package package = new Package(GameData.GamePath + nodeTexture.path);
-                            Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
-                            text += "  Texture name:  " + package.exportsTable[nodeTexture.exportID].objectName + "\n";
-                            text += "  Texture original CRC:  " + string.Format("0x{0:X8}", node.textures[index].crc) + "\n";
-                            text += "  Texture properties:\n";
-                            for (int l = 0; l < texture.properties.texPropertyList.Count; l++)
-                            {
-                                text += "  " + texture.properties.getDisplayString(l);
-                            }
-                            for (int l = 0; l < texture.mipMapsList.Count; l++)
-                            {
-                                text += "  MipMap: " + l + ", " + texture.mipMapsList[l].width + "x" + texture.mipMapsList[l].height + "\n";
-                            }
-                            package.Dispose();
-                            fs.WriteStringASCII(text);
-                        }
-                    }
-                }
-                _mainWindow.updateStatusLabel("Dump textures information finished.");
-                _mainWindow.updateStatusLabel2("");
-                EnableMenuOptions(true);
             }
         }
 
@@ -990,52 +856,6 @@ namespace MassEffectModder
                 }
             }
             EnableMenuOptions(true);
-        }
-
-        private void extractAllMappedTexturesToDDSFilesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            EnableMenuOptions(false);
-
-            using (FolderBrowserDialog extractDir = new FolderBrowserDialog())
-            {
-                if (extractDir.ShowDialog() == DialogResult.OK)
-                {
-                    for (int i = 0; i < _textures.Count; i++)
-                    {
-                        _mainWindow.updateStatusLabel("Extracting textures...");
-                        _mainWindow.updateStatusLabel2("Texture: " + (i + 1) + " of " + _textures.Count + " - " + _textures[i].name);
-                        mipMaps.extractTextureToDDS(Path.Combine(extractDir.SelectedPath, _textures[i].name + string.Format("_0x{0:X8}", _textures[i].crc) + ".dds"),
-                            GameData.GamePath + _textures[i].list[0].path, _textures[i].list[0].exportID);
-                    }
-                    _mainWindow.updateStatusLabel("Textures extracted.");
-                }
-            }
-
-            EnableMenuOptions(true);
-            _mainWindow.updateStatusLabel2("");
-        }
-
-        private void extractAllMappedTexturesToPNGFilesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            EnableMenuOptions(false);
-
-            using (FolderBrowserDialog extractDir = new FolderBrowserDialog())
-            {
-                if (extractDir.ShowDialog() == DialogResult.OK)
-                {
-                    for (int i = 0; i < _textures.Count; i++)
-                    {
-                        _mainWindow.updateStatusLabel("Extracting textures...");
-                        _mainWindow.updateStatusLabel2("Texture: " + (i + 1) + " of " + _textures.Count + " - " + _textures[i].name);
-                        mipMaps.extractTextureToPng(Path.Combine(extractDir.SelectedPath, _textures[i].name + string.Format("_0x{0:X8}", _textures[i].crc) + ".png"),
-                            GameData.GamePath + _textures[i].list[0].path, _textures[i].list[0].exportID);
-                    }
-                    _mainWindow.updateStatusLabel("Textures extracted.");
-                }
-            }
-
-            EnableMenuOptions(true);
-            _mainWindow.updateStatusLabel2("");
         }
 
         private void generateTexturesTreeMenuItem_Click(object sender, EventArgs e)

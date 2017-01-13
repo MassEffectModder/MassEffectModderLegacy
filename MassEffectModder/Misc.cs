@@ -22,6 +22,7 @@
 using StreamHelpers;
 using System;
 using System.IO;
+using System.Linq;
 using System.Security.Principal;
 using System.Windows.Forms;
 
@@ -151,6 +152,35 @@ namespace MassEffectModder
         static public bool isRunAsAdministrator()
         {
             return (new WindowsPrincipal(WindowsIdentity.GetCurrent())).IsInRole(WindowsBuiltInRole.Administrator);
+        }
+
+        static public long getDiskFreeSpace(string path)
+        {
+            string drive = path.Substring(0, 3);
+            foreach (DriveInfo drv in DriveInfo.GetDrives())
+            {
+                if (drv.IsReady && drv.Name == drive)
+                    return drv.TotalFreeSpace;
+            }
+
+            return -1;
+        }
+
+        public static long getDirectorySize(string dir)
+        {
+            return new DirectoryInfo(dir).GetFiles("*", SearchOption.AllDirectories).Sum(file => file.Length);
+        }
+
+        public static string getBytesFormat(long size)
+        {
+            if (size / 1024 == 0)
+                return string.Format("{0:0.00} bytes", size);
+            else if (size / 1024 / 1024 == 0)
+                return string.Format("{0:0.00} KB", size / 1024.0);
+            else if (size / 1024 / 1024 / 1024 == 0)
+                return string.Format("{0:0.00} MB", size / 1024 / 1024.0);
+            else
+                return string.Format("{0:0.00} GB", size / 1024/ 1024 / 1024.0);
         }
     }
 }
