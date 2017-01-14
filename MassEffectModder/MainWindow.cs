@@ -1,7 +1,7 @@
 /*
  * MassEffectModder
  *
- * Copyright (C) 2014-2016 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2014-2017 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -47,7 +47,6 @@ namespace MassEffectModder
             toolStripMenuME1.Enabled = enable;
             toolStripMenuME2.Enabled = enable;
             toolStripMenuME3.Enabled = enable;
-            comparatorToolStripMenuItem.Enabled = enable;
         }
 
         public void updateStatusLabel(string text)
@@ -346,16 +345,6 @@ namespace MassEffectModder
             enableGameDataMenu(true);
         }
 
-        private void comparatorToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            enableGameDataMenu(false);
-            Comparator comparator = new Comparator(this);
-            comparator.Text = "Texture Comparator";
-            comparator.MdiParent = this;
-            comparator.WindowState = FormWindowState.Maximized;
-            comparator.Show();
-        }
-
         private void changeGamePathME1ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             enableGameDataMenu(false);
@@ -374,6 +363,60 @@ namespace MassEffectModder
         {
             enableGameDataMenu(false);
             GameData gameData = new GameData(MeType.ME3_TYPE, _configIni, true);
+            enableGameDataMenu(true);
+        }
+
+        private void removeLODSetME1MenuItem_Click(object sender, EventArgs e)
+        {
+            enableGameDataMenu(false);
+            GameData gameData = new GameData(MeType.ME1_TYPE, _configIni);
+            string path = gameData.EngineConfigIniPath;
+            bool exist = File.Exists(path);
+            if (exist)
+            {
+                ConfIni engineConf = new ConfIni(path);
+                LODSettings.removeLOD(MeType.ME1_TYPE, engineConf);
+            }
+            else
+            {
+                MessageBox.Show("Game configuration: " + path + " not exist, nothing done.");
+            }
+            enableGameDataMenu(true);
+        }
+
+        private void removeLODSetME2MenuItem_Click(object sender, EventArgs e)
+        {
+            enableGameDataMenu(false);
+            GameData gameData = new GameData(MeType.ME2_TYPE, _configIni);
+            string path = gameData.EngineConfigIniPath;
+            bool exist = File.Exists(path);
+            if (exist)
+            {
+                ConfIni engineConf = new ConfIni(path);
+                LODSettings.removeLOD(MeType.ME2_TYPE, engineConf);
+            }
+            else
+            {
+                MessageBox.Show("Game configuration: " + path + " not exist, nothing done.");
+            }
+            enableGameDataMenu(true);
+        }
+
+        private void removeLODSetME3MenuItem_Click(object sender, EventArgs e)
+        {
+            enableGameDataMenu(false);
+            GameData gameData = new GameData(MeType.ME2_TYPE, _configIni);
+            string path = gameData.EngineConfigIniPath;
+            bool exist = File.Exists(path);
+            if (exist)
+            {
+                ConfIni engineConf = new ConfIni(path);
+                LODSettings.removeLOD(MeType.ME3_TYPE, engineConf);
+            }
+            else
+            {
+                MessageBox.Show("Game configuration: " + path + " not exist, nothing done.");
+            }
             enableGameDataMenu(true);
         }
     }

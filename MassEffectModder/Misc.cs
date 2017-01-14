@@ -1,7 +1,7 @@
 /*
  * MassEffectModder
  *
- * Copyright (C) 2014-2016 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2014-2017 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -109,7 +109,88 @@ namespace MassEffectModder
                 throw new Exception("");
             }
         }
+
+        static public void removeLOD(MeType gameId, ConfIni engineConf)
+        {
+            if (gameId == MeType.ME1_TYPE)
+            {
+                engineConf.DeleteKey("TEXTUREGROUP_LightAndShadowMap", "TextureLODSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_Environment_64", "TextureLODSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_Environment_128", "TextureLODSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_Environment_256", "TextureLODSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_Environment_512", "TextureLODSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_Environment_1024", "TextureLODSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_VFX_64", "TextureLODSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_VFX_128", "TextureLODSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_VFX_256", "TextureLODSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_VFX_512", "TextureLODSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_VFX_1024", "TextureLODSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_APL_128", "TextureLODSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_APL_256", "TextureLODSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_APL_512", "TextureLODSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_APL_1024", "TextureLODSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_GUI", "TextureLODSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_Promotional", "TextureLODSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_Character_1024", "TextureLODSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_Character_Diff", "TextureLODSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_Character_Norm", "TextureLODSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_Character_Spec", "TextureLODSettings");
+            }
+            else if (gameId == MeType.ME2_TYPE)
+            {
+                engineConf.DeleteKey("TEXTUREGROUP_LightAndShadowMap", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_RenderTarget", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_Environment_64", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_Environment_128", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_Environment_256", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_Environment_512", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_Environment_1024", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_VFX_64", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_VFX_128", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_VFX_256", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_VFX_512", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_VFX_1024", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_APL_128", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_APL_256", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_APL_512", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_APL_1024", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_UI", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_Promotional", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_Character_1024", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_Character_Diff", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_Character_Norm", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_Character_Spec", "SystemSettings");
+            }
+            else if (gameId == MeType.ME3_TYPE)
+            {
+                engineConf.DeleteKey("TEXTUREGROUP_Environment_64", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_Environment_128", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_Environment_256", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_Environment_512", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_Environment_1024", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_VFX_64", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_VFX_128", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_VFX_256", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_VFX_512", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_VFX_1024", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_APL_128", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_APL_256", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_APL_512", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_APL_1024", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_UI", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_Promotional", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_Character_1024", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_Character_Diff", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_Character_Norm", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_Character_Spec", "SystemSettings");
+            }
+            else
+            {
+                throw new Exception("");
+            }
+        }
     }
+
     static class Misc
     {
         static public void VerifyME1Exe(GameData gameData, bool gui = true)

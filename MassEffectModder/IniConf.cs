@@ -1,7 +1,7 @@
 /*
  * MassEffectModder
  *
- * Copyright (C) 2014-2016 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2014-2017 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -65,10 +65,26 @@ namespace MassEffectModder
 
         public bool Write(string key, string value, string section)
         {
-            if (_iniPath == null || key == null || value == null)
+            if (_iniPath == null || key == null || value == null || section == null)
                 throw new Exception();
 
             return WritePrivateProfileString(section, key, value, _iniPath);
+        }
+
+        public bool DeleteKey(string key, string section)
+        {
+            if (_iniPath == null || key == null || section == null)
+                throw new Exception();
+
+            return WritePrivateProfileString(section, key, null, _iniPath);
+        }
+
+        public bool DeleteSection(string section)
+        {
+            if (_iniPath == null || section == null)
+                throw new Exception();
+
+            return WritePrivateProfileString(section, null, null, _iniPath);
         }
     }
 }
