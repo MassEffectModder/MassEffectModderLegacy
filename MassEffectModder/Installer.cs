@@ -100,6 +100,8 @@ namespace MassEffectModder
             if (!Directory.Exists(GameData.GamePath))
                 return;
 
+            Misc.startTimer();
+
             labelStatusDetected.Text = "In progress...";
             checkBoxDetected.Checked = true;
             labelStatusDetected.Text = "";
@@ -247,6 +249,9 @@ namespace MassEffectModder
             cachePackageMgr.CloseAllWithSave();
             checkBoxStore.Checked = true;
             updateStatusStore("");
+
+            var time = Misc.stopTimer();
+            MessageBox.Show("Done - time lapsed: " + Misc.getTimerFormat(time));
 
             string filename = "errors.txt";
             File.Delete(filename);

@@ -155,8 +155,10 @@ namespace MassEffectModder
             {
                 _mainWindow.updateStatusLabel("");
                 _mainWindow.updateStatusLabel("Preparing tree...");
+                Misc.startTimer();
                 _textures = treeScan.PrepareListOfTextures(this, _mainWindow, null);
-                _mainWindow.updateStatusLabel("Done.");
+                var time = Misc.stopTimer();
+                _mainWindow.updateStatusLabel("Done - time lapsed: " + Misc.getTimerFormat(time));
                 _mainWindow.updateStatusLabel("");
             }
 
@@ -371,8 +373,10 @@ namespace MassEffectModder
                 return;
             _mainWindow.updateStatusLabel("Replacing texture...");
             _mainWindow.updateStatusLabel2("");
+            Misc.startTimer();
             replaceTexture();
-            _mainWindow.updateStatusLabel("Done.");
+            var time = Misc.stopTimer();
+            _mainWindow.updateStatusLabel("Done - time lapsed: " + Misc.getTimerFormat(time));
             _mainWindow.updateStatusLabel2("");
         }
 
@@ -382,8 +386,10 @@ namespace MassEffectModder
                 return;
             _mainWindow.updateStatusLabel("Replacing texture...");
             _mainWindow.updateStatusLabel2("");
+            Misc.startTimer();
             replaceTexture();
-            _mainWindow.updateStatusLabel("Done.");
+            var time = Misc.stopTimer();
+            _mainWindow.updateStatusLabel("Done - time lapsed: " + Misc.getTimerFormat(time));
             _mainWindow.updateStatusLabel2("");
         }
 
@@ -532,6 +538,7 @@ namespace MassEffectModder
             }
             if (diskUsage * 2 < diskFreeSpace)
             {
+                Misc.startTimer();
                 foreach (ListViewItem item in listViewMods.SelectedItems)
                 {
                     richTextBoxInfo.Text += mipMaps.replaceTextureMod(item.Name, _textures, cachePackageMgr, this);
@@ -540,7 +547,8 @@ namespace MassEffectModder
                 }
                 _mainWindow.updateStatusLabel("");
                 cachePackageMgr.CloseAllWithSave();
-                _mainWindow.updateStatusLabel("MODs applied.");
+                var time = Misc.stopTimer();
+                _mainWindow.updateStatusLabel("MODs applied - time lapsed: " + Misc.getTimerFormat(time));
                 _mainWindow.updateStatusLabel2("");
                 if (listViewMods.Items.Count == 0)
                     clearMODsView();
@@ -616,6 +624,7 @@ namespace MassEffectModder
                     }
                     if (diskUsage * 2.1 < diskFreeSpace)
                     {
+                        Misc.startTimer();
                         richTextBoxInfo.Text = "";
                         foreach (ListViewItem item in listViewMods.SelectedItems)
                         {
@@ -625,7 +634,8 @@ namespace MassEffectModder
                             _mainWindow.updateStatusLabel("MOD: " + item.Text + "extracting...");
                             _mainWindow.updateStatusLabel2("");
                         }
-                        _mainWindow.updateStatusLabel("MODs extracted.");
+                        var time = Misc.stopTimer();
+                        _mainWindow.updateStatusLabel("MODs extracted - time lapsed: " + Misc.getTimerFormat(time));
                         _mainWindow.updateStatusLabel2("");
                         if (richTextBoxInfo.Text != "")
                         {
@@ -659,16 +669,19 @@ namespace MassEffectModder
                     long diskFreeSpace = Misc.getDiskFreeSpace(modFile.SelectedPath);
                     if (diskUsage / 1.9 < diskFreeSpace)
                     {
+                        Misc.startTimer();
                         _mainWindow.updateStatusLabel("MOD packing...");
                         _mainWindow.updateStatusLabel2("");
                         richTextBoxInfo.Text = mipMaps.createTextureMod(modFile.SelectedPath, Path.Combine(Path.GetDirectoryName(modFile.SelectedPath), Path.GetFileName(modFile.SelectedPath)) + ".mem",
                             _textures, _mainWindow);
+                        var time = Misc.stopTimer();
                         if (richTextBoxInfo.Text != "")
                         {
                             richTextBoxInfo.Show();
                             pictureBoxPreview.Hide();
                             MessageBox.Show("There were some errors while process.");
                         }
+                        _mainWindow.updateStatusLabel("MOD packed - time lapsed: " + Misc.getTimerFormat(time));
                     }
                     else
                     {
@@ -678,7 +691,6 @@ namespace MassEffectModder
             }
 
             EnableMenuOptions(true);
-            _mainWindow.updateStatusLabel("MOD packed.");
             _mainWindow.updateStatusLabel2("");
         }
 
@@ -709,6 +721,7 @@ namespace MassEffectModder
 
                     if (diskUsage / 1.9 < diskFreeSpace)
                     {
+                        Misc.startTimer();
                         _mainWindow.updateStatusLabel("MODs packing...");
                         _mainWindow.updateStatusLabel2("");
                         richTextBoxInfo.Text = "";
@@ -719,11 +732,12 @@ namespace MassEffectModder
                             richTextBoxInfo.Text += mipMaps.createTextureMod(listDirs[i], Path.Combine(Path.GetDirectoryName(listDirs[i]), Path.GetFileName(listDirs[i])) + ".mem",
                                 _textures, _mainWindow);
                         }
+                        var time = Misc.stopTimer();
                         if (richTextBoxInfo.Text != "")
                         {
                             MessageBox.Show("There were some errors while process.");
                         }
-                        _mainWindow.updateStatusLabel("MODs packed.");
+                        _mainWindow.updateStatusLabel("MODs packed - time lapsed: " + Misc.getTimerFormat(time));
                     }
                     else
                     {
@@ -872,8 +886,10 @@ namespace MassEffectModder
 
             _mainWindow.updateStatusLabel("");
             _mainWindow.updateStatusLabel("Preparing tree...");
+            Misc.startTimer();
             _textures = treeScan.PrepareListOfTextures(this, _mainWindow, null, true);
-            _mainWindow.updateStatusLabel("Done.");
+            var time = Misc.stopTimer();
+            _mainWindow.updateStatusLabel("Done - time lapsed: " + Misc.getTimerFormat(time));
             _mainWindow.updateStatusLabel("");
 
             PrepareTreeList();

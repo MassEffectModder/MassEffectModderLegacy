@@ -263,5 +263,29 @@ namespace MassEffectModder
             else
                 return string.Format("{0:0.00} GB", size / 1024/ 1024 / 1024.0);
         }
+
+        static System.Diagnostics.Stopwatch timer;
+        public static void startTimer()
+        {
+            timer = System.Diagnostics.Stopwatch.StartNew();
+        }
+
+        public static long stopTimer()
+        {
+            timer.Stop();
+            return timer.ElapsedMilliseconds;
+        }
+
+        public static string getTimerFormat(long time)
+        {
+            if (time / 1000 == 0)
+                return string.Format("{0} ms", time);
+            else if (time / 1000 / 60 == 0)
+                return string.Format("{0} sec", time / 1000);
+            else if (time / 1000 / 60 / 60 == 0)
+                return string.Format("{0}min - {1}sec", time / 1000 / 60, time / 1000);
+            else
+                return string.Format("{0}h - {1}min - {2}sec", time / 1000 / 60 / 60, time / 1000 / 60, time / 1000);
+        }
     }
 }

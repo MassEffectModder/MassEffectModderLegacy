@@ -606,11 +606,13 @@ namespace MassEffectModder
             if (_gameSelected == MeType.ME1_TYPE)
                 treeScan.sortPackagesME1(_mainWindow, null);
 
+            Misc.startTimer();
             MipMaps mipmaps = new MipMaps();
             mipmaps.removeMipMaps(_textures, cachePackageMgr, _mainWindow, null);
+            var time = Misc.stopTimer();
 
             EnableMenuOptions(true);
-            _mainWindow.updateStatusLabel("Done.");
+            _mainWindow.updateStatusLabel("Done - time lapsed: " + Misc.getTimerFormat(time));
             _mainWindow.updateStatusLabel2("");
         }
     }
