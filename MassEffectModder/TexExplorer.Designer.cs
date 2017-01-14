@@ -82,7 +82,6 @@ namespace MassEffectModder
             this.miscToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeEmptyMipmapsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.generateTexturesTreeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.repackTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dumpAllTexturesMipmapsInfoTXTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStripTextures.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -393,7 +392,6 @@ namespace MassEffectModder
             this.miscToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.removeEmptyMipmapsToolStripMenuItem,
             this.generateTexturesTreeMenuItem,
-            this.repackTexturesToolStripMenuItem,
             this.dumpAllTexturesMipmapsInfoTXTToolStripMenuItem});
             this.miscToolStripMenuItem.Name = "miscToolStripMenuItem";
             this.miscToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
@@ -412,13 +410,6 @@ namespace MassEffectModder
             this.generateTexturesTreeMenuItem.Size = new System.Drawing.Size(237, 22);
             this.generateTexturesTreeMenuItem.Text = "Generate textures tree";
             this.generateTexturesTreeMenuItem.Click += new System.EventHandler(this.generateTexturesTreeMenuItem_Click);
-            // 
-            // repackTexturesToolStripMenuItem
-            // 
-            this.repackTexturesToolStripMenuItem.Name = "repackTexturesToolStripMenuItem";
-            this.repackTexturesToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
-            this.repackTexturesToolStripMenuItem.Text = "Repack Textures";
-            this.repackTexturesToolStripMenuItem.Click += new System.EventHandler(this.repackTexturesToolStripMenuItem_Click);
             // 
             // dumpAllTexturesMipmapsInfoTXTToolStripMenuItem
             // 
@@ -487,7 +478,6 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripMenuItem removeEmptyMipmapsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem dumpAllTexturesMipmapsInfoTXTToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem createMODBatchToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem repackTexturesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem extractToDDSFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem generateTexturesTreeMenuItem;
     }
