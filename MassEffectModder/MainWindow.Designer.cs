@@ -69,7 +69,6 @@ namespace MassEffectModder
             this.updateME3ConfigToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeGamePathME3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modME3ExportDataToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.comparatorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.statusStrip2 = new System.Windows.Forms.StatusStrip();
@@ -84,8 +83,7 @@ namespace MassEffectModder
             this.menuGame.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuME1,
             this.toolStripMenuME2,
-            this.toolStripMenuME3,
-            this.comparatorToolStripMenuItem});
+            this.toolStripMenuME3});
             this.menuGame.Location = new System.Drawing.Point(0, 0);
             this.menuGame.Name = "menuGame";
             this.menuGame.Size = new System.Drawing.Size(1177, 24);
@@ -240,13 +238,6 @@ namespace MassEffectModder
             this.modME3ExportDataToolStripMenuItem1.Text = "Load Data Mod";
             this.modME3ExportDataToolStripMenuItem1.Click += new System.EventHandler(this.modME3ExportDataToolStripMenuItem1_Click);
             // 
-            // comparatorToolStripMenuItem
-            // 
-            this.comparatorToolStripMenuItem.Name = "comparatorToolStripMenuItem";
-            this.comparatorToolStripMenuItem.Size = new System.Drawing.Size(83, 20);
-            this.comparatorToolStripMenuItem.Text = "Comparator";
-            this.comparatorToolStripMenuItem.Click += new System.EventHandler(this.comparatorToolStripMenuItem_Click);
-            // 
             // toolStripStatusLabel
             // 
             this.toolStripStatusLabel.Name = "toolStripStatusLabel";
@@ -323,7 +314,6 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripMenuItem modME2ExportDataToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem modME1ExportDataToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem modME3ExportDataToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem comparatorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem changeGamePathME1ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem changeGamePathME2ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem changeGamePathME3ToolStripMenuItem;
