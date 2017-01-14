@@ -84,7 +84,27 @@ namespace MassEffectModder
                         for (int i = 0; i < numPackages; i++)
                         {
                             string pkgPath = fs.ReadStringASCIINull();
-                            packages.Add(Path.Combine(GameData.GamePath, pkgPath));
+                            pkgPath = GameData.GamePath + pkgPath;
+                            packages.Add(pkgPath);
+                        }
+                        for (int i = 0; i < packages.Count; i++)
+                        {
+                            if (GameData.packageFiles.Find(s => s.Equals(packages[i], StringComparison.OrdinalIgnoreCase)) == null)
+                            {
+                                MessageBox.Show("Detected removal game data files from last game data scan." +
+                                    "\n\nIt's required to re-scan vanilla gama data again.");
+                                return null;
+                            }
+                        }
+                        for (int i = 0; i < GameData.packageFiles.Count; i++)
+                        {
+                            if (packages.Find(s => s.Equals(GameData.packageFiles[i], StringComparison.OrdinalIgnoreCase)) == null)
+                            {
+                                MessageBox.Show("Detected additonal game data files from last game data scan." +
+                                    "\n\nIt's required to remove empty textures process again to cover additional files." +
+                                    "\n\nHowever additional files will be ignored while textures modding.");
+                                break;
+                            }
                         }
                     }
                     else
