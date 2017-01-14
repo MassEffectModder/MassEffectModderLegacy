@@ -120,6 +120,13 @@ namespace MassEffectModder
             }
             else
             {
+                if (MipMaps.checkGameDataModded())
+                {
+                    if (mainWindow != null)
+                        MessageBox.Show("Detected game data modded. Can not continue.");
+                    return null;
+                }
+
                 if (mainWindow != null)
                 {
                     DialogResult result = MessageBox.Show("Replacing textures and creating mods require textures mapping.\n" +

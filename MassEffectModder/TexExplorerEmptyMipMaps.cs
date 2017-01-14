@@ -186,6 +186,401 @@ namespace MassEffectModder
 
             return true;
         }
+
+        static public bool checkGameDataModded()
+        {
+            EmptyMipMaps[] entries = new EmptyMipMaps[]
+            {
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME1_TYPE,
+                    packagePath = @"\BioGame\CookedPC\Packages\GameObjects\Characters\Humanoids\HumanMale\BIOG_HMM_HED_PROMorph.upk",
+                    exportId = 304,
+                    crc = 0x80B2CBCF,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME1_TYPE,
+                    packagePath = @"\BioGame\CookedPC\Packages\GameObjects\Characters\Humanoids\HumanFemale\BIOG_HMF_HED_PROMorph_R.upk",
+                    exportId = 279,
+                    crc = 0x422AAA0D,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME1_TYPE,
+                    packagePath = @"\BioGame\CookedPC\BIOG_ASA_ARM_MRC_R.upk",
+                    exportId = 71,
+                    crc = 0x077202BD,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME1_TYPE,
+                    packagePath = @"\BioGame\CookedPC\Packages\GameObjects\Characters\Humanoids\HumanFemale\BIOG_HMF_HED_PROMorph_R.upk",
+                    exportId = 259,
+                    crc = 0x8F331825,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME1_TYPE,
+                    packagePath = @"\BioGame\CookedPC\Packages\GameObjects\Characters\Humanoids\HumanFemale\BIOG_HMF_HED_PROMorph_R.upk",
+                    exportId = 262,
+                    crc = 0x2CC6F67C,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME1_TYPE,
+                    packagePath = @"\BioGame\CookedPC\Packages\GameObjects\Characters\Humanoids\Turian\BIOG_TUR_HED_PROMorph_R.upk",
+                    exportId = 115,
+                    crc = 0x39A26907,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME1_TYPE,
+                    packagePath = @"\BioGame\CookedPC\Packages\GameObjects\Characters\Humanoids\HumanMale\BIOG_HMM_HED_PROMorph.upk",
+                    exportId = 356,
+                    crc = 0xCD4AD3A5,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME1_TYPE,
+                    packagePath = @"\BioGame\CookedPC\Packages\GameObjects\Characters\Humanoids\HumanMale\BIOG_HMM_HED_PROMorph.upk",
+                    exportId = 360,
+                    crc = 0x0898E4C4,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME1_TYPE,
+                    packagePath = @"\BioGame\CookedPC\Packages\GameObjects\Characters\Humanoids\HumanFemale\BIOG_HMF_ARM_CTH_R.upk",
+                    exportId = 243,
+                    crc = 0x8D20F3EB,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME1_TYPE,
+                    packagePath = @"\BioGame\CookedPC\Packages\GameObjects\Characters\Humanoids\Turian\BIOG_TUR_HED_SAR.upk",
+                    exportId = 51,
+                    crc = 0x4F24BAAF,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME1_TYPE,
+                    packagePath = @"\BioGame\CookedPC\Packages\GameObjects\Characters\Humanoids\HumanMale\BIOG_HMM_HED_PROMorph.upk",
+                    exportId = 394,
+                    crc = 0x947A74A8,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME1_TYPE,
+                    packagePath = @"\BioGame\CookedPC\Packages\GameObjects\Characters\Humanoids\HumanMale\BIOG_HMM_HED_PROMorph.upk",
+                    exportId = 341,
+                    crc = 0x72D6575F,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME1_TYPE,
+                    packagePath = @"\BioGame\CookedPC\Packages\GameObjects\Characters\Humanoids\Krogan\BIOG_KRO_HED_PROMorph.upk",
+                    exportId = 61,
+                    crc = 0x822EEFB1,
+                },
+
+
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME2_TYPE,
+                    packagePath = @"\BioGame\CookedPC\BioA_N7Spdr2_100.pcc",
+                    exportId = 13796,
+                    crc = 0x80B2CBCF,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME2_TYPE,
+                    packagePath = @"\BioGame\CookedPC\BioD_JunCvL_100Landing.pcc",
+                    exportId = 6105,
+                    crc = 0x72D6575F,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME2_TYPE,
+                    packagePath = @"\BioGame\CookedPC\BioD_EndGm2_440Normandy.pcc",
+                    exportId = 2569,
+                    crc = 0xCD4AD3A5,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME2_TYPE,
+                    packagePath = @"\\BioGame\CookedPC\BioD_HorCr1_303AshKaidan.pcc",
+                    exportId = 3781,
+                    crc = 0x0898E4C4,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME2_TYPE,
+                    packagePath = @"\BioGame\CookedPC\BIOG_HMM_HED_PROMorph.pcc",
+                    exportId = 2495,
+                    crc = 0x947A74A8,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME2_TYPE,
+                    packagePath = @"\BioGame\CookedPC\BioD_JnkKgA_300Labs.pcc",
+                    exportId = 5785,
+                    crc = 0xECA7DA8F,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME2_TYPE,
+                    packagePath = @"\BioGame\CookedPC\BioD_CitAsL_210FirstStop.pcc",
+                    exportId = 4117,
+                    crc = 0x822EEFB1,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME2_TYPE,
+                    packagePath = @"\BioGame\CookedPC\BioD_EndGm1_110ROMGarrus.pcc",
+                    exportId = 5076,
+                    crc = 0x6E3C2E30,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME2_TYPE,
+                    packagePath = @"\BioGame\CookedPC\BioD_OmgGrA_113AlamoAssault.pcc",
+                    exportId = 4864,
+                    crc = 0x6CD2B8F2,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME2_TYPE,
+                    packagePath = @"\BioGame\CookedPC\BioH_END_Professor_00.pcc",
+                    exportId = 5894,
+                    crc = 0x9A987362,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME2_TYPE,
+                    packagePath = @"\BioGame\CookedPC\BioD_EndGm1_110ROMMirranda.pcc",
+                    exportId = 8808,
+                    crc = 0xB389BFE6,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME2_TYPE,
+                    packagePath = @"\BioGame\CookedPC\BIOG_HMF_HED_PROMorph_R.pcc",
+                    exportId = 3073,
+                    crc = 0x5674B1E3,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME2_TYPE,
+                    packagePath = @"\BioGame\CookedPC\BioD_HorCr1_303AshKaidan.pcc",
+                    exportId = 3757,
+                    crc = 0x422AAA0D,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME2_TYPE,
+                    packagePath = @"\BioGame\CookedPC\BioD_BchLmL_102BeachFight.pcc",
+                    exportId = 5869,
+                    crc = 0x9CA124E8,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME2_TYPE,
+                    packagePath = @"\BioGame\CookedPC\BioA_N7Mmnt7.pcc",
+                    exportId = 10440,
+                    crc = 0x2A01319D,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME2_TYPE,
+                    packagePath = @"\BioGame\CookedPC\BioD_ProNor.pcc",
+                    exportId = 21224,
+                    crc = 0x40197218,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME2_TYPE,
+                    packagePath = @"\BioGame\CookedPC\BioD_Nor_231Morinth.pcc",
+                    exportId = 1922,
+                    crc = 0x27539E1B,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME2_TYPE,
+                    packagePath = @"\BioGame\CookedPC\BioD_CitAsL.pcc",
+                    exportId = 8798,
+                    crc = 0x42EE7CBF,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME2_TYPE,
+                    packagePath = @"\BioGame\CookedPC\BioD_Nor_110DebriefLeadVixen.pcc",
+                    exportId = 4433,
+                    crc = 0xD30672BD,
+                },
+
+
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME3_TYPE,
+                    packagePath = @"\BioGame\CookedPCConsole\BioA_CitSam_000LevelTrans.pcc",
+                    exportId = 4607,
+                    crc = 0x0F4E701E,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME3_TYPE,
+                    packagePath = @"\BioGame\CookedPCConsole\BioD_CitHub_EmbassyP3.pcc",
+                    exportId = 8182,
+                    crc = 0x27539E1B,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME3_TYPE,
+                    packagePath = @"\BioGame\CookedPCConsole\BioD_Cat003_380DesksConvos.pcc",
+                    exportId = 9460,
+                    crc = 0x42EE7CBF,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME3_TYPE,
+                    packagePath = @"\BioGame\CookedPCConsole\BioA_GthLeg_000LevelTrans.pcc",
+                    exportId = 3500,
+                    crc = 0xD30672BD,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME3_TYPE,
+                    packagePath = @"\BioGame\CookedPCConsole\BioA_CitHub_000Docking.pcc",
+                    exportId = 3625,
+                    crc = 0xF51672AC,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME3_TYPE,
+                    packagePath = @"\BioGame\CookedPCConsole\BioD_CerJcb_150MainDoor.pcc",
+                    exportId = 7722,
+                    crc = 0xEDC5BFE7,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME3_TYPE,
+                    packagePath = @"\BioGame\DLC\DLC_EXP_Pack003_Base\CookedPCConsole\BioH_Exp3_EDI_2.pcc",
+                    exportId = 251,
+                    crc = 0x7715D057,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME3_TYPE,
+                    packagePath = @"\BioGame\CookedPCConsole\BioD_CitHub_WardsFluxP3.pcc",
+                    exportId = 11443,
+                    crc = 0xF95D3472,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME3_TYPE,
+                    packagePath = @"\BioGame\CookedPCConsole\BioD_CitHub_Dock.pcc",
+                    exportId = 11485,
+                    crc = 0xE8271883,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME3_TYPE,
+                    packagePath = @"\BioGame\CookedPCConsole\BioD_CerMir_375Lab_vid.pcc",
+                    exportId = 4630,
+                    crc = 0x4D73F4F6,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME3_TYPE,
+                    packagePath = @"\BioGame\CookedPCConsole\BIOG_HMF_HED_PROMorph_R.pcc",
+                    exportId = 7552,
+                    crc = 0xF6BFD7B5,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME3_TYPE,
+                    packagePath = @"\BioGame\CookedPCConsole\BioA_MPCer_000Translevel.pcc",
+                    exportId = 6294,
+                    crc = 0x3451A823,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME3_TYPE,
+                    packagePath = @"\BioGame\CookedPCConsole\BioA_Cat002_050Shuttle.pcc",
+                    exportId = 2995,
+                    crc = 0xF394E97A,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME3_TYPE,
+                    packagePath = @"\BioGame\CookedPCConsole\BioD_CitHub_000ProCit.pcc",
+                    exportId = 6451,
+                    crc = 0x2DCFDEA9,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME3_TYPE,
+                    packagePath = @"\BioGame\CookedPCConsole\BIOG_HMM_HED_PROMorph.pcc",
+                    exportId = 8818,
+                    crc = 0xB2900BF5,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME3_TYPE,
+                    packagePath = @"\BioGame\CookedPCConsole\BioD_Cat003_780FinalConvos.pcc",
+                    exportId = 9938,
+                    crc = 0x6574CE07,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME3_TYPE,
+                    packagePath = @"\BioGame\CookedPCConsole\BioD_Gth001_560Gethries.pcc",
+                    exportId = 7227,
+                    crc = 0x36DACF3F,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME3_TYPE,
+                    packagePath = @"\BioGame\CookedPCConsole\BioA_Kro001_000LevelTrans.pcc",
+                    exportId = 7156,
+                    crc = 0x1198BA9D,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME3_TYPE,
+                    packagePath = @"\BioGame\CookedPCConsole\BioD_End001_436CRGrunt.pcc",
+                    exportId = 1568,
+                    crc = 0xECA7DA8F,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME3_TYPE,
+                    packagePath = @"\BioGame\CookedPCConsole\BioD_End001_436CRMordin.pcc",
+                    exportId = 1456,
+                    crc = 0x9A987362,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME3_TYPE,
+                    packagePath = @"\BioGame\CookedPCConsole\BioA_CitHub_Council.pcc",
+                    exportId = 6653,
+                    crc = 0x8645A85C,
+                },
+            };
+
+            for (int i = 0; i < entries.Count(); i++)
+            {
+                if (GameData.gameType == entries[i].gameType)
+                {
+                    Package package = new Package(GameData.GamePath + entries[i].packagePath);
+                    Texture texture = new Texture(package, entries[i].exportId, package.getExportData(entries[i].exportId));
+                    if (texture.getCrcTopMipmap() != entries[i].crc)
+                        return true;
+                }
+            }
+
+            return false;
+        }
     }
 
     public partial class TexExplorer : Form
