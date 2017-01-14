@@ -490,33 +490,52 @@ namespace MassEffectModder
                 return;
             }
 
-            string tmpDlcDir = Path.Combine(GameData.GamePath, "BIOGame", "DLCTemp");
-            List<string> dlcs = Directory.GetFiles(GameData.DLCData, "*.pcc", SearchOption.AllDirectories).ToList();
-            if (dlcs.Count() == 0)
+            List<string> sfarFiles = Directory.GetFiles(GameData.DLCData, "Default.sfar", SearchOption.AllDirectories).ToList();
+            for (int i = 0; i < sfarFiles.Count; i++)
             {
-                if (Directory.Exists(tmpDlcDir))
-                    Directory.Delete(tmpDlcDir, true);
-                Directory.CreateDirectory(tmpDlcDir);
-                List<string> sfarFiles = Directory.GetFiles(GameData.DLCData, "Default.sfar", SearchOption.AllDirectories).ToList();
-                for (int i = 0; i < sfarFiles.Count; i++)
-                {
-                    string DLCname = Path.GetFileName(Path.GetDirectoryName(Path.GetDirectoryName(sfarFiles[i])));
-                    string outPath = Path.Combine(tmpDlcDir, DLCname);
-                    Directory.CreateDirectory(outPath);
-                    ME3DLC dlc = new ME3DLC(mainWindow);
-                    if (mainWindow != null)
-                    {
-                        mainWindow.updateStatusLabel("SFAR unpacking - DLC " + (i + 1) + " of " + sfarFiles.Count);
-                    }
-                    if (installer != null)
-                    {
-                        installer.updateStatusPrepare("Unpacking DLC " + (i + 1) + " of " + sfarFiles.Count);
-                    }
-                    dlc.extract(sfarFiles[i], outPath);
-                }
-                Directory.Delete(GameData.DLCData, true);
-                Directory.Move(tmpDlcDir, GameData.DLCData);
+                if (new FileInfo(sfarFiles[i]).Length <= 32)
+                    sfarFiles.RemoveAt(i--);
             }
+            if (sfarFiles.Count() == 0)
+            {
+                if (mainWindow != null)
+                    MessageBox.Show("There is nothing to unpack.");
+                return;
+            }
+
+            string tmpDlcDir = Path.Combine(GameData.GamePath, "BIOGame", "DLCTemp");
+            if (Directory.Exists(tmpDlcDir))
+                Directory.Delete(tmpDlcDir, true);
+            Directory.CreateDirectory(tmpDlcDir);
+            for (int i = 0; i < sfarFiles.Count; i++)
+            {
+                string DLCname = Path.GetFileName(Path.GetDirectoryName(Path.GetDirectoryName(sfarFiles[i])));
+                string outPath = Path.Combine(tmpDlcDir, DLCname);
+                Directory.CreateDirectory(outPath);
+                ME3DLC dlc = new ME3DLC(mainWindow);
+                if (mainWindow != null)
+                {
+                    mainWindow.updateStatusLabel("SFAR unpacking - DLC " + (i + 1) + " of " + sfarFiles.Count);
+                }
+                if (installer != null)
+                {
+                    installer.updateStatusPrepare("Unpacking DLC " + (i + 1) + " of " + sfarFiles.Count);
+                }
+                dlc.extract(sfarFiles[i], outPath);
+            }
+
+            sfarFiles = Directory.GetFiles(GameData.DLCData, "Default.sfar", SearchOption.AllDirectories).ToList();
+            for (int i = 0; i < sfarFiles.Count; i++)
+            {
+                if (new FileInfo(sfarFiles[i]).Length <= 32)
+                {
+                    string source = Path.GetDirectoryName(Path.GetDirectoryName(sfarFiles[i]));
+                    Directory.Move(source, tmpDlcDir + "\\" + Path.GetFileName(source));
+                }
+            }
+
+            Directory.Delete(GameData.DLCData, true);
+            Directory.Move(tmpDlcDir, GameData.DLCData);
         }
     }
 }

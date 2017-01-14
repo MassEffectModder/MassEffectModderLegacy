@@ -365,7 +365,8 @@ namespace MassEffectModder
                         List<string> dlcs = Directory.GetFiles(DLCs[i], "Mount.dlc", SearchOption.AllDirectories).ToList();
                         if (dlcs.Count() == 0)
                         {
-                            MessageBox.Show("Detected packed and unpacked DLCs in DLC folder. Aborting...");
+                            MessageBox.Show("Detected packed and unpacked DLCs in DLC folder." +
+                                "\nYou need exract DLC packages first.");
                             return false;
                         }
                     }
