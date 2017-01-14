@@ -62,8 +62,10 @@ namespace MassEffectModder
         public const uint textureMapBinTag = 0x5054454D;
         public const uint textureMapBinVersion = 1;
         public const uint TextureModTag = 0x444F4D54;
-        public const uint TextureModVersion = 1;
-        public const uint TextureModHeaderLength = 16;
+        public const uint FileTextureTag = 0x53444446;
+        public const uint FileBinTag = 0x4E494246;
+        public const uint TextureModVersion1 = 1;
+        public const uint TextureModVersion = 2;
 
         MeType _gameSelected;
         public MainWindow _mainWindow;
@@ -476,9 +478,9 @@ namespace MassEffectModder
                     {
                         uint tag = fs.ReadUInt32();
                         uint version = fs.ReadUInt32();
-                        if (tag != TextureModTag || version != TextureModVersion)
+                        if (tag != TextureModTag || (version != TextureModVersion1 && version != TextureModVersion))
                         {
-                            MessageBox.Show("File " + file + " is not a MOD, omitting...");
+                            MessageBox.Show("File " + file + " is not MEM mod, omitting...");
                             continue;
                         }
                     }

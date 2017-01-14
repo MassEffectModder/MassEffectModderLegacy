@@ -32,6 +32,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static MassEffectModder.MipMaps;
 
 namespace MassEffectModder
 {
@@ -41,7 +42,7 @@ namespace MassEffectModder
         ConfIni installerIni;
         int gameId;
         GameData gameData;
-        public List<string> modFiles;
+        public List<string> memFiles;
         CachePackageMgr cachePackageMgr;
         List<FoundTexture> textures;
         MipMaps mipMaps;
@@ -70,9 +71,9 @@ namespace MassEffectModder
                 MessageBox.Show("Not recognized game id in installer.ini, exiting...", "Installer");
                 return false;
             }
-            modFiles = Directory.GetFiles(".", "*.mem", SearchOption.AllDirectories).ToList();
-            modFiles.Sort();
-            if (modFiles.Count == 0)
+            memFiles = Directory.GetFiles(".", "*.mem", SearchOption.AllDirectories).ToList();
+            memFiles.Sort();
+            if (memFiles.Count == 0)
             {
                 MessageBox.Show("No mods included, exiting", "Installer");
                 return false;
@@ -148,39 +149,73 @@ namespace MassEffectModder
 
             updateStatusTextures("In progress...");
             string errors = "";
-            for (int i = 0; i < modFiles.Count; i++)
+            for (int i = 0; i < memFiles.Count; i++)
             {
-                using (FileStream fs = new FileStream(modFiles[i], FileMode.Open, FileAccess.Read))
+                using (FileStream fs = new FileStream(memFiles[i], FileMode.Open, FileAccess.Read))
                 {
                     uint tag = fs.ReadUInt32();
                     uint version = fs.ReadUInt32();
-                    if (tag != TexExplorer.TextureModTag || version != TexExplorer.TextureModVersion)
+                    if (tag != TexExplorer.TextureModTag || (version != TexExplorer.TextureModVersion1 && version != TexExplorer.TextureModVersion))
                     {
+                        errors += "File " + memFiles[i] + " is not a MEM mod!" + Environment.NewLine;
                         continue;
                     }
                     else
                     {
-                        uint gameType = fs.ReadUInt32();
+                        uint gameType = 0;
+                        if (version == TexExplorer.TextureModVersion)
+                            fs.JumpTo(fs.ReadInt64());
+                        gameType = fs.ReadUInt32();
                         if ((MeType)gameType != GameData.gameType)
                         {
-                            return;
+                            errors += "File " + memFiles[i] + " is a MEM mod for different game!" + Environment.NewLine;
+                            continue;
                         }
                     }
-                    int numTextures = fs.ReadInt32();
-                    for (int l = 0; l < numTextures; l++)
+                    int numFiles = fs.ReadInt32();
+                    List<FileMod> modFiles = new List<FileMod>();
+                    if (version == TexExplorer.TextureModVersion)
+                    {
+                        for (int k = 0; k < numFiles; k++)
+                        {
+                            FileMod fileMod = new FileMod();
+                            fileMod.tag = fs.ReadUInt32();
+                            fileMod.name = fs.ReadStringASCIINull();
+                            fileMod.offset = fs.ReadInt64();
+                            fileMod.size = fs.ReadInt64();
+                            if (fileMod.tag == FileTextureTag)
+                                modFiles.Add(fileMod);
+                        }
+                        numFiles = modFiles.Count;
+                    }
+                    for (int l = 0; l < numFiles; l++)
                     {
                         string name;
-                        uint crc, size, dstLen = 0, decSize = 0;
+                        uint crc;
+                        long size = 0, dstLen = 0, decSize = 0;
                         byte[] dst = null;
+                        if (version == TexExplorer.TextureModVersion)
+                        {
+                            fs.JumpTo(modFiles[i].offset);
+                            size = modFiles[i].size;
+                        }
                         name = fs.ReadStringASCIINull();
                         crc = fs.ReadUInt32();
-                        decSize = fs.ReadUInt32();
-                        size = fs.ReadUInt32();
-                        byte[] src = fs.ReadToBuffer(size);
-                        dst = new byte[decSize];
-                        dstLen = ZlibHelper.Zlib.Decompress(src, size, dst);
+                        if (version == TexExplorer.TextureModVersion1)
+                        {
+                            decSize = fs.ReadUInt32();
+                            size = fs.ReadUInt32();
+                            byte[] src = fs.ReadToBuffer(size);
+                            dst = new byte[decSize];
+                            dstLen = ZlibHelper.Zlib.Decompress(src, (uint)size, dst);
+                        }
+                        else
+                        {
+                            dst = decompressData(fs, size);
+                            dstLen = dst.Length;
+                        }
 
-                        updateStatusTextures("Mod: " + (i + 1) + " of " + modFiles.Count + " - in progress: " + ((l + 1) * 100 / numTextures) + " % ");
+                        updateStatusTextures("Mod: " + (i + 1) + " of " + modFiles.Count + " - in progress: " + ((l + 1) * 100 / numFiles) + " % ");
 
                         FoundTexture foundTexture;
                         if (GameData.gameType == MeType.ME1_TYPE)
