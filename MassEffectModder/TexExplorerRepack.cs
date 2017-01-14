@@ -1,7 +1,7 @@
 /*
  * MassEffectModder
  *
- * Copyright (C) 2016 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2016-2017 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,29 +24,23 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
 
 namespace MassEffectModder
 {
-    public partial class TexExplorer : Form
+    public class Repack
     {
-        private void RepackTexturesTFC()
+        public void RepackTexturesTFC(List<FoundTexture> textures, MainWindow mainWindow, CachePackageMgr cachePackageMgr)
         {
-            DialogResult result = MessageBox.Show("Repacking textures can be long time process.\n\n" +
-                "Are you sure to proceed?", "Textures repacking (WIP feature!)", MessageBoxButtons.YesNo);
-            if (result == DialogResult.No)
+            if (GameData.gameType == MeType.ME2_TYPE)
             {
-                Close();
-                return;
-            }
-/*
-            if (_gameSelected == MeType.ME2_TYPE)
-            {
-                for (int i = 0; i < _textures.Count; i++)
+                for (int i = 0; i < textures.Count; i++)
                 {
-                    FoundTexture foundTexture = _textures[i];
-                    _mainWindow.updateStatusLabel("Texture: " + (i + 1) + " of " + _textures.Count);
-                    _mainWindow.updateStatusLabel2("");
+                    FoundTexture foundTexture = textures[i];
+                    if (mainWindow != null)
+                    {
+                        mainWindow.updateStatusLabel("Texture: " + (i + 1) + " of " + textures.Count);
+                        mainWindow.updateStatusLabel2("");
+                    }
                     string TFCfilename = "", TFCfilenameTemp, prevTFCfilename = "";
                     Texture prevTexture = null;
                     for (int index2 = 0; index2 < foundTexture.list.Count; index2++)
@@ -127,13 +121,16 @@ namespace MassEffectModder
                             {
                                 newData.WriteFromBuffer(texture.properties.toArray());
                                 newData.WriteFromBuffer(texture.toArray(package.exportsTable[matchedTexture.exportID].dataOffset + (uint)newData.Position));
-                                //package.setExportData(nodeTexture.exportID, newData.ToArray());
+                                //package.setExportData(matchedTexture.exportID, newData.ToArray());
                             }
                         }
                     }
                 }
             }
-            _mainWindow.updateStatusLabel("");
+            if (mainWindow != null)
+            {
+                mainWindow.updateStatusLabel("");
+            }
 
             List<string> tfcFles = Directory.GetFiles(GameData.GamePath, "*.TempTFC", SearchOption.AllDirectories).ToList();
             for (int i = 0; i < tfcFles.Count; i++)
@@ -144,9 +141,12 @@ namespace MassEffectModder
                 File.Move(tfcFles[i], newname);
             }
             //cachePackageMgr.CloseAllWithSave();
-            */
-            _mainWindow.updateStatusLabel("Done.");
-            _mainWindow.updateStatusLabel("");
+
+            if (mainWindow != null)
+            {
+                mainWindow.updateStatusLabel("Done.");
+                mainWindow.updateStatusLabel("");
+            }
         }
     }
 }

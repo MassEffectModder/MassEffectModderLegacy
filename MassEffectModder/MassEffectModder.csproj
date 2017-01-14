@@ -98,9 +98,7 @@
     <Compile Include="TexExplorerCachePkgMgr.cs" />
     <Compile Include="TexExplorerEmptyMipMaps.cs" />
     <Compile Include="TexExplorerProcess.cs" />
-    <Compile Include="TexExplorerRepack.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="TexExplorerRepack.cs" />
     <Compile Include="TexExplorerReplace.cs" />
     <Compile Include="TexExplorer.cs">
       <SubType>Form</SubType>
