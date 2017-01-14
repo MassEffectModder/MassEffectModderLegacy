@@ -103,7 +103,7 @@ namespace MassEffectModder
                 if (mainWindow != null)
                 {
                     DialogResult result = MessageBox.Show("Replacing textures and creating mods require textures mapping.\n" +
-                    "It's one time only process but can be very long.\n\n" +
+                    "It's one time only process.\n\n" +
                     "IMPORTANT! Make sure game data is not modified.\n\n" +
                     "Are you sure to proceed?", "Textures mapping", MessageBoxButtons.YesNo);
                     if (result == DialogResult.No)
