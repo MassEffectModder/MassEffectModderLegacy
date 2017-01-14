@@ -259,7 +259,8 @@ namespace MassEffectModder
                     text += "Texture original CRC:  " + string.Format("0x{0:X8}", node.textures[index].crc) + "\n";
                     text += "Node name:     " + node.textures[index].name + "\n";
                     text += "Package name:  " + node.textures[index].packageName + "\n";
-                    for (int index2 = 0; index2 < node.textures[index].list.Count; index2++)
+                    //for (int index2 = 0; index2 < node.textures[index].list.Count; index2++)
+                    int index2 = 0;
                     {
                         MatchedTexture nodeTexture = node.textures[index].list[index2];
                         Package package = cachePackageMgr.OpenPackage(GameData.GamePath + nodeTexture.path);
