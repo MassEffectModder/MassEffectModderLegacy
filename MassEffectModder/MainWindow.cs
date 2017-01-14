@@ -101,6 +101,8 @@ namespace MassEffectModder
             }
             ConfIni engineConf = new ConfIni(path);
             LODSettings.updateLOD(MeType.ME1_TYPE, engineConf);
+            MessageBox.Show("Game configuration " + path + " updated." +
+                "\n\nAfter this it's required to remove empty mipmaps to prevent black textures issue in the game.");
             enableGameDataMenu(true);
         }
 
@@ -243,6 +245,8 @@ namespace MassEffectModder
             }
             ConfIni engineConf = new ConfIni(path);
             LODSettings.updateLOD(MeType.ME2_TYPE, engineConf);
+            MessageBox.Show("Game configuration " + path + " updated." +
+                "\n\nAfter this it's required to remove empty mipmaps to prevent black textures issue in the game.");
             enableGameDataMenu(true);
         }
 
@@ -335,6 +339,8 @@ namespace MassEffectModder
             }
             ConfIni engineConf = new ConfIni(path);
             LODSettings.updateLOD(MeType.ME3_TYPE, engineConf);
+            MessageBox.Show("Game configuration " + path + " updated." +
+                "\n\nAfter this it's required to remove empty mipmaps to prevent black textures issue in the game.");
             enableGameDataMenu(true);
         }
 
@@ -376,6 +382,7 @@ namespace MassEffectModder
             {
                 ConfIni engineConf = new ConfIni(path);
                 LODSettings.removeLOD(MeType.ME1_TYPE, engineConf);
+                MessageBox.Show("Game configuration: " + path + " updated.");
             }
             else
             {
@@ -394,6 +401,7 @@ namespace MassEffectModder
             {
                 ConfIni engineConf = new ConfIni(path);
                 LODSettings.removeLOD(MeType.ME2_TYPE, engineConf);
+                MessageBox.Show("Game configuration: " + path + " updated.");
             }
             else
             {
@@ -412,6 +420,7 @@ namespace MassEffectModder
             {
                 ConfIni engineConf = new ConfIni(path);
                 LODSettings.removeLOD(MeType.ME3_TYPE, engineConf);
+                MessageBox.Show("Game configuration: " + path + " updated.");
             }
             else
             {
