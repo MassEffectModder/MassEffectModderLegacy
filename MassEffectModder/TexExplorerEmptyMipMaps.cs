@@ -1,7 +1,7 @@
 /*
  * MassEffectModder
  *
- * Copyright (C) 2014-2016 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2014-2017 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,6 +30,14 @@ namespace MassEffectModder
 {
     public partial class MipMaps
     {
+        struct EmptyMipMaps
+        {
+            public MeType gameType;
+            public string packagePath;
+            public int exportId;
+            public uint crc;
+        }
+
         public void removeMipMaps(List<FoundTexture> textures, CachePackageMgr cachePackageMgr, MainWindow mainWindow, Installer installer)
         {
             for (int i = 0; i < GameData.packageFiles.Count; i++)
@@ -137,15 +145,65 @@ namespace MassEffectModder
                 cachePackageMgr.updateDLCsTOC();
             }
         }
+
+        static public bool verifyGameDataEmptyMipMapsRemoval()
+        {
+            EmptyMipMaps[] entries = new EmptyMipMaps[]
+            {
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME1_TYPE,
+                    packagePath = "\\BioGame\\CookedPC\\Packages\\VFX_Prototype\\v_Explosion_PrototypeTest_01.upk",
+                    exportId = 4888,
+                    crc = 0x9C074E3B,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME2_TYPE,
+                    packagePath = "\\BioGame\\CookedPC\\BioA_CitHub_500Udina.pcc",
+                    exportId = 3655,
+                    crc = 0xE18544C0,
+                },
+                new EmptyMipMaps
+                {
+                    gameType = MeType.ME3_TYPE,
+                    packagePath = "\\BioGame\\CookedPCConsole\\BIOG_UIWorld.pcc",
+                    exportId = 464,
+                    crc = 0x85EFF558,
+                },
+            };
+
+            for (int i = 0; i < entries.Count(); i++)
+            {
+                if (GameData.gameType == entries[i].gameType)
+                {
+                    Package package = new Package(GameData.GamePath + entries[i].packagePath);
+                    Texture texture = new Texture(package, entries[i].exportId, package.getExportData(entries[i].exportId));
+                    if (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty))
+                        return false;
+                }
+            }
+
+            return true;
+        }
     }
 
     public partial class TexExplorer : Form
     {
         private void removeEmptyMipmapsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DialogResult result = MessageBox.Show("Are you sure to proceed?", "Remove empty mipmaps", MessageBoxButtons.YesNo);
-            if (result == DialogResult.No)
-                return;
+            if (MipMaps.verifyGameDataEmptyMipMapsRemoval())
+            {
+                DialogResult result = MessageBox.Show("It seems removal empty mipmaps was already processed.\nAre you sure to proceed?", "Remove empty mipmaps", MessageBoxButtons.YesNo);
+                if (result == DialogResult.No)
+                    return;
+            }
+            else
+            {
+                DialogResult result = MessageBox.Show("Are you sure to proceed?", "Remove empty mipmaps", MessageBoxButtons.YesNo);
+                if (result == DialogResult.No)
+                    return;
+            }
 
             EnableMenuOptions(false);
 
