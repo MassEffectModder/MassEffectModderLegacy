@@ -417,7 +417,7 @@ namespace MassEffectModder
                                 else if (GameData.gameType == MeType.ME3_TYPE)
                                 {
                                     if (!File.Exists(filename))
-                                        filename = Directory.GetFiles(GameData.bioGamePath, archive + ".tfc", SearchOption.AllDirectories)[0];
+                                        filename = Directory.GetFiles(GameData.bioGamePath, archive + ".tfc", SearchOption.AllDirectories).Where(item => item.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase)).ToList()[0];
                                 }
                             }
                         }

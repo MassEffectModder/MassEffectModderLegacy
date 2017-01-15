@@ -132,7 +132,7 @@ namespace MassEffectModder
                 mainWindow.updateStatusLabel("");
             }
 
-            List<string> tfcFles = Directory.GetFiles(GameData.GamePath, "*.TempTFC", SearchOption.AllDirectories).ToList();
+            List<string> tfcFles = Directory.GetFiles(GameData.GamePath, "*.TempTFC", SearchOption.AllDirectories).Where(item => item.EndsWith(".TempTFC", StringComparison.OrdinalIgnoreCase)).ToList();
             for (int i = 0; i < tfcFles.Count; i++)
             {
 

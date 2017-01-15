@@ -240,8 +240,8 @@ namespace MassEffectModder
             string errors = "";
             int count = 0;
 
-            string[] files = Directory.GetFiles(inDir, "*.dds");
-            Array.Sort(files);
+            List<string> files = Directory.GetFiles(inDir, "*.dds").Where(item => item.EndsWith(".dds", StringComparison.OrdinalIgnoreCase)).ToList();
+            files.Sort();
             List<FileMod> modFiles = new List<FileMod>();
             using (FileStream outFs = new FileStream(outFile, FileMode.Create, FileAccess.Write))
             {

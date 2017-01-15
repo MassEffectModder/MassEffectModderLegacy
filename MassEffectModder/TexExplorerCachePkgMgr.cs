@@ -95,8 +95,8 @@ namespace MassEffectModder
 
         static public void updateMainTOC()
         {
-            List<string> mainFiles = Directory.GetFiles(GameData.MainData, "*.pcc", SearchOption.AllDirectories).ToList();
-            mainFiles.AddRange(Directory.GetFiles(GameData.MainData, "*.tfc", SearchOption.AllDirectories).ToList());
+            List<string> mainFiles = Directory.GetFiles(GameData.MainData, "*.pcc", SearchOption.AllDirectories).Where(item => item.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase)).ToList();
+            mainFiles.AddRange(Directory.GetFiles(GameData.MainData, "*.tfc", SearchOption.AllDirectories).Where(item => item.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase)).ToList());
             TOCBinFile tocFile = new TOCBinFile(Path.Combine(GameData.bioGamePath, "PCConsoleTOC.bin"));
             for (int i = 0; i < mainFiles.Count; i++)
             {
@@ -115,10 +115,10 @@ namespace MassEffectModder
             List<string> DLCs = Directory.GetDirectories(GameData.DLCData).ToList();
             for (int i = 0; i < DLCs.Count; i++)
             {
-                List<string> dlcFiles = Directory.GetFiles(DLCs[i], "*.pcc", SearchOption.AllDirectories).ToList();
+                List<string> dlcFiles = Directory.GetFiles(DLCs[i], "*.pcc", SearchOption.AllDirectories).Where(item => item.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase)).ToList();
                 if (dlcFiles.Count == 0)
                     continue;
-                dlcFiles.AddRange(Directory.GetFiles(DLCs[i], "*.tfc", SearchOption.AllDirectories).ToList());
+                dlcFiles.AddRange(Directory.GetFiles(DLCs[i], "*.tfc", SearchOption.AllDirectories).Where(item => item.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase)).ToList());
                 string DLCname = Path.GetFileName(DLCs[i]);
                 TOCBinFile tocDLC = new TOCBinFile(Path.Combine(GameData.DLCData, DLCname, "PCConsoleTOC.bin"));
                 for (int f = 0; f < dlcFiles.Count; f++)

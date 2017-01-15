@@ -264,7 +264,7 @@ namespace MassEffectModder
             if (tfcFiles != null && tfcFiles.Count != 0)
                 return true;
 
-            tfcFiles = Directory.GetFiles(GameData.GamePath, "*.tfc", SearchOption.AllDirectories).ToList();
+            tfcFiles = Directory.GetFiles(GameData.GamePath, "*.tfc", SearchOption.AllDirectories).Where(item => item.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase)).ToList();
             return true;
         }
 
@@ -341,16 +341,16 @@ namespace MassEffectModder
             }
             else if (gameType == MeType.ME2_TYPE)
             {
-                packageFiles = Directory.GetFiles(MainData, "*.pcc", SearchOption.AllDirectories).ToList();
+                packageFiles = Directory.GetFiles(MainData, "*.pcc", SearchOption.AllDirectories).Where(item => item.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase)).ToList();
                 if (Directory.Exists(DLCData))
-                    packageFiles.AddRange(Directory.GetFiles(DLCData, "*.pcc", SearchOption.AllDirectories));
+                    packageFiles.AddRange(Directory.GetFiles(DLCData, "*.pcc", SearchOption.AllDirectories).Where(item => item.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase)));
             }
             else if (gameType == MeType.ME3_TYPE)
             {
                 List<string> pccs = null;
                 if (Directory.Exists(DLCData))
                 {
-                    pccs = Directory.GetFiles(DLCData, "*.pcc", SearchOption.AllDirectories).ToList();
+                    pccs = Directory.GetFiles(DLCData, "*.pcc", SearchOption.AllDirectories).Where(item => item.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase)).ToList();
                     if (pccs.Count() == 0)
                     {
                         MessageBox.Show("You need exract DLC packages first");
@@ -372,7 +372,7 @@ namespace MassEffectModder
                     }
                 }
 
-                packageFiles = Directory.GetFiles(MainData, "*.pcc", SearchOption.AllDirectories).ToList();
+                packageFiles = Directory.GetFiles(MainData, "*.pcc", SearchOption.AllDirectories).Where(item => item.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase)).ToList();
                 if (pccs != null)
                     packageFiles.AddRange(pccs);
                 packageFiles.RemoveAll(s => s.Contains("GuidCache"));
