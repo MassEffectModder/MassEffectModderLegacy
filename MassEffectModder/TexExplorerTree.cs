@@ -43,147 +43,152 @@ namespace MassEffectModder
 
             if (File.Exists(filename))
             {
-                using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.ReadWrite))
-                {
-                    uint tag = fs.ReadUInt32();
-                    uint version = fs.ReadUInt32();
-                    if (tag != TexExplorer.textureMapBinTag || version != TexExplorer.textureMapBinVersion)
-                    {
-                        if (mainWindow != null)
-                        {
-                            MessageBox.Show("Wrong " + filename + " file!");
-                            mainWindow.updateStatusLabel("");
-                            mainWindow.updateStatusLabel2("");
-                            texEplorer.Close();
-                        }
-                        return null;
-                    }
-
-                    uint countTexture = fs.ReadUInt32();
-                    for (int i = 0; i < countTexture; i++)
-                    {
-                        FoundTexture texture = new FoundTexture();
-                        texture.name = fs.ReadStringASCIINull();
-                        texture.crc = fs.ReadUInt32();
-                        texture.packageName = fs.ReadStringASCIINull();
-                        uint countPackages = fs.ReadUInt32();
-                        texture.list = new List<MatchedTexture>();
-                        for (int k = 0; k < countPackages; k++)
-                        {
-                            MatchedTexture matched = new MatchedTexture();
-                            matched.exportID = fs.ReadInt32();
-                            matched.path = fs.ReadStringASCIINull();
-                            texture.list.Add(matched);
-                        }
-                        textures.Add(texture);
-                    }
-                    if (fs.Position < new FileInfo(filename).Length)
-                    {
-                        List<string> packages = new List<string>();
-                        int numPackages = fs.ReadInt32();
-                        for (int i = 0; i < numPackages; i++)
-                        {
-                            string pkgPath = fs.ReadStringASCIINull();
-                            pkgPath = GameData.GamePath + pkgPath;
-                            packages.Add(pkgPath);
-                        }
-                        for (int i = 0; i < packages.Count; i++)
-                        {
-                            if (GameData.packageFiles.Find(s => s.Equals(packages[i], StringComparison.OrdinalIgnoreCase)) == null)
-                            {
-                                MessageBox.Show("Detected removal game data files from last game data scan." +
-                                    "\n\nIt's required to re-scan vanilla gama data again.");
-                                return null;
-                            }
-                        }
-                        for (int i = 0; i < GameData.packageFiles.Count; i++)
-                        {
-                            if (packages.Find(s => s.Equals(GameData.packageFiles[i], StringComparison.OrdinalIgnoreCase)) == null)
-                            {
-                                MessageBox.Show("Detected additonal game data files from last game data scan." +
-                                    "\n\nIt's required to remove empty textures process again to cover additional files." +
-                                    "\n\nHowever additional files will be ignored while textures modding.");
-                                break;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        fs.SeekEnd();
-                        fs.WriteInt32(GameData.packageFiles.Count);
-                        for (int i = 0; i < GameData.packageFiles.Count; i++)
-                        {
-                            fs.WriteStringASCIINull(GameData.RelativeGameData(GameData.packageFiles[i]));
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if (MipMaps.checkGameDataModded())
+                FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.ReadWrite);
+                uint tag = fs.ReadUInt32();
+                uint version = fs.ReadUInt32();
+                if (tag != TexExplorer.textureMapBinTag || version != TexExplorer.textureMapBinVersion)
                 {
                     if (mainWindow != null)
-                        MessageBox.Show("Detected game data modded. Can not continue.");
+                    {
+                        MessageBox.Show("Wrong " + filename + " file!");
+                        mainWindow.updateStatusLabel("");
+                        mainWindow.updateStatusLabel2("");
+                        texEplorer.Close();
+                    }
                     return null;
                 }
 
-                if (mainWindow != null)
+                uint countTexture = fs.ReadUInt32();
+                for (int i = 0; i < countTexture; i++)
                 {
-                    DialogResult result = MessageBox.Show("Replacing textures and creating mods require textures mapping.\n" +
-                    "It's one time only process.\n\n" +
-                    "IMPORTANT! Make sure game data is not modified.\n\n" +
-                    "Are you sure to proceed?", "Textures mapping", MessageBoxButtons.YesNo);
-                    if (result == DialogResult.No)
+                    FoundTexture texture = new FoundTexture();
+                    texture.name = fs.ReadStringASCIINull();
+                    texture.crc = fs.ReadUInt32();
+                    texture.packageName = fs.ReadStringASCIINull();
+                    uint countPackages = fs.ReadUInt32();
+                    texture.list = new List<MatchedTexture>();
+                    for (int k = 0; k < countPackages; k++)
                     {
-                        texEplorer.Close();
-                        return null;
+                        MatchedTexture matched = new MatchedTexture();
+                        matched.exportID = fs.ReadInt32();
+                        matched.path = fs.ReadStringASCIINull();
+                        texture.list.Add(matched);
                     }
+                    textures.Add(texture);
                 }
-
-                GameData.packageFiles.Sort();
-                if (GameData.gameType == MeType.ME1_TYPE)
-                    sortPackagesME1(mainWindow, installer);
-                for (int i = 0; i < GameData.packageFiles.Count; i++)
+                if (fs.Position < new FileInfo(filename).Length)
                 {
-                    if (mainWindow != null)
+                    List<string> packages = new List<string>();
+                    int numPackages = fs.ReadInt32();
+                    for (int i = 0; i < numPackages; i++)
                     {
-                        mainWindow.updateStatusLabel("Find textures in package " + (i + 1) + " of " + GameData.packageFiles.Count + " - " + GameData.packageFiles[i]);
+                        string pkgPath = fs.ReadStringASCIINull();
+                        pkgPath = GameData.GamePath + pkgPath;
+                        packages.Add(pkgPath);
                     }
-                    if (installer != null)
+                    for (int i = 0; i < packages.Count; i++)
                     {
-                        installer.updateStatusScan("Progress... " + (i * 100 / GameData.packageFiles.Count) + " % ");
-                    }
-                    FindTextures(textures, GameData.packageFiles[i]);
-                }
-
-                using (FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
-                {
-                    fs.WriteUInt32(TexExplorer.textureMapBinTag);
-                    fs.WriteUInt32(TexExplorer.textureMapBinVersion);
-                    fs.WriteInt32(textures.Count);
-                    for (int i = 0; i < textures.Count; i++)
-                    {
-                        fs.WriteStringASCIINull(textures[i].name);
-                        fs.WriteUInt32(textures[i].crc);
-                        fs.WriteStringASCIINull(textures[i].packageName);
-                        fs.WriteInt32(textures[i].list.Count);
-                        for (int k = 0; k < textures[i].list.Count; k++)
+                        if (GameData.packageFiles.Find(s => s.Equals(packages[i], StringComparison.OrdinalIgnoreCase)) == null)
                         {
-                            fs.WriteInt32(textures[i].list[k].exportID);
-                            fs.WriteStringASCIINull(textures[i].list[k].path);
+                            DialogResult result = MessageBox.Show("Detected removal game data files from last game data scan." +
+                                "\n\nIt's required to re-scan vanilla gama data again.\n\nRe-scan textures?", "Loading textures tree", MessageBoxButtons.YesNo);
+                            if (result == DialogResult.No)
+                                return null;
+                            goto scan;
                         }
                     }
+                    for (int i = 0; i < GameData.packageFiles.Count; i++)
+                    {
+                        if (packages.Find(s => s.Equals(GameData.packageFiles[i], StringComparison.OrdinalIgnoreCase)) == null)
+                        {
+                            DialogResult result = MessageBox.Show("Detected additonal game data files from last game data scan." +
+                                "\n\nIt's required to remove empty textures process again (if it's yet done) to cover additional files." +
+                                "\n\nHowever additional files will be ignored while textures modding." +
+                                "\nTo able included them it's required to re-scan vanilla gama data again.\n\nRe-scan textures?", "Loading textures tree", MessageBoxButtons.YesNo);
+                            if (result == DialogResult.No)
+                                break;
+                            goto scan;
+                        }
+                    }
+                }
+                else
+                {
+                    fs.SeekEnd();
                     fs.WriteInt32(GameData.packageFiles.Count);
                     for (int i = 0; i < GameData.packageFiles.Count; i++)
                     {
                         fs.WriteStringASCIINull(GameData.RelativeGameData(GameData.packageFiles[i]));
                     }
                 }
+                fs.Close();
+                return textures;
+            }
+scan:
+            if (File.Exists(filename))
+                File.Delete(filename);
+            if (MipMaps.checkGameDataModded())
+            {
+                if (mainWindow != null)
+                    MessageBox.Show("Detected game data modded. Can not continue.");
+                return null;
+            }
+
+            if (mainWindow != null)
+            {
+                DialogResult result = MessageBox.Show("Replacing textures and creating mods require textures mapping.\n" +
+                "It's one time only process.\n\n" +
+                "IMPORTANT! Make sure game data is not modified.\n\n" +
+                "Are you sure to proceed?", "Textures mapping", MessageBoxButtons.YesNo);
+                if (result == DialogResult.No)
+                {
+                    texEplorer.Close();
+                    return null;
+                }
+            }
+
+            GameData.packageFiles.Sort();
+            if (GameData.gameType == MeType.ME1_TYPE)
+                sortPackagesME1(mainWindow, installer);
+            for (int i = 0; i < GameData.packageFiles.Count; i++)
+            {
                 if (mainWindow != null)
                 {
-                    mainWindow.updateStatusLabel("Done.");
-                    mainWindow.updateStatusLabel("");
+                    mainWindow.updateStatusLabel("Find textures in package " + (i + 1) + " of " + GameData.packageFiles.Count + " - " + GameData.packageFiles[i]);
                 }
+                if (installer != null)
+                {
+                    installer.updateStatusScan("Progress... " + (i * 100 / GameData.packageFiles.Count) + " % ");
+                }
+                FindTextures(textures, GameData.packageFiles[i]);
+            }
+
+            using (FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
+            {
+                fs.WriteUInt32(TexExplorer.textureMapBinTag);
+                fs.WriteUInt32(TexExplorer.textureMapBinVersion);
+                fs.WriteInt32(textures.Count);
+                for (int i = 0; i < textures.Count; i++)
+                {
+                    fs.WriteStringASCIINull(textures[i].name);
+                    fs.WriteUInt32(textures[i].crc);
+                    fs.WriteStringASCIINull(textures[i].packageName);
+                    fs.WriteInt32(textures[i].list.Count);
+                    for (int k = 0; k < textures[i].list.Count; k++)
+                    {
+                        fs.WriteInt32(textures[i].list[k].exportID);
+                        fs.WriteStringASCIINull(textures[i].list[k].path);
+                    }
+                }
+                fs.WriteInt32(GameData.packageFiles.Count);
+                for (int i = 0; i < GameData.packageFiles.Count; i++)
+                {
+                    fs.WriteStringASCIINull(GameData.RelativeGameData(GameData.packageFiles[i]));
+                }
+            }
+            if (mainWindow != null)
+            {
+                mainWindow.updateStatusLabel("Done.");
+                mainWindow.updateStatusLabel("");
             }
             return textures;
         }
