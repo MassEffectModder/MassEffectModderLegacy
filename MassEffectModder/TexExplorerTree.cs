@@ -91,26 +91,40 @@ namespace MassEffectModder
                     {
                         if (GameData.packageFiles.Find(s => s.Equals(packages[i], StringComparison.OrdinalIgnoreCase)) == null)
                         {
-                            DialogResult result = MessageBox.Show("Detected removal game data files from last game data scan." +
+                            if (mainWindow != null)
+                            {
+                                DialogResult result = MessageBox.Show("Detected removal game data files from last game data scan." +
                                 "\n\nIt's required to re-scan vanilla gama data again.\n\nRe-scan textures?", "Loading textures tree", MessageBoxButtons.YesNo);
-                            fs.Close();
-                            if (result == DialogResult.No)
+                                fs.Close();
+                                if (result == DialogResult.No)
+                                    return null;
+                                goto scan;
+                            }
+                            else
+                            {
                                 return null;
-                            goto scan;
+                            }
                         }
                     }
                     for (int i = 0; i < GameData.packageFiles.Count; i++)
                     {
                         if (packages.Find(s => s.Equals(GameData.packageFiles[i], StringComparison.OrdinalIgnoreCase)) == null)
                         {
-                            DialogResult result = MessageBox.Show("Detected additonal game data files from last game data scan." +
+                            if (mainWindow != null)
+                            {
+                                DialogResult result = MessageBox.Show("Detected additonal game data files from last game data scan." +
                                 "\n\nIt's required to remove empty textures process again (if it's done yet) to cover additional files." +
                                 "\n\nHowever additional files will be ignored while textures modding." +
                                 "\nTo able included them, it's required to re-scan vanilla gama data again.\n\nRe-scan textures?", "Loading textures tree", MessageBoxButtons.YesNo);
-                            fs.Close();
-                            if (result == DialogResult.No)
+                                fs.Close();
+                                if (result == DialogResult.No)
+                                    break;
+                                goto scan;
+                            }
+                            else
+                            {
                                 break;
-                            goto scan;
+                            }
                         }
                     }
                 }
