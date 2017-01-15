@@ -536,7 +536,7 @@ namespace MassEffectModder
             {
                 diskUsage += Misc.getDirectorySize(Path.GetDirectoryName(item.Name));
             }
-            if (diskUsage * 2 < diskFreeSpace)
+            if (diskUsage * 2.5 < diskFreeSpace)
             {
                 Misc.startTimer();
                 foreach (ListViewItem item in listViewMods.SelectedItems)
@@ -561,7 +561,7 @@ namespace MassEffectModder
             }
             else
             {
-                MessageBox.Show("You need about " + Misc.getBytesFormat(diskUsage * 2) + " free disk space");
+                MessageBox.Show("You need about " + Misc.getBytesFormat((long)(diskUsage * 2.5)) + " free disk space");
             }
             EnableMenuOptions(true);
         }
@@ -622,7 +622,7 @@ namespace MassEffectModder
                         string outDir = Path.Combine(modFile.SelectedPath, Path.GetFileNameWithoutExtension(item.Name));
                         diskUsage += Misc.getDirectorySize(outDir);
                     }
-                    if (diskUsage * 2.1 < diskFreeSpace)
+                    if (diskUsage * 2.5 < diskFreeSpace)
                     {
                         Misc.startTimer();
                         richTextBoxInfo.Text = "";
@@ -646,7 +646,7 @@ namespace MassEffectModder
                     }
                     else
                     {
-                        MessageBox.Show("You need about " + Misc.getBytesFormat((long)(diskUsage * 2.1)) + " free disk space");
+                        MessageBox.Show("You need about " + Misc.getBytesFormat((long)(diskUsage * 2.5)) + " free disk space");
                     }
                 }
             }
@@ -667,7 +667,7 @@ namespace MassEffectModder
                     gameData.lastCreateMODPath = modFile.SelectedPath;
                     long diskUsage = Misc.getDirectorySize(modFile.SelectedPath);
                     long diskFreeSpace = Misc.getDiskFreeSpace(modFile.SelectedPath);
-                    if (diskUsage / 1.9 < diskFreeSpace)
+                    if (diskUsage / 1.5 < diskFreeSpace)
                     {
                         Misc.startTimer();
                         _mainWindow.updateStatusLabel("MOD packing...");
@@ -685,7 +685,7 @@ namespace MassEffectModder
                     }
                     else
                     {
-                        MessageBox.Show("You need about " + Misc.getBytesFormat((long)(diskUsage / 1.9)) + " free disk space");
+                        MessageBox.Show("You need about " + Misc.getBytesFormat((long)(diskUsage / 1.5)) + " free disk space");
                     }
                 }
             }
@@ -719,7 +719,7 @@ namespace MassEffectModder
                         diskUsage += Misc.getDirectorySize(listDirs[i]);
                     }
 
-                    if (diskUsage / 1.9 < diskFreeSpace)
+                    if (diskUsage / 1.5 < diskFreeSpace)
                     {
                         Misc.startTimer();
                         _mainWindow.updateStatusLabel("MODs packing...");
@@ -741,7 +741,7 @@ namespace MassEffectModder
                     }
                     else
                     {
-                        MessageBox.Show("You need about " + Misc.getBytesFormat((long)(diskUsage / 1.9)) + " free disk space");
+                        MessageBox.Show("You need about " + Misc.getBytesFormat((long)(diskUsage / 1.5)) + " free disk space");
                     }
                 }
             }
