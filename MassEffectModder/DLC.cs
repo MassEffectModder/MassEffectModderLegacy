@@ -509,10 +509,11 @@ namespace MassEffectModder
             {
                 diskUsage += new FileInfo(sfarFiles[i]).Length;
             }
-            if (diskUsage * 2.5 > diskFreeSpace)
+            diskUsage = (long)(diskUsage * 2.5);
+            if (diskUsage > diskFreeSpace)
             {
                 if (mainWindow != null)
-                    MessageBox.Show("You need about " + Misc.getBytesFormat((long)(diskUsage * 2.5)) + " free disk space");
+                    MessageBox.Show("You need about " + Misc.getBytesFormat(diskUsage) + " free disk space");
                 return;
             }
 
