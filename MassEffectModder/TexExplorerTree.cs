@@ -132,7 +132,7 @@ scan:
             if (MipMaps.checkGameDataModded())
             {
                 if (mainWindow != null)
-                    MessageBox.Show("Detected game data modded. Can not continue.");
+                    MessageBox.Show("Detected texture modded game data. Can not continue.");
                 return null;
             }
 
