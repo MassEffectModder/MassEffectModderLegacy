@@ -264,7 +264,7 @@ namespace MassEffectModder
             if (tfcFiles != null && tfcFiles.Count != 0)
                 return true;
 
-            tfcFiles = Directory.GetFiles(GameData.GamePath, "*.tfc", SearchOption.AllDirectories).Where(item => item.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase)).ToList();
+            tfcFiles = Directory.GetFiles(GamePath, "*.tfc", SearchOption.AllDirectories).Where(item => item.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase)).ToList();
             return true;
         }
 
