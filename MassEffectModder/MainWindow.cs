@@ -317,16 +317,41 @@ namespace MassEffectModder
                 if (files.Count == 0)
                     DLCs.RemoveAt(i--);
             }
+            long diskFreeSpace = Misc.getDiskFreeSpace(GameData.GamePath);
+            long diskUsage = 0;
             for (int i = 0; i < DLCs.Count; i++)
             {
-                string DLCname = Path.GetFileName(DLCs[i]);
-                updateStatusLabel("SFAR packing - DLC " + (i + 1) + " of " + DLCs.Count);
-                PackME3DLC(DLCs[i], DLCname);
+                diskUsage += Misc.getDirectorySize(DLCs[i]);
             }
-            Directory.Delete(GameData.DLCData, true);
-            Directory.Move(Path.Combine(GameData.GamePath, "BIOGame", "DLCTemp"), GameData.DLCData);
+            diskUsage = (long)(diskUsage / 1.5);
+            if (diskUsage < diskFreeSpace)
+            {
+                for (int i = 0; i < DLCs.Count; i++)
+                {
+                    string DLCname = Path.GetFileName(DLCs[i]);
+                    updateStatusLabel("SFAR packing - DLC " + (i + 1) + " of " + DLCs.Count);
+                    PackME3DLC(DLCs[i], DLCname);
+                }
 
-            updateStatusLabel("Done");
+                string tmpDlcDir = Path.Combine(GameData.GamePath, "BIOGame", "DLCTemp");
+                DLCs = Directory.GetFiles(GameData.DLCData, "Default.sfar", SearchOption.AllDirectories).ToList();
+                for (int i = 0; i < DLCs.Count; i++)
+                {
+                    if (new FileInfo(DLCs[i]).Length <= 32)
+                    {
+                        string source = Path.GetDirectoryName(Path.GetDirectoryName(DLCs[i]));
+                        Directory.Move(source, tmpDlcDir + "\\" + Path.GetFileName(source));
+                    }
+                }
+
+                Directory.Delete(GameData.DLCData, true);
+                Directory.Move(tmpDlcDir, GameData.DLCData);
+                updateStatusLabel("Done");
+            }
+            else
+            {
+                MessageBox.Show("You need about " + Misc.getBytesFormat(diskUsage) + " free disk space");
+            }
             updateStatusLabel2("");
             enableGameDataMenu(true);
         }

@@ -503,6 +503,19 @@ namespace MassEffectModder
                 return;
             }
 
+            long diskFreeSpace = Misc.getDiskFreeSpace(GameData.GamePath);
+            long diskUsage = 0;
+            for (int i = 0; i < sfarFiles.Count; i++)
+            {
+                diskUsage += new FileInfo(sfarFiles[i]).Length;
+            }
+            if (diskUsage * 2.5 > diskFreeSpace)
+            {
+                if (mainWindow != null)
+                    MessageBox.Show("You need about " + Misc.getBytesFormat((long)(diskUsage * 2.5)) + " free disk space");
+                return;
+            }
+
             string tmpDlcDir = Path.Combine(GameData.GamePath, "BIOGame", "DLCTemp");
             if (Directory.Exists(tmpDlcDir))
                 Directory.Delete(tmpDlcDir, true);
