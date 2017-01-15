@@ -54,12 +54,14 @@ namespace MassEffectModder
             this.massEffect1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.repackME1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updateME1ConfigToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeLODSetME1MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeGamePathME1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modME1ExportDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuME2 = new System.Windows.Forms.ToolStripMenuItem();
             this.massEffect2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.repackME2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updateME2ConfigToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeLODSetME2MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeGamePathME2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modME2ExportDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuME3 = new System.Windows.Forms.ToolStripMenuItem();
@@ -67,15 +69,14 @@ namespace MassEffectModder
             this.extractME3DLCPackagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.packME3DLCPackagesLZMAToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updateME3ConfigToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeLODSetME3MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeGamePathME3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modME3ExportDataToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.statusStrip2 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.removeLODSetME1MenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.removeLODSetME2MenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.removeLODSetME3MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItemUpdateTOCs = new System.Windows.Forms.ToolStripMenuItem();
             this.menuGame.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.statusStrip2.SuspendLayout();
@@ -126,6 +127,13 @@ namespace MassEffectModder
             this.updateME1ConfigToolStripMenuItem.Text = "Update LOD Settings";
             this.updateME1ConfigToolStripMenuItem.Click += new System.EventHandler(this.updateME1ConfigToolStripMenuItem_Click);
             // 
+            // removeLODSetME1MenuItem
+            // 
+            this.removeLODSetME1MenuItem.Name = "removeLODSetME1MenuItem";
+            this.removeLODSetME1MenuItem.Size = new System.Drawing.Size(188, 22);
+            this.removeLODSetME1MenuItem.Text = "Remove LOD Settings";
+            this.removeLODSetME1MenuItem.Click += new System.EventHandler(this.removeLODSetME1MenuItem_Click);
+            // 
             // changeGamePathME1ToolStripMenuItem
             // 
             this.changeGamePathME1ToolStripMenuItem.Name = "changeGamePathME1ToolStripMenuItem";
@@ -174,6 +182,13 @@ namespace MassEffectModder
             this.updateME2ConfigToolStripMenuItem.Text = "Update LOD Settings";
             this.updateME2ConfigToolStripMenuItem.Click += new System.EventHandler(this.updateME2ConfigToolStripMenuItem_Click);
             // 
+            // removeLODSetME2MenuItem
+            // 
+            this.removeLODSetME2MenuItem.Name = "removeLODSetME2MenuItem";
+            this.removeLODSetME2MenuItem.Size = new System.Drawing.Size(188, 22);
+            this.removeLODSetME2MenuItem.Text = "Remove LOD Settings";
+            this.removeLODSetME2MenuItem.Click += new System.EventHandler(this.removeLODSetME2MenuItem_Click);
+            // 
             // changeGamePathME2ToolStripMenuItem
             // 
             this.changeGamePathME2ToolStripMenuItem.Name = "changeGamePathME2ToolStripMenuItem";
@@ -197,6 +212,7 @@ namespace MassEffectModder
             this.updateME3ConfigToolStripMenuItem,
             this.removeLODSetME3MenuItem,
             this.changeGamePathME3ToolStripMenuItem,
+            this.toolStripMenuItemUpdateTOCs,
             this.modME3ExportDataToolStripMenuItem1});
             this.toolStripMenuME3.Name = "toolStripMenuME3";
             this.toolStripMenuME3.Size = new System.Drawing.Size(88, 20);
@@ -229,6 +245,13 @@ namespace MassEffectModder
             this.updateME3ConfigToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.updateME3ConfigToolStripMenuItem.Text = "Update LOD Settings";
             this.updateME3ConfigToolStripMenuItem.Click += new System.EventHandler(this.updateME3ConfigToolStripMenuItem_Click);
+            // 
+            // removeLODSetME3MenuItem
+            // 
+            this.removeLODSetME3MenuItem.Name = "removeLODSetME3MenuItem";
+            this.removeLODSetME3MenuItem.Size = new System.Drawing.Size(188, 22);
+            this.removeLODSetME3MenuItem.Text = "Remove LOD Settings";
+            this.removeLODSetME3MenuItem.Click += new System.EventHandler(this.removeLODSetME3MenuItem_Click);
             // 
             // changeGamePathME3ToolStripMenuItem
             // 
@@ -273,26 +296,12 @@ namespace MassEffectModder
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
             this.toolStripStatusLabel2.Size = new System.Drawing.Size(0, 17);
             // 
-            // removeLODSetME1MenuItem
+            // toolStripMenuItemUpdateTOCs
             // 
-            this.removeLODSetME1MenuItem.Name = "removeLODSetME1MenuItem";
-            this.removeLODSetME1MenuItem.Size = new System.Drawing.Size(188, 22);
-            this.removeLODSetME1MenuItem.Text = "Remove LOD Settings";
-            this.removeLODSetME1MenuItem.Click += new System.EventHandler(this.removeLODSetME1MenuItem_Click);
-            // 
-            // removeLODSetME2MenuItem
-            // 
-            this.removeLODSetME2MenuItem.Name = "removeLODSetME2MenuItem";
-            this.removeLODSetME2MenuItem.Size = new System.Drawing.Size(188, 22);
-            this.removeLODSetME2MenuItem.Text = "Remove LOD Settings";
-            this.removeLODSetME2MenuItem.Click += new System.EventHandler(this.removeLODSetME2MenuItem_Click);
-            // 
-            // removeLODSetME3MenuItem
-            // 
-            this.removeLODSetME3MenuItem.Name = "removeLODSetME3MenuItem";
-            this.removeLODSetME3MenuItem.Size = new System.Drawing.Size(188, 22);
-            this.removeLODSetME3MenuItem.Text = "Remove LOD Settings";
-            this.removeLODSetME3MenuItem.Click += new System.EventHandler(this.removeLODSetME3MenuItem_Click);
+            this.toolStripMenuItemUpdateTOCs.Name = "toolStripMenuItemUpdateTOCs";
+            this.toolStripMenuItemUpdateTOCs.Size = new System.Drawing.Size(188, 22);
+            this.toolStripMenuItemUpdateTOCs.Text = "Update TOCs";
+            this.toolStripMenuItemUpdateTOCs.Click += new System.EventHandler(this.toolStripMenuItemUpdateTOCs_Click);
             // 
             // MainWindow
             // 
@@ -347,6 +356,7 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripMenuItem removeLODSetME1MenuItem;
         private System.Windows.Forms.ToolStripMenuItem removeLODSetME2MenuItem;
         private System.Windows.Forms.ToolStripMenuItem removeLODSetME3MenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemUpdateTOCs;
     }
 }
 

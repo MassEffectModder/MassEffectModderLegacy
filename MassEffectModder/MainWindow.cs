@@ -266,6 +266,11 @@ namespace MassEffectModder
                 MessageBox.Show("Wrong game path!");
                 return;
             }
+            if (!Directory.Exists(GameData.DLCData))
+            {
+                MessageBox.Show("There is nothing to unpack.");
+                return;
+            }
             ME3DLC.unpackAllDLC(this, null);
             updateStatusLabel("Done");
             updateStatusLabel2("");
@@ -291,6 +296,11 @@ namespace MassEffectModder
             if (!Directory.Exists(GameData.GamePath))
             {
                 MessageBox.Show("Wrong game path!");
+                return;
+            }
+            if (!Directory.Exists(GameData.DLCData))
+            {
+                MessageBox.Show("There is nothing to pack.");
                 return;
             }
             List<string> dlcs = Directory.GetFiles(GameData.DLCData, "Mount.dlc", SearchOption.AllDirectories).ToList();
@@ -426,6 +436,23 @@ namespace MassEffectModder
             {
                 MessageBox.Show("Game configuration: " + path + " not exist, nothing done.");
             }
+            enableGameDataMenu(true);
+        }
+
+        private void toolStripMenuItemUpdateTOCs_Click(object sender, EventArgs e)
+        {
+            enableGameDataMenu(false);
+            GameData gameData = new GameData(MeType.ME3_TYPE, _configIni);
+            if (Directory.Exists(GameData.GamePath))
+            {
+                CachePackageMgr.updateMainTOC();
+                CachePackageMgr.updateDLCsTOC();
+            }
+            else
+            {
+                MessageBox.Show("Wrong game path!");
+            }
+
             enableGameDataMenu(true);
         }
     }

@@ -93,7 +93,7 @@ namespace MassEffectModder
             packages.Clear();
         }
 
-        public void updateMainTOC()
+        static public void updateMainTOC()
         {
             List<string> mainFiles = Directory.GetFiles(GameData.MainData, "*.pcc", SearchOption.AllDirectories).ToList();
             mainFiles.AddRange(Directory.GetFiles(GameData.MainData, "*.tfc", SearchOption.AllDirectories).ToList());
@@ -107,7 +107,7 @@ namespace MassEffectModder
             tocFile.saveToFile(Path.Combine(GameData.bioGamePath, @"PCConsoleTOC.bin"));
         }
 
-        public void updateDLCsTOC()
+        static public void updateDLCsTOC()
         {
             if (!Directory.Exists(GameData.DLCData))
                 return;

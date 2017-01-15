@@ -141,8 +141,8 @@ namespace MassEffectModder
             }
             if (GameData.gameType == MeType.ME3_TYPE)
             {
-                cachePackageMgr.updateMainTOC();
-                cachePackageMgr.updateDLCsTOC();
+                CachePackageMgr.updateMainTOC();
+                CachePackageMgr.updateDLCsTOC();
             }
         }
 
