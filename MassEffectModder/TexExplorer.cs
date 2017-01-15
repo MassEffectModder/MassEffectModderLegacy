@@ -879,23 +879,5 @@ namespace MassEffectModder
             }
             EnableMenuOptions(true);
         }
-
-        private void generateTexturesTreeMenuItem_Click(object sender, EventArgs e)
-        {
-            EnableMenuOptions(false);
-
-            _mainWindow.updateStatusLabel("");
-            _mainWindow.updateStatusLabel("Preparing tree...");
-            Misc.startTimer();
-            _textures = treeScan.PrepareListOfTextures(this, _mainWindow, null, true);
-            var time = Misc.stopTimer();
-            _mainWindow.updateStatusLabel("Done - time lapsed: " + Misc.getTimerFormat(time));
-            _mainWindow.updateStatusLabel("");
-
-            PrepareTreeList();
-
-            EnableMenuOptions(true);
-        }
     }
-
 }
