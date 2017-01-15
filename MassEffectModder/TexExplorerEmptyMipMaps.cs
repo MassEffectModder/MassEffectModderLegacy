@@ -38,7 +38,7 @@ namespace MassEffectModder
             public uint crc;
         }
 
-        public void removeMipMaps(List<FoundTexture> textures, CachePackageMgr cachePackageMgr, MainWindow mainWindow, Installer installer)
+        public void removeMipMaps(List<FoundTexture> textures, CachePackageMgr cachePackageMgr, MainWindow mainWindow, Installer installer, bool forceZlib = false)
         {
             for (int i = 0; i < GameData.packageFiles.Count; i++)
             {
@@ -136,7 +136,12 @@ namespace MassEffectModder
                     }
                 }
                 if (modified)
-                    package.SaveToFile();
+                {
+                    if (package.compressed && package.compressionType != Package.CompressionType.Zlib)
+                        package.SaveToFile(true);
+                    else
+                        package.SaveToFile();
+                }
                 package.Dispose();
             }
             if (GameData.gameType == MeType.ME3_TYPE)
