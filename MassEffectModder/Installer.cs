@@ -23,21 +23,17 @@ using AmaroK86.ImageFormat;
 using StreamHelpers;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static MassEffectModder.MipMaps;
 
 namespace MassEffectModder
 {
     public partial class Installer : Form
     {
+        public bool exitToModder;
         ConfIni configIni;
         ConfIni installerIni;
         int gameId;
@@ -47,6 +43,7 @@ namespace MassEffectModder
         List<FoundTexture> textures;
         MipMaps mipMaps;
         TreeScan treeScan;
+        string errors = "";
 
         public Installer()
         {
@@ -71,86 +68,254 @@ namespace MassEffectModder
                 MessageBox.Show("Not recognized game id in installer.ini, exiting...", "Installer");
                 return false;
             }
-            memFiles = Directory.GetFiles(".", "*.mem", SearchOption.AllDirectories).ToList();
-            memFiles.Sort();
-            if (memFiles.Count == 0)
-            {
-                MessageBox.Show("No mods included, exiting", "Installer");
-                return false;
-            }
+            configIni = new ConfIni();
 
-            labelStatusDetected.Text = "";
-            labelStatusLOD.Text = "";
             labelStatusPrepare.Text = "";
             labelStatusScan.Text = "";
-            labelStatusMipMaps.Text = "";
             labelStatusTextures.Text = "";
             labelStatusStore.Text = "";
+            labelStatusMipMaps.Text = "";
+            labelStatusLOD.Text = "";
+            labelFinalStatus.Text = "Press CHECK button first before begin.";
+
+            if (gameId != 3)
+            {
+                checkBoxPreEnablePack.Visible = false;
+                labelME3DLCPack.Visible = false;
+                checkBoxPackDLC.Visible = false;
+                labelStatusPackDLC.Visible = false;
+
+                labelMERepackZlib.Visible = false;
+                checkBoxRepackZlib.Visible = false;
+                labelStatusRepackZlib.Visible = false;
+            }
+            if (gameId == 3)
+            {
+                checkBoxPreEnableRepack.Visible = false;
+                labelMERepackZlib.Visible = false;
+                checkBoxRepackZlib.Visible = false;
+                labelStatusRepackZlib.Visible = false;
+
+                labelME3DLCPack.Visible = false;
+                checkBoxPackDLC.Visible = false;
+                labelStatusPackDLC.Visible = false;
+            }
+
+            clearPreCheckStatus();
+
+            buttonSTART.Enabled = false;
 
             return true;
         }
 
-        private void buttonSTART_Click(object sender, EventArgs e)
+        private void buttonPreInstallCheck_Click(object sender, EventArgs e)
         {
-            buttonSTART.Enabled = false;
+            clearPreCheckStatus();
 
-
-            configIni = new ConfIni();
-            gameData = new GameData((MeType)gameId, configIni);
-            if (!Directory.Exists(GameData.GamePath))
-                return;
-
-            Misc.startTimer();
-
-            labelStatusDetected.Text = "In progress...";
-            checkBoxDetected.Checked = true;
-            labelStatusDetected.Text = "";
-
-
-            labelStatusLOD.Text = "In progress...";
-            LODSettings.updateLOD((MeType)gameId, configIni);
-            checkBoxLOD.Checked = true;
-            labelStatusLOD.Text = "";
-
-
-            updateStatusPrepare("In progress...");
-            if (GameData.gameType == MeType.ME1_TYPE)
-                Misc.VerifyME1Exe(gameData, false);
-
-            if (GameData.gameType == MeType.ME3_TYPE)
-                ME3DLC.unpackAllDLC(null, this);
-
-            if (!gameData.getPackages(false))
+            buttonPreInstallCheck.Enabled = false;
+            labelFinalStatus.Text = "Checking...";
+            labelPreMods.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
+            labelPreMods.Text = "Checking...";
+            Application.DoEvents();
+            memFiles = Directory.GetFiles(".", "*.mem", SearchOption.AllDirectories).Where(item => item.EndsWith(".mem", StringComparison.OrdinalIgnoreCase)).ToList();
+            memFiles.Sort();
+            if (memFiles.Count == 0)
             {
-                labelStatusPrepare.Text = "Failed!";
+                labelPreMods.Text = "No MEM mods found!";
+                labelPreMods.ForeColor = Color.FromKnownColor(KnownColor.Red);
+                labelFinalStatus.Text = "Checks detected issue!";
+                buttonPreInstallCheck.Enabled = true;
                 return;
             }
-            if (GameData.gameType != MeType.ME1_TYPE)
+            errors = "";
+            for (int i = 0; i < memFiles.Count; i++)
             {
-                if (!gameData.getTfcTextures())
+                using (FileStream fs = new FileStream(memFiles[i], FileMode.Open, FileAccess.Read))
                 {
-                    labelStatusPrepare.Text = "Failed!";
+                    uint tag = fs.ReadUInt32();
+                    uint version = fs.ReadUInt32();
+                    if (tag != TexExplorer.TextureModTag || (version != TexExplorer.TextureModVersion1 && version != TexExplorer.TextureModVersion))
+                    {
+                        errors += "File " + memFiles[i] + " is not MEM mod!" + Environment.NewLine;
+                        continue;
+                    }
+                    else
+                    {
+                        uint gameType = 0;
+                        if (version == TexExplorer.TextureModVersion)
+                            fs.JumpTo(fs.ReadInt64());
+                        gameType = fs.ReadUInt32();
+                        if (gameType != gameId)
+                        {
+                            errors += "File " + memFiles[i] + " is MEM mod for different game!" + Environment.NewLine;
+                            continue;
+                        }
+                    }
+                }
+            }
+            if (errors != "")
+            {
+                labelPreMods.Text = "There are some errors while detecting MEM mods!";
+                labelPreMods.ForeColor = Color.FromKnownColor(KnownColor.Red);
+                labelFinalStatus.Text = "Checks detected issue!";
+                buttonPreInstallCheck.Enabled = true;
+
+                string filename = "errors.txt";
+                if (File.Exists(filename))
+                    File.Delete(filename);
+                if (errors != "")
+                {
+                    using (FileStream fs = new FileStream(filename, FileMode.CreateNew))
+                    {
+                        fs.WriteStringASCII(errors);
+                    }
+                    Process.Start(filename);
+                }
+
+                return;
+            }
+            labelPreMods.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
+            labelPreMods.Text = "";
+            checkBoxPreMods.Checked = true;
+
+
+            labelPreGamePath.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
+            labelPreGamePath.Text = "Checking...";
+            Application.DoEvents();
+            gameData = new GameData((MeType)gameId, configIni);
+            labelPrePath.Text = GameData.GamePath;
+            if (!Directory.Exists(GameData.GamePath))
+            {
+                labelPreGamePath.Text = "Game path is wrong!";
+                labelPreGamePath.ForeColor = Color.FromKnownColor(KnownColor.Red);
+                labelFinalStatus.Text = "Checks detected issue!";
+                buttonPreInstallCheck.Enabled = true;
+                return;
+            }
+            if (!gameData.getPackages(false))
+            {
+                labelPreGamePath.Text = "Missing game data!";
+                labelPreGamePath.ForeColor = Color.FromKnownColor(KnownColor.Red);
+                labelFinalStatus.Text = "Checks detected issue!";
+                buttonPreInstallCheck.Enabled = true;
+                return;
+            }
+            if (gameId == (int)MeType.ME1_TYPE)
+            {
+                if (!File.Exists(GameData.GamePath + "\\BioGame\\CookedPC\\Startup_int.upk"))
+                {
+                    labelPreGamePath.Text = "Not found ME1 game!";
+                    labelPreGamePath.ForeColor = Color.FromKnownColor(KnownColor.Red);
+                    labelFinalStatus.Text = "Checks detected issue!";
+                    buttonPreInstallCheck.Enabled = true;
                     return;
                 }
             }
-            checkBoxPrepare.Checked = true;
-            updateStatusPrepare("");
+            if (gameId == (int)MeType.ME2_TYPE)
+            {
+                if (!File.Exists(GameData.GamePath + "\\BioGame\\CookedPC\\Textures.tfc"))
+                {
+                    labelPreGamePath.Text = "Not found ME2 game!";
+                    labelPreGamePath.ForeColor = Color.FromKnownColor(KnownColor.Red);
+                    labelFinalStatus.Text = "Checks detected issue";
+                    buttonPreInstallCheck.Enabled = true;
+                    return;
+                }
+            }
+            if (gameId == (int)MeType.ME3_TYPE)
+            {
+                if (!File.Exists(GameData.GamePath + "\\BIOGame\\PCConsoleTOC.bin"))
+                {
+                    labelPreGamePath.Text = "Not found ME3 game!";
+                    labelPreGamePath.ForeColor = Color.FromKnownColor(KnownColor.Red);
+                    labelFinalStatus.Text = "Checks detected issue!";
+                    buttonPreInstallCheck.Enabled = true;
+                    return;
+                }
+            }
+            labelPreGamePath.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
+            labelPreGamePath.Text = "";
+            checkBoxPrePath.Checked = true;
+
+            labelPreAccess.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
+            labelPreAccess.Text = "Checking...";
+            Application.DoEvents();
+            if (!Misc.checkWriteAccess(GameData.GamePath))
+            {
+                labelPreAccess.Text = "No write access to game data!";
+                labelPreAccess.ForeColor = Color.FromKnownColor(KnownColor.Red);
+                labelFinalStatus.Text = "Checks detected issue!";
+                buttonPreInstallCheck.Enabled = true;
+                return;
+            }
+            labelPreAccess.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
+            labelPreAccess.Text = "";
+            checkBoxPreAccess.Checked = true;
 
 
-            updateStatusScan("In progress...");
-            textures = treeScan.PrepareListOfTextures(null, null, this);
-            checkBoxScan.Checked = true;
-            updateStatusScan("");
+            labelPreSpace.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
+            labelPreSpace.Text = "Checking...";
+            Application.DoEvents();
+            long diskFreeSpace = Misc.getDiskFreeSpace(GameData.GamePath);
+            long diskUsage = 0;
+
+            for (int i = 0; i < memFiles.Count; i++)
+            {
+                diskUsage += new FileInfo(memFiles[i]).Length;
+            }
+            diskUsage = (long)(diskUsage * 2.5);
+
+            if (gameId == (int)MeType.ME3_TYPE)
+            {
+                List<string> sfarFiles = Directory.GetFiles(GameData.DLCData, "Default.sfar", SearchOption.AllDirectories).ToList();
+                for (int i = 0; i < sfarFiles.Count; i++)
+                {
+                    if (new FileInfo(sfarFiles[i]).Length <= 32)
+                        sfarFiles.RemoveAt(i--);
+                }
+                for (int i = 0; i < sfarFiles.Count; i++)
+                {
+                    diskUsage += new FileInfo(sfarFiles[i]).Length;
+                }
+                diskUsage = (long)(diskUsage * 2.5);
+            }
+
+            if (diskUsage > diskFreeSpace)
+            {
+                labelPreSpace.Text = "You need about " + Misc.getBytesFormat(diskUsage) + " free disk space";
+                labelPreSpace.ForeColor = Color.FromKnownColor(KnownColor.Red);
+                labelFinalStatus.Text = "Checks detected issue!";
+                buttonPreInstallCheck.Enabled = true;
+                return;
+            }
+            labelPreSpace.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
+            labelPreSpace.Text = "";
+            checkBoxPreSpace.Checked = true;
 
 
-            updateStatusMipMaps("In progress...");
-            mipMaps.removeMipMaps(textures, cachePackageMgr, null, this);
-            checkBoxMipMaps.Checked = true;
-            updateStatusMipMaps("");
+            labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
+            labelPreVanilla.Text = "Checking...";
+            Application.DoEvents();
+            if (MipMaps.checkGameDataModded())
+            {
+                labelPreVanilla.Text = "Game is already modded!";
+                labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.Red);
+                labelFinalStatus.Text = "Checks detected issue!";
+                buttonPreInstallCheck.Enabled = true;
+                return;
+            }
+            labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
+            labelPreVanilla.Text = "";
+            checkBoxPreVanilla.Checked = true;
 
 
-            updateStatusTextures("In progress...");
-            string errors = "";
+            labelFinalStatus.Text = "Ready to go. Press START button!";
+            buttonPreInstallCheck.Enabled = true;
+            buttonSTART.Enabled = true;
+        }
+
+        public void applyModules()
+        {
             for (int i = 0; i < memFiles.Count; i++)
             {
                 using (FileStream fs = new FileStream(memFiles[i], FileMode.Open, FileAccess.Read))
@@ -175,17 +340,17 @@ namespace MassEffectModder
                         }
                     }
                     int numFiles = fs.ReadInt32();
-                    List<FileMod> modFiles = new List<FileMod>();
+                    List<MipMaps.FileMod> modFiles = new List<MipMaps.FileMod>();
                     if (version == TexExplorer.TextureModVersion)
                     {
                         for (int k = 0; k < numFiles; k++)
                         {
-                            FileMod fileMod = new FileMod();
+                            MipMaps.FileMod fileMod = new MipMaps.FileMod();
                             fileMod.tag = fs.ReadUInt32();
                             fileMod.name = fs.ReadStringASCIINull();
                             fileMod.offset = fs.ReadInt64();
                             fileMod.size = fs.ReadInt64();
-                            if (fileMod.tag == FileTextureTag)
+                            if (fileMod.tag == MipMaps.FileTextureTag)
                                 modFiles.Add(fileMod);
                         }
                         numFiles = modFiles.Count;
@@ -213,7 +378,7 @@ namespace MassEffectModder
                         }
                         else
                         {
-                            dst = decompressData(fs, size);
+                            dst = MipMaps.decompressData(fs, size);
                             dstLen = dst.Length;
                         }
 
@@ -241,6 +406,79 @@ namespace MassEffectModder
                     }
                 }
             }
+        }
+
+        public void clearPreCheckStatus()
+        {
+            labelPreMods.Text = "";
+            labelPreGamePath.Text = "";
+            labelPrePath.Text = "";
+            labelPreAccess.Text = "";
+            labelPreSpace.Text = "";
+            labelPreVanilla.Text = "";
+            labelStatusRepackZlib.Text = "";
+            labelStatusPackDLC.Text = "";
+
+            checkBoxPreMods.Checked = false;
+            checkBoxPrePath.Checked = false;
+            checkBoxPreAccess.Checked = false;
+            checkBoxPreSpace.Checked = false;
+            checkBoxPreVanilla.Checked = false;
+
+            checkBoxPreEnableRepack.Checked = false;
+            checkBoxPreEnablePack.Checked = false;
+            Application.DoEvents();
+        }
+
+        private void buttonChangePath_Click(object sender, EventArgs e)
+        {
+            gameData = new GameData((MeType)gameId, configIni, true);
+            clearPreCheckStatus();
+            labelPrePath.Text = GameData.GamePath;
+            buttonSTART.Enabled = false;
+        }
+
+        private void buttonsEnable(bool enabled)
+        {
+            buttonExit.Enabled = enabled;
+            buttonNormal.Enabled = enabled;
+            Application.DoEvents();
+        }
+
+        private void buttonSTART_Click(object sender, EventArgs e)
+        {
+            buttonPreInstallCheck.Enabled = false;
+            buttonSTART.Enabled = false;
+            buttonPreChangePath.Enabled = false;
+            checkBoxPreEnableRepack.Enabled = false;
+            checkBoxPreEnablePack.Enabled = false;
+            buttonsEnable(false);
+            labelFinalStatus.Text = "Process in progress...";
+
+            Misc.startTimer();
+
+            updateStatusPrepare("In progress...");
+            if (GameData.gameType == MeType.ME1_TYPE)
+                Misc.VerifyME1Exe(gameData, false);
+
+            if (GameData.gameType == MeType.ME3_TYPE)
+                ME3DLC.unpackAllDLC(null, this);
+
+            if (GameData.gameType != MeType.ME1_TYPE)
+                gameData.getTfcTextures();
+
+            checkBoxPrepare.Checked = true;
+            updateStatusPrepare("");
+
+
+            updateStatusScan("In progress...");
+            textures = treeScan.PrepareListOfTextures(null, null, this);
+            checkBoxScan.Checked = true;
+            updateStatusScan("");
+
+
+            updateStatusTextures("In progress...");
+            applyModules();
             checkBoxTextures.Checked = true;
             updateStatusTextures("");
 
@@ -250,11 +488,71 @@ namespace MassEffectModder
             checkBoxStore.Checked = true;
             updateStatusStore("");
 
+
+            updateStatusMipMaps("In progress...");
+            mipMaps.removeMipMaps(textures, cachePackageMgr, null, this, checkBoxPreEnableRepack.Checked);
+            checkBoxMipMaps.Checked = true;
+            updateStatusMipMaps("");
+
+
+            updateStatusLOD("In progress...");
+            LODSettings.updateLOD((MeType)gameId, configIni);
+            checkBoxLOD.Checked = true;
+            updateStatusLOD("");
+
+
+            if (checkBoxPreEnableRepack.Checked)
+            {
+                for (int i = 0; i < GameData.packageFiles.Count; i++)
+                {
+                    updateStatusRepackZlib("Repacking files... " + ((i + 1) * 100 / GameData.packageFiles.Count) + " %");
+                    Package package = new Package(GameData.packageFiles[i]);
+                    if (package.compressed && package.compressionType != Package.CompressionType.Zlib)
+                        package.SaveToFile(true);
+                }
+                checkBoxRepackZlib.Checked = true;
+                updateStatusRepackZlib("");
+            }
+
+
+            if (checkBoxPreEnablePack.Checked)
+            {
+                if (Directory.Exists(GameData.DLCData))
+                {
+                    updateStatusPackDLC("In progress...");
+                    List<string> DLCs = Directory.GetDirectories(GameData.DLCData).ToList();
+                    for (int i = 0; i < DLCs.Count; i++)
+                    {
+                        List<string> files = Directory.GetFiles(DLCs[i], "Mount.dlc", SearchOption.AllDirectories).ToList();
+                        if (files.Count == 0)
+                            DLCs.RemoveAt(i--);
+                    }
+
+                    string tmpDlcDir = Path.Combine(GameData.GamePath, "BIOGame", "DLCTemp");
+                    for (int i = 0; i < DLCs.Count; i++)
+                    {
+                        string DLCname = Path.GetFileName(DLCs[i]);
+                        string outPath = Path.Combine(tmpDlcDir, DLCname, "CookedPCConsole", "Default.sfar");
+                        ME3DLC dlc = new ME3DLC(null);
+                        dlc.fullRePack(DLCs[i], outPath, DLCname, null, this);
+                    }
+
+                    Directory.Delete(GameData.DLCData, true);
+                    Directory.Move(tmpDlcDir, GameData.DLCData);
+
+                    updateStatusPackDLC("");
+                }
+                checkBoxPackDLC.Checked = true;
+            }
+
+
             var time = Misc.stopTimer();
-            MessageBox.Show("Done - time lapsed: " + Misc.getTimerFormat(time));
+            labelFinalStatus.Text = "Process finished - time lapsed: " + Misc.getTimerFormat(time);
+            buttonsEnable(true);
 
             string filename = "errors.txt";
-            File.Delete(filename);
+            if (File.Exists(filename))
+                File.Delete(filename);
             if (errors != "")
             {
                 using (FileStream fs = new FileStream(filename, FileMode.CreateNew))
@@ -296,5 +594,47 @@ namespace MassEffectModder
             Application.DoEvents();
         }
 
+        public void updateStatusLOD(string text)
+        {
+            labelStatusLOD.Text = text;
+            Application.DoEvents();
+        }
+
+        public void updateStatusRepackZlib(string text)
+        {
+            labelStatusRepackZlib.Text = text;
+            Application.DoEvents();
+        }
+
+        public void updateStatusPackDLC(string text)
+        {
+            labelStatusPackDLC.Text = text;
+            Application.DoEvents();
+        }
+
+        private void buttonExit_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void buttonNormal_Click(object sender, EventArgs e)
+        {
+            exitToModder = true;
+            Close();
+        }
+
+        private void checkBoxPreEnableRepack_CheckedChanged(object sender, EventArgs e)
+        {
+            labelMERepackZlib.Visible = checkBoxPreEnableRepack.Checked;
+            checkBoxRepackZlib.Visible = checkBoxPreEnableRepack.Checked;
+            labelStatusRepackZlib.Visible = checkBoxPreEnableRepack.Checked;
+        }
+
+        private void checkBoxPreEnablePack_CheckedChanged(object sender, EventArgs e)
+        {
+            labelME3DLCPack.Visible = checkBoxPreEnablePack.Checked;
+            checkBoxPackDLC.Visible = checkBoxPreEnablePack.Checked;
+            labelStatusPackDLC.Visible = checkBoxPreEnablePack.Checked;
+        }
     }
 }

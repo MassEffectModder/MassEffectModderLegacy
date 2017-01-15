@@ -323,7 +323,7 @@ namespace MassEffectModder
             sfarFile = null;
         }
 
-        public void fullRePack(string inPath, string outPath, string DLCName)
+        public void fullRePack(string inPath, string outPath, string DLCName, MainWindow mainWindow, Installer installer)
         {
             if (sfarFile != null)
                 throw new Exception();
@@ -385,7 +385,10 @@ namespace MassEffectModder
                 outputFile.JumpTo(dataOffset);
                 for (int i = 0; i < srcFilesList.Count(); i++)
                 {
-                    mainWindow.updateStatusLabel2("File " + (i + 1) + " of " + srcFilesList.Count() + " - " + Path.GetFileName(srcFilesList[i]));
+                    if (mainWindow != null)
+                        mainWindow.updateStatusLabel2("File " + (i + 1) + " of " + srcFilesList.Count() + " - " + Path.GetFileName(srcFilesList[i]));
+                    if (installer != null)
+                        installer.updateStatusPrepare("Packing DLC... " + (i + 1) + " of " + srcFilesList.Count);
                     FileEntry file = new FileEntry();
                     Stream inputFile = new FileStream(srcFilesList[i], FileMode.Open, FileAccess.Read);
                     long fileLen = new FileInfo(srcFilesList[i]).Length;
@@ -533,7 +536,7 @@ namespace MassEffectModder
                 }
                 if (installer != null)
                 {
-                    installer.updateStatusPrepare("Unpacking DLC " + (i + 1) + " of " + sfarFiles.Count);
+                    installer.updateStatusPrepare("Unpacking DLC ... " + (i + 1) + " of " + sfarFiles.Count);
                 }
                 dlc.extract(sfarFiles[i], outPath);
             }

@@ -288,7 +288,7 @@ namespace MassEffectModder
             }
             string outPath = Path.Combine(Path.Combine(GameData.GamePath, "BIOGame", "DLCTemp"), DLCname, "CookedPCConsole", "Default.sfar");
             ME3DLC dlc = new ME3DLC(this);
-            dlc.fullRePack(inPath, outPath, DLCname);
+            dlc.fullRePack(inPath, outPath, DLCname, this, null);
         }
 
         private void PackAllME3DLC()

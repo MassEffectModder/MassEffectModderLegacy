@@ -44,6 +44,8 @@ namespace MassEffectModder
                 Installer installer = new Installer();
                 if (installer.Run())
                     Application.Run(installer);
+                if (installer.exitToModder)
+                    Application.Run(new MainWindow());
             }
             else
                 Application.Run(new MainWindow());
