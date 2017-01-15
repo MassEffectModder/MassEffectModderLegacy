@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace MassEffectModder
@@ -454,6 +455,46 @@ namespace MassEffectModder
             }
 
             enableGameDataMenu(true);
+        }
+
+        void removeTreeFile(MeType game)
+        {
+            enableGameDataMenu(false);
+            DialogResult result = MessageBox.Show("This operation removing textures scan file to allow re-scan game data." +
+            "\n\nAfter that you need restore game to vanilla state and install any original/modded DLC files before re-scan." +
+            "\n\nAre you really sure?", "Remove Textures Scan File", MessageBoxButtons.YesNo);
+            if (result == DialogResult.Yes)
+            {
+                GameData gameData = new GameData(game, _configIni);
+                string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                        Assembly.GetExecutingAssembly().GetName().Name);
+                string filename = Path.Combine(path, "me" + (int)GameData.gameType + "map.bin");
+                if (File.Exists(filename))
+                {
+                    File.Delete(filename);
+                    MessageBox.Show("File deleted.");
+                }
+                else
+                {
+                    MessageBox.Show("File not found.");
+                }
+            }
+            enableGameDataMenu(true);
+        }
+
+        private void toolStripME1RemoveTreeMenuItem_Click(object sender, EventArgs e)
+        {
+            removeTreeFile(MeType.ME1_TYPE);
+        }
+
+        private void toolStripME2RemoveTreeMenuItem_Click(object sender, EventArgs e)
+        {
+            removeTreeFile(MeType.ME2_TYPE);
+        }
+
+        private void toolStripME3RemoveTreeMenuItem_Click(object sender, EventArgs e)
+        {
+            removeTreeFile(MeType.ME3_TYPE);
         }
     }
 }

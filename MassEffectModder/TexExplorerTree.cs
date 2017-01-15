@@ -43,110 +43,102 @@ namespace MassEffectModder
 
             if (File.Exists(filename))
             {
-                FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.ReadWrite);
-                uint tag = fs.ReadUInt32();
-                uint version = fs.ReadUInt32();
-                if (tag != TexExplorer.textureMapBinTag || version != TexExplorer.textureMapBinVersion)
+                using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.ReadWrite))
                 {
-                    if (mainWindow != null)
+                    uint tag = fs.ReadUInt32();
+                    uint version = fs.ReadUInt32();
+                    if (tag != TexExplorer.textureMapBinTag || version != TexExplorer.textureMapBinVersion)
                     {
-                        MessageBox.Show("Wrong " + filename + " file!");
-                        mainWindow.updateStatusLabel("");
-                        mainWindow.updateStatusLabel2("");
-                        texEplorer.Close();
-                    }
-                    fs.Close();
-                    return null;
-                }
-
-                uint countTexture = fs.ReadUInt32();
-                for (int i = 0; i < countTexture; i++)
-                {
-                    FoundTexture texture = new FoundTexture();
-                    texture.name = fs.ReadStringASCIINull();
-                    texture.crc = fs.ReadUInt32();
-                    texture.packageName = fs.ReadStringASCIINull();
-                    uint countPackages = fs.ReadUInt32();
-                    texture.list = new List<MatchedTexture>();
-                    for (int k = 0; k < countPackages; k++)
-                    {
-                        MatchedTexture matched = new MatchedTexture();
-                        matched.exportID = fs.ReadInt32();
-                        matched.path = fs.ReadStringASCIINull();
-                        texture.list.Add(matched);
-                    }
-                    textures.Add(texture);
-                }
-                if (fs.Position < new FileInfo(filename).Length)
-                {
-                    List<string> packages = new List<string>();
-                    int numPackages = fs.ReadInt32();
-                    for (int i = 0; i < numPackages; i++)
-                    {
-                        string pkgPath = fs.ReadStringASCIINull();
-                        pkgPath = GameData.GamePath + pkgPath;
-                        packages.Add(pkgPath);
-                    }
-                    for (int i = 0; i < packages.Count; i++)
-                    {
-                        if (GameData.packageFiles.Find(s => s.Equals(packages[i], StringComparison.OrdinalIgnoreCase)) == null)
+                        if (mainWindow != null)
                         {
-                            if (mainWindow != null)
+                            MessageBox.Show("Wrong " + filename + " file!");
+                            mainWindow.updateStatusLabel("");
+                            mainWindow.updateStatusLabel2("");
+                            texEplorer.Close();
+                        }
+                        fs.Close();
+                        return null;
+                    }
+
+                    uint countTexture = fs.ReadUInt32();
+                    for (int i = 0; i < countTexture; i++)
+                    {
+                        FoundTexture texture = new FoundTexture();
+                        texture.name = fs.ReadStringASCIINull();
+                        texture.crc = fs.ReadUInt32();
+                        texture.packageName = fs.ReadStringASCIINull();
+                        uint countPackages = fs.ReadUInt32();
+                        texture.list = new List<MatchedTexture>();
+                        for (int k = 0; k < countPackages; k++)
+                        {
+                            MatchedTexture matched = new MatchedTexture();
+                            matched.exportID = fs.ReadInt32();
+                            matched.path = fs.ReadStringASCIINull();
+                            texture.list.Add(matched);
+                        }
+                        textures.Add(texture);
+                    }
+                    if (fs.Position < new FileInfo(filename).Length)
+                    {
+                        List<string> packages = new List<string>();
+                        int numPackages = fs.ReadInt32();
+                        for (int i = 0; i < numPackages; i++)
+                        {
+                            string pkgPath = fs.ReadStringASCIINull();
+                            pkgPath = GameData.GamePath + pkgPath;
+                            packages.Add(pkgPath);
+                        }
+                        for (int i = 0; i < packages.Count; i++)
+                        {
+                            if (GameData.packageFiles.Find(s => s.Equals(packages[i], StringComparison.OrdinalIgnoreCase)) == null)
                             {
-                                DialogResult result = MessageBox.Show("Detected removal game data files from last game data scan." +
-                                "\n\nIt's required to re-scan vanilla gama data again.\n\nRe-scan textures?", "Loading textures tree", MessageBoxButtons.YesNo);
-                                fs.Close();
-                                if (result == DialogResult.No)
-                                    return null;
-                                goto scan;
-                            }
-                            else
-                            {
+                                if (mainWindow != null)
+                                {
+                                    MessageBox.Show("Detected removal game data files from last game data scan." +
+                                    "\n\nYou need restore game to vanilla state and install original/modded DLC files." +
+                                    "\n\nThen from main menu select option 'Remove Textures Scan File' and start Texture Explorer again.");
+                                }
                                 return null;
                             }
                         }
-                    }
-                    for (int i = 0; i < GameData.packageFiles.Count; i++)
-                    {
-                        if (packages.Find(s => s.Equals(GameData.packageFiles[i], StringComparison.OrdinalIgnoreCase)) == null)
+                        for (int i = 0; i < GameData.packageFiles.Count; i++)
                         {
-                            if (mainWindow != null)
+                            if (packages.Find(s => s.Equals(GameData.packageFiles[i], StringComparison.OrdinalIgnoreCase)) == null)
                             {
-                                DialogResult result = MessageBox.Show("Detected additonal game data files from last game data scan." +
-                                "\n\nIt's required to remove empty textures process again (if it's done yet) to cover additional files." +
-                                "\n\nHowever additional files will be ignored while textures modding." +
-                                "\nTo able included them, it's required to re-scan vanilla gama data again.\n\nRe-scan textures?", "Loading textures tree", MessageBoxButtons.YesNo);
-                                fs.Close();
-                                if (result == DialogResult.No)
-                                    break;
-                                goto scan;
-                            }
-                            else
-                            {
+                                if (mainWindow != null)
+                                {
+                                    MessageBox.Show("Detected additonal game data files from last game data scan." +
+                                    "\n\nYou need restore game to vanilla state and install original/modded DLC files." +
+                                    "\n\nThen from main menu select option 'Remove Textures Scan File' and start Texture Explorer again.");
+                                }
                                 break;
                             }
                         }
                     }
-                }
-                else
-                {
-                    fs.SeekEnd();
-                    fs.WriteInt32(GameData.packageFiles.Count);
-                    for (int i = 0; i < GameData.packageFiles.Count; i++)
+                    else
                     {
-                        fs.WriteStringASCIINull(GameData.RelativeGameData(GameData.packageFiles[i]));
+                        fs.SeekEnd();
+                        fs.WriteInt32(GameData.packageFiles.Count);
+                        for (int i = 0; i < GameData.packageFiles.Count; i++)
+                        {
+                            fs.WriteStringASCIINull(GameData.RelativeGameData(GameData.packageFiles[i]));
+                        }
                     }
+                    return textures;
                 }
-                fs.Close();
-                return textures;
             }
-scan:
+
+
             if (File.Exists(filename))
                 File.Delete(filename);
             if (MipMaps.checkGameDataModded())
             {
                 if (mainWindow != null)
-                    MessageBox.Show("Detected texture modded game data. Can not continue.");
+                {
+                    MessageBox.Show("Detected textures modded game data. Can not continue." +
+                    "\n\nYou need restore game to vanilla state and install original/modded DLC files." +
+                    "\n\nThen start Texture Explorer again.");
+                }
                 return null;
             }
 
@@ -154,7 +146,7 @@ scan:
             {
                 DialogResult result = MessageBox.Show("Replacing textures and creating mods require textures mapping.\n" +
                 "It's one time only process.\n\n" +
-                "IMPORTANT! Make sure game data is not modified.\n\n" +
+                "IMPORTANT! Your game needs to be in vanilla state and have all original/modded DLC files installed.\n\n" +
                 "Are you sure to proceed?", "Textures mapping", MessageBoxButtons.YesNo);
                 if (result == DialogResult.No)
                 {
