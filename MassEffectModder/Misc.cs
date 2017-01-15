@@ -240,7 +240,7 @@ namespace MassEffectModder
             string drive = path.Substring(0, 3);
             foreach (DriveInfo drv in DriveInfo.GetDrives())
             {
-                if (drv.IsReady && string.Compare(drv.Name, drive, true) == 0)
+                if (string.Compare(drv.Name, drive, true) == 0)
                     return drv.TotalFreeSpace;
             }
 
