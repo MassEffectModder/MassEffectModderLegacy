@@ -102,9 +102,9 @@ namespace MassEffectModder
                         if (packages.Find(s => s.Equals(GameData.packageFiles[i], StringComparison.OrdinalIgnoreCase)) == null)
                         {
                             DialogResult result = MessageBox.Show("Detected additonal game data files from last game data scan." +
-                                "\n\nIt's required to remove empty textures process again (if it's yet done) to cover additional files." +
+                                "\n\nIt's required to remove empty textures process again (if it's done yet) to cover additional files." +
                                 "\n\nHowever additional files will be ignored while textures modding." +
-                                "\nTo able included them it's required to re-scan vanilla gama data again.\n\nRe-scan textures?", "Loading textures tree", MessageBoxButtons.YesNo);
+                                "\nTo able included them, it's required to re-scan vanilla gama data again.\n\nRe-scan textures?", "Loading textures tree", MessageBoxButtons.YesNo);
                             if (result == DialogResult.No)
                                 break;
                             goto scan;
