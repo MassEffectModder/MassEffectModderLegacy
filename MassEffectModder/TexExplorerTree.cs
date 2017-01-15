@@ -55,6 +55,7 @@ namespace MassEffectModder
                         mainWindow.updateStatusLabel2("");
                         texEplorer.Close();
                     }
+                    fs.Close();
                     return null;
                 }
 
@@ -92,6 +93,7 @@ namespace MassEffectModder
                         {
                             DialogResult result = MessageBox.Show("Detected removal game data files from last game data scan." +
                                 "\n\nIt's required to re-scan vanilla gama data again.\n\nRe-scan textures?", "Loading textures tree", MessageBoxButtons.YesNo);
+                            fs.Close();
                             if (result == DialogResult.No)
                                 return null;
                             goto scan;
@@ -105,6 +107,7 @@ namespace MassEffectModder
                                 "\n\nIt's required to remove empty textures process again (if it's done yet) to cover additional files." +
                                 "\n\nHowever additional files will be ignored while textures modding." +
                                 "\nTo able included them, it's required to re-scan vanilla gama data again.\n\nRe-scan textures?", "Loading textures tree", MessageBoxButtons.YesNo);
+                            fs.Close();
                             if (result == DialogResult.No)
                                 break;
                             goto scan;
