@@ -129,12 +129,13 @@
             // 
             // buttonSTART
             // 
+            this.buttonSTART.BackColor = System.Drawing.Color.LimeGreen;
             this.buttonSTART.Location = new System.Drawing.Point(16, 19);
             this.buttonSTART.Name = "buttonSTART";
             this.buttonSTART.Size = new System.Drawing.Size(75, 23);
             this.buttonSTART.TabIndex = 2;
             this.buttonSTART.Text = "START";
-            this.buttonSTART.UseVisualStyleBackColor = true;
+            this.buttonSTART.UseVisualStyleBackColor = false;
             this.buttonSTART.Click += new System.EventHandler(this.buttonSTART_Click);
             // 
             // checkBoxScan
@@ -462,10 +463,10 @@
             this.checkBoxPreEnableRepack.AutoSize = true;
             this.checkBoxPreEnableRepack.Location = new System.Drawing.Point(18, 19);
             this.checkBoxPreEnableRepack.Name = "checkBoxPreEnableRepack";
-            this.checkBoxPreEnableRepack.Size = new System.Drawing.Size(182, 17);
+            this.checkBoxPreEnableRepack.Size = new System.Drawing.Size(167, 17);
             this.checkBoxPreEnableRepack.TabIndex = 35;
             this.checkBoxPreEnableRepack.TabStop = false;
-            this.checkBoxPreEnableRepack.Text = "ME1-ME2 Repack Zlib (Optional)";
+            this.checkBoxPreEnableRepack.Text = "Repack Game Files (Optional)";
             this.checkBoxPreEnableRepack.UseVisualStyleBackColor = true;
             this.checkBoxPreEnableRepack.CheckedChanged += new System.EventHandler(this.checkBoxPreEnableRepack_CheckedChanged);
             // 
@@ -483,10 +484,10 @@
             this.checkBoxPreEnablePack.AutoSize = true;
             this.checkBoxPreEnablePack.Location = new System.Drawing.Point(18, 42);
             this.checkBoxPreEnablePack.Name = "checkBoxPreEnablePack";
-            this.checkBoxPreEnablePack.Size = new System.Drawing.Size(153, 17);
+            this.checkBoxPreEnablePack.Size = new System.Drawing.Size(141, 17);
             this.checkBoxPreEnablePack.TabIndex = 37;
             this.checkBoxPreEnablePack.TabStop = false;
-            this.checkBoxPreEnablePack.Text = "ME3 Pack DLCs (Optional)";
+            this.checkBoxPreEnablePack.Text = "Repack DLCs (Optional)";
             this.checkBoxPreEnablePack.UseVisualStyleBackColor = true;
             this.checkBoxPreEnablePack.CheckedChanged += new System.EventHandler(this.checkBoxPreEnablePack_CheckedChanged);
             // 
@@ -554,9 +555,9 @@
             this.labelMERepackZlib.AutoSize = true;
             this.labelMERepackZlib.Location = new System.Drawing.Point(13, 188);
             this.labelMERepackZlib.Name = "labelMERepackZlib";
-            this.labelMERepackZlib.Size = new System.Drawing.Size(115, 13);
+            this.labelMERepackZlib.Size = new System.Drawing.Size(100, 13);
             this.labelMERepackZlib.TabIndex = 26;
-            this.labelMERepackZlib.Text = "ME1-ME2 Repack Zlib";
+            this.labelMERepackZlib.Text = "Repack Game Files";
             // 
             // labelStatusPackDLC
             // 
@@ -573,9 +574,9 @@
             this.labelME3DLCPack.AutoSize = true;
             this.labelME3DLCPack.Location = new System.Drawing.Point(13, 211);
             this.labelME3DLCPack.Name = "labelME3DLCPack";
-            this.labelME3DLCPack.Size = new System.Drawing.Size(86, 13);
+            this.labelME3DLCPack.Size = new System.Drawing.Size(74, 13);
             this.labelME3DLCPack.TabIndex = 28;
-            this.labelME3DLCPack.Text = "ME3 Pack DLCs";
+            this.labelME3DLCPack.Text = "Repack DLCs";
             // 
             // checkBoxRepackZlib
             // 
