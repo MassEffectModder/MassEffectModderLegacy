@@ -469,13 +469,6 @@ namespace MassEffectModder
                 new EmptyMipMaps
                 {
                     gameType = MeType.ME3_TYPE,
-                    packagePath = @"\BioGame\DLC\DLC_EXP_Pack003_Base\CookedPCConsole\BioH_Exp3_EDI_2.pcc",
-                    exportId = 251,
-                    crc = 0x7715D057,
-                },
-                new EmptyMipMaps
-                {
-                    gameType = MeType.ME3_TYPE,
                     packagePath = @"\BioGame\CookedPCConsole\BioD_CitHub_WardsFluxP3.pcc",
                     exportId = 11443,
                     crc = 0xF95D3472,

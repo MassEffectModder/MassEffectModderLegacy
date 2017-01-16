@@ -365,7 +365,7 @@ namespace MassEffectModder
                         List<string> dlcs = Directory.GetFiles(DLCs[i], "Mount.dlc", SearchOption.AllDirectories).ToList();
                         if (dlcs.Count() == 0)
                         {
-                            MessageBox.Show("Detected compressed and extracted DLCs in DLC folder." +
+                            MessageBox.Show("Detected compressed DLCs in DLC folder." +
                                 "\nYou need to extract the DLC files first.");
                             return false;
                         }
