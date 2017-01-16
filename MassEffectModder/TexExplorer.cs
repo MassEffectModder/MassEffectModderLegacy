@@ -620,8 +620,7 @@ namespace MassEffectModder
                     long diskUsage = 0;
                     foreach (ListViewItem item in listViewMods.SelectedItems)
                     {
-                        string outDir = Path.Combine(modFile.SelectedPath, Path.GetFileNameWithoutExtension(item.Name));
-                        diskUsage += Misc.getDirectorySize(outDir);
+                        diskUsage += new FileInfo(item.Name).Length;
                     }
                     diskUsage = (long)(diskUsage * 2.5);
                     if (diskUsage < diskFreeSpace)
