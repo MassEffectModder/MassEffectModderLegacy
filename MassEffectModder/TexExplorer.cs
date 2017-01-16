@@ -534,7 +534,7 @@ namespace MassEffectModder
             long diskUsage = 0;
             foreach (ListViewItem item in listViewMods.SelectedItems)
             {
-                diskUsage += Misc.getDirectorySize(Path.GetDirectoryName(item.Name));
+                diskUsage += new FileInfo(item.Name).Length;
             }
             diskUsage = (long)(diskUsage * 2.5);
             if (diskUsage < diskFreeSpace)
@@ -666,7 +666,7 @@ namespace MassEffectModder
                 if (modFile.ShowDialog() == DialogResult.OK)
                 {
                     gameData.lastCreateMODPath = modFile.SelectedPath;
-                    long diskUsage = Misc.getDirectorySize(modFile.SelectedPath);
+                    long diskUsage = new DirectoryInfo(modFile.SelectedPath).GetFiles("*.dds").ToList().Sum(file => file.Length);
                     long diskFreeSpace = Misc.getDiskFreeSpace(modFile.SelectedPath);
                     diskUsage = (long)(diskUsage / 1.5);
                     if (diskUsage < diskFreeSpace)
@@ -718,7 +718,7 @@ namespace MassEffectModder
                     long diskUsage = 0;
                     for (int i = 0; i < listDirs.Count; i++)
                     {
-                        diskUsage += Misc.getDirectorySize(listDirs[i]);
+                        diskUsage += new DirectoryInfo(listDirs[i]).GetFiles("*.dds").ToList().Sum(file => file.Length);
                     }
                     diskUsage = (long)(diskUsage / 1.5);
 
