@@ -80,7 +80,7 @@ namespace MassEffectModder
                 uint version = fs.ReadUInt32();
                 if (tag != TexExplorer.TextureModTag || (version != TexExplorer.TextureModVersion1 && version != TexExplorer.TextureModVersion))
                 {
-                    errors += "File " + filenameMod + " is not a MEM mod!" + Environment.NewLine;
+                    errors += "File " + filenameMod + " is not a valid MEM mod" + Environment.NewLine;
                     return errors;
                 }
                 else
@@ -91,7 +91,7 @@ namespace MassEffectModder
                     gameType = fs.ReadUInt32();
                     if ((MeType)gameType != GameData.gameType)
                     {
-                        errors += "File " + filenameMod + " is a MEM mod for different game!" + Environment.NewLine;
+                        errors += "File " + filenameMod + " is not a MEM mod valid for this game" + Environment.NewLine;
                         return errors;
                     }
                 }
@@ -166,10 +166,10 @@ namespace MassEffectModder
                         }
                         else
                         {
-                            ListViewItem item = new ListViewItem(name + " (" + "Not matched texture: " + name + string.Format("_0x{0:X8}", crc) + ")");
+                            ListViewItem item = new ListViewItem(name + " (Texture not found: " + name + string.Format("_0x{0:X8}", crc) + ")");
                             item.Name = i.ToString();
                             texExplorer.listViewTextures.Items.Add(item);
-                            errors += "Not matched texture: " + name + string.Format("_0x{0:X8}", crc) + Environment.NewLine;
+                            errors += "Texture skipped. Texture " + name + string.Format("_0x{0:X8}", crc) + " is not present in your game setup" + Environment.NewLine;
                         }
                         continue;
                     }
@@ -215,15 +215,15 @@ namespace MassEffectModder
                                 DDSImage image = new DDSImage(new MemoryStream(dst, 0, (int)dstLen));
                                 if (!image.checkExistAllMipmaps())
                                 {
-                                    errors += "Not all mipmaps exists in texture: " + name + string.Format("_0x{0:X8}", crc) + Environment.NewLine;
+                                    errors += "Error in texture: " + name + string.Format("_0x{0:X8}", crc) + " Texture skipped. This texture has not all the required mipmaps" + Environment.NewLine;
                                     continue;
                                 }
-                                replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, errors);
+                                errors += replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name);
                             }
                         }
                         else
                         {
-                            errors += "Not matched texture: " + name + string.Format("_0x{0:X8}", crc) + Environment.NewLine;
+                            errors += "Texture " + name + string.Format("_0x{0:X8}", crc) + "is not present in your game setup" + Environment.NewLine;
                         }
                     }
                 }
@@ -266,7 +266,7 @@ namespace MassEffectModder
                     uint crc = uint.Parse(crcStr, System.Globalization.NumberStyles.HexNumber);
                     if (crc == 0)
                     {
-                        errors += "Wrong format of texture filename: " + Path.GetFileName(file) + "\n";
+                        errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC. Skipping texture..." + Environment.NewLine;
                         continue;
                     }
 
@@ -279,7 +279,7 @@ namespace MassEffectModder
                     FoundTexture foundTexture = textures.Find(s => s.crc == crc && s.name == name);
                     if (foundCrcList.Count == 0)
                     {
-                        errors += "Texture not matched: " + Path.GetFileName(file) + "\n";
+                        errors += "Texture skipped. Texture " + Path.GetFileName(file) + " is not present in your game setup" + Environment.NewLine;
                         continue;
                     }
 
@@ -302,7 +302,7 @@ namespace MassEffectModder
                             DDSImage image = new DDSImage(new MemoryStream(src));
                             if (!image.checkExistAllMipmaps())
                             {
-                                errors += "Texture does not have all mipmaps: " + Path.GetFileName(file) + "\n";
+                                errors += "Error in texture: " + Path.GetFileName(file) + " Texture has not all the required mipmaps" + Environment.NewLine;
                                 continue;
                             }
 
@@ -311,21 +311,22 @@ namespace MassEffectModder
 
                             if (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1)
                             {
-                                errors += "DDS file must have mipmaps: " + Path.GetFileName(file) + "\n";
+                                errors += "Error in texture: " + Path.GetFileName(file) + "This texture must have mipmaps, skipping texture..." + Environment.NewLine;
                                 continue;
                             }
 
-                            DDSFormat ddsFormat = DDSImage.convertFormat(texture.properties.getProperty("Format").valueName);
+                            string fmt = texture.properties.getProperty("Format").valueName;
+                            DDSFormat ddsFormat = DDSImage.convertFormat(fmt);
                             if (image.ddsFormat != ddsFormat)
                             {
-                                errors += "DDS file not match expected texture format: " + Path.GetFileName(file) + "\n";
+                                errors += "Error in texture: " + Path.GetFileName(file) + " This texture has wrong texture format: " + fmt + ", skipping..." + Environment.NewLine;
                                 continue;
                             }
 
                             if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
                                 texture.mipMapsList[0].width / texture.mipMapsList[0].height)
                             {
-                                errors += "DDS file not match game data texture aspect ratio: " + Path.GetFileName(file) + "\n";
+                                errors += "Error in texture: " + Path.GetFileName(file) + " This texture has wrong aspect ratio, skipping texture..." + Environment.NewLine;
                                 continue;
                             }
 
@@ -370,7 +371,10 @@ namespace MassEffectModder
                 }
             }
             if (count == 0)
+            {
+                errors += "There are no texture files in " + inDir + " Mod not generated." + Environment.NewLine;
                 File.Delete(outFile);
+            }
             return errors;
         }
 

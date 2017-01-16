@@ -45,7 +45,7 @@ namespace MassEffectModder
                 bool modified = false;
                 if (mainWindow != null)
                 {
-                    mainWindow.updateStatusLabel("Remove empty mipmaps, package " + (i + 1) + " of " + GameData.packageFiles.Count);
+                    mainWindow.updateStatusLabel("Removing empty mipmaps - package " + (i + 1) + " of " + GameData.packageFiles.Count);
                     mainWindow.updateStatusLabel2("");
                 }
                 if (installer != null)
@@ -594,13 +594,13 @@ namespace MassEffectModder
         {
             if (MipMaps.verifyGameDataEmptyMipMapsRemoval())
             {
-                DialogResult result = MessageBox.Show("It seems removal empty mipmaps was already processed.\nAre you sure to proceed?", "Remove empty mipmaps", MessageBoxButtons.YesNo);
+                DialogResult result = MessageBox.Show("It seems empty mipmaps were already removed.\nAre you sure you want to proceed?", "Remove empty mipmaps", MessageBoxButtons.YesNo);
                 if (result == DialogResult.No)
                     return;
             }
             else
             {
-                DialogResult result = MessageBox.Show("Are you sure to proceed?", "Remove empty mipmaps", MessageBoxButtons.YesNo);
+                DialogResult result = MessageBox.Show("Are you sure you want to proceed?", "Remove empty mipmaps", MessageBoxButtons.YesNo);
                 if (result == DialogResult.No)
                     return;
             }
@@ -617,7 +617,7 @@ namespace MassEffectModder
             var time = Misc.stopTimer();
 
             EnableMenuOptions(true);
-            _mainWindow.updateStatusLabel("Done - time lapsed: " + Misc.getTimerFormat(time));
+            _mainWindow.updateStatusLabel("Done. Process total time: " + Misc.getTimerFormat(time));
             _mainWindow.updateStatusLabel2("");
         }
     }

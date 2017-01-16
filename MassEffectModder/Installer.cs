@@ -65,7 +65,7 @@ namespace MassEffectModder
                 gameId = 3;
             else
             {
-                MessageBox.Show("Not recognized game id in installer.ini, exiting...", "Installer");
+                MessageBox.Show("Game ID not recognized in installer.ini, exiting...", "Installer");
                 return false;
             }
             configIni = new ConfIni();
@@ -76,7 +76,7 @@ namespace MassEffectModder
             labelStatusStore.Text = "";
             labelStatusMipMaps.Text = "";
             labelStatusLOD.Text = "";
-            labelFinalStatus.Text = "Press CHECK button first before begin.";
+            labelFinalStatus.Text = "Before beginning, press the CHECK button.";
 
             if (gameId != 3)
             {
@@ -123,7 +123,7 @@ namespace MassEffectModder
             {
                 labelPreMods.Text = "No MEM mods found!";
                 labelPreMods.ForeColor = Color.FromKnownColor(KnownColor.Red);
-                labelFinalStatus.Text = "Checks detected issue!";
+                labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
                 buttonPreInstallCheck.Enabled = true;
                 return;
             }
@@ -136,7 +136,7 @@ namespace MassEffectModder
                     uint version = fs.ReadUInt32();
                     if (tag != TexExplorer.TextureModTag || (version != TexExplorer.TextureModVersion1 && version != TexExplorer.TextureModVersion))
                     {
-                        errors += "File " + memFiles[i] + " is not MEM mod!" + Environment.NewLine;
+                        errors += "File " + memFiles[i] + " is not a valid MEM mod" + Environment.NewLine;
                         continue;
                     }
                     else
@@ -147,7 +147,7 @@ namespace MassEffectModder
                         gameType = fs.ReadUInt32();
                         if (gameType != gameId)
                         {
-                            errors += "File " + memFiles[i] + " is MEM mod for different game!" + Environment.NewLine;
+                            errors += "File " + memFiles[i] + " is not a MEM mod valid for this game" + Environment.NewLine;
                             continue;
                         }
                     }
@@ -157,7 +157,7 @@ namespace MassEffectModder
             {
                 labelPreMods.Text = "There are some errors while detecting MEM mods!";
                 labelPreMods.ForeColor = Color.FromKnownColor(KnownColor.Red);
-                labelFinalStatus.Text = "Checks detected issue!";
+                labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
                 buttonPreInstallCheck.Enabled = true;
 
                 string filename = "errors.txt";
@@ -188,7 +188,7 @@ namespace MassEffectModder
             {
                 labelPreGamePath.Text = "Game path is wrong!";
                 labelPreGamePath.ForeColor = Color.FromKnownColor(KnownColor.Red);
-                labelFinalStatus.Text = "Checks detected issue!";
+                labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
                 buttonPreInstallCheck.Enabled = true;
                 return;
             }
@@ -196,7 +196,7 @@ namespace MassEffectModder
             {
                 labelPreGamePath.Text = "Missing game data!";
                 labelPreGamePath.ForeColor = Color.FromKnownColor(KnownColor.Red);
-                labelFinalStatus.Text = "Checks detected issue!";
+                labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
                 buttonPreInstallCheck.Enabled = true;
                 return;
             }
@@ -204,9 +204,9 @@ namespace MassEffectModder
             {
                 if (!File.Exists(GameData.GamePath + "\\BioGame\\CookedPC\\Startup_int.upk"))
                 {
-                    labelPreGamePath.Text = "Not found ME1 game!";
+                    labelPreGamePath.Text = "ME1 game not found!";
                     labelPreGamePath.ForeColor = Color.FromKnownColor(KnownColor.Red);
-                    labelFinalStatus.Text = "Checks detected issue!";
+                    labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
                     buttonPreInstallCheck.Enabled = true;
                     return;
                 }
@@ -215,9 +215,9 @@ namespace MassEffectModder
             {
                 if (!File.Exists(GameData.GamePath + "\\BioGame\\CookedPC\\Textures.tfc"))
                 {
-                    labelPreGamePath.Text = "Not found ME2 game!";
+                    labelPreGamePath.Text = "ME2 game not found!";
                     labelPreGamePath.ForeColor = Color.FromKnownColor(KnownColor.Red);
-                    labelFinalStatus.Text = "Checks detected issue";
+                    labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
                     buttonPreInstallCheck.Enabled = true;
                     return;
                 }
@@ -226,9 +226,9 @@ namespace MassEffectModder
             {
                 if (!File.Exists(GameData.GamePath + "\\BIOGame\\PCConsoleTOC.bin"))
                 {
-                    labelPreGamePath.Text = "Not found ME3 game!";
+                    labelPreGamePath.Text = "ME3 game not found!";
                     labelPreGamePath.ForeColor = Color.FromKnownColor(KnownColor.Red);
-                    labelFinalStatus.Text = "Checks detected issue!";
+                    labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
                     buttonPreInstallCheck.Enabled = true;
                     return;
                 }
@@ -242,9 +242,9 @@ namespace MassEffectModder
             Application.DoEvents();
             if (!Misc.checkWriteAccess(GameData.GamePath))
             {
-                labelPreAccess.Text = "No write access to game data!";
+                labelPreAccess.Text = "Write access denied to game folders!";
                 labelPreAccess.ForeColor = Color.FromKnownColor(KnownColor.Red);
-                labelFinalStatus.Text = "Checks detected issue!";
+                labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
                 buttonPreInstallCheck.Enabled = true;
                 return;
             }
@@ -282,9 +282,9 @@ namespace MassEffectModder
 
             if (diskUsage > diskFreeSpace)
             {
-                labelPreSpace.Text = "You need about " + Misc.getBytesFormat(diskUsage) + " free disk space";
+                labelPreSpace.Text = "You have not enough disk space remaining. You need about " + Misc.getBytesFormat(diskUsage) + " free.";
                 labelPreSpace.ForeColor = Color.FromKnownColor(KnownColor.Red);
-                labelFinalStatus.Text = "Checks detected issue!";
+                labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
                 buttonPreInstallCheck.Enabled = true;
                 return;
             }
@@ -300,7 +300,7 @@ namespace MassEffectModder
             {
                 labelPreVanilla.Text = "Game is already modded!";
                 labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.Red);
-                labelFinalStatus.Text = "Checks detected issue!";
+                labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
                 buttonPreInstallCheck.Enabled = true;
                 return;
             }
@@ -324,7 +324,7 @@ namespace MassEffectModder
                     uint version = fs.ReadUInt32();
                     if (tag != TexExplorer.TextureModTag || (version != TexExplorer.TextureModVersion1 && version != TexExplorer.TextureModVersion))
                     {
-                        errors += "File " + memFiles[i] + " is not a MEM mod!" + Environment.NewLine;
+                        errors += "File " + memFiles[i] + " is not a valid MEM mod" + Environment.NewLine;
                         continue;
                     }
                     else
@@ -335,7 +335,7 @@ namespace MassEffectModder
                         gameType = fs.ReadUInt32();
                         if ((MeType)gameType != GameData.gameType)
                         {
-                            errors += "File " + memFiles[i] + " is a MEM mod for different game!" + Environment.NewLine;
+                            errors += "File " + memFiles[i] + " is not a MEM mod valid for this game" + Environment.NewLine;
                             continue;
                         }
                     }
@@ -394,14 +394,14 @@ namespace MassEffectModder
                             DDSImage image = new DDSImage(new MemoryStream(dst, 0, (int)dstLen));
                             if (!image.checkExistAllMipmaps())
                             {
-                                errors += "Not all mipmaps exists in texture: " + name + string.Format("_0x{0:X8}", crc) + Environment.NewLine;
+                                errors += "Error in texture: " + name + string.Format("_0x{0:X8}", crc) + " Texture skipped. This texture has not all the required mipmaps" +  Environment.NewLine;
                                 continue;
                             }
-                            mipMaps.replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, errors);
+                            errors += mipMaps.replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name);
                         }
                         else
                         {
-                            errors += "Not matched texture: " + name + string.Format("_0x{0:X8}", crc) + Environment.NewLine;
+                            errors += "Texture skipped. Texture " + name + string.Format("_0x{0:X8}", crc) + " is not present in your game setup" + Environment.NewLine;
                         }
                     }
                 }
@@ -505,7 +505,7 @@ namespace MassEffectModder
             {
                 for (int i = 0; i < GameData.packageFiles.Count; i++)
                 {
-                    updateStatusRepackZlib("Repacking files... " + ((i + 1) * 100 / GameData.packageFiles.Count) + " %");
+                    updateStatusRepackZlib("Repacking PCC files... " + ((i + 1) * 100 / GameData.packageFiles.Count) + " %");
                     Package package = new Package(GameData.packageFiles[i]);
                     if (package.compressed && package.compressionType != Package.CompressionType.Zlib)
                         package.SaveToFile(true);
@@ -547,7 +547,7 @@ namespace MassEffectModder
 
 
             var time = Misc.stopTimer();
-            labelFinalStatus.Text = "Process finished - time lapsed: " + Misc.getTimerFormat(time);
+            labelFinalStatus.Text = "Process finished. Process total time: " + Misc.getTimerFormat(time);
             buttonsEnable(true);
 
             string filename = "errors.txt";
@@ -559,7 +559,7 @@ namespace MassEffectModder
                 {
                     fs.WriteStringASCII(errors);
                 }
-                MessageBox.Show("There were some errors while process.");
+                MessageBox.Show("WARNING: Some errors have occured!");
                 Process.Start(filename);
             }
         }

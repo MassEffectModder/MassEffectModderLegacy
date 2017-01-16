@@ -196,7 +196,7 @@ namespace MassEffectModder
         static public void VerifyME1Exe(GameData gameData, bool gui = true)
         {
             if (!File.Exists(gameData.GameExePath))
-                throw new FileNotFoundException("Game exe not found: " + gameData.GameExePath);
+                throw new FileNotFoundException("Game executable not found: " + gameData.GameExePath);
 
             using (FileStream fs = new FileStream(gameData.GameExePath, FileMode.Open, FileAccess.ReadWrite))
             {
@@ -207,7 +207,7 @@ namespace MassEffectModder
                 if ((flag & 0x20) != 0x20) // check for LAA flag
                 {
                     if (gui)
-                        MessageBox.Show("Large Aware Address flag is not enabled in MassEffect.exe file. Correcting...");
+                        MessageBox.Show("Large Aware Address flag is not enabled on Mass Effect executable file.Correcting...");
                     flag |= 0x20;
                     fs.Skip(-2);
                     fs.WriteUInt16(flag); // write LAA flag
@@ -255,7 +255,7 @@ namespace MassEffectModder
         public static string getBytesFormat(long size)
         {
             if (size / 1024 == 0)
-                return string.Format("{0:0.00} bytes", size);
+                return string.Format("{0:0.00} Bytes", size);
             else if (size / 1024 / 1024 == 0)
                 return string.Format("{0:0.00} KB", size / 1024.0);
             else if (size / 1024 / 1024 / 1024 == 0)
@@ -279,13 +279,13 @@ namespace MassEffectModder
         public static string getTimerFormat(long time)
         {
             if (time / 1000 == 0)
-                return string.Format("{0} ms", time);
+                return string.Format("{0} milliseconds", time);
             else if (time / 1000 / 60 == 0)
-                return string.Format("{0} sec", time / 1000);
+                return string.Format("{0} seconds", time / 1000);
             else if (time / 1000 / 60 / 60 == 0)
-                return string.Format("{0}min - {1}sec", time / 1000 / 60, time / 1000);
+                return string.Format("{0} min - {1} seconds", time / 1000 / 60, time - (time / 1000) * 60);
             else
-                return string.Format("{0}h - {1}min - {2}sec", time / 1000 / 60 / 60, time / 1000 / 60, time / 1000);
+                return string.Format("{0} hours - {1} minutes - {2} seconds", time / 1000 / 60 / 60, time / 1000 / 60, time / 1000);
         }
     }
 }

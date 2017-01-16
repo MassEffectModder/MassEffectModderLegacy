@@ -353,7 +353,7 @@ namespace MassEffectModder
                     pccs = Directory.GetFiles(DLCData, "*.pcc", SearchOption.AllDirectories).Where(item => item.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase)).ToList();
                     if (pccs.Count() == 0)
                     {
-                        MessageBox.Show("You need exract DLC packages first");
+                        MessageBox.Show("You need to extract the DLC files first.");
                         return false;
                     }
                     List<string> DLCs = Directory.GetDirectories(DLCData).ToList();
@@ -365,8 +365,8 @@ namespace MassEffectModder
                         List<string> dlcs = Directory.GetFiles(DLCs[i], "Mount.dlc", SearchOption.AllDirectories).ToList();
                         if (dlcs.Count() == 0)
                         {
-                            MessageBox.Show("Detected packed and unpacked DLCs in DLC folder." +
-                                "\nYou need exract DLC packages first.");
+                            MessageBox.Show("Detected compressed and extracted DLCs in DLC folder." +
+                                "\nYou need to extract the DLC files first.");
                             return false;
                         }
                     }

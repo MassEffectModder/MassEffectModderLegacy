@@ -102,8 +102,8 @@ namespace MassEffectModder
             }
             ConfIni engineConf = new ConfIni(path);
             LODSettings.updateLOD(MeType.ME1_TYPE, engineConf);
-            MessageBox.Show("Game configuration " + path + " updated." +
-                "\n\nAfter this it's required to remove empty mipmaps to prevent black textures issue in the game.");
+            MessageBox.Show("Game configuration file at " + path + " updated." +
+                "\n\nAfter updating LOD settings you will have to remove empty mipmaps.");
             enableGameDataMenu(true);
         }
 
@@ -111,13 +111,13 @@ namespace MassEffectModder
         {
             if (!Directory.Exists(GameData.GamePath))
             {
-                MessageBox.Show("Wrong game path!");
+                MessageBox.Show("Game path is wrong!");
                 return false;
             }
-            updateStatusLabel("Finding packages in game data...");
+            updateStatusLabel("Finding packages in game setup...");
             if (!gameData.getPackages())
             {
-                MessageBox.Show("Unable get packages from game data.");
+                MessageBox.Show("Unable find packages in game setup.");
                 updateStatusLabel("");
                 return false;
             }
@@ -138,7 +138,7 @@ namespace MassEffectModder
             GameData gameData = new GameData(gameType, _configIni);
             if (!Directory.Exists(GameData.GamePath))
             {
-                MessageBox.Show("Wrong game path!");
+                MessageBox.Show("Game path is wrong!");
                 return;
             }
             using (OpenFileDialog modFile = new OpenFileDialog())
@@ -154,19 +154,19 @@ namespace MassEffectModder
                     uint version = fs.ReadUInt32();
                     if (tag == TexExplorer.TextureModTag)
                     {
-                        MessageBox.Show("This is textures Mod!");
+                        MessageBox.Show("This is not a valid MEM mod. This is a textures Mod!");
                         return;
                     }
                     if (tag != ExportModTag || version != ExportModVersion)
                     {
-                        MessageBox.Show("Mod not compatible!");
+                        MessageBox.Show("This is mod is not compatible!");
                         return;
                     }
                     else
                     {
                         if ((MeType)fs.ReadUInt32() != gameType)
                         {
-                            MessageBox.Show("Mod for different game!");
+                            MessageBox.Show("This is not a MEM mod valid for this game!");
                             return;
                         }
                         int numEntries = fs.ReadInt32();
@@ -198,13 +198,13 @@ namespace MassEffectModder
             GameData gameData = new GameData(gametype, _configIni);
             if (!Directory.Exists(GameData.GamePath))
             {
-                MessageBox.Show("Wrong game path!");
+                MessageBox.Show("Game path is wrong!");
                 return;
             }
             GetPackages(gameData);
             for (int i = 0; i < GameData.packageFiles.Count; i++)
             {
-                updateStatusLabel("Repack file " + (i + 1) + " of " + GameData.packageFiles.Count);
+                updateStatusLabel("Repack PCC file " + (i + 1) + " of " + GameData.packageFiles.Count);
                 Package package = new Package(GameData.packageFiles[i]);
                 if (package.compressed && package.compressionType != Package.CompressionType.Zlib)
                     package.SaveToFile(true);
@@ -246,8 +246,8 @@ namespace MassEffectModder
             }
             ConfIni engineConf = new ConfIni(path);
             LODSettings.updateLOD(MeType.ME2_TYPE, engineConf);
-            MessageBox.Show("Game configuration " + path + " updated." +
-                "\n\nAfter this it's required to remove empty mipmaps to prevent black textures issue in the game.");
+            MessageBox.Show("Game configuration file at " + path + " updated." +
+                "\n\nAfter updating LOD settings you will have to remove empty mipmaps.");
             enableGameDataMenu(true);
         }
 
@@ -264,12 +264,12 @@ namespace MassEffectModder
             GameData gameData = new GameData(MeType.ME3_TYPE, _configIni);
             if (!Directory.Exists(GameData.GamePath))
             {
-                MessageBox.Show("Wrong game path!");
+                MessageBox.Show("Game path is wrong!");
                 return;
             }
             if (!Directory.Exists(GameData.DLCData))
             {
-                MessageBox.Show("There is nothing to unpack.");
+                MessageBox.Show("No DLCs need to be extracted.");
                 return;
             }
             ME3DLC.unpackAllDLC(this, null);
@@ -283,7 +283,7 @@ namespace MassEffectModder
             GameData gameData = new GameData(MeType.ME3_TYPE, _configIni);
             if (!Directory.Exists(GameData.GamePath))
             {
-                MessageBox.Show("Wrong game path!");
+                MessageBox.Show("Game path is wrong!");
                 return;
             }
             string outPath = Path.Combine(Path.Combine(GameData.GamePath, "BIOGame", "DLCTemp"), DLCname, "CookedPCConsole", "Default.sfar");
@@ -296,18 +296,18 @@ namespace MassEffectModder
             GameData gameData = new GameData(MeType.ME3_TYPE, _configIni);
             if (!Directory.Exists(GameData.GamePath))
             {
-                MessageBox.Show("Wrong game path!");
+                MessageBox.Show("Game path is wrong!");
                 return;
             }
             if (!Directory.Exists(GameData.DLCData))
             {
-                MessageBox.Show("There is nothing to pack.");
+                MessageBox.Show("No DLCs need to be compressed.");
                 return;
             }
             List<string> dlcs = Directory.GetFiles(GameData.DLCData, "Mount.dlc", SearchOption.AllDirectories).ToList();
             if (dlcs.Count() == 0)
             {
-                MessageBox.Show("There is nothing to pack.");
+                MessageBox.Show("No DLCs need to be compressed.");
                 return;
             }
             List<string> DLCs = Directory.GetDirectories(GameData.DLCData).ToList();
@@ -329,7 +329,7 @@ namespace MassEffectModder
                 for (int i = 0; i < DLCs.Count; i++)
                 {
                     string DLCname = Path.GetFileName(DLCs[i]);
-                    updateStatusLabel("SFAR packing - DLC " + (i + 1) + " of " + DLCs.Count);
+                    updateStatusLabel("DLC compressing - " + (i + 1) + " of " + DLCs.Count);
                     PackME3DLC(DLCs[i], DLCname);
                 }
 
@@ -350,7 +350,7 @@ namespace MassEffectModder
             }
             else
             {
-                MessageBox.Show("You need about " + Misc.getBytesFormat(diskUsage) + " free disk space");
+                MessageBox.Show("You have not enough disk space remaining. You need about " + Misc.getBytesFormat(diskUsage) + " free.");
             }
             updateStatusLabel2("");
             enableGameDataMenu(true);
@@ -375,8 +375,8 @@ namespace MassEffectModder
             }
             ConfIni engineConf = new ConfIni(path);
             LODSettings.updateLOD(MeType.ME3_TYPE, engineConf);
-            MessageBox.Show("Game configuration " + path + " updated." +
-                "\n\nAfter this it's required to remove empty mipmaps to prevent black textures issue in the game.");
+            MessageBox.Show("Game configuration file at " + path + " updated." +
+                "\n\nAfter updating LOD settings you will have to remove empty mipmaps.");
             enableGameDataMenu(true);
         }
 
@@ -418,11 +418,11 @@ namespace MassEffectModder
             {
                 ConfIni engineConf = new ConfIni(path);
                 LODSettings.removeLOD(MeType.ME1_TYPE, engineConf);
-                MessageBox.Show("Game configuration: " + path + " updated.");
+                MessageBox.Show("INFO: Game configuration file at " + path + " updated.");
             }
             else
             {
-                MessageBox.Show("Game configuration: " + path + " not exist, nothing done.");
+                MessageBox.Show("INFO: Game configuration file at " + path + " not exist, nothing done.");
             }
             enableGameDataMenu(true);
         }
@@ -437,11 +437,11 @@ namespace MassEffectModder
             {
                 ConfIni engineConf = new ConfIni(path);
                 LODSettings.removeLOD(MeType.ME2_TYPE, engineConf);
-                MessageBox.Show("Game configuration: " + path + " updated.");
+                MessageBox.Show("INFO: Game configuration file at " + path + " updated.");
             }
             else
             {
-                MessageBox.Show("Game configuration: " + path + " not exist, nothing done.");
+                MessageBox.Show("INFO: Game configuration file at " + path + " not exist, nothing done.");
             }
             enableGameDataMenu(true);
         }
@@ -456,11 +456,11 @@ namespace MassEffectModder
             {
                 ConfIni engineConf = new ConfIni(path);
                 LODSettings.removeLOD(MeType.ME3_TYPE, engineConf);
-                MessageBox.Show("Game configuration: " + path + " updated.");
+                MessageBox.Show("INFO: Game configuration file at " + path + " updated.");
             }
             else
             {
-                MessageBox.Show("Game configuration: " + path + " not exist, nothing done.");
+                MessageBox.Show("INFO: Game configuration: " + path + " not exist, nothing done.");
             }
             enableGameDataMenu(true);
         }
@@ -476,7 +476,7 @@ namespace MassEffectModder
             }
             else
             {
-                MessageBox.Show("Wrong game path!");
+                MessageBox.Show("Game path is wrong!");
             }
 
             enableGameDataMenu(true);
@@ -485,9 +485,9 @@ namespace MassEffectModder
         void removeTreeFile(MeType game)
         {
             enableGameDataMenu(false);
-            DialogResult result = MessageBox.Show("This operation removing textures scan file to allow re-scan game data." +
-            "\n\nAfter that you need restore game to vanilla state and install any original/modded DLC files before re-scan." +
-            "\n\nAre you really sure?", "Remove Textures Scan File", MessageBoxButtons.YesNo);
+            DialogResult result = MessageBox.Show("WARNING: you are going to delete your current textures scan file." +
+            "\n\nAfter that, and before scanning your game again, you need to restore game to vanilla state and reinstall vanilla DLCs and DLC mods." +
+            "\n\nAre you sure you want to proceed?", "Remove textures map of the game.", MessageBoxButtons.YesNo);
             if (result == DialogResult.Yes)
             {
                 GameData gameData = new GameData(game, _configIni);
@@ -497,11 +497,11 @@ namespace MassEffectModder
                 if (File.Exists(filename))
                 {
                     File.Delete(filename);
-                    MessageBox.Show("File deleted.");
+                    MessageBox.Show("File at " + filename + " deleted.");
                 }
                 else
                 {
-                    MessageBox.Show("File not found.");
+                    MessageBox.Show("INFO: File at " + filename + " not found.");
                 }
             }
             enableGameDataMenu(true);

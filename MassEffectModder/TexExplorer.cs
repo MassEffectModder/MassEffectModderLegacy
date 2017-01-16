@@ -131,14 +131,14 @@ namespace MassEffectModder
 
             if (!Directory.Exists(GameData.GamePath))
             {
-                MessageBox.Show("Wrong game path!");
+                MessageBox.Show("Game path is wrong!");
                 Close();
                 return;
             }
 
             if (!Misc.checkWriteAccess(GameData.GamePath))
             {
-                MessageBox.Show("Tool doesn't have write access to game data!");
+                MessageBox.Show("Write access denied to game folders!");
                 Close();
                 return;
             }
@@ -158,7 +158,7 @@ namespace MassEffectModder
                 Misc.startTimer();
                 _textures = treeScan.PrepareListOfTextures(this, _mainWindow, null);
                 var time = Misc.stopTimer();
-                _mainWindow.updateStatusLabel("Done - time lapsed: " + Misc.getTimerFormat(time));
+                _mainWindow.updateStatusLabel("Done. Process total time: " + Misc.getTimerFormat(time));
                 _mainWindow.updateStatusLabel("");
             }
 
@@ -376,7 +376,7 @@ namespace MassEffectModder
             Misc.startTimer();
             replaceTexture();
             var time = Misc.stopTimer();
-            _mainWindow.updateStatusLabel("Done - time lapsed: " + Misc.getTimerFormat(time));
+            _mainWindow.updateStatusLabel("Done. Process total time: " + Misc.getTimerFormat(time));
             _mainWindow.updateStatusLabel2("");
         }
 
@@ -389,7 +389,7 @@ namespace MassEffectModder
             Misc.startTimer();
             replaceTexture();
             var time = Misc.stopTimer();
-            _mainWindow.updateStatusLabel("Done - time lapsed: " + Misc.getTimerFormat(time));
+            _mainWindow.updateStatusLabel("Done. Process total time: " + Misc.getTimerFormat(time));
             _mainWindow.updateStatusLabel2("");
         }
 
@@ -486,7 +486,7 @@ namespace MassEffectModder
                         uint version = fs.ReadUInt32();
                         if (tag != TextureModTag || (version != TextureModVersion1 && version != TextureModVersion))
                         {
-                            MessageBox.Show("File " + file + " is not MEM mod, omitting...");
+                            MessageBox.Show("File " + file + " is not a MEM mod valid for this game, skipping...");
                             continue;
                         }
                     }
@@ -549,7 +549,7 @@ namespace MassEffectModder
                 _mainWindow.updateStatusLabel("");
                 cachePackageMgr.CloseAllWithSave();
                 var time = Misc.stopTimer();
-                _mainWindow.updateStatusLabel("MODs applied - time lapsed: " + Misc.getTimerFormat(time));
+                _mainWindow.updateStatusLabel("MODs applied. Process total time: " + Misc.getTimerFormat(time));
                 _mainWindow.updateStatusLabel2("");
                 if (listViewMods.Items.Count == 0)
                     clearMODsView();
@@ -557,12 +557,12 @@ namespace MassEffectModder
                 {
                     richTextBoxInfo.Show();
                     pictureBoxPreview.Hide();
-                    MessageBox.Show("There were some errors while process.");
+                    MessageBox.Show("WARNING: Some errors have occured!");
                 }
             }
             else
             {
-                MessageBox.Show("You need about " + Misc.getBytesFormat(diskUsage) + " free disk space");
+                MessageBox.Show("You have not enough disk space remaining. You need about " + Misc.getBytesFormat(diskUsage) + " free.");
             }
             EnableMenuOptions(true);
         }
@@ -599,7 +599,7 @@ namespace MassEffectModder
             {
                 richTextBoxInfo.Show();
                 pictureBoxPreview.Hide();
-                MessageBox.Show("There were some errors while process.");
+                MessageBox.Show("WARNING: Some errors have occured!");
             }
         }
 
@@ -637,18 +637,18 @@ namespace MassEffectModder
                             _mainWindow.updateStatusLabel2("");
                         }
                         var time = Misc.stopTimer();
-                        _mainWindow.updateStatusLabel("MODs extracted - time lapsed: " + Misc.getTimerFormat(time));
+                        _mainWindow.updateStatusLabel("MODs extracted. Process total time: " + Misc.getTimerFormat(time));
                         _mainWindow.updateStatusLabel2("");
                         if (richTextBoxInfo.Text != "")
                         {
                             richTextBoxInfo.Show();
                             pictureBoxPreview.Hide();
-                            MessageBox.Show("There were some errors while process.");
+                            MessageBox.Show("WARNING: Some errors have occured!");
                         }
                     }
                     else
                     {
-                        MessageBox.Show("You need about " + Misc.getBytesFormat(diskUsage) + " free disk space");
+                        MessageBox.Show("You have not enough disk space remaining. You need about " + Misc.getBytesFormat(diskUsage) + " free.");
                     }
                 }
             }
@@ -682,13 +682,13 @@ namespace MassEffectModder
                         {
                             richTextBoxInfo.Show();
                             pictureBoxPreview.Hide();
-                            MessageBox.Show("There were some errors while process.");
+                            MessageBox.Show("WARNING: Some errors have occured!");
                         }
-                        _mainWindow.updateStatusLabel("MOD packed - time lapsed: " + Misc.getTimerFormat(time));
+                        _mainWindow.updateStatusLabel("MOD packed. Process total time: " + Misc.getTimerFormat(time));
                     }
                     else
                     {
-                        MessageBox.Show("You need about " + Misc.getBytesFormat(diskUsage) + " free disk space");
+                        MessageBox.Show("You have not enough disk space remaining. You need about " + Misc.getBytesFormat(diskUsage) + " free.");
                     }
                 }
             }
@@ -710,7 +710,7 @@ namespace MassEffectModder
                     List<string> listDirs = Directory.GetDirectories(modFile.SelectedPath).ToList();
                     if (listDirs.Count == 0)
                     {
-                        MessageBox.Show("Empty subdirectory!");
+                        MessageBox.Show("There are no subfolders required for mod batch creation. Use mod creation instead.");
                         EnableMenuOptions(true);
                         return;
                     }
@@ -739,13 +739,13 @@ namespace MassEffectModder
                         var time = Misc.stopTimer();
                         if (richTextBoxInfo.Text != "")
                         {
-                            MessageBox.Show("There were some errors while process.");
+                            MessageBox.Show("WARNING: Some errors have occured!");
                         }
-                        _mainWindow.updateStatusLabel("MODs packed - time lapsed: " + Misc.getTimerFormat(time));
+                        _mainWindow.updateStatusLabel("MODs packed. Process total time: " + Misc.getTimerFormat(time));
                     }
                     else
                     {
-                        MessageBox.Show("You need about " + Misc.getBytesFormat(diskUsage) + " free disk space");
+                        MessageBox.Show("You have not enough disk space remaining. You need about " + Misc.getBytesFormat(diskUsage) + " free.");
                     }
                 }
             }
@@ -756,7 +756,7 @@ namespace MassEffectModder
 
         private void searchToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string name = Microsoft.VisualBasic.Interaction.InputBox("Please enter texture name or CRC", "", "", 0, 0);
+            string name = Microsoft.VisualBasic.Interaction.InputBox("Please enter texture name or CRC.\n\nYou can use * as wilcards.", "Search Texture", "", 0, 0);
             if (string.IsNullOrEmpty(name))
                 return;
 
@@ -804,7 +804,7 @@ namespace MassEffectModder
                     File.Delete(filename);
 
                 EnableMenuOptions(false);
-                _mainWindow.updateStatusLabel("Dump textures information...");
+                _mainWindow.updateStatusLabel("Generating textures information...");
                 _mainWindow.updateStatusLabel2("");
 
                 GameData.packageFiles.Sort();
@@ -815,7 +815,7 @@ namespace MassEffectModder
                 {
                     for (int l = 0; l < GameData.packageFiles.Count; l++)
                     {
-                        _mainWindow.updateStatusLabel("Dump textures information from package " + (l + 1) + " of " + GameData.packageFiles.Count);
+                        _mainWindow.updateStatusLabel("Generating textures information from package " + (l + 1) + " of " + GameData.packageFiles.Count);
                         _mainWindow.updateStatusLabel2("");
                         Package package = new Package(GameData.packageFiles[l]);
                         fs.WriteStringASCII("--- Package: " + Path.GetFileName(GameData.packageFiles[l]) + " ---\n");
@@ -843,7 +843,7 @@ namespace MassEffectModder
                         package.Dispose();
                     }
                 }
-                _mainWindow.updateStatusLabel("Dump textures information finished.");
+                _mainWindow.updateStatusLabel("Generating textures information completed.");
                 _mainWindow.updateStatusLabel2("");
                 EnableMenuOptions(true);
             }
@@ -852,8 +852,8 @@ namespace MassEffectModder
         private void repackTexturesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             EnableMenuOptions(false);
-            DialogResult result = MessageBox.Show("Repacking textures can be long time process.\n\n" +
-                "Are you sure to proceed?", "Textures repacking (WIP feature!)", MessageBoxButtons.YesNo);
+            DialogResult result = MessageBox.Show("Repacking textures process can take a lot of time.\n\n" +
+                "Are you sure you want to proceed?", "Textures repacking (WIP feature!)", MessageBoxButtons.YesNo);
             if (result == DialogResult.No)
             {
                 new Repack().RepackTexturesTFC(_textures, _mainWindow, cachePackageMgr);

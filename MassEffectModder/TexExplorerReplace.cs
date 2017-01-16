@@ -71,9 +71,10 @@ namespace MassEffectModder
             }
         };
 
-        public void replaceTexture(DDSImage image, List<MatchedTexture> list, CachePackageMgr cachePackageMgr, string textureName, string errors)
+        public string replaceTexture(DDSImage image, List<MatchedTexture> list, CachePackageMgr cachePackageMgr, string textureName)
         {
             Texture firstTexture = null, arcTexture = null, cprTexture = null;
+            string errors = "";
 
             for (int n = 0; n < list.Count; n++)
             {
@@ -87,7 +88,7 @@ namespace MassEffectModder
 
                 if (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1)
                 {
-                    errors += "Texture: " + textureName + " must have mipmaps, skipping..." + Environment.NewLine;
+                    errors += "Error in texture: " + textureName + " Texture skipped. This texture has not all the required mipmaps" + Environment.NewLine;
                     break;
                 }
 
@@ -95,14 +96,14 @@ namespace MassEffectModder
                 DDSFormat ddsFormat = DDSImage.convertFormat(fmt);
                 if (image.ddsFormat != ddsFormat)
                 {
-                    errors += "Texture: " + textureName + " not match expected texture format: " + fmt + ", skipping..." + Environment.NewLine;
+                    errors += "Error in texture: " + textureName + " This texture has wrong texture format: " + fmt + ", skipping..." + Environment.NewLine;
                     break;
                 }
 
                 if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
                     texture.mipMapsList[0].width / texture.mipMapsList[0].height)
                 {
-                    errors += "Texture: " + textureName + " not match game data texture aspect ratio, skipping..." + Environment.NewLine;
+                    errors += "Error in texture: " + textureName + " This texture has wrong aspect ratio, skipping texture..." + Environment.NewLine;
                     break;
                 }
 
@@ -376,6 +377,8 @@ namespace MassEffectModder
                 package = null;
             }
             firstTexture = arcTexture = cprTexture = null;
+
+            return errors;
         }
     }
 
@@ -396,9 +399,8 @@ namespace MassEffectModder
                 DDSImage image = new DDSImage(selectDDS.FileName);
                 if (!image.checkExistAllMipmaps())
                 {
-                    DialogResult result = MessageBox.Show("Not all mipmaps exists in DDS file, continue?", "Replace Texture", MessageBoxButtons.YesNo);
-                    if (result == DialogResult.No)
-                        return;
+                    MessageBox.Show("This texture has not all the required mipmaps, canceling...");
+                    return;
                 }
 
                 bool loadMod = loadMODsToolStripMenuItem.Enabled;
@@ -411,7 +413,13 @@ namespace MassEffectModder
                 int index = Convert.ToInt32(item.Name);
 
                 MipMaps mipMaps = new MipMaps();
-                mipMaps.replaceTexture(image, node.textures[index].list, cachePackageMgr,  node.textures[index].name, richTextBoxInfo.Text);
+                richTextBoxInfo.Text = mipMaps.replaceTexture(image, node.textures[index].list, cachePackageMgr,  node.textures[index].name);
+                if (richTextBoxInfo.Text != "")
+                {
+                    richTextBoxInfo.Show();
+                    pictureBoxPreview.Hide();
+                    MessageBox.Show("WARNING: Some errors have occured!");
+                }
 
                 cachePackageMgr.CloseAllWithSave();
 

@@ -35,7 +35,7 @@ namespace MassEffectModder
 
             if (Misc.isRunAsAdministrator())
             {
-                MessageBox.Show("Warning: Tool started with Administrator rights!");
+                MessageBox.Show("INFO: You are running MEM with Administrator rights.");
             }
 
             string iniPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "installer.ini");

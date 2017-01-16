@@ -94,9 +94,9 @@ namespace MassEffectModder
                             {
                                 if (mainWindow != null)
                                 {
-                                    MessageBox.Show("Detected removal game data files from last game data scan." +
-                                    "\n\nYou need restore game to vanilla state and install original/modded DLC files." +
-                                    "\n\nThen from main menu select option 'Remove Textures Scan File' and start Texture Explorer again.");
+                                    MessageBox.Show("Detected removal of game files since last game data scan." +
+                                    "\n\nYou need to restore the game to vanilla state and reinstall vanilla DLCs and DLC mods." +
+                                    "\n\nThen from the main menu, select 'Remove Textures Scan File' and start Texture Explorer again.");
                                 }
                                 return null;
                             }
@@ -107,9 +107,9 @@ namespace MassEffectModder
                             {
                                 if (mainWindow != null)
                                 {
-                                    MessageBox.Show("Detected additonal game data files from last game data scan." +
-                                    "\n\nYou need restore game to vanilla state and install original/modded DLC files." +
-                                    "\n\nThen from main menu select option 'Remove Textures Scan File' and start Texture Explorer again.");
+                                    MessageBox.Show("Detected additional game files not present in latest game data scan." +
+                                    "\n\nYou need to restore the game to vanilla state and reinstall vanilla DLCs and DLC mods." +
+                                    "\n\nThen from the main menu, select 'Remove Textures Scan File' and start Texture Explorer again.");
                                 }
                                 break;
                             }
@@ -135,8 +135,8 @@ namespace MassEffectModder
             {
                 if (mainWindow != null)
                 {
-                    MessageBox.Show("Detected textures modded game data. Can not continue." +
-                    "\n\nYou need restore game to vanilla state and install original/modded DLC files." +
+                    MessageBox.Show("Detected modded game. Can not continue." +
+                    "\n\nYou need to restore the game to vanilla state and reinstall vanilla DLCs and DLC mods." +
                     "\n\nThen start Texture Explorer again.");
                 }
                 return null;
@@ -144,10 +144,10 @@ namespace MassEffectModder
 
             if (mainWindow != null)
             {
-                DialogResult result = MessageBox.Show("Replacing textures and creating mods require textures mapping.\n" +
-                "It's one time only process.\n\n" +
-                "IMPORTANT! Your game needs to be in vanilla state and have all original/modded DLC files installed.\n\n" +
-                "Are you sure to proceed?", "Textures mapping", MessageBoxButtons.YesNo);
+                DialogResult result = MessageBox.Show("Replacing textures and creating mods requires generating a map of the game's textures.\n" +
+                "You only need to do it once.\n\n" +
+                "IMPORTANT! Your game needs to be in vanilla state and have all original DLCs and DLC mods installed.\n\n" +
+                "Are you sure you want to proceed?", "Textures mapping", MessageBoxButtons.YesNo);
                 if (result == DialogResult.No)
                 {
                     texEplorer.Close();
@@ -162,7 +162,7 @@ namespace MassEffectModder
             {
                 if (mainWindow != null)
                 {
-                    mainWindow.updateStatusLabel("Find textures in package " + (i + 1) + " of " + GameData.packageFiles.Count + " - " + GameData.packageFiles[i]);
+                    mainWindow.updateStatusLabel("Finding textures in package " + (i + 1) + " of " + GameData.packageFiles.Count + " - " + GameData.packageFiles[i]);
                 }
                 if (installer != null)
                 {

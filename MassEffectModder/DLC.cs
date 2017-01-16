@@ -388,7 +388,7 @@ namespace MassEffectModder
                     if (mainWindow != null)
                         mainWindow.updateStatusLabel2("File " + (i + 1) + " of " + srcFilesList.Count() + " - " + Path.GetFileName(srcFilesList[i]));
                     if (installer != null)
-                        installer.updateStatusPrepare("Packing DLC... " + (i + 1) + " of " + srcFilesList.Count);
+                        installer.updateStatusPrepare("Compressing DLC... " + (i + 1) + " of " + srcFilesList.Count);
                     FileEntry file = new FileEntry();
                     Stream inputFile = new FileStream(srcFilesList[i], FileMode.Open, FileAccess.Read);
                     long fileLen = new FileInfo(srcFilesList[i]).Length;
@@ -489,7 +489,7 @@ namespace MassEffectModder
             if (!Directory.Exists(GameData.DLCData))
             {
                 if (mainWindow != null)
-                    MessageBox.Show("There is nothing to unpack.");
+                    MessageBox.Show("No DLCs need to be extracted.");
                 return;
             }
 
@@ -502,7 +502,7 @@ namespace MassEffectModder
             if (sfarFiles.Count() == 0)
             {
                 if (mainWindow != null)
-                    MessageBox.Show("There is nothing to unpack.");
+                    MessageBox.Show("No DLCs need to be extracted.");
                 return;
             }
 
@@ -516,7 +516,7 @@ namespace MassEffectModder
             if (diskUsage > diskFreeSpace)
             {
                 if (mainWindow != null)
-                    MessageBox.Show("You need about " + Misc.getBytesFormat(diskUsage) + " free disk space");
+                    MessageBox.Show("You have not enough disk space remaining. You need about " + Misc.getBytesFormat(diskUsage) + " free.");
                 return;
             }
 
@@ -532,11 +532,11 @@ namespace MassEffectModder
                 ME3DLC dlc = new ME3DLC(mainWindow);
                 if (mainWindow != null)
                 {
-                    mainWindow.updateStatusLabel("SFAR unpacking - DLC " + (i + 1) + " of " + sfarFiles.Count);
+                    mainWindow.updateStatusLabel("SFAR extracting - DLC " + (i + 1) + " of " + sfarFiles.Count);
                 }
                 if (installer != null)
                 {
-                    installer.updateStatusPrepare("Unpacking DLC ... " + (i + 1) + " of " + sfarFiles.Count);
+                    installer.updateStatusPrepare("Extracting DLC ... " + (i + 1) + " of " + sfarFiles.Count);
                 }
                 dlc.extract(sfarFiles[i], outPath);
             }
