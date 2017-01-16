@@ -97,9 +97,7 @@ namespace MassEffectModder
             string path = gameData.EngineConfigIniPath;
             bool exist = File.Exists(path);
             if (!exist)
-            {
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
-            }
             ConfIni engineConf = new ConfIni(path);
             LODSettings.updateLOD(MeType.ME1_TYPE, engineConf);
             MessageBox.Show("Game configuration file at " + path + " updated." +
@@ -117,7 +115,6 @@ namespace MassEffectModder
             updateStatusLabel("Finding packages in game setup...");
             if (!gameData.getPackages())
             {
-                MessageBox.Show("Unable find packages in game setup.");
                 updateStatusLabel("");
                 return false;
             }
@@ -241,9 +238,7 @@ namespace MassEffectModder
             string path = gameData.EngineConfigIniPath;
             bool exist = File.Exists(path);
             if (!exist)
-            {
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
-            }
             ConfIni engineConf = new ConfIni(path);
             LODSettings.updateLOD(MeType.ME2_TYPE, engineConf);
             MessageBox.Show("Game configuration file at " + path + " updated." +
@@ -265,11 +260,13 @@ namespace MassEffectModder
             if (!Directory.Exists(GameData.GamePath))
             {
                 MessageBox.Show("Game path is wrong!");
+                enableGameDataMenu(true);
                 return;
             }
             if (!Directory.Exists(GameData.DLCData))
             {
                 MessageBox.Show("No DLCs need to be extracted.");
+                enableGameDataMenu(true);
                 return;
             }
             ME3DLC.unpackAllDLC(this, null);
@@ -337,7 +334,7 @@ namespace MassEffectModder
                 DLCs = Directory.GetFiles(GameData.DLCData, "Default.sfar", SearchOption.AllDirectories).ToList();
                 for (int i = 0; i < DLCs.Count; i++)
                 {
-                    if (new FileInfo(DLCs[i]).Length <= 32)
+                    if (new FileInfo(DLCs[i]).Length > 32)
                     {
                         string source = Path.GetDirectoryName(Path.GetDirectoryName(DLCs[i]));
                         Directory.Move(source, tmpDlcDir + "\\" + Path.GetFileName(source));
@@ -353,7 +350,6 @@ namespace MassEffectModder
                 MessageBox.Show("You have not enough disk space remaining. You need about " + Misc.getBytesFormat(diskUsage) + " free.");
             }
             updateStatusLabel2("");
-            enableGameDataMenu(true);
         }
 
         private void packME3DLCPackagesLZMAToolStripMenuItem_Click(object sender, EventArgs e)
@@ -370,9 +366,7 @@ namespace MassEffectModder
             string path = gameData.EngineConfigIniPath;
             bool exist = File.Exists(path);
             if (!exist)
-            {
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
-            }
             ConfIni engineConf = new ConfIni(path);
             LODSettings.updateLOD(MeType.ME3_TYPE, engineConf);
             MessageBox.Show("Game configuration file at " + path + " updated." +
@@ -473,6 +467,7 @@ namespace MassEffectModder
             {
                 CachePackageMgr.updateMainTOC();
                 CachePackageMgr.updateDLCsTOC();
+                MessageBox.Show("TOC files updated.");
             }
             else
             {

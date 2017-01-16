@@ -23,6 +23,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace MassEffectModder
 {
@@ -30,7 +31,7 @@ namespace MassEffectModder
     {
         public List<Package> packages;
         MainWindow mainWindow;
-        Installer _installer;
+        static Installer _installer;
 
         public CachePackageMgr(MainWindow main, Installer installer)
         {
@@ -97,7 +98,14 @@ namespace MassEffectModder
         {
             List<string> mainFiles = Directory.GetFiles(GameData.MainData, "*.pcc", SearchOption.AllDirectories).Where(item => item.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase)).ToList();
             mainFiles.AddRange(Directory.GetFiles(GameData.MainData, "*.tfc", SearchOption.AllDirectories).Where(item => item.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase)).ToList());
-            TOCBinFile tocFile = new TOCBinFile(Path.Combine(GameData.bioGamePath, "PCConsoleTOC.bin"));
+            string tocFilename = Path.Combine(GameData.bioGamePath, "PCConsoleTOC.bin");
+            if (!File.Exists(tocFilename))
+            {
+                if (_installer == null)
+                    MessageBox.Show("ERROR: File at " + tocFilename + " is missing!");
+                return;
+            }
+            TOCBinFile tocFile = new TOCBinFile(tocFilename);
             for (int i = 0; i < mainFiles.Count; i++)
             {
                 int pos = mainFiles[i].IndexOf("BioGame", StringComparison.OrdinalIgnoreCase);
@@ -120,7 +128,14 @@ namespace MassEffectModder
                     continue;
                 dlcFiles.AddRange(Directory.GetFiles(DLCs[i], "*.tfc", SearchOption.AllDirectories).Where(item => item.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase)).ToList());
                 string DLCname = Path.GetFileName(DLCs[i]);
-                TOCBinFile tocDLC = new TOCBinFile(Path.Combine(GameData.DLCData, DLCname, "PCConsoleTOC.bin"));
+                string tocFilename = Path.Combine(GameData.DLCData, DLCname, "PCConsoleTOC.bin");
+                if (!File.Exists(tocFilename))
+                {
+                    if (_installer == null)
+                        MessageBox.Show("ERROR: File at " + tocFilename + " is missing!");
+                    continue;
+                }
+                TOCBinFile tocDLC = new TOCBinFile(Path.Combine(tocFilename));
                 for (int f = 0; f < dlcFiles.Count; f++)
                 {
                     int pos = dlcFiles[f].IndexOf(DLCname + "\\", StringComparison.OrdinalIgnoreCase);

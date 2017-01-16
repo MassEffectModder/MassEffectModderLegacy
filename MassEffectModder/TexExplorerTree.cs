@@ -111,7 +111,7 @@ namespace MassEffectModder
                                     "\n\nYou need to restore the game to vanilla state and reinstall vanilla DLCs and DLC mods." +
                                     "\n\nThen from the main menu, select 'Remove Textures Scan File' and start Texture Explorer again.");
                                 }
-                                break;
+                                return null;
                             }
                         }
                     }
