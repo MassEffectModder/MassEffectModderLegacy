@@ -486,7 +486,7 @@ namespace MassEffectModder
                         uint version = fs.ReadUInt32();
                         if (tag != TextureModTag || (version != TextureModVersion1 && version != TextureModVersion))
                         {
-                            MessageBox.Show("File " + file + " is not a MEM mod valid for this game, skipping...");
+                            MessageBox.Show("File " + file + " is not a valid MEM mod, skipping...");
                             continue;
                         }
                     }

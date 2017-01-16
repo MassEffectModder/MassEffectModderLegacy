@@ -129,7 +129,7 @@ namespace StreamHelpers
             byte[] buffer = new byte[sizeof(ulong)];
             if (stream.Read(buffer, 0, sizeof(ulong)) != sizeof(ulong))
                 throw new Exception();
-            return BitConverter.ToUInt32(buffer, 0);
+            return BitConverter.ToUInt64(buffer, 0);
         }
 
         public static long ReadInt64(this Stream stream)

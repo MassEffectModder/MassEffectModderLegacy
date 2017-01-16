@@ -81,6 +81,8 @@ namespace MassEffectModder
                 if (tag != TexExplorer.TextureModTag || (version != TexExplorer.TextureModVersion1 && version != TexExplorer.TextureModVersion))
                 {
                     errors += "File " + filenameMod + " is not a valid MEM mod" + Environment.NewLine;
+                    if (previewIndex == -1 && !extract && !replace)
+                        texExplorer.listViewTextures.EndUpdate();
                     return errors;
                 }
                 else
@@ -92,6 +94,8 @@ namespace MassEffectModder
                     if ((MeType)gameType != GameData.gameType)
                     {
                         errors += "File " + filenameMod + " is not a MEM mod valid for this game" + Environment.NewLine;
+                        if (previewIndex == -1 && !extract && !replace)
+                            texExplorer.listViewTextures.EndUpdate();
                         return errors;
                     }
                 }
@@ -228,9 +232,7 @@ namespace MassEffectModder
                     }
                 }
                 if (previewIndex == -1 && !extract && !replace)
-                {
                     texExplorer.listViewTextures.EndUpdate();
-                }
             }
             return errors;
         }
