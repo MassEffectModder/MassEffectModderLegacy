@@ -472,7 +472,7 @@ namespace MassEffectModder
 
 
             updateStatusScan("In progress...");
-            textures = treeScan.PrepareListOfTextures(null, null, this);
+            textures = treeScan.PrepareListOfTextures(null, null, this, true);
             checkBoxScan.Checked = true;
             updateStatusScan("");
 

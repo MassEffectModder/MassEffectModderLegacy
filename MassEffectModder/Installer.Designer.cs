@@ -72,33 +72,33 @@
             this.labelStatusPrepare = new System.Windows.Forms.Label();
             this.checkBoxPrepare = new System.Windows.Forms.CheckBox();
             this.groupBoxPreInstallCheck = new System.Windows.Forms.GroupBox();
-            this.groupBoxInstaller = new System.Windows.Forms.GroupBox();
+            this.checkBoxPreVanilla = new System.Windows.Forms.CheckBox();
+            this.checkBoxPreSpace = new System.Windows.Forms.CheckBox();
+            this.checkBoxPreAccess = new System.Windows.Forms.CheckBox();
+            this.checkBoxPrePath = new System.Windows.Forms.CheckBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.labelPreMods = new System.Windows.Forms.Label();
+            this.labelPreVanilla = new System.Windows.Forms.Label();
+            this.labelPreSpace = new System.Windows.Forms.Label();
+            this.labelPreAccess = new System.Windows.Forms.Label();
+            this.labelPrePath = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.buttonPreChangePath = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
             this.buttonPreInstallCheck = new System.Windows.Forms.Button();
+            this.groupBoxInstaller = new System.Windows.Forms.GroupBox();
+            this.checkBoxPackDLC = new System.Windows.Forms.CheckBox();
+            this.checkBoxRepackZlib = new System.Windows.Forms.CheckBox();
+            this.labelStatusPackDLC = new System.Windows.Forms.Label();
+            this.labelME3DLCPack = new System.Windows.Forms.Label();
+            this.labelStatusRepackZlib = new System.Windows.Forms.Label();
+            this.labelMERepackZlib = new System.Windows.Forms.Label();
             this.buttonExit = new System.Windows.Forms.Button();
             this.buttonNormal = new System.Windows.Forms.Button();
             this.labelFinalStatus = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.buttonPreChangePath = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
             this.checkBoxPreEnableRepack = new System.Windows.Forms.CheckBox();
-            this.labelPrePath = new System.Windows.Forms.Label();
             this.checkBoxPreEnablePack = new System.Windows.Forms.CheckBox();
-            this.labelPreAccess = new System.Windows.Forms.Label();
-            this.labelPreSpace = new System.Windows.Forms.Label();
-            this.labelPreVanilla = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.labelPreMods = new System.Windows.Forms.Label();
-            this.labelStatusRepackZlib = new System.Windows.Forms.Label();
-            this.labelMERepackZlib = new System.Windows.Forms.Label();
-            this.labelStatusPackDLC = new System.Windows.Forms.Label();
-            this.labelME3DLCPack = new System.Windows.Forms.Label();
-            this.checkBoxRepackZlib = new System.Windows.Forms.CheckBox();
-            this.checkBoxPackDLC = new System.Windows.Forms.CheckBox();
-            this.checkBoxPrePath = new System.Windows.Forms.CheckBox();
-            this.checkBoxPreAccess = new System.Windows.Forms.CheckBox();
-            this.checkBoxPreSpace = new System.Windows.Forms.CheckBox();
-            this.checkBoxPreVanilla = new System.Windows.Forms.CheckBox();
             this.groupBoxOptions = new System.Windows.Forms.GroupBox();
             this.groupBoxPreInstallCheck.SuspendLayout();
             this.groupBoxInstaller.SuspendLayout();
@@ -130,6 +130,7 @@
             // buttonSTART
             // 
             this.buttonSTART.BackColor = System.Drawing.Color.LimeGreen;
+            this.buttonSTART.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.buttonSTART.Location = new System.Drawing.Point(16, 19);
             this.buttonSTART.Name = "buttonSTART";
             this.buttonSTART.Size = new System.Drawing.Size(75, 23);
@@ -348,6 +349,162 @@
             this.groupBoxPreInstallCheck.TabStop = false;
             this.groupBoxPreInstallCheck.Text = "Pre-Installer Checks";
             // 
+            // checkBoxPreVanilla
+            // 
+            this.checkBoxPreVanilla.AutoSize = true;
+            this.checkBoxPreVanilla.Enabled = false;
+            this.checkBoxPreVanilla.FlatAppearance.CheckedBackColor = System.Drawing.Color.Green;
+            this.checkBoxPreVanilla.Location = new System.Drawing.Point(166, 165);
+            this.checkBoxPreVanilla.Name = "checkBoxPreVanilla";
+            this.checkBoxPreVanilla.Size = new System.Drawing.Size(15, 14);
+            this.checkBoxPreVanilla.TabIndex = 50;
+            this.checkBoxPreVanilla.TabStop = false;
+            this.checkBoxPreVanilla.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxPreSpace
+            // 
+            this.checkBoxPreSpace.AutoSize = true;
+            this.checkBoxPreSpace.Enabled = false;
+            this.checkBoxPreSpace.FlatAppearance.CheckedBackColor = System.Drawing.Color.Green;
+            this.checkBoxPreSpace.Location = new System.Drawing.Point(166, 142);
+            this.checkBoxPreSpace.Name = "checkBoxPreSpace";
+            this.checkBoxPreSpace.Size = new System.Drawing.Size(15, 14);
+            this.checkBoxPreSpace.TabIndex = 49;
+            this.checkBoxPreSpace.TabStop = false;
+            this.checkBoxPreSpace.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxPreAccess
+            // 
+            this.checkBoxPreAccess.AutoSize = true;
+            this.checkBoxPreAccess.Enabled = false;
+            this.checkBoxPreAccess.FlatAppearance.CheckedBackColor = System.Drawing.Color.Green;
+            this.checkBoxPreAccess.Location = new System.Drawing.Point(166, 120);
+            this.checkBoxPreAccess.Name = "checkBoxPreAccess";
+            this.checkBoxPreAccess.Size = new System.Drawing.Size(15, 14);
+            this.checkBoxPreAccess.TabIndex = 48;
+            this.checkBoxPreAccess.TabStop = false;
+            this.checkBoxPreAccess.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxPrePath
+            // 
+            this.checkBoxPrePath.AutoSize = true;
+            this.checkBoxPrePath.Enabled = false;
+            this.checkBoxPrePath.FlatAppearance.CheckedBackColor = System.Drawing.Color.Green;
+            this.checkBoxPrePath.Location = new System.Drawing.Point(166, 75);
+            this.checkBoxPrePath.Name = "checkBoxPrePath";
+            this.checkBoxPrePath.Size = new System.Drawing.Size(15, 14);
+            this.checkBoxPrePath.TabIndex = 47;
+            this.checkBoxPrePath.TabStop = false;
+            this.checkBoxPrePath.UseVisualStyleBackColor = true;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(13, 52);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(100, 13);
+            this.label7.TabIndex = 46;
+            this.label7.Text = "MEM Mods Present";
+            // 
+            // labelPreMods
+            // 
+            this.labelPreMods.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.labelPreMods.ForeColor = System.Drawing.Color.LimeGreen;
+            this.labelPreMods.Location = new System.Drawing.Point(187, 52);
+            this.labelPreMods.Name = "labelPreMods";
+            this.labelPreMods.Size = new System.Drawing.Size(252, 13);
+            this.labelPreMods.TabIndex = 45;
+            this.labelPreMods.Text = "label";
+            // 
+            // labelPreVanilla
+            // 
+            this.labelPreVanilla.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.labelPreVanilla.ForeColor = System.Drawing.Color.LimeGreen;
+            this.labelPreVanilla.Location = new System.Drawing.Point(187, 165);
+            this.labelPreVanilla.Name = "labelPreVanilla";
+            this.labelPreVanilla.Size = new System.Drawing.Size(252, 13);
+            this.labelPreVanilla.TabIndex = 40;
+            this.labelPreVanilla.Text = "label";
+            // 
+            // labelPreSpace
+            // 
+            this.labelPreSpace.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.labelPreSpace.ForeColor = System.Drawing.Color.LimeGreen;
+            this.labelPreSpace.Location = new System.Drawing.Point(187, 142);
+            this.labelPreSpace.Name = "labelPreSpace";
+            this.labelPreSpace.Size = new System.Drawing.Size(252, 13);
+            this.labelPreSpace.TabIndex = 39;
+            this.labelPreSpace.Text = "label";
+            // 
+            // labelPreAccess
+            // 
+            this.labelPreAccess.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.labelPreAccess.ForeColor = System.Drawing.Color.LimeGreen;
+            this.labelPreAccess.Location = new System.Drawing.Point(187, 120);
+            this.labelPreAccess.Name = "labelPreAccess";
+            this.labelPreAccess.Size = new System.Drawing.Size(252, 13);
+            this.labelPreAccess.TabIndex = 38;
+            this.labelPreAccess.Text = "label";
+            // 
+            // labelPrePath
+            // 
+            this.labelPrePath.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.labelPrePath.Location = new System.Drawing.Point(13, 97);
+            this.labelPrePath.Name = "labelPrePath";
+            this.labelPrePath.Size = new System.Drawing.Size(426, 13);
+            this.labelPrePath.TabIndex = 29;
+            this.labelPrePath.Text = "label";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(13, 165);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(69, 13);
+            this.label3.TabIndex = 31;
+            this.label3.Text = "Game Vanilla";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(13, 142);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(66, 13);
+            this.label2.TabIndex = 30;
+            this.label2.Text = "Drive Space";
+            // 
+            // buttonPreChangePath
+            // 
+            this.buttonPreChangePath.Location = new System.Drawing.Point(445, 92);
+            this.buttonPreChangePath.Name = "buttonPreChangePath";
+            this.buttonPreChangePath.Size = new System.Drawing.Size(111, 23);
+            this.buttonPreChangePath.TabIndex = 1;
+            this.buttonPreChangePath.Text = "Change Path...";
+            this.buttonPreChangePath.UseVisualStyleBackColor = true;
+            this.buttonPreChangePath.Click += new System.EventHandler(this.buttonChangePath_Click);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(13, 120);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(70, 13);
+            this.label1.TabIndex = 28;
+            this.label1.Text = "Write Access";
+            // 
+            // buttonPreInstallCheck
+            // 
+            this.buttonPreInstallCheck.BackColor = System.Drawing.Color.DarkBlue;
+            this.buttonPreInstallCheck.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.buttonPreInstallCheck.ForeColor = System.Drawing.Color.White;
+            this.buttonPreInstallCheck.Location = new System.Drawing.Point(14, 19);
+            this.buttonPreInstallCheck.Name = "buttonPreInstallCheck";
+            this.buttonPreInstallCheck.Size = new System.Drawing.Size(75, 23);
+            this.buttonPreInstallCheck.TabIndex = 0;
+            this.buttonPreInstallCheck.Text = "CHECK";
+            this.buttonPreInstallCheck.UseVisualStyleBackColor = false;
+            this.buttonPreInstallCheck.Click += new System.EventHandler(this.buttonPreInstallCheck_Click);
+            // 
             // groupBoxInstaller
             // 
             this.groupBoxInstaller.Controls.Add(this.checkBoxPackDLC);
@@ -382,15 +539,63 @@
             this.groupBoxInstaller.TabStop = false;
             this.groupBoxInstaller.Text = "Installer";
             // 
-            // buttonPreInstallCheck
+            // checkBoxPackDLC
             // 
-            this.buttonPreInstallCheck.Location = new System.Drawing.Point(14, 19);
-            this.buttonPreInstallCheck.Name = "buttonPreInstallCheck";
-            this.buttonPreInstallCheck.Size = new System.Drawing.Size(75, 23);
-            this.buttonPreInstallCheck.TabIndex = 0;
-            this.buttonPreInstallCheck.Text = "CHECK";
-            this.buttonPreInstallCheck.UseVisualStyleBackColor = true;
-            this.buttonPreInstallCheck.Click += new System.EventHandler(this.buttonPreInstallCheck_Click);
+            this.checkBoxPackDLC.AutoSize = true;
+            this.checkBoxPackDLC.Enabled = false;
+            this.checkBoxPackDLC.Location = new System.Drawing.Point(166, 210);
+            this.checkBoxPackDLC.Name = "checkBoxPackDLC";
+            this.checkBoxPackDLC.Size = new System.Drawing.Size(15, 14);
+            this.checkBoxPackDLC.TabIndex = 30;
+            this.checkBoxPackDLC.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxRepackZlib
+            // 
+            this.checkBoxRepackZlib.AutoSize = true;
+            this.checkBoxRepackZlib.Enabled = false;
+            this.checkBoxRepackZlib.Location = new System.Drawing.Point(166, 187);
+            this.checkBoxRepackZlib.Name = "checkBoxRepackZlib";
+            this.checkBoxRepackZlib.Size = new System.Drawing.Size(15, 14);
+            this.checkBoxRepackZlib.TabIndex = 29;
+            this.checkBoxRepackZlib.UseVisualStyleBackColor = true;
+            // 
+            // labelStatusPackDLC
+            // 
+            this.labelStatusPackDLC.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.labelStatusPackDLC.ForeColor = System.Drawing.Color.LimeGreen;
+            this.labelStatusPackDLC.Location = new System.Drawing.Point(187, 211);
+            this.labelStatusPackDLC.Name = "labelStatusPackDLC";
+            this.labelStatusPackDLC.Size = new System.Drawing.Size(252, 13);
+            this.labelStatusPackDLC.TabIndex = 27;
+            this.labelStatusPackDLC.Text = "label";
+            // 
+            // labelME3DLCPack
+            // 
+            this.labelME3DLCPack.AutoSize = true;
+            this.labelME3DLCPack.Location = new System.Drawing.Point(13, 211);
+            this.labelME3DLCPack.Name = "labelME3DLCPack";
+            this.labelME3DLCPack.Size = new System.Drawing.Size(74, 13);
+            this.labelME3DLCPack.TabIndex = 28;
+            this.labelME3DLCPack.Text = "Repack DLCs";
+            // 
+            // labelStatusRepackZlib
+            // 
+            this.labelStatusRepackZlib.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.labelStatusRepackZlib.ForeColor = System.Drawing.Color.LimeGreen;
+            this.labelStatusRepackZlib.Location = new System.Drawing.Point(187, 188);
+            this.labelStatusRepackZlib.Name = "labelStatusRepackZlib";
+            this.labelStatusRepackZlib.Size = new System.Drawing.Size(252, 13);
+            this.labelStatusRepackZlib.TabIndex = 25;
+            this.labelStatusRepackZlib.Text = "label";
+            // 
+            // labelMERepackZlib
+            // 
+            this.labelMERepackZlib.AutoSize = true;
+            this.labelMERepackZlib.Location = new System.Drawing.Point(13, 188);
+            this.labelMERepackZlib.Name = "labelMERepackZlib";
+            this.labelMERepackZlib.Size = new System.Drawing.Size(100, 13);
+            this.labelMERepackZlib.TabIndex = 26;
+            this.labelMERepackZlib.Text = "Repack Game Files";
             // 
             // buttonExit
             // 
@@ -421,43 +626,6 @@
             this.labelFinalStatus.TabIndex = 25;
             this.labelFinalStatus.Text = "label";
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(13, 120);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(70, 13);
-            this.label1.TabIndex = 28;
-            this.label1.Text = "Write Access";
-            // 
-            // buttonPreChangePath
-            // 
-            this.buttonPreChangePath.Location = new System.Drawing.Point(445, 92);
-            this.buttonPreChangePath.Name = "buttonPreChangePath";
-            this.buttonPreChangePath.Size = new System.Drawing.Size(111, 23);
-            this.buttonPreChangePath.TabIndex = 1;
-            this.buttonPreChangePath.Text = "Change Path...";
-            this.buttonPreChangePath.UseVisualStyleBackColor = true;
-            this.buttonPreChangePath.Click += new System.EventHandler(this.buttonChangePath_Click);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(13, 142);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(66, 13);
-            this.label2.TabIndex = 30;
-            this.label2.Text = "Drive Space";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(13, 165);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(69, 13);
-            this.label3.TabIndex = 31;
-            this.label3.Text = "Game Vanilla";
-            // 
             // checkBoxPreEnableRepack
             // 
             this.checkBoxPreEnableRepack.AutoSize = true;
@@ -470,15 +638,6 @@
             this.checkBoxPreEnableRepack.UseVisualStyleBackColor = true;
             this.checkBoxPreEnableRepack.CheckedChanged += new System.EventHandler(this.checkBoxPreEnableRepack_CheckedChanged);
             // 
-            // labelPrePath
-            // 
-            this.labelPrePath.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.labelPrePath.Location = new System.Drawing.Point(13, 97);
-            this.labelPrePath.Name = "labelPrePath";
-            this.labelPrePath.Size = new System.Drawing.Size(426, 13);
-            this.labelPrePath.TabIndex = 29;
-            this.labelPrePath.Text = "label";
-            // 
             // checkBoxPreEnablePack
             // 
             this.checkBoxPreEnablePack.AutoSize = true;
@@ -490,161 +649,6 @@
             this.checkBoxPreEnablePack.Text = "Repack DLCs (Optional)";
             this.checkBoxPreEnablePack.UseVisualStyleBackColor = true;
             this.checkBoxPreEnablePack.CheckedChanged += new System.EventHandler(this.checkBoxPreEnablePack_CheckedChanged);
-            // 
-            // labelPreAccess
-            // 
-            this.labelPreAccess.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.labelPreAccess.ForeColor = System.Drawing.Color.LimeGreen;
-            this.labelPreAccess.Location = new System.Drawing.Point(187, 120);
-            this.labelPreAccess.Name = "labelPreAccess";
-            this.labelPreAccess.Size = new System.Drawing.Size(252, 13);
-            this.labelPreAccess.TabIndex = 38;
-            this.labelPreAccess.Text = "label";
-            // 
-            // labelPreSpace
-            // 
-            this.labelPreSpace.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.labelPreSpace.ForeColor = System.Drawing.Color.LimeGreen;
-            this.labelPreSpace.Location = new System.Drawing.Point(187, 142);
-            this.labelPreSpace.Name = "labelPreSpace";
-            this.labelPreSpace.Size = new System.Drawing.Size(252, 13);
-            this.labelPreSpace.TabIndex = 39;
-            this.labelPreSpace.Text = "label";
-            // 
-            // labelPreVanilla
-            // 
-            this.labelPreVanilla.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.labelPreVanilla.ForeColor = System.Drawing.Color.LimeGreen;
-            this.labelPreVanilla.Location = new System.Drawing.Point(187, 165);
-            this.labelPreVanilla.Name = "labelPreVanilla";
-            this.labelPreVanilla.Size = new System.Drawing.Size(252, 13);
-            this.labelPreVanilla.TabIndex = 40;
-            this.labelPreVanilla.Text = "label";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(13, 52);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(100, 13);
-            this.label7.TabIndex = 46;
-            this.label7.Text = "MEM Mods Present";
-            // 
-            // labelPreMods
-            // 
-            this.labelPreMods.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.labelPreMods.ForeColor = System.Drawing.Color.LimeGreen;
-            this.labelPreMods.Location = new System.Drawing.Point(187, 52);
-            this.labelPreMods.Name = "labelPreMods";
-            this.labelPreMods.Size = new System.Drawing.Size(252, 13);
-            this.labelPreMods.TabIndex = 45;
-            this.labelPreMods.Text = "label";
-            // 
-            // labelStatusRepackZlib
-            // 
-            this.labelStatusRepackZlib.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.labelStatusRepackZlib.ForeColor = System.Drawing.Color.LimeGreen;
-            this.labelStatusRepackZlib.Location = new System.Drawing.Point(187, 188);
-            this.labelStatusRepackZlib.Name = "labelStatusRepackZlib";
-            this.labelStatusRepackZlib.Size = new System.Drawing.Size(252, 13);
-            this.labelStatusRepackZlib.TabIndex = 25;
-            this.labelStatusRepackZlib.Text = "label";
-            // 
-            // labelMERepackZlib
-            // 
-            this.labelMERepackZlib.AutoSize = true;
-            this.labelMERepackZlib.Location = new System.Drawing.Point(13, 188);
-            this.labelMERepackZlib.Name = "labelMERepackZlib";
-            this.labelMERepackZlib.Size = new System.Drawing.Size(100, 13);
-            this.labelMERepackZlib.TabIndex = 26;
-            this.labelMERepackZlib.Text = "Repack Game Files";
-            // 
-            // labelStatusPackDLC
-            // 
-            this.labelStatusPackDLC.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.labelStatusPackDLC.ForeColor = System.Drawing.Color.LimeGreen;
-            this.labelStatusPackDLC.Location = new System.Drawing.Point(187, 211);
-            this.labelStatusPackDLC.Name = "labelStatusPackDLC";
-            this.labelStatusPackDLC.Size = new System.Drawing.Size(252, 13);
-            this.labelStatusPackDLC.TabIndex = 27;
-            this.labelStatusPackDLC.Text = "label";
-            // 
-            // labelME3DLCPack
-            // 
-            this.labelME3DLCPack.AutoSize = true;
-            this.labelME3DLCPack.Location = new System.Drawing.Point(13, 211);
-            this.labelME3DLCPack.Name = "labelME3DLCPack";
-            this.labelME3DLCPack.Size = new System.Drawing.Size(74, 13);
-            this.labelME3DLCPack.TabIndex = 28;
-            this.labelME3DLCPack.Text = "Repack DLCs";
-            // 
-            // checkBoxRepackZlib
-            // 
-            this.checkBoxRepackZlib.AutoSize = true;
-            this.checkBoxRepackZlib.Enabled = false;
-            this.checkBoxRepackZlib.Location = new System.Drawing.Point(166, 187);
-            this.checkBoxRepackZlib.Name = "checkBoxRepackZlib";
-            this.checkBoxRepackZlib.Size = new System.Drawing.Size(15, 14);
-            this.checkBoxRepackZlib.TabIndex = 29;
-            this.checkBoxRepackZlib.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxPackDLC
-            // 
-            this.checkBoxPackDLC.AutoSize = true;
-            this.checkBoxPackDLC.Enabled = false;
-            this.checkBoxPackDLC.Location = new System.Drawing.Point(166, 210);
-            this.checkBoxPackDLC.Name = "checkBoxPackDLC";
-            this.checkBoxPackDLC.Size = new System.Drawing.Size(15, 14);
-            this.checkBoxPackDLC.TabIndex = 30;
-            this.checkBoxPackDLC.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxPrePath
-            // 
-            this.checkBoxPrePath.AutoSize = true;
-            this.checkBoxPrePath.Enabled = false;
-            this.checkBoxPrePath.FlatAppearance.CheckedBackColor = System.Drawing.Color.Green;
-            this.checkBoxPrePath.Location = new System.Drawing.Point(166, 75);
-            this.checkBoxPrePath.Name = "checkBoxPrePath";
-            this.checkBoxPrePath.Size = new System.Drawing.Size(15, 14);
-            this.checkBoxPrePath.TabIndex = 47;
-            this.checkBoxPrePath.TabStop = false;
-            this.checkBoxPrePath.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxPreAccess
-            // 
-            this.checkBoxPreAccess.AutoSize = true;
-            this.checkBoxPreAccess.Enabled = false;
-            this.checkBoxPreAccess.FlatAppearance.CheckedBackColor = System.Drawing.Color.Green;
-            this.checkBoxPreAccess.Location = new System.Drawing.Point(166, 120);
-            this.checkBoxPreAccess.Name = "checkBoxPreAccess";
-            this.checkBoxPreAccess.Size = new System.Drawing.Size(15, 14);
-            this.checkBoxPreAccess.TabIndex = 48;
-            this.checkBoxPreAccess.TabStop = false;
-            this.checkBoxPreAccess.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxPreSpace
-            // 
-            this.checkBoxPreSpace.AutoSize = true;
-            this.checkBoxPreSpace.Enabled = false;
-            this.checkBoxPreSpace.FlatAppearance.CheckedBackColor = System.Drawing.Color.Green;
-            this.checkBoxPreSpace.Location = new System.Drawing.Point(166, 142);
-            this.checkBoxPreSpace.Name = "checkBoxPreSpace";
-            this.checkBoxPreSpace.Size = new System.Drawing.Size(15, 14);
-            this.checkBoxPreSpace.TabIndex = 49;
-            this.checkBoxPreSpace.TabStop = false;
-            this.checkBoxPreSpace.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxPreVanilla
-            // 
-            this.checkBoxPreVanilla.AutoSize = true;
-            this.checkBoxPreVanilla.Enabled = false;
-            this.checkBoxPreVanilla.FlatAppearance.CheckedBackColor = System.Drawing.Color.Green;
-            this.checkBoxPreVanilla.Location = new System.Drawing.Point(166, 165);
-            this.checkBoxPreVanilla.Name = "checkBoxPreVanilla";
-            this.checkBoxPreVanilla.Size = new System.Drawing.Size(15, 14);
-            this.checkBoxPreVanilla.TabIndex = 50;
-            this.checkBoxPreVanilla.TabStop = false;
-            this.checkBoxPreVanilla.UseVisualStyleBackColor = true;
             // 
             // groupBoxOptions
             // 
