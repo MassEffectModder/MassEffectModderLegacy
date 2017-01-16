@@ -808,8 +808,6 @@ namespace MassEffectModder
                 _mainWindow.updateStatusLabel2("");
 
                 GameData.packageFiles.Sort();
-                if (_gameSelected == MeType.ME1_TYPE)
-                    treeScan.sortPackagesME1(_mainWindow, null);
 
                 using (FileStream fs = new FileStream(filename, FileMode.CreateNew, FileAccess.Write))
                 {
