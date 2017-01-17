@@ -76,7 +76,7 @@ namespace MassEffectModder
             {
                 Package pkg = packages[i];
                 if (mainWindow != null)
-                    mainWindow.updateStatusLabel2("Saving package " + (i + 1) + " of " + packages.Count + " - " + pkg.packagePath);
+                    mainWindow.updateStatusLabel2("Saving package " + (i + 1) + " of " + packages.Count);
                 if (_installer != null)
                     _installer.updateStatusStore("Progress... " + (i * 100 / packages.Count) + " % ");
                 pkg.SaveToFile();

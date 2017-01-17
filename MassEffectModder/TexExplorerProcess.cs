@@ -140,7 +140,7 @@ namespace MassEffectModder
 
                     if (texExplorer != null)
                     {
-                        texExplorer._mainWindow.updateStatusLabel("Processing MOD " + Path.GetFileNameWithoutExtension(filenameMod) +
+                        texExplorer._mainWindow.updateStatusLabel("Processing MOD " + Path.GetFileName(filenameMod) +
                             " - Texture " + (i + 1) + " of " + numFiles + " - " + name);
                     }
 
@@ -255,7 +255,7 @@ namespace MassEffectModder
                 {
                     string file = files[n];
                     if (mainWindow != null)
-                        mainWindow.updateStatusLabel("Processing MOD: " + Path.GetFileNameWithoutExtension(outFile));
+                        mainWindow.updateStatusLabel("Ctreating MOD: " + Path.GetFileName(outFile));
                     string crcStr = Path.GetFileNameWithoutExtension(file);
                     if (crcStr.Contains("_0x"))
                     {
