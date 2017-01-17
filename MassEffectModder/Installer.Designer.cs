@@ -402,9 +402,9 @@
             this.label7.AutoSize = true;
             this.label7.Location = new System.Drawing.Point(13, 52);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(100, 13);
+            this.label7.Size = new System.Drawing.Size(61, 13);
             this.label7.TabIndex = 46;
-            this.label7.Text = "MEM Mods Present";
+            this.label7.Text = "MEM Mods";
             // 
             // labelPreMods
             // 
@@ -532,7 +532,7 @@
             this.groupBoxInstaller.Controls.Add(this.labelLOD);
             this.groupBoxInstaller.Controls.Add(this.labelStatusTextures);
             this.groupBoxInstaller.Controls.Add(this.labelStatusStore);
-            this.groupBoxInstaller.Location = new System.Drawing.Point(14, 292);
+            this.groupBoxInstaller.Location = new System.Drawing.Point(12, 292);
             this.groupBoxInstaller.Name = "groupBoxInstaller";
             this.groupBoxInstaller.Size = new System.Drawing.Size(569, 233);
             this.groupBoxInstaller.TabIndex = 26;
