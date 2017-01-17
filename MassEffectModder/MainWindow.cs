@@ -37,9 +37,12 @@ namespace MassEffectModder
 
         public ConfIni _configIni;
 
-        public MainWindow()
+        public MainWindow(bool runAsAdmin)
         {
             InitializeComponent();
+            Text = "Mass Effect Modder";
+            if (runAsAdmin)
+                Text += " (run as Administrator)";
             _configIni = new ConfIni();
         }
 

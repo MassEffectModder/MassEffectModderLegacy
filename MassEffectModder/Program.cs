@@ -32,23 +32,24 @@ namespace MassEffectModder
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            bool runAsAdmin = false;
 
             if (Misc.isRunAsAdministrator())
             {
-                MessageBox.Show("INFO: You are running MEM with Administrator rights.");
+                runAsAdmin = true;
             }
 
             string iniPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "installer.ini");
             if (File.Exists(iniPath))
             {
-                Installer installer = new Installer();
+                Installer installer = new Installer(runAsAdmin);
                 if (installer.Run())
                     Application.Run(installer);
                 if (installer.exitToModder)
-                    Application.Run(new MainWindow());
+                    Application.Run(new MainWindow(runAsAdmin));
             }
             else
-                Application.Run(new MainWindow());
+                Application.Run(new MainWindow(runAsAdmin));
         }
     }
 }

@@ -612,9 +612,9 @@
             // 
             // buttonNormal
             // 
-            this.buttonNormal.BackColor = System.Drawing.Color.DarkRed;
+            this.buttonNormal.BackColor = System.Drawing.Color.DeepSkyBlue;
             this.buttonNormal.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.buttonNormal.ForeColor = System.Drawing.Color.White;
+            this.buttonNormal.ForeColor = System.Drawing.Color.Black;
             this.buttonNormal.Location = new System.Drawing.Point(457, 535);
             this.buttonNormal.Name = "buttonNormal";
             this.buttonNormal.Size = new System.Drawing.Size(111, 23);

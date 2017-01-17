@@ -45,9 +45,12 @@ namespace MassEffectModder
         TreeScan treeScan;
         string errors = "";
 
-        public Installer()
+        public Installer(bool runAsAdmin)
         {
             InitializeComponent();
+            Text = "MEM Installer for ALOT";
+            if (runAsAdmin)
+                Text += " (run as Administrator)";
             mipMaps = new MipMaps();
             treeScan = new TreeScan();
             cachePackageMgr = new CachePackageMgr(null, this);

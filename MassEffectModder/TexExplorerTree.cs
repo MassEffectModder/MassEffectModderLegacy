@@ -96,7 +96,7 @@ namespace MassEffectModder
                                 {
                                     MessageBox.Show("Detected removal of game files since last game data scan." +
                                     "\n\nYou need to restore the game to vanilla state and reinstall vanilla DLCs and DLC mods." +
-                                    "\n\nThen from the main menu, select 'Remove Textures Scan File' and start Texture Explorer again.");
+                                    "\n\nThen from the main menu, select 'Remove Textures Scan File' and start Texture Manager again.");
                                 }
                                 return null;
                             }
@@ -109,7 +109,7 @@ namespace MassEffectModder
                                 {
                                     MessageBox.Show("Detected additional game files not present in latest game data scan." +
                                     "\n\nYou need to restore the game to vanilla state and reinstall vanilla DLCs and DLC mods." +
-                                    "\n\nThen from the main menu, select 'Remove Textures Scan File' and start Texture Explorer again.");
+                                    "\n\nThen from the main menu, select 'Remove Textures Scan File' and start Texture Manager again.");
                                 }
                                 return null;
                             }
@@ -137,7 +137,7 @@ namespace MassEffectModder
                 {
                     MessageBox.Show("Detected modded game. Can not continue." +
                     "\n\nYou need to restore the game to vanilla state and reinstall vanilla DLCs and DLC mods." +
-                    "\n\nThen start Texture Explorer again.");
+                    "\n\nThen start Texture Manager again.");
                 }
                 return null;
             }

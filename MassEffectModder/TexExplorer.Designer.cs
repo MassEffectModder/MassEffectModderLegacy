@@ -363,29 +363,29 @@ namespace MassEffectModder
             // loadMODsToolStripMenuItem
             // 
             this.loadMODsToolStripMenuItem.Name = "loadMODsToolStripMenuItem";
-            this.loadMODsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadMODsToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
             this.loadMODsToolStripMenuItem.Text = "Load MODs";
             this.loadMODsToolStripMenuItem.Click += new System.EventHandler(this.loadMODsToolStripMenuItem_Click);
             // 
             // clearMODsToolStripMenuItem
             // 
             this.clearMODsToolStripMenuItem.Name = "clearMODsToolStripMenuItem";
-            this.clearMODsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.clearMODsToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
             this.clearMODsToolStripMenuItem.Text = "Clear MODs";
             this.clearMODsToolStripMenuItem.Click += new System.EventHandler(this.clearMODsToolStripMenuItem_Click);
             // 
             // packMODToolStripMenuItem
             // 
             this.packMODToolStripMenuItem.Name = "packMODToolStripMenuItem";
-            this.packMODToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.packMODToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
             this.packMODToolStripMenuItem.Text = "Create MOD";
             this.packMODToolStripMenuItem.Click += new System.EventHandler(this.createMODToolStripMenuItem_Click);
             // 
             // createMODBatchToolStripMenuItem
             // 
             this.createMODBatchToolStripMenuItem.Name = "createMODBatchToolStripMenuItem";
-            this.createMODBatchToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.createMODBatchToolStripMenuItem.Text = "Create MOD - Batch";
+            this.createMODBatchToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
+            this.createMODBatchToolStripMenuItem.Text = "Create multiple MODs";
             this.createMODBatchToolStripMenuItem.Click += new System.EventHandler(this.createMODBatchToolStripMenuItem_Click);
             // 
             // miscToolStripMenuItem
@@ -428,7 +428,7 @@ namespace MassEffectModder
             this.Controls.Add(this.splitContainer1);
             this.MinimumSize = new System.Drawing.Size(1024, 500);
             this.Name = "TexExplorer";
-            this.Text = "Texture Explorer";
+            this.Text = "Texture Manager ";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.TexExplorer_FormClosed);
             this.contextMenuStripTextures.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);
