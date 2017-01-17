@@ -283,13 +283,13 @@ namespace MassEffectModder
             else if (time / 1000 / 60 == 0)
                 return string.Format("{0} seconds", time / 1000);
             else if (time / 1000 / 60 / 60 == 0)
-                return string.Format("{0} min - {1} seconds", time / 1000 / 60, time / 1000 % 60);
+                return string.Format("{0} min - {1} sec", time / 1000 / 60, time / 1000 % 60);
             else
             {
                 long hours = time / 1000 / 60 / 60;
                 long minutes = (time - (hours * 1000 * 60 * 60)) / 1000 / 60;
                 long seconds = (time - (hours * 1000 * 60 * 60) - (minutes * 1000 * 60)) / 1000 / 60;
-                return string.Format("{0} hours - {1} minutes - {2} seconds", hours, minutes, seconds);
+                return string.Format("{0} hours - {1} min - {2} sec", hours, minutes, seconds);
             }
         }
     }
