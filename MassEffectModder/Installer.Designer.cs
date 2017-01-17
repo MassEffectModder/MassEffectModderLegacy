@@ -612,12 +612,15 @@
             // 
             // buttonNormal
             // 
+            this.buttonNormal.BackColor = System.Drawing.Color.DarkRed;
+            this.buttonNormal.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.buttonNormal.ForeColor = System.Drawing.Color.White;
             this.buttonNormal.Location = new System.Drawing.Point(457, 535);
             this.buttonNormal.Name = "buttonNormal";
             this.buttonNormal.Size = new System.Drawing.Size(111, 23);
             this.buttonNormal.TabIndex = 4;
-            this.buttonNormal.Text = "EXIT Installer Mode";
-            this.buttonNormal.UseVisualStyleBackColor = true;
+            this.buttonNormal.Text = "Switch to Normal";
+            this.buttonNormal.UseVisualStyleBackColor = false;
             this.buttonNormal.Click += new System.EventHandler(this.buttonNormal_Click);
             // 
             // labelFinalStatus
@@ -676,7 +679,7 @@
             this.Controls.Add(this.groupBoxInstaller);
             this.Controls.Add(this.groupBoxPreInstallCheck);
             this.Name = "Installer";
-            this.Text = "MEM Installer";
+            this.Text = "MEM Installer for ALOT";
             this.groupBoxPreInstallCheck.ResumeLayout(false);
             this.groupBoxPreInstallCheck.PerformLayout();
             this.groupBoxInstaller.ResumeLayout(false);
