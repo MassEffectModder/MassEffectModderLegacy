@@ -114,6 +114,7 @@ namespace MassEffectModder
             replaceTextureToolStripMenuItem.Enabled = enable;
             viewToolStripMenuItem.Enabled = enable;
             extractToDDSFileToolStripMenuItem.Enabled = enable;
+            _mainWindow.helpToolStripMenuItem.Enabled = enable;
             Application.DoEvents();
         }
 

@@ -48,6 +48,7 @@ namespace MassEffectModder
 
         public void enableGameDataMenu(bool enable)
         {
+            helpToolStripMenuItem.Enabled = enable;
             toolStripMenuME1.Enabled = enable;
             toolStripMenuME2.Enabled = enable;
             toolStripMenuME3.Enabled = enable;
