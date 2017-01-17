@@ -316,7 +316,7 @@ namespace MassEffectModder
             }
         }
 
-        public bool getPackages(bool gui = true)
+        public bool getPackages(bool installerMode = false)
         {
             if (packageFiles != null && packageFiles.Count != 0)
                 return true;
@@ -353,8 +353,11 @@ namespace MassEffectModder
                     pccs = Directory.GetFiles(DLCData, "*.pcc", SearchOption.AllDirectories).Where(item => item.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase)).ToList();
                     if (pccs.Count() == 0)
                     {
-                        MessageBox.Show("You need to extract the DLC files first.");
-                        return false;
+                        if (!installerMode)
+                        {
+                            MessageBox.Show("You need to extract the DLC files first.");
+                            return false;
+                        }
                     }
                     List<string> DLCs = Directory.GetDirectories(DLCData).ToList();
                     for (int i = 0; i < DLCs.Count; i++)
@@ -365,9 +368,12 @@ namespace MassEffectModder
                         List<string> dlcs = Directory.GetFiles(DLCs[i], "Mount.dlc", SearchOption.AllDirectories).ToList();
                         if (dlcs.Count() == 0)
                         {
-                            MessageBox.Show("Detected compressed DLCs in DLC folder." +
+                            if (!installerMode)
+                            {
+                                MessageBox.Show("Detected compressed DLCs in DLC folder." +
                                 "\nYou need to extract the DLC files first.");
-                            return false;
+                                return false;
+                            }
                         }
                     }
                 }

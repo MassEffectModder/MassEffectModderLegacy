@@ -163,15 +163,11 @@ namespace MassEffectModder
                 string filename = "errors.txt";
                 if (File.Exists(filename))
                     File.Delete(filename);
-                if (errors != "")
+                using (FileStream fs = new FileStream(filename, FileMode.CreateNew))
                 {
-                    using (FileStream fs = new FileStream(filename, FileMode.CreateNew))
-                    {
-                        fs.WriteStringASCII(errors);
-                    }
-                    Process.Start(filename);
+                    fs.WriteStringASCII(errors);
                 }
-
+                Process.Start(filename);
                 return;
             }
             labelPreMods.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
@@ -192,7 +188,7 @@ namespace MassEffectModder
                 buttonPreInstallCheck.Enabled = true;
                 return;
             }
-            if (!gameData.getPackages(false))
+            if (!gameData.getPackages(true))
             {
                 labelPreGamePath.Text = "Missing game data!";
                 labelPreGamePath.ForeColor = Color.FromKnownColor(KnownColor.Red);
@@ -363,8 +359,8 @@ namespace MassEffectModder
                         byte[] dst = null;
                         if (version == TexExplorer.TextureModVersion)
                         {
-                            fs.JumpTo(modFiles[i].offset);
-                            size = modFiles[i].size;
+                            fs.JumpTo(modFiles[l].offset);
+                            size = modFiles[l].size;
                         }
                         name = fs.ReadStringASCIINull();
                         crc = fs.ReadUInt32();
@@ -382,7 +378,7 @@ namespace MassEffectModder
                             dstLen = dst.Length;
                         }
 
-                        updateStatusTextures("Mod: " + (i + 1) + " of " + modFiles.Count + " - in progress: " + ((l + 1) * 100 / numFiles) + " % ");
+                        updateStatusTextures("Mod: " + (i + 1) + " of " + memFiles.Count + " - in progress: " + ((l + 1) * 100 / numFiles) + " % ");
 
                         FoundTexture foundTexture;
                         if (GameData.gameType == MeType.ME1_TYPE)
