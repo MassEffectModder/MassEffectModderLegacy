@@ -880,5 +880,28 @@ namespace MassEffectModder
             }
             EnableMenuOptions(true);
         }
+
+        private void extractToPNGFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            EnableMenuOptions(false);
+            if (listViewTextures.SelectedItems.Count == 0)
+                return;
+
+            using (SaveFileDialog saveFile = new SaveFileDialog())
+            {
+                PackageTreeNode node = (PackageTreeNode)treeViewPackages.SelectedNode;
+                ListViewItem item = listViewTextures.FocusedItem;
+                int index = Convert.ToInt32(item.Name);
+                MatchedTexture nodeTexture = node.textures[index].list[0];
+                saveFile.Title = "Please select output PNG file";
+                saveFile.Filter = "PNG file | *.png";
+                saveFile.FileName = node.textures[index].name + string.Format("_0x{0:X8}", node.textures[index].crc) + ".dds";
+                if (saveFile.ShowDialog() == DialogResult.OK)
+                {
+                    mipMaps.extractTextureToPng(saveFile.FileName, GameData.GamePath + nodeTexture.path, nodeTexture.exportID);
+                }
+            }
+            EnableMenuOptions(true);
+        }
     }
 }
