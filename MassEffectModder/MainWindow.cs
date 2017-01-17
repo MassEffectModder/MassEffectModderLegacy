@@ -40,7 +40,7 @@ namespace MassEffectModder
         public MainWindow(bool runAsAdmin)
         {
             InitializeComponent();
-            Text = "Mass Effect Modder";
+            Text = "Mass Effect Modder v1.60";
             if (runAsAdmin)
                 Text += " (run as Administrator)";
             _configIni = new ConfIni();
@@ -518,6 +518,26 @@ namespace MassEffectModder
         private void toolStripME3RemoveTreeMenuItem_Click(object sender, EventArgs e)
         {
             removeTreeFile(MeType.ME3_TYPE);
+        }
+
+        private void wikiToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/MassEffectModder/MassEffectModder/wiki");
+        }
+
+        private void githubToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/MassEffectModder/MassEffectModder/");
+        }
+
+        private void releasesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/MassEffectModder/MassEffectModder/releases");
+        }
+
+        private void reportIssueToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/MassEffectModder/MassEffectModder/issues");
         }
     }
 }
