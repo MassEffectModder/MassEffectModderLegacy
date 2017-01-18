@@ -50,6 +50,11 @@ namespace MassEffectModder
         private void InitializeComponent()
         {
             this.menuGame = new System.Windows.Forms.MenuStrip();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.wikiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.githubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.releasesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.reportIssueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuME1 = new System.Windows.Forms.ToolStripMenuItem();
             this.massEffect1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripME1RemoveTreeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -92,11 +97,6 @@ namespace MassEffectModder
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.statusStrip2 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.wikiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.githubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.releasesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.reportIssueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuGame.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.statusStrip2.SuspendLayout();
@@ -105,14 +105,53 @@ namespace MassEffectModder
             // menuGame
             // 
             this.menuGame.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.helpToolStripMenuItem,
             this.toolStripMenuME1,
             this.toolStripMenuME2,
-            this.toolStripMenuME3});
+            this.toolStripMenuME3,
+            this.helpToolStripMenuItem});
             this.menuGame.Location = new System.Drawing.Point(0, 0);
             this.menuGame.Name = "menuGame";
             this.menuGame.Size = new System.Drawing.Size(1177, 24);
             this.menuGame.TabIndex = 0;
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.wikiToolStripMenuItem,
+            this.githubToolStripMenuItem,
+            this.releasesToolStripMenuItem,
+            this.reportIssueToolStripMenuItem});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "Help";
+            // 
+            // wikiToolStripMenuItem
+            // 
+            this.wikiToolStripMenuItem.Name = "wikiToolStripMenuItem";
+            this.wikiToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.wikiToolStripMenuItem.Text = "Wiki";
+            this.wikiToolStripMenuItem.Click += new System.EventHandler(this.wikiToolStripMenuItem_Click);
+            // 
+            // githubToolStripMenuItem
+            // 
+            this.githubToolStripMenuItem.Name = "githubToolStripMenuItem";
+            this.githubToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.githubToolStripMenuItem.Text = "Github";
+            this.githubToolStripMenuItem.Click += new System.EventHandler(this.githubToolStripMenuItem_Click);
+            // 
+            // releasesToolStripMenuItem
+            // 
+            this.releasesToolStripMenuItem.Name = "releasesToolStripMenuItem";
+            this.releasesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.releasesToolStripMenuItem.Text = "Releases";
+            this.releasesToolStripMenuItem.Click += new System.EventHandler(this.releasesToolStripMenuItem_Click);
+            // 
+            // reportIssueToolStripMenuItem
+            // 
+            this.reportIssueToolStripMenuItem.Name = "reportIssueToolStripMenuItem";
+            this.reportIssueToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.reportIssueToolStripMenuItem.Text = "Report Issue";
+            this.reportIssueToolStripMenuItem.Click += new System.EventHandler(this.reportIssueToolStripMenuItem_Click);
             // 
             // toolStripMenuME1
             // 
@@ -419,45 +458,6 @@ namespace MassEffectModder
             // 
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
             this.toolStripStatusLabel2.Size = new System.Drawing.Size(0, 17);
-            // 
-            // helpToolStripMenuItem
-            // 
-            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.wikiToolStripMenuItem,
-            this.githubToolStripMenuItem,
-            this.releasesToolStripMenuItem,
-            this.reportIssueToolStripMenuItem});
-            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.helpToolStripMenuItem.Text = "Help";
-            // 
-            // wikiToolStripMenuItem
-            // 
-            this.wikiToolStripMenuItem.Name = "wikiToolStripMenuItem";
-            this.wikiToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.wikiToolStripMenuItem.Text = "Wiki";
-            this.wikiToolStripMenuItem.Click += new System.EventHandler(this.wikiToolStripMenuItem_Click);
-            // 
-            // githubToolStripMenuItem
-            // 
-            this.githubToolStripMenuItem.Name = "githubToolStripMenuItem";
-            this.githubToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.githubToolStripMenuItem.Text = "Github";
-            this.githubToolStripMenuItem.Click += new System.EventHandler(this.githubToolStripMenuItem_Click);
-            // 
-            // releasesToolStripMenuItem
-            // 
-            this.releasesToolStripMenuItem.Name = "releasesToolStripMenuItem";
-            this.releasesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.releasesToolStripMenuItem.Text = "Releases";
-            this.releasesToolStripMenuItem.Click += new System.EventHandler(this.releasesToolStripMenuItem_Click);
-            // 
-            // reportIssueToolStripMenuItem
-            // 
-            this.reportIssueToolStripMenuItem.Name = "reportIssueToolStripMenuItem";
-            this.reportIssueToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.reportIssueToolStripMenuItem.Text = "Report Issue";
-            this.reportIssueToolStripMenuItem.Click += new System.EventHandler(this.reportIssueToolStripMenuItem_Click);
             // 
             // MainWindow
             // 
