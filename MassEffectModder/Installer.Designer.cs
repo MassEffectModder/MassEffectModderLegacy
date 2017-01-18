@@ -619,7 +619,7 @@
             this.buttonNormal.Name = "buttonNormal";
             this.buttonNormal.Size = new System.Drawing.Size(111, 23);
             this.buttonNormal.TabIndex = 4;
-            this.buttonNormal.Text = "Switch to Normal";
+            this.buttonNormal.Text = "Standard Mode";
             this.buttonNormal.UseVisualStyleBackColor = false;
             this.buttonNormal.Click += new System.EventHandler(this.buttonNormal_Click);
             // 
