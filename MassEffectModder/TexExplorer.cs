@@ -139,7 +139,7 @@ namespace MassEffectModder
 
             if (!Misc.checkWriteAccess(GameData.GamePath))
             {
-                MessageBox.Show("Write access denied to game folders!");
+                MessageBox.Show("Write access denied to game folders!\n\n" + GameData.GamePath);
                 Close();
                 return;
             }
