@@ -760,27 +760,11 @@ namespace MassEffectModder
             if (string.IsNullOrEmpty(name))
                 return;
 
-            string crcStr = name;
-            if (crcStr.Contains("_0x"))
-            {
-                crcStr = name.Split('_').Last().Substring(2, 8); // in case filename contain CRC 
-            }
-            else
-            {
-                crcStr = name.Split('-').Last(); // in case filename contain CRC
-                if (crcStr == "")
-                {
-                    crcStr = name;
-                }
-            }
-
             uint crc = 0;
+            string crcStr = name.ToLower();
             try
             {
-                if (crcStr.Substring(0, 2).ToLower() == "0x")
-                    crcStr = crcStr.Substring(2, 8);
-                else
-                    crcStr = crcStr.Substring(0, 8);
+                crcStr = crcStr.Substring(crcStr.IndexOf("0x") + 2, 8);
                 crc = uint.Parse(crcStr, System.Globalization.NumberStyles.HexNumber);
                 searchTexture("", crc);
             }
