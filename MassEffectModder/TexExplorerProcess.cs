@@ -255,30 +255,33 @@ namespace MassEffectModder
                 {
                     string file = files[n];
                     if (mainWindow != null)
-                        mainWindow.updateStatusLabel("Ctreating MOD: " + Path.GetFileName(outFile));
-                    string crcStr = Path.GetFileNameWithoutExtension(file);
-                    if (crcStr.Contains("_0x"))
+                        mainWindow.updateStatusLabel("Creating MOD: " + Path.GetFileName(outFile));
+                    string filename = Path.GetFileNameWithoutExtension(file).ToLower();
+                    if (!filename.Contains("_0x"))
                     {
-                        crcStr = Path.GetFileNameWithoutExtension(file).Split('_').Last().Substring(2, 8); // in case filename contain CRC 
+                        errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (_0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
+                        continue;
                     }
-                    else
+                    int idx = filename.IndexOf("_0x");
+                    if (filename.Length - idx < 11)
                     {
-                        crcStr = Path.GetFileNameWithoutExtension(file).Split('-').Last().Substring(2, 8); // in case filename contain CRC 
+                        errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (_0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
+                        continue;
                     }
+                    string crcStr = filename.Substring(idx + 3, 8);
                     uint crc = uint.Parse(crcStr, System.Globalization.NumberStyles.HexNumber);
                     if (crc == 0)
                     {
-                        errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC. Skipping texture..." + Environment.NewLine;
+                        errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (_0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
                         continue;
                     }
 
-                    string filename = Path.GetFileNameWithoutExtension(file);
-                    int idx = filename.IndexOf(crcStr);
+                    idx = filename.IndexOf(crcStr);
                     string name = filename.Substring(0, idx - "_0x".Length);
 
                     string textureName = "";
                     List<FoundTexture> foundCrcList = textures.FindAll(s => s.crc == crc);
-                    FoundTexture foundTexture = textures.Find(s => s.crc == crc && s.name == name);
+                    FoundTexture foundTexture = textures.Find(s => s.crc == crc && s.name.ToLower() == name);
                     if (foundCrcList.Count == 0)
                     {
                         errors += "Texture skipped. Texture " + Path.GetFileName(file) + " is not present in your game setup" + Environment.NewLine;
