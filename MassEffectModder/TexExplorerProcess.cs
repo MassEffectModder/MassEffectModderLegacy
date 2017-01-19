@@ -374,7 +374,7 @@ namespace MassEffectModder
             }
             if (count == 0)
             {
-                errors += "There are no texture files in " + inDir + " Mod not generated." + Environment.NewLine;
+                errors += "There are no texture files in " + inDir + ", mod not generated." + Environment.NewLine;
                 File.Delete(outFile);
             }
             return errors;
