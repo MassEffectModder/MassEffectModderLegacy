@@ -268,9 +268,13 @@ namespace MassEffectModder
                         errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (_0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
                         continue;
                     }
+                    uint crc;
                     string crcStr = filename.Substring(idx + 3, 8);
-                    uint crc = uint.Parse(crcStr, System.Globalization.NumberStyles.HexNumber);
-                    if (crc == 0)
+                    try
+                    {
+                        crc = uint.Parse(crcStr, System.Globalization.NumberStyles.HexNumber);
+                    }
+                    catch
                     {
                         errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (_0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
                         continue;
