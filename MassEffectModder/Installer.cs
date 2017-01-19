@@ -48,7 +48,7 @@ namespace MassEffectModder
         public Installer(bool runAsAdmin)
         {
             InitializeComponent();
-            Text = "MEM Installer v1.60 for ALOT";
+            Text = "MEM Installer v1.61 for ALOT";
             if (runAsAdmin)
                 Text += " (run as Administrator)";
             mipMaps = new MipMaps();
