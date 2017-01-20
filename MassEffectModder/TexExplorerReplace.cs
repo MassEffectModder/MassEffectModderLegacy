@@ -309,20 +309,34 @@ namespace MassEffectModder
                                     texture.properties.getProperty("TFCFileGuid").valueStruct) &&
                                     oldMipmap.width != 0 && mipmap.newData.Length <= oldMipmap.compressedSize)
                                 {
-                                    using (FileStream fs = new FileStream(archiveFile, FileMode.Open, FileAccess.Write))
+                                    try
                                     {
-                                        fs.JumpTo(oldMipmap.dataOffset);
-                                        mipmap.dataOffset = oldMipmap.dataOffset;
-                                        fs.WriteFromBuffer(mipmap.newData);
+                                        using (FileStream fs = new FileStream(archiveFile, FileMode.Open, FileAccess.Write))
+                                        {
+                                            fs.JumpTo(oldMipmap.dataOffset);
+                                            mipmap.dataOffset = oldMipmap.dataOffset;
+                                            fs.WriteFromBuffer(mipmap.newData);
+                                        }
+                                    }
+                                    catch
+                                    {
+                                        throw new Exception("Problem with access to TFC file: " + archiveFile);
                                     }
                                 }
                                 else
                                 {
-                                    using (FileStream fs = new FileStream(archiveFile, FileMode.Open, FileAccess.Write))
+                                    try
                                     {
-                                        fs.SeekEnd();
-                                        mipmap.dataOffset = (uint)fs.Position;
-                                        fs.WriteFromBuffer(mipmap.newData);
+                                        using (FileStream fs = new FileStream(archiveFile, FileMode.Open, FileAccess.Write))
+                                        {
+                                            fs.SeekEnd();
+                                            mipmap.dataOffset = (uint)fs.Position;
+                                            fs.WriteFromBuffer(mipmap.newData);
+                                        }
+                                    }
+                                    catch
+                                    {
+                                        throw new Exception("Problem with access to TFC file: " + archiveFile);
                                     }
                                 }
                             }

@@ -422,20 +422,27 @@ namespace MassEffectModder
                             }
                         }
 
-                        using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
+                        try
                         {
-                            fs.JumpTo(mipmap.dataOffset);
-                            if (mipmap.storageType == StorageTypes.extLZO || mipmap.storageType == StorageTypes.extZlib)
+                            using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
                             {
-                                using (MemoryStream tmpStream = new MemoryStream(fs.ReadToBuffer(mipmap.compressedSize)))
+                                fs.JumpTo(mipmap.dataOffset);
+                                if (mipmap.storageType == StorageTypes.extLZO || mipmap.storageType == StorageTypes.extZlib)
                                 {
-                                    mipMapData = decompressTexture(tmpStream, mipmap.storageType, mipmap.uncompressedSize, mipmap.compressedSize);
+                                    using (MemoryStream tmpStream = new MemoryStream(fs.ReadToBuffer(mipmap.compressedSize)))
+                                    {
+                                        mipMapData = decompressTexture(tmpStream, mipmap.storageType, mipmap.uncompressedSize, mipmap.compressedSize);
+                                    }
+                                }
+                                else
+                                {
+                                    mipMapData = fs.ReadToBuffer(mipmap.uncompressedSize);
                                 }
                             }
-                            else
-                            {
-                                mipMapData = fs.ReadToBuffer(mipmap.uncompressedSize);
-                            }
+                        }
+                        catch
+                        {
+                            throw new Exception("Problem with access to TFC file: " + filename);
                         }
                         break;
                     }
