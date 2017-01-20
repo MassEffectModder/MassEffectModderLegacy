@@ -195,22 +195,22 @@ namespace MassEffectModder
     {
         static public void VerifyME1Exe(GameData gameData, bool gui = true)
         {
-            if (!File.Exists(GameData.GameExePath))
-                throw new FileNotFoundException("Game executable not found: " + GameData.GameExePath);
-
-            using (FileStream fs = new FileStream(GameData.GameExePath, FileMode.Open, FileAccess.ReadWrite))
+            if (File.Exists(GameData.GameExePath))
             {
-                fs.JumpTo(0x3C); // jump to offset of COFF header
-                uint offset = fs.ReadUInt32() + 4; // skip PE signature too
-                fs.JumpTo(offset + 0x12); // jump to flags entry
-                ushort flag = fs.ReadUInt16(); // read flags
-                if ((flag & 0x20) != 0x20) // check for LAA flag
+                using (FileStream fs = new FileStream(GameData.GameExePath, FileMode.Open, FileAccess.ReadWrite))
                 {
-                    if (gui)
-                        MessageBox.Show("Large Aware Address flag is not enabled on Mass Effect executable file.Correcting...");
-                    flag |= 0x20;
-                    fs.Skip(-2);
-                    fs.WriteUInt16(flag); // write LAA flag
+                    fs.JumpTo(0x3C); // jump to offset of COFF header
+                    uint offset = fs.ReadUInt32() + 4; // skip PE signature too
+                    fs.JumpTo(offset + 0x12); // jump to flags entry
+                    ushort flag = fs.ReadUInt16(); // read flags
+                    if ((flag & 0x20) != 0x20) // check for LAA flag
+                    {
+                        if (gui)
+                            MessageBox.Show("Large Aware Address flag is not enabled on Mass Effect executable file.Correcting...");
+                        flag |= 0x20;
+                        fs.Skip(-2);
+                        fs.WriteUInt16(flag); // write LAA flag
+                    }
                 }
             }
         }
@@ -219,11 +219,10 @@ namespace MassEffectModder
         {
             try
             {
-                using (FileStream fs = File.Create(Path.Combine(GameData.GamePath, Path.GetRandomFileName()), 1, FileOptions.DeleteOnClose))
+                using (FileStream fs = File.Create(Path.Combine(GameData.GamePath, Path.GetRandomFileName()), 1, FileOptions.DeleteOnClose)) { }
+                if (File.Exists(GameData.GameExePath))
                 {
-                }
-                using (FileStream fs = File.OpenWrite(GameData.GameExePath))
-                {
+                    using (FileStream fs = File.OpenWrite(GameData.GameExePath)) { }
                 }
                 return true;
             }
