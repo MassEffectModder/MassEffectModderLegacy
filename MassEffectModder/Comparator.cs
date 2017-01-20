@@ -111,6 +111,9 @@ namespace MassEffectModder
 
             checkedListBox.Items.Clear();
             checkedListBox.BeginUpdate();
+            checkedListBox1.Items.Clear();
+            checkedListBox1.BeginUpdate();
+            checkedListBox1.Items.Add("Note", false);
             if (mode == 1)
                 checkedListBox.Items.Add("Ok | GroupId |  Game  | CRC", false);
             else
@@ -143,9 +146,11 @@ namespace MassEffectModder
                     int modded = int.Parse(str[3]);
                     bool ok = uint.Parse(str[4]) == 1;
                     checkedListBox.Items.Add("   | " + string.Format("{0,7}", groupId) + " |   " + "ME" + gameId + "  | " + string.Format("0x{0:X8} | ", crc) + ((modded == 1) ? "Modded" : "Vanilla"), ok);
+                    checkedListBox1.Items.Add("");
                 }
             }
             checkedListBox.EndUpdate();
+            checkedListBox1.EndUpdate();
         }
 
         private bool loadTexturesMap(string path, List<FoundTexture> textures)
@@ -200,6 +205,17 @@ namespace MassEffectModder
                 csvFile.Filter = "CSV file | *.csv";
                 if (csvFile.ShowDialog() != DialogResult.OK)
                     return;
+                if (mode == 2)
+                {
+                    lines[0] += ";0";
+                    for (int i = 1; i < lines.Count(); i++)
+                    {
+                        if (checkedListBox1.GetItemChecked(i))
+                            lines[i] += ";1";
+                        else
+                            lines[i] += ";0";
+                    }
+                }
                 File.WriteAllLines(csvFile.FileName, lines);
             }
         }
@@ -236,6 +252,8 @@ namespace MassEffectModder
                 pictureBox.Image = null;
                 return;
             }
+            if (mode == 2)
+                checkedListBox1.SelectedIndex = index;
 
             string[] str = lines[index].Split(';');
             string groupId = str[0];

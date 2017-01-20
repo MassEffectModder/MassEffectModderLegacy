@@ -56,6 +56,7 @@ namespace MassEffectModder
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.checkedListBox1 = new System.Windows.Forms.CheckedListBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -72,6 +73,7 @@ namespace MassEffectModder
             // 
             // splitContainer.Panel1
             // 
+            this.splitContainer.Panel1.Controls.Add(this.checkedListBox1);
             this.splitContainer.Panel1.Controls.Add(this.textBoxResolution);
             this.splitContainer.Panel1.Controls.Add(this.checkedListBox);
             // 
@@ -80,7 +82,7 @@ namespace MassEffectModder
             this.splitContainer.Panel2.AutoScroll = true;
             this.splitContainer.Panel2.Controls.Add(this.pictureBox);
             this.splitContainer.Size = new System.Drawing.Size(843, 567);
-            this.splitContainer.SplitterDistance = 295;
+            this.splitContainer.SplitterDistance = 305;
             this.splitContainer.TabIndex = 0;
             // 
             // textBoxResolution
@@ -103,7 +105,7 @@ namespace MassEffectModder
             this.checkedListBox.Location = new System.Drawing.Point(3, 0);
             this.checkedListBox.Name = "checkedListBox";
             this.checkedListBox.ScrollAlwaysVisible = true;
-            this.checkedListBox.Size = new System.Drawing.Size(289, 526);
+            this.checkedListBox.Size = new System.Drawing.Size(250, 526);
             this.checkedListBox.TabIndex = 0;
             this.checkedListBox.TabStop = false;
             this.checkedListBox.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.checkedListBox_ItemCheck);
@@ -145,6 +147,19 @@ namespace MassEffectModder
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
+            // checkedListBox1
+            // 
+            this.checkedListBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.checkedListBox1.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.checkedListBox1.FormattingEnabled = true;
+            this.checkedListBox1.Location = new System.Drawing.Point(259, 0);
+            this.checkedListBox1.Name = "checkedListBox1";
+            this.checkedListBox1.ScrollAlwaysVisible = true;
+            this.checkedListBox1.Size = new System.Drawing.Size(43, 526);
+            this.checkedListBox1.TabIndex = 2;
+            this.checkedListBox1.TabStop = false;
+            // 
             // Comparator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -177,5 +192,6 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripMenuItem loadToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.TextBox textBoxResolution;
+        private System.Windows.Forms.CheckedListBox checkedListBox1;
     }
 }
