@@ -105,13 +105,13 @@ namespace MassEffectModder
             this.extractToPNGFileToolStripMenuItem,
             this.viewToolStripMenuItem});
             this.contextMenuStripTextures.Name = "contextMenuStripTextures";
-            this.contextMenuStripTextures.Size = new System.Drawing.Size(211, 92);
+            this.contextMenuStripTextures.Size = new System.Drawing.Size(212, 114);
             // 
             // replaceTextureToolStripMenuItem
             // 
             this.replaceTextureToolStripMenuItem.Name = "replaceTextureToolStripMenuItem";
             this.replaceTextureToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
-            this.replaceTextureToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.replaceTextureToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
             this.replaceTextureToolStripMenuItem.Text = "Replace Texture";
             this.replaceTextureToolStripMenuItem.Click += new System.EventHandler(this.replaceTextureToolStripMenuItem_Click);
             // 
@@ -119,15 +119,15 @@ namespace MassEffectModder
             // 
             this.extractToDDSFileToolStripMenuItem.Name = "extractToDDSFileToolStripMenuItem";
             this.extractToDDSFileToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
-            this.extractToDDSFileToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.extractToDDSFileToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
             this.extractToDDSFileToolStripMenuItem.Text = "Extract to DDS file";
             this.extractToDDSFileToolStripMenuItem.Click += new System.EventHandler(this.extractToDDSFileToolStripMenuItem_Click);
             // 
             // extractToPNGFileToolStripMenuItem
             // 
             this.extractToPNGFileToolStripMenuItem.Name = "extractToPNGFileToolStripMenuItem";
-            this.extractToPNGFileToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
-            this.extractToPNGFileToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.extractToPNGFileToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
+            this.extractToPNGFileToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
             this.extractToPNGFileToolStripMenuItem.Text = "Extract to PNG file";
             this.extractToPNGFileToolStripMenuItem.Click += new System.EventHandler(this.extractToPNGFileToolStripMenuItem_Click);
             // 
@@ -137,7 +137,7 @@ namespace MassEffectModder
             this.previewTextureToolStripMenuItem,
             this.infoTextureToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
-            this.viewToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
             this.viewToolStripMenuItem.Text = "View";
             // 
             // previewTextureToolStripMenuItem
