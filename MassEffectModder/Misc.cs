@@ -195,10 +195,10 @@ namespace MassEffectModder
     {
         static public void VerifyME1Exe(GameData gameData, bool gui = true)
         {
-            if (!File.Exists(gameData.GameExePath))
-                throw new FileNotFoundException("Game executable not found: " + gameData.GameExePath);
+            if (!File.Exists(GameData.GameExePath))
+                throw new FileNotFoundException("Game executable not found: " + GameData.GameExePath);
 
-            using (FileStream fs = new FileStream(gameData.GameExePath, FileMode.Open, FileAccess.ReadWrite))
+            using (FileStream fs = new FileStream(GameData.GameExePath, FileMode.Open, FileAccess.ReadWrite))
             {
                 fs.JumpTo(0x3C); // jump to offset of COFF header
                 uint offset = fs.ReadUInt32() + 4; // skip PE signature too
@@ -221,8 +221,11 @@ namespace MassEffectModder
             {
                 using (FileStream fs = File.Create(Path.Combine(GameData.GamePath, Path.GetRandomFileName()), 1, FileOptions.DeleteOnClose))
                 {
-                    return true;
                 }
+                using (FileStream fs = File.OpenWrite(GameData.GameExePath))
+                {
+                }
+                return true;
             }
             catch
             {

@@ -195,7 +195,7 @@ namespace MassEffectModder
             }
         }
 
-        public string GameExePath
+        static public string GameExePath
         {
             get
             {
