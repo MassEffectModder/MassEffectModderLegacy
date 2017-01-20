@@ -63,7 +63,7 @@ namespace MassEffectModder
             {
                 mode = 1;
             }
-            else if (lines[0] == "GroupId;Game;CRC;Modded;Ok")
+            else if (lines[0] == "GroupId;Game;CRC;Modded;Ok" || lines[0] == "GroupId;Game;CRC;Modded;Ok;0")
             {
                 mode = 2;
                 if (!Directory.Exists("ME1") || !Directory.Exists("ME2") || !Directory.Exists("ME3"))
@@ -146,7 +146,11 @@ namespace MassEffectModder
                     int modded = int.Parse(str[3]);
                     bool ok = uint.Parse(str[4]) == 1;
                     checkedListBox.Items.Add("   | " + string.Format("{0,7}", groupId) + " |   " + "ME" + gameId + "  | " + string.Format("0x{0:X8} | ", crc) + ((modded == 1) ? "Modded" : "Vanilla"), ok);
-                    checkedListBox1.Items.Add("");
+                    if (str.Count() == 6)
+                        ok = uint.Parse(str[5]) == 1;
+                    else
+                        ok = false;
+                    checkedListBox1.Items.Add("", ok);
                 }
             }
             checkedListBox.EndUpdate();
