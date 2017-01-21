@@ -681,7 +681,7 @@ namespace AmaroK86.ImageFormat
                             sbyte green = (sbyte)Buffer.GetByte(imgData, ptr++);
                             byte blue = 0xFF;
 
-                            int fCol = blue | (0x7F + green) << 8 | (0x7F + red) << 16 | 0xFF << 24;
+                            int fCol = blue | (128 + green) << 8 | (128 + red) << 16 | 0xFF << 24;
                             bitmapBW.Write(fCol);
                         }
                     }
