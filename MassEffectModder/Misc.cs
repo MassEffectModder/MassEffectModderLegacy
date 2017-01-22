@@ -215,15 +215,24 @@ namespace MassEffectModder
             }
         }
 
-        static public bool checkWriteAccess(string path)
+        static public bool checkWriteAccessDir(string path)
         {
             try
             {
                 using (FileStream fs = File.Create(Path.Combine(GameData.GamePath, Path.GetRandomFileName()), 1, FileOptions.DeleteOnClose)) { }
-                if (File.Exists(GameData.GameExePath))
-                {
-                    using (FileStream fs = File.OpenWrite(GameData.GameExePath)) { }
-                }
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        static public bool checkWriteAccessFile(string path)
+        {
+            try
+            {
+                using (FileStream fs = File.OpenWrite(path)) { }
                 return true;
             }
             catch

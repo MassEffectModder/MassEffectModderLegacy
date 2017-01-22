@@ -239,7 +239,25 @@ namespace MassEffectModder
             labelPreAccess.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
             labelPreAccess.Text = "Checking...";
             Application.DoEvents();
-            if (!Misc.checkWriteAccess(GameData.GamePath))
+            bool writeAccess = false;
+            if (Misc.checkWriteAccessDir(GameData.MainData))
+                writeAccess = true;
+            if (gameId == (int)MeType.ME1_TYPE)
+            {
+                if (Misc.checkWriteAccessFile(GameData.GamePath + @"\BioGame\CookedPC\Packages\GameObjects\Characters\Humanoids\HumanMale\BIOG_HMM_HED_PROMorph.upk"))
+                    writeAccess = true;
+            }
+            if (gameId == (int)MeType.ME2_TYPE)
+            {
+                if (Misc.checkWriteAccessFile(GameData.GamePath + @"\BioGame\CookedPC\BioD_CitAsL.pcc"))
+                    writeAccess = true;
+            }
+            if (gameId == (int)MeType.ME3_TYPE)
+            {
+                if (Misc.checkWriteAccessFile(GameData.GamePath + @"\BioGame\CookedPCConsole\BioA_CitSam_000LevelTrans.pcc"))
+                    writeAccess = true;
+            }
+            if (!writeAccess)
             {
                 labelPreAccess.Text = "Write access denied to game folders!";
                 labelPreAccess.ForeColor = Color.FromKnownColor(KnownColor.Red);

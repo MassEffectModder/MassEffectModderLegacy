@@ -137,7 +137,25 @@ namespace MassEffectModder
                 return;
             }
 
-            if (!Misc.checkWriteAccess(GameData.GamePath))
+            bool writeAccess = false;
+            if (Misc.checkWriteAccessDir(GameData.MainData))
+                writeAccess = true;
+            if (_gameSelected == MeType.ME1_TYPE)
+            {
+                if (Misc.checkWriteAccessFile(GameData.GamePath + @"\BioGame\CookedPC\Packages\GameObjects\Characters\Humanoids\HumanMale\BIOG_HMM_HED_PROMorph.upk"))
+                    writeAccess = true;
+            }
+            if (_gameSelected == MeType.ME2_TYPE)
+            {
+                if (Misc.checkWriteAccessFile(GameData.GamePath + @"\BioGame\CookedPC\BioD_CitAsL.pcc"))
+                    writeAccess = true;
+            }
+            if (_gameSelected == MeType.ME3_TYPE)
+            {
+                if (Misc.checkWriteAccessFile(GameData.GamePath + @"\BioGame\CookedPCConsole\BioA_CitSam_000LevelTrans.pcc"))
+                    writeAccess = true;
+            }
+            if (!writeAccess)
             {
                 MessageBox.Show("Write access denied to game folders!\n\n" + GameData.GamePath);
                 Close();
