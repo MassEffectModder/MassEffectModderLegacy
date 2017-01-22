@@ -48,7 +48,7 @@ namespace MassEffectModder
         public Installer(bool runAsAdmin)
         {
             InitializeComponent();
-            Text = "MEM Installer v1.63 for ALOT";
+            Text = "MEM Installer v1.64 for ALOT";
             if (runAsAdmin)
                 Text += " (run as Administrator)";
             mipMaps = new MipMaps();
@@ -319,12 +319,21 @@ namespace MassEffectModder
             labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
             labelPreVanilla.Text = "Checking...";
             Application.DoEvents();
-            if (MipMaps.checkGameDataModded())
+            errors = Misc.checkGameFiles((MeType)gameId, null, this);
+            if (errors != "")
             {
-                labelPreVanilla.Text = "Game is already modded!";
+                string filename = "errors.txt";
+                if (File.Exists(filename))
+                    File.Delete(filename);
+                using (FileStream fs = new FileStream(filename, FileMode.CreateNew))
+                {
+                    fs.WriteStringASCII(errors);
+                }
+                Process.Start(filename);
+                labelPreVanilla.Text = "Game file are not vanilla!";
                 labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.Red);
                 labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
-                buttonPreInstallCheck.Enabled = true;
+                checkBoxPreVanilla.Enabled = true;
                 return;
             }
             labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
@@ -520,6 +529,7 @@ namespace MassEffectModder
 
             updateStatusLOD("In progress...");
             LODSettings.updateLOD((MeType)gameId, configIni);
+            LODSettings.updateGFXSettings((MeType)gameId, configIni);
             checkBoxLOD.Checked = true;
             updateStatusLOD("");
 
@@ -585,6 +595,12 @@ namespace MassEffectModder
                 MessageBox.Show("WARNING: Some errors have occured!");
                 Process.Start(filename);
             }
+        }
+
+        public void updateLabelPreVanilla(string text)
+        {
+            labelPreVanilla.Text = text;
+            Application.DoEvents();
         }
 
         public void updateStatusPrepare(string text)

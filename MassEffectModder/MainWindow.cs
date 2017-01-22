@@ -41,7 +41,7 @@ namespace MassEffectModder
         public MainWindow(bool runAsAdmin)
         {
             InitializeComponent();
-            Text = "Mass Effect Modder v1.63";
+            Text = "Mass Effect Modder v1.64";
             if (runAsAdmin)
                 Text += " (run as Administrator)";
             _configIni = new ConfIni();
@@ -542,7 +542,7 @@ namespace MassEffectModder
             Process.Start("https://github.com/MassEffectModder/MassEffectModder/issues");
         }
 
-        void checkGameFile(MeType gameType)
+        void checkGameFiles(MeType gameType)
         {
             enableGameDataMenu(false);
             GameData gameData = new GameData(gameType, _configIni);
@@ -551,7 +551,8 @@ namespace MassEffectModder
                 string filename = "errors.txt";
                 if (File.Exists(filename))
                     File.Delete(filename);
-                string errors = Misc.checkGameFiles(gameType);
+                string errors = Misc.checkGameFiles(gameType, this);
+                updateStatusLabel("");
                 if (errors != "")
                 {
                     using (FileStream fs = new FileStream(filename, FileMode.CreateNew))
@@ -575,17 +576,59 @@ namespace MassEffectModder
 
         private void toolStripCheckFilesME1MenuItem_Click(object sender, EventArgs e)
         {
-            checkGameFile(MeType.ME1_TYPE);
+            checkGameFiles(MeType.ME1_TYPE);
         }
 
         private void toolStripCheckFilesME2MenuItem_Click(object sender, EventArgs e)
         {
-            checkGameFile(MeType.ME2_TYPE);
+            checkGameFiles(MeType.ME2_TYPE);
         }
 
         private void toolStripCheckFilesME3MenuItem_Click(object sender, EventArgs e)
         {
-            checkGameFile(MeType.ME3_TYPE);
+            checkGameFiles(MeType.ME3_TYPE);
+        }
+
+        private void toolStripUpdateGfxME1MenuItem_Click(object sender, EventArgs e)
+        {
+            enableGameDataMenu(false);
+            GameData gameData = new GameData(MeType.ME1_TYPE, _configIni);
+            string path = gameData.EngineConfigIniPath;
+            bool exist = File.Exists(path);
+            if (!exist)
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+            ConfIni engineConf = new ConfIni(path);
+            LODSettings.updateGFXSettings(MeType.ME1_TYPE, engineConf);
+            MessageBox.Show("Game configuration file at " + path + " updated.");
+            enableGameDataMenu(true);
+        }
+
+        private void toolStripUpdateGfxME2MenuItem_Click(object sender, EventArgs e)
+        {
+            enableGameDataMenu(false);
+            GameData gameData = new GameData(MeType.ME2_TYPE, _configIni);
+            string path = gameData.EngineConfigIniPath;
+            bool exist = File.Exists(path);
+            if (!exist)
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+            ConfIni engineConf = new ConfIni(path);
+            LODSettings.updateGFXSettings(MeType.ME2_TYPE, engineConf);
+            MessageBox.Show("Game configuration file at " + path + " updated.");
+            enableGameDataMenu(true);
+        }
+
+        private void toolStripUpdateGfxME3MenuItem_Click(object sender, EventArgs e)
+        {
+            enableGameDataMenu(false);
+            GameData gameData = new GameData(MeType.ME3_TYPE, _configIni);
+            string path = gameData.EngineConfigIniPath;
+            bool exist = File.Exists(path);
+            if (!exist)
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+            ConfIni engineConf = new ConfIni(path);
+            LODSettings.updateGFXSettings(MeType.ME3_TYPE, engineConf);
+            MessageBox.Show("Game configuration file at " + path + " updated.");
+            enableGameDataMenu(true);
         }
     }
 }

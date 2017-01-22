@@ -21,6 +21,8 @@
 
 using StreamHelpers;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -35,75 +37,75 @@ namespace MassEffectModder
         {
             if (gameId == MeType.ME1_TYPE)
             {
-                engineConf.Write("TEXTUREGROUP_LightAndShadowMap", "(MinLODSize=1024,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
-                engineConf.Write("TEXTUREGROUP_Environment_64", "(MinLODSize=128,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
-                engineConf.Write("TEXTUREGROUP_Environment_128", "(MinLODSize=256,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
-                engineConf.Write("TEXTUREGROUP_Environment_256", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
-                engineConf.Write("TEXTUREGROUP_Environment_512", "(MinLODSize=1024,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
-                engineConf.Write("TEXTUREGROUP_Environment_1024", "(MinLODSize=2048,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_LightAndShadowMap", "(MinLODSize=1024,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_Environment_64", "(MinLODSize=128,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_Environment_128", "(MinLODSize=256,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_Environment_256", "(MinLODSize=512,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_Environment_512", "(MinLODSize=1024,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_Environment_1024", "(MinLODSize=2048,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
                 engineConf.Write("TEXTUREGROUP_VFX_64", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
                 engineConf.Write("TEXTUREGROUP_VFX_128", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
                 engineConf.Write("TEXTUREGROUP_VFX_256", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
                 engineConf.Write("TEXTUREGROUP_VFX_512", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
                 engineConf.Write("TEXTUREGROUP_VFX_1024", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
-                engineConf.Write("TEXTUREGROUP_APL_128", "(MinLODSize=256,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
-                engineConf.Write("TEXTUREGROUP_APL_256", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
-                engineConf.Write("TEXTUREGROUP_APL_512", "(MinLODSize=1024,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
-                engineConf.Write("TEXTUREGROUP_APL_1024", "(MinLODSize=2048,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
-                engineConf.Write("TEXTUREGROUP_GUI", "(MinLODSize=64,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
-                engineConf.Write("TEXTUREGROUP_Promotional", "(MinLODSize=256,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
-                engineConf.Write("TEXTUREGROUP_Character_1024", "(MinLODSize=2048,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
-                engineConf.Write("TEXTUREGROUP_Character_Diff", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
-                engineConf.Write("TEXTUREGROUP_Character_Norm", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
-                engineConf.Write("TEXTUREGROUP_Character_Spec", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_APL_128", "(MinLODSize=256,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_APL_256", "(MinLODSize=512,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_APL_512", "(MinLODSize=1024,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_APL_1024", "(MinLODSize=2048,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_GUI", "(MinLODSize=64,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_Promotional", "(MinLODSize=256,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_Character_1024", "(MinLODSize=2048,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_Character_Diff", "(MinLODSize=512,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_Character_Norm", "(MinLODSize=512,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_Character_Spec", "(MinLODSize=512,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
             }
             else if (gameId == MeType.ME2_TYPE)
             {
-                engineConf.Write("TEXTUREGROUP_LightAndShadowMap", "(MinLODSize=1024,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-                engineConf.Write("TEXTUREGROUP_RenderTarget", "(MinLODSize=2048,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-                engineConf.Write("TEXTUREGROUP_Environment_64", "(MinLODSize=128,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-                engineConf.Write("TEXTUREGROUP_Environment_128", "(MinLODSize=256,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-                engineConf.Write("TEXTUREGROUP_Environment_256", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-                engineConf.Write("TEXTUREGROUP_Environment_512", "(MinLODSize=1024,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-                engineConf.Write("TEXTUREGROUP_Environment_1024", "(MinLODSize=2048,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_LightAndShadowMap", "(MinLODSize=1024,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_RenderTarget", "(MinLODSize=2048,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_Environment_64", "(MinLODSize=128,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_Environment_128", "(MinLODSize=256,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_Environment_256", "(MinLODSize=512,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_Environment_512", "(MinLODSize=1024,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_Environment_1024", "(MinLODSize=2048,MaxLODSize=4096,LODBias=0)", "SystemSettings");
                 engineConf.Write("TEXTUREGROUP_VFX_64", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "SystemSettings");
                 engineConf.Write("TEXTUREGROUP_VFX_128", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "SystemSettings");
                 engineConf.Write("TEXTUREGROUP_VFX_256", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "SystemSettings");
                 engineConf.Write("TEXTUREGROUP_VFX_512", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "SystemSettings");
                 engineConf.Write("TEXTUREGROUP_VFX_1024", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "SystemSettings");
-                engineConf.Write("TEXTUREGROUP_APL_128", "(MinLODSize=256,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-                engineConf.Write("TEXTUREGROUP_APL_256", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-                engineConf.Write("TEXTUREGROUP_APL_512", "(MinLODSize=1024,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-                engineConf.Write("TEXTUREGROUP_APL_1024", "(MinLODSize=2048,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-                engineConf.Write("TEXTUREGROUP_UI", "(MinLODSize=64,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-                engineConf.Write("TEXTUREGROUP_Promotional", "(MinLODSize=256,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-                engineConf.Write("TEXTUREGROUP_Character_1024", "(MinLODSize=2048,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-                engineConf.Write("TEXTUREGROUP_Character_Diff", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-                engineConf.Write("TEXTUREGROUP_Character_Norm", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-                engineConf.Write("TEXTUREGROUP_Character_Spec", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_APL_128", "(MinLODSize=256,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_APL_256", "(MinLODSize=512,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_APL_512", "(MinLODSize=1024,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_APL_1024", "(MinLODSize=2048,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_UI", "(MinLODSize=64,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_Promotional", "(MinLODSize=256,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_Character_1024", "(MinLODSize=2048,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_Character_Diff", "(MinLODSize=512,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_Character_Norm", "(MinLODSize=512,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_Character_Spec", "(MinLODSize=512,MaxLODSize=4096,LODBias=0)", "SystemSettings");
             }
             else if (gameId == MeType.ME3_TYPE)
             {
-                engineConf.Write("TEXTUREGROUP_Environment_64", "(MinLODSize=128,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-                engineConf.Write("TEXTUREGROUP_Environment_128", "(MinLODSize=256,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-                engineConf.Write("TEXTUREGROUP_Environment_256", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-                engineConf.Write("TEXTUREGROUP_Environment_512", "(MinLODSize=1024,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-                engineConf.Write("TEXTUREGROUP_Environment_1024", "(MinLODSize=2048,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_Environment_64", "(MinLODSize=128,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_Environment_128", "(MinLODSize=256,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_Environment_256", "(MinLODSize=512,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_Environment_512", "(MinLODSize=1024,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_Environment_1024", "(MinLODSize=2048,MaxLODSize=4096,LODBias=0)", "SystemSettings");
                 engineConf.Write("TEXTUREGROUP_VFX_64", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "SystemSettings");
                 engineConf.Write("TEXTUREGROUP_VFX_128", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "SystemSettings");
                 engineConf.Write("TEXTUREGROUP_VFX_256", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "SystemSettings");
                 engineConf.Write("TEXTUREGROUP_VFX_512", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "SystemSettings");
                 engineConf.Write("TEXTUREGROUP_VFX_1024", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "SystemSettings");
-                engineConf.Write("TEXTUREGROUP_APL_128", "(MinLODSize=256,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-                engineConf.Write("TEXTUREGROUP_APL_256", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-                engineConf.Write("TEXTUREGROUP_APL_512", "(MinLODSize=1024,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-                engineConf.Write("TEXTUREGROUP_APL_1024", "(MinLODSize=2048,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-                engineConf.Write("TEXTUREGROUP_UI", "(MinLODSize=64,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-                engineConf.Write("TEXTUREGROUP_Promotional", "(MinLODSize=256,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-                engineConf.Write("TEXTUREGROUP_Character_1024", "(MinLODSize=2048,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-                engineConf.Write("TEXTUREGROUP_Character_Diff", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-                engineConf.Write("TEXTUREGROUP_Character_Norm", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
-                engineConf.Write("TEXTUREGROUP_Character_Spec", "(MinLODSize=512,MaxLODSize=4096,LODBias=-1)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_APL_128", "(MinLODSize=256,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_APL_256", "(MinLODSize=512,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_APL_512", "(MinLODSize=1024,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_APL_1024", "(MinLODSize=2048,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_UI", "(MinLODSize=64,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_Promotional", "(MinLODSize=256,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_Character_1024", "(MinLODSize=2048,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_Character_Diff", "(MinLODSize=512,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_Character_Norm", "(MinLODSize=512,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_Character_Spec", "(MinLODSize=512,MaxLODSize=4096,LODBias=0)", "SystemSettings");
             }
             else
             {
@@ -190,10 +192,73 @@ namespace MassEffectModder
                 throw new Exception("");
             }
         }
+
+        static public void updateGFXSettings(MeType gameId, ConfIni engineConf)
+        {
+            if (gameId == MeType.ME1_TYPE)
+            {
+                engineConf.Write("MaxShadowResolution", "4096", "Engine.GameEngine");
+                engineConf.Write("MinShadowResolution", "64", "Engine.GameEngine");
+                engineConf.Write("DynamicShadows", "True", "SystemSettings");
+                engineConf.Write("ShadowFilterQualityBias", "2", "SystemSettings");
+                engineConf.Write("ShadowFilterRadius", "5", "Engine.GameEngine");
+                engineConf.Write("bEnableBranchingPCFShadows", "True", "Engine.GameEngine");
+                engineConf.Write("MaxAnisotropy", "16", "SystemSettings");
+                engineConf.Write("TextureLODLevel", "3", "WinDrv.WindowsClient");
+                engineConf.Write("FilterLevel", "2", "WinDrv.WindowsClient");
+                engineConf.Write("Trilinear", "False", "SystemSettings");
+                engineConf.Write("MotionBlur", "True", "SystemSettings");
+                engineConf.Write("DepthOfField", "True", "SystemSettings");
+                engineConf.Write("Bloom", "True", "SystemSettings");
+                engineConf.Write("QualityBloom", "True", "SystemSettings");
+                engineConf.Write("ParticleLODBias", "2", "SystemSettings");
+            }
+            else if (gameId == MeType.ME2_TYPE)
+            {
+                engineConf.Write("MaxShadowResolution", "4096", "SystemSettings");
+                engineConf.Write("MinShadowResolution", "64", "SystemSettings");
+                engineConf.Write("ShadowFilterQualityBias", "2", "SystemSettings");
+                engineConf.Write("ShadowFilterRadius", "5", "SystemSettings");
+                engineConf.Write("bEnableBranchingPCFShadows", "True", "SystemSettings");
+                engineConf.Write("MaxAnisotropy", "16", "SystemSettings");
+                engineConf.Write("Trilinear", "False", "SystemSettings");
+                engineConf.Write("MotionBlur", "True", "SystemSettings");
+                engineConf.Write("DepthOfField", "True", "SystemSettings");
+                engineConf.Write("Bloom", "True", "SystemSettings");
+                engineConf.Write("QualityBloom", "True", "SystemSettings");
+                engineConf.Write("ParticleLODBias", "2", "SystemSettings");
+            }
+            else if (gameId == MeType.ME3_TYPE)
+            {
+                engineConf.Write("MaxShadowResolution", "4096", "SystemSettings");
+                engineConf.Write("MinShadowResolution", "64", "SystemSettings");
+                engineConf.Write("ShadowFilterQualityBias", "2", "SystemSettings");
+                engineConf.Write("ShadowFilterRadius", "5", "SystemSettings");
+                engineConf.Write("bEnableBranchingPCFShadows", "True", "SystemSettings");
+                engineConf.Write("MaxAnisotropy", "16", "SystemSettings");
+                engineConf.Write("Trilinear", "False", "SystemSettings");
+                engineConf.Write("MotionBlur", "True", "SystemSettings");
+                engineConf.Write("DepthOfField", "True", "SystemSettings");
+                engineConf.Write("Bloom", "True", "SystemSettings");
+                engineConf.Write("QualityBloom", "True", "SystemSettings");
+                engineConf.Write("ParticleLODBias", "2", "SystemSettings");
+            }
+            else
+            {
+                throw new Exception("");
+            }
+
+        }
     }
 
-    static class Misc
+    static partial class Misc
     {
+        struct MD5FileEntry
+        {
+            public string path;
+            public byte[] md5;
+        }
+
         static public void VerifyME1Exe(GameData gameData, bool gui = true)
         {
             if (File.Exists(GameData.GameExePath))
@@ -329,9 +394,218 @@ namespace MassEffectModder
             }
         }
 
-        static public string checkGameFiles(MeType gameType)
+
+        static public string checkGameFiles(MeType gameType, MainWindow mainWindow = null, Installer installer = null)
         {
             string errors = "";
+            List<string> packageMainFiles = null;
+            List<string> packageDLCFiles = null;
+            List<string> sfarFiles = null;
+            MD5FileEntry[] entries = null;
+
+            if (gameType == MeType.ME1_TYPE)
+            {
+                packageMainFiles = Directory.GetFiles(GameData.MainData, "*.*",
+                SearchOption.AllDirectories).Where(s => s.EndsWith(".upk",
+                    StringComparison.OrdinalIgnoreCase) ||
+                    s.EndsWith(".u", StringComparison.OrdinalIgnoreCase) ||
+                    s.EndsWith(".sfm", StringComparison.OrdinalIgnoreCase)).ToList();
+                if (Directory.Exists(GameData.DLCData))
+                {
+                    packageDLCFiles = Directory.GetFiles(GameData.DLCData, "*.*",
+                    SearchOption.AllDirectories).Where(s => s.EndsWith(".upk",
+                        StringComparison.OrdinalIgnoreCase) ||
+                        s.EndsWith(".u", StringComparison.OrdinalIgnoreCase) ||
+                        s.EndsWith(".sfm", StringComparison.OrdinalIgnoreCase)).ToList();
+                }
+                packageMainFiles.RemoveAll(s => s.Contains("LocalShaderCache-PC-D3D-SM3.upk"));
+                packageMainFiles.RemoveAll(s => s.Contains("RefShaderCache-PC-D3D-SM3.upk"));
+                entries = entriesME1;
+            }
+            else if (gameType == MeType.ME2_TYPE)
+            {
+                packageMainFiles = Directory.GetFiles(GameData.MainData, "*.pcc", SearchOption.AllDirectories).Where(item => item.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase)).ToList();
+                if (Directory.Exists(GameData.DLCData))
+                    packageDLCFiles = Directory.GetFiles(GameData.DLCData, "*.pcc", SearchOption.AllDirectories).Where(item => item.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase)).ToList();
+                entries = entriesME2;
+            }
+            else if (gameType == MeType.ME3_TYPE)
+            {
+                packageMainFiles = Directory.GetFiles(GameData.MainData, "*.pcc", SearchOption.AllDirectories).Where(item => item.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase)).ToList();
+                if (Directory.Exists(GameData.DLCData))
+                {
+                    packageDLCFiles = Directory.GetFiles(GameData.DLCData, "*.pcc", SearchOption.AllDirectories).Where(item => item.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase)).ToList();
+                    sfarFiles = Directory.GetFiles(GameData.DLCData, "Default.sfar", SearchOption.AllDirectories).ToList();
+                    for (int i = 0; i < sfarFiles.Count; i++)
+                    {
+                        if (new FileInfo(sfarFiles[i]).Length <= 32)
+                            sfarFiles.RemoveAt(i--);
+                    }
+                    packageDLCFiles.RemoveAll(s => s.Contains("GuidCache"));
+                }
+                packageMainFiles.RemoveAll(s => s.Contains("GuidCache"));
+                entries = entriesME3;
+            }
+
+            packageMainFiles.Sort();
+            if (packageDLCFiles != null)
+                packageDLCFiles.Sort();
+            if (sfarFiles != null)
+                sfarFiles.Sort();
+
+            //using (FileStream fs = new FileStream("MD5EntriesME" + (int)gameType + ".cs", FileMode.Create, FileAccess.Write))
+            {
+                //fs.WriteStringASCII("MD5FileEntry[] entries = new MD5FileEntry[]\n{\n");
+
+                for (int l = 0; l < packageMainFiles.Count; l++)
+                {
+                    if (mainWindow != null)
+                    {
+                        mainWindow.updateStatusLabel("Checking main PCC files - " + (l + 1) + " of " + packageMainFiles.Count);
+                    }
+                    if (installer != null)
+                    {
+                        installer.updateLabelPreVanilla("Progress (PCC) ... " + (l * 100 / packageMainFiles.Count));
+                    }
+                    byte[] md5 = calculateMD5(packageMainFiles[l]);
+                    bool found = false;
+                    for (int p = 0; p < entries.Count(); p++)
+                    {
+                        if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, entries[p].md5))
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (found)
+                        continue;
+                    int index = -1;
+                    for (int p = 0; p < entries.Count(); p++)
+                    {
+                        if (GameData.RelativeGameData(packageMainFiles[l]) == entries[p].path)
+                        {
+                            index = p;
+                            break;
+                        }
+                    }
+                    if (index == -1)
+                        continue;
+                    errors += "File " + packageMainFiles[l] + " has wrong MD5 checksum, expected: ";
+                    for (int i = 0; i < entries[index].md5.Count(); i++)
+                    {
+                        errors += string.Format("{0:x2}", entries[index].md5[i]);
+                    }
+                    errors += Environment.NewLine;
+
+                    /*fs.WriteStringASCII("new MD5FileEntry\n{\npath = @\"" + GameData.RelativeGameData(packageMainFiles[l]) + "\",\nmd5 = new byte[] { ");
+                    for (int i = 0; i < md5.Length; i++)
+                    {
+                        fs.WriteStringASCII(string.Format("0x{0:X2}, ", md5[i]));
+                    }
+                    fs.WriteStringASCII("},\n},\n");*/
+                }
+                if (packageDLCFiles != null)
+                {
+                    for (int l = 0; l < packageDLCFiles.Count; l++)
+                    {
+                        if (mainWindow != null)
+                        {
+                            mainWindow.updateStatusLabel("Checking DLC PCC files - " + (l + 1) + " of " + packageDLCFiles.Count);
+                        }
+                        if (installer != null)
+                        {
+                            installer.updateLabelPreVanilla("Progress (DLC PCC) ... " + (l * 100 / packageDLCFiles.Count));
+                        }
+                        byte[] md5 = calculateMD5(packageDLCFiles[l]);
+                        bool found = false;
+                        for (int p = 0; p < entries.Count(); p++)
+                        {
+                            if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, entries[p].md5))
+                            {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (found)
+                            continue;
+                        int index = -1;
+                        for (int p = 0; p < entries.Count(); p++)
+                        {
+                            if (GameData.RelativeGameData(packageDLCFiles[l]) == entries[p].path)
+                            {
+                                index = p;
+                                break;
+                            }
+                        }
+                        if (index == -1)
+                            continue;
+                        errors += "File " + packageDLCFiles[l] + " has wrong MD5 checksum, expected: ";
+                        for (int i = 0; i < entries[index].md5.Count(); i++)
+                        {
+                            errors += string.Format("{0:x2}", entries[index].md5[i]);
+                        }
+                        errors += Environment.NewLine;
+
+                        /*fs.WriteStringASCII("new MD5FileEntry\n{\npath = @\"" + GameData.RelativeGameData(packageDLCFiles[l]) + "\",\nmd5 = new byte[] { ");
+                        for (int i = 0; i < md5.Length; i++)
+                        {
+                            fs.WriteStringASCII(string.Format("0x{0:X2}, ", md5[i]));
+                        }
+                        fs.WriteStringASCII("},\n},\n");*/
+                    }
+                }
+                if (sfarFiles != null)
+                {
+                    for (int l = 0; l < sfarFiles.Count; l++)
+                    {
+                        if (mainWindow != null)
+                        {
+                            mainWindow.updateStatusLabel("Checking DLC archive files - " + (l + 1) + " of " + sfarFiles.Count);
+                        }
+                        if (installer != null)
+                        {
+                            installer.updateLabelPreVanilla("Progress (DLC Archives) ... " + (l * 100 / sfarFiles.Count));
+                        }
+                        byte[] md5 = calculateMD5(sfarFiles[l]);
+                        bool found = false;
+                        for (int p = 0; p < entries.Count(); p++)
+                        {
+                            if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, entries[p].md5))
+                            {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (found)
+                            continue;
+                        int index = -1;
+                        for (int p = 0; p < entries.Count(); p++)
+                        {
+                            if (GameData.RelativeGameData(sfarFiles[l]) == entries[p].path)
+                            {
+                                index = p;
+                                break;
+                            }
+                        }
+                        if (index == -1)
+                            continue;
+                        errors += "File " + sfarFiles[l] + " has wrong MD5 checksum, expected: ";
+                        for (int i = 0; i < entries[index].md5.Count(); i++)
+                        {
+                            errors += string.Format("{0:x2}", entries[index].md5[i]);
+                        }
+                        errors += Environment.NewLine;
+
+                        /*fs.WriteStringASCII("new MD5FileEntry\n{\npath = @\"" + GameData.RelativeGameData(sfarFiles[l]) + "\",\nmd5 = new byte[] { ");
+                        for (int i = 0; i < md5.Length; i++)
+                        {
+                            fs.WriteStringASCII(string.Format("0x{0:X2}, ", md5[i]));
+                        }
+                        fs.WriteStringASCII("},\n},\n");*/
+                    }
+                }
+                //fs.WriteStringASCII("};\n");
+            }
 
             return errors;
         }

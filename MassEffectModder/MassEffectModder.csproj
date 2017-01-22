@@ -90,6 +90,9 @@
     <Compile Include="MainWindow.Designer.cs">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="MD5EntriesME1.cs" />
+    <Compile Include="MD5EntriesME2.cs" />
+    <Compile Include="MD5EntriesME3.cs" />
     <Compile Include="Misc.cs" />
     <Compile Include="Package.cs" />
     <Compile Include="ParallelCRC.cs" />

@@ -289,9 +289,9 @@
             this.labelLOD.AutoSize = true;
             this.labelLOD.Location = new System.Drawing.Point(13, 165);
             this.labelLOD.Name = "labelLOD";
-            this.labelLOD.Size = new System.Drawing.Size(99, 13);
+            this.labelLOD.Size = new System.Drawing.Size(105, 13);
             this.labelLOD.TabIndex = 16;
-            this.labelLOD.Text = "Apply LOD Settings";
+            this.labelLOD.Text = "Apply Game Settings";
             // 
             // labelPrepare
             // 
