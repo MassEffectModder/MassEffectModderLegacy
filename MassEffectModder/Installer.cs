@@ -156,6 +156,9 @@ namespace MassEffectModder
                     }
                 }
             }
+            string filename = "errors-precheck.txt";
+            if (File.Exists(filename))
+                File.Delete(filename);
             if (errors != "")
             {
                 labelPreMods.Text = "There are some errors while detecting MEM mods!";
@@ -163,7 +166,6 @@ namespace MassEffectModder
                 labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
                 buttonPreInstallCheck.Enabled = true;
 
-                string filename = "errors.txt";
                 if (File.Exists(filename))
                     File.Delete(filename);
                 using (FileStream fs = new FileStream(filename, FileMode.CreateNew))
@@ -322,11 +324,12 @@ namespace MassEffectModder
             errors = Misc.checkGameFiles((MeType)gameId, null, this);
             if (errors != "")
             {
-                string filename = "errors.txt";
-                if (File.Exists(filename))
-                    File.Delete(filename);
-                using (FileStream fs = new FileStream(filename, FileMode.CreateNew))
+                using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate))
                 {
+                    fs.SeekEnd();
+                    fs.WriteStringASCII("=========================================================\n");
+                    fs.WriteStringASCII("WARNING: looks like the following file(s) are not vanilla\n");
+                    fs.WriteStringASCII("=========================================================\n\n");
                     fs.WriteStringASCII(errors);
                 }
                 Process.Start(filename);
@@ -584,7 +587,7 @@ namespace MassEffectModder
             labelFinalStatus.Text = "Process finished. Process total time: " + Misc.getTimerFormat(time);
             buttonsEnable(true);
 
-            string filename = "errors.txt";
+            string filename = "errors-install.txt";
             if (File.Exists(filename))
                 File.Delete(filename);
             if (errors != "")

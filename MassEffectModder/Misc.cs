@@ -465,7 +465,7 @@ namespace MassEffectModder
                     }
                     if (installer != null)
                     {
-                        installer.updateLabelPreVanilla("Progress (PCC) ... " + (l * 100 / packageMainFiles.Count));
+                        installer.updateLabelPreVanilla("Progress (PCC) ... " + (l * 100 / packageMainFiles.Count) + "%");
                     }
                     byte[] md5 = calculateMD5(packageMainFiles[l]);
                     bool found = false;
@@ -514,7 +514,7 @@ namespace MassEffectModder
                         }
                         if (installer != null)
                         {
-                            installer.updateLabelPreVanilla("Progress (DLC PCC) ... " + (l * 100 / packageDLCFiles.Count));
+                            installer.updateLabelPreVanilla("Progress (DLC PCC) ... " + (l * 100 / packageDLCFiles.Count) + "%");
                         }
                         byte[] md5 = calculateMD5(packageDLCFiles[l]);
                         bool found = false;
@@ -564,7 +564,7 @@ namespace MassEffectModder
                         }
                         if (installer != null)
                         {
-                            installer.updateLabelPreVanilla("Progress (DLC Archives) ... " + (l * 100 / sfarFiles.Count));
+                            installer.updateLabelPreVanilla("Progress (DLC Archives) ... " + (l * 100 / sfarFiles.Count) + "%");
                         }
                         byte[] md5 = calculateMD5(sfarFiles[l]);
                         bool found = false;
