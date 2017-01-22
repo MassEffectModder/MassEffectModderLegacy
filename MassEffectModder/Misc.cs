@@ -219,7 +219,7 @@ namespace MassEffectModder
         {
             try
             {
-                using (FileStream fs = File.Create(Path.Combine(GameData.GamePath, Path.GetRandomFileName()), 1, FileOptions.DeleteOnClose)) { }
+                using (FileStream fs = File.Create(Path.Combine(path, Path.GetRandomFileName()), 1, FileOptions.DeleteOnClose)) { }
                 return true;
             }
             catch
