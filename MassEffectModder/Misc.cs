@@ -23,6 +23,7 @@ using StreamHelpers;
 using System;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Windows.Forms;
 
@@ -301,6 +302,30 @@ namespace MassEffectModder
                 long minutes = (time - (hours * 1000 * 60 * 60)) / 1000 / 60;
                 long seconds = (time - (hours * 1000 * 60 * 60) - (minutes * 1000 * 60)) / 1000 / 60;
                 return string.Format("{0} hours - {1} min - {2} sec", hours, minutes, seconds);
+            }
+        }
+
+        static public byte[] calculateSHA1(string filePath)
+        {
+            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            {
+                using (SHA1 sha1 = SHA1.Create())
+                {
+                    sha1.Initialize();
+                    return sha1.ComputeHash(fs);
+                }
+            }
+        }
+
+        static public byte[] calculateMD5(string filePath)
+        {
+            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            {
+                using (MD5 md5 = MD5.Create())
+                {
+                    md5.Initialize();
+                    return md5.ComputeHash(fs);
+                }
             }
         }
     }

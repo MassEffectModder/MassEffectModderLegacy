@@ -1,7 +1,7 @@
 /*
  * MassEffectModder
  *
- * Copyright (C) 2014-2016 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2014-2017 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,7 +22,6 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using StreamHelpers;
 using System.Linq;
 
@@ -103,18 +102,6 @@ namespace MassEffectModder
             }
         }
 
-        byte[] calculateSHA1(string filePath)
-        {
-            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-            {
-                using (SHA1 sha1 = SHA1.Create())
-                {
-                    sha1.Initialize();
-                    return sha1.ComputeHash(fs);
-                }
-            }
-        }
-
         public void updateFile(string filename, string filePath, bool updateSHA1 = false)
         {
             for (int b = 0; b < blockList.Count; b++)
@@ -126,7 +113,7 @@ namespace MassEffectModder
                     {
                         file.size = (uint)new FileInfo(filePath).Length;
                         if (updateSHA1)
-                            file.sha1 = calculateSHA1(filePath);
+                            file.sha1 = Misc.calculateSHA1(filePath);
                         blockList[b].filesList[f] = file;
                         return;
                     }
@@ -138,7 +125,7 @@ namespace MassEffectModder
             e.size = (uint)new FileInfo(filePath).Length;
             e.type = 1;
             if (updateSHA1)
-                e.sha1 = calculateSHA1(filePath);
+                e.sha1 = Misc.calculateSHA1(filePath);
             else
                 e.sha1 = new byte[20];
             block.filesList.Add(e);
