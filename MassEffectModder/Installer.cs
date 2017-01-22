@@ -330,18 +330,19 @@ namespace MassEffectModder
                     fs.WriteStringASCII(errors);
                 }
                 Process.Start(filename);
-                labelPreVanilla.Text = "Game file are not vanilla!";
+                labelPreVanilla.Text = "Game files are not vanilla!";
                 labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.Red);
-                labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
-                checkBoxPreVanilla.Enabled = true;
-                return;
+                labelFinalStatus.Text = "Preliminary check detected potential issue...";
             }
-            labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
-            labelPreVanilla.Text = "";
+            else
+            {
+                labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
+                labelPreVanilla.Text = "";
+                labelFinalStatus.Text = "Ready to go. Press START button!";
+            }
             checkBoxPreVanilla.Checked = true;
 
 
-            labelFinalStatus.Text = "Ready to go. Press START button!";
             buttonPreInstallCheck.Enabled = true;
             buttonSTART.Enabled = true;
         }
