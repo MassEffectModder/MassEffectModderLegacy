@@ -246,16 +246,22 @@ namespace MassEffectModder
             {
                 if (Misc.checkWriteAccessFile(GameData.GamePath + @"\BioGame\CookedPC\Packages\GameObjects\Characters\Humanoids\HumanMale\BIOG_HMM_HED_PROMorph.upk"))
                     writeAccess = true;
+                else
+                    writeAccess = false;
             }
             if (gameId == (int)MeType.ME2_TYPE)
             {
                 if (Misc.checkWriteAccessFile(GameData.GamePath + @"\BioGame\CookedPC\BioD_CitAsL.pcc"))
                     writeAccess = true;
+                else
+                    writeAccess = false;
             }
             if (gameId == (int)MeType.ME3_TYPE)
             {
                 if (Misc.checkWriteAccessFile(GameData.GamePath + @"\BioGame\CookedPCConsole\BioA_CitSam_000LevelTrans.pcc"))
                     writeAccess = true;
+                else
+                    writeAccess = false;
             }
             if (!writeAccess)
             {
