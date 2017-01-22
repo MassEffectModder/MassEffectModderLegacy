@@ -448,7 +448,7 @@ namespace MassEffectModder
         private void removeLODSetME3MenuItem_Click(object sender, EventArgs e)
         {
             enableGameDataMenu(false);
-            GameData gameData = new GameData(MeType.ME2_TYPE, _configIni);
+            GameData gameData = new GameData(MeType.ME3_TYPE, _configIni);
             string path = gameData.EngineConfigIniPath;
             bool exist = File.Exists(path);
             if (exist)
