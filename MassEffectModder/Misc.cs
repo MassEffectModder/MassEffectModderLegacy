@@ -328,5 +328,12 @@ namespace MassEffectModder
                 }
             }
         }
+
+        static public string checkGameFiles(MeType gameType)
+        {
+            string errors = "";
+
+            return errors;
+        }
     }
 }

@@ -22,6 +22,7 @@
 using StreamHelpers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -523,22 +524,68 @@ namespace MassEffectModder
 
         private void wikiToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("https://github.com/MassEffectModder/MassEffectModder/wiki");
+            Process.Start("https://github.com/MassEffectModder/MassEffectModder/wiki");
         }
 
         private void githubToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("https://github.com/MassEffectModder/MassEffectModder/");
+            Process.Start("https://github.com/MassEffectModder/MassEffectModder/");
         }
 
         private void releasesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("https://github.com/MassEffectModder/MassEffectModder/releases");
+            Process.Start("https://github.com/MassEffectModder/MassEffectModder/releases");
         }
 
         private void reportIssueToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("https://github.com/MassEffectModder/MassEffectModder/issues");
+            Process.Start("https://github.com/MassEffectModder/MassEffectModder/issues");
+        }
+
+        void checkGameFile(MeType gameType)
+        {
+            enableGameDataMenu(false);
+            GameData gameData = new GameData(gameType, _configIni);
+            if (Directory.Exists(GameData.GamePath))
+            {
+                string filename = "errors.txt";
+                if (File.Exists(filename))
+                    File.Delete(filename);
+                string errors = Misc.checkGameFiles(gameType);
+                if (errors != "")
+                {
+                    using (FileStream fs = new FileStream(filename, FileMode.CreateNew))
+                    {
+                        fs.WriteStringASCII(errors);
+                    }
+                    MessageBox.Show("Finished checking game files.\n\nWARNING: Some errors have occured!");
+                    Process.Start(filename);
+                }
+                else
+                {
+                    MessageBox.Show("Finished checking game files.");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Game path is wrong!");
+            }
+            enableGameDataMenu(true);
+        }
+
+        private void toolStripCheckFilesME1MenuItem_Click(object sender, EventArgs e)
+        {
+            checkGameFile(MeType.ME1_TYPE);
+        }
+
+        private void toolStripCheckFilesME2MenuItem_Click(object sender, EventArgs e)
+        {
+            checkGameFile(MeType.ME2_TYPE);
+        }
+
+        private void toolStripCheckFilesME3MenuItem_Click(object sender, EventArgs e)
+        {
+            checkGameFile(MeType.ME3_TYPE);
         }
     }
 }
