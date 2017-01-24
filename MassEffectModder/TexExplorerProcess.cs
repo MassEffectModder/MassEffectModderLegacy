@@ -311,7 +311,7 @@ namespace MassEffectModder
                             DDSImage image = new DDSImage(new MemoryStream(src));
                             if (!image.checkExistAllMipmaps())
                             {
-                                errors += "Error in texture: " + Path.GetFileName(file) + " Texture has not all the required mipmaps" + Environment.NewLine;
+                                errors += "Error in texture: " + Path.GetFileName(file) + " This texture has not all the required mipmaps, skipping texture..." + Environment.NewLine;
                                 continue;
                             }
 
@@ -328,7 +328,7 @@ namespace MassEffectModder
                             DDSFormat ddsFormat = DDSImage.convertFormat(fmt);
                             if (image.ddsFormat != ddsFormat)
                             {
-                                errors += "Error in texture: " + Path.GetFileName(file) + " This texture has wrong texture format, should be: " + ddsFormat + ", skipping..." + Environment.NewLine;
+                                errors += "Error in texture: " + Path.GetFileName(file) + " This texture has wrong texture format, should be: " + ddsFormat + ", skipping texture..." + Environment.NewLine;
                                 continue;
                             }
 

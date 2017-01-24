@@ -88,7 +88,7 @@ namespace MassEffectModder
 
                 if (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1)
                 {
-                    errors += "Error in texture: " + textureName + " Texture skipped. This texture has not all the required mipmaps" + Environment.NewLine;
+                    errors += "Error in texture: " + textureName + " This texture has not all the required mipmaps, skipping texture..." + Environment.NewLine;
                     break;
                 }
 
@@ -96,7 +96,7 @@ namespace MassEffectModder
                 DDSFormat ddsFormat = DDSImage.convertFormat(fmt);
                 if (image.ddsFormat != ddsFormat)
                 {
-                    errors += "Error in texture: " + textureName + " This texture has wrong texture format, should be: " + ddsFormat + ", skipping..." + Environment.NewLine;
+                    errors += "Error in texture: " + textureName + " This texture has wrong texture format, should be: " + ddsFormat + ", skipping texture..." + Environment.NewLine;
                     break;
                 }
 
