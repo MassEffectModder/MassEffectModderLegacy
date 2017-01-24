@@ -320,7 +320,7 @@ namespace MassEffectModder
 
                             if (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1)
                             {
-                                errors += "Error in texture: " + Path.GetFileName(file) + "This texture must have mipmaps, skipping texture..." + Environment.NewLine;
+                                errors += "Error in texture: " + Path.GetFileName(file) + " This texture must have mipmaps, skipping texture..." + Environment.NewLine;
                                 continue;
                             }
 
