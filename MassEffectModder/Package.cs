@@ -1,7 +1,7 @@
 /*
  * MassEffectModder
  *
- * Copyright (C) 2014-2016 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2014-2017 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -1036,7 +1036,7 @@ namespace MassEffectModder
                 tempOutput.WriteZeros(dataLeft);
             }
 
-            if (endOfTablesOffset < exportsOffset)
+            if (exportsOffset > sortedExports[0].dataOffset)
             {
                 if (compressed) // allowed only uncompressed
                     throw new Exception();
@@ -1051,21 +1051,33 @@ namespace MassEffectModder
             }
 
             tempOutput.JumpTo(exportsEndOffset);
-            if (endOfTablesOffset < namesOffset)
+            if (namesOffset > sortedExports[0].dataOffset)
             {
                 if (compressed) // allowed only uncompressed
                     throw new Exception();
                 namesOffset = (uint)tempOutput.Position;
                 saveNames(tempOutput, true);
             }
-            if (endOfTablesOffset < importsOffset)
+            else
+            {
+                saveNames(tempOutput);
+            }
+
+            if (importsOffset > sortedExports[0].dataOffset)
             {
                 if (compressed) // allowed only uncompressed
                     throw new Exception();
                 importsOffset = (uint)tempOutput.Position;
                 saveImports(tempOutput, true);
             }
-            if (endOfTablesOffset < namesOffset || endOfTablesOffset < importsOffset || endOfTablesOffset < exportsOffset)
+            else
+            {
+                saveImports(tempOutput);
+            }
+
+            if (namesOffset > sortedExports[0].dataOffset ||
+                importsOffset > sortedExports[0].dataOffset ||
+                exportsOffset > sortedExports[0].dataOffset)
             {
                 tempOutput.SeekBegin();
                 tempOutput.Write(packageHeader, 0, packageHeader.Length);
