@@ -904,7 +904,7 @@ namespace MassEffectModder
                 MatchedTexture nodeTexture = node.textures[index].list[0];
                 saveFile.Title = "Please select output PNG file";
                 saveFile.Filter = "PNG file | *.png";
-                saveFile.FileName = node.textures[index].name + string.Format("_0x{0:X8}", node.textures[index].crc) + ".dds";
+                saveFile.FileName = node.textures[index].name + string.Format("_0x{0:X8}", node.textures[index].crc) + ".png";
                 if (saveFile.ShowDialog() == DialogResult.OK)
                 {
                     mipMaps.extractTextureToPng(saveFile.FileName, GameData.GamePath + nodeTexture.path, nodeTexture.exportID);
