@@ -106,7 +106,7 @@ namespace MassEffectModder
             ConfIni engineConf = new ConfIni(path);
             LODSettings.updateLOD(MeType.ME1_TYPE, engineConf);
             MessageBox.Show("Game configuration file at " + path + " updated." +
-                "\n\nAfter updating LOD settings you will have to remove empty mipmaps.");
+                "\n\nYou will have to remove empty mipmaps if you haven't already done.");
             enableGameDataMenu(true);
         }
 
@@ -247,7 +247,7 @@ namespace MassEffectModder
             ConfIni engineConf = new ConfIni(path);
             LODSettings.updateLOD(MeType.ME2_TYPE, engineConf);
             MessageBox.Show("Game configuration file at " + path + " updated." +
-                "\n\nAfter updating LOD settings you will have to remove empty mipmaps.");
+                "\n\nYou will have to remove empty mipmaps if you haven't already done.");
             enableGameDataMenu(true);
         }
 
@@ -375,7 +375,7 @@ namespace MassEffectModder
             ConfIni engineConf = new ConfIni(path);
             LODSettings.updateLOD(MeType.ME3_TYPE, engineConf);
             MessageBox.Show("Game configuration file at " + path + " updated." +
-                "\n\nAfter updating LOD settings you will have to remove empty mipmaps.");
+                "\n\nYou will have to remove empty mipmaps if you haven't already done.");
             enableGameDataMenu(true);
         }
 
