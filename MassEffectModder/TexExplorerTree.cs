@@ -156,8 +156,9 @@ namespace MassEffectModder
             }
 
             GameData.packageFiles.Sort();
+            List<string> restPkgs = null;
             if (GameData.gameType == MeType.ME1_TYPE)
-                sortPackagesME1(mainWindow, installer);
+                restPkgs = sortPackagesME1(mainWindow, installer);
             for (int i = 0; i < GameData.packageFiles.Count; i++)
             {
                 if (mainWindow != null)
@@ -168,7 +169,22 @@ namespace MassEffectModder
                 {
                     installer.updateStatusScan("Progress... " + (i * 100 / GameData.packageFiles.Count) + " % ");
                 }
-                FindTextures(textures, GameData.packageFiles[i]);
+                FindTextures(textures, GameData.packageFiles[i], 1);
+            }
+            if (GameData.gameType == MeType.ME1_TYPE)
+            {
+                for (int i = 0; i < restPkgs.Count; i++)
+                {
+                    if (mainWindow != null)
+                    {
+                        mainWindow.updateStatusLabel("Finding textures in package " + (i + 1) + " of " + restPkgs.Count + " - " + restPkgs[i]);
+                    }
+                    if (installer != null)
+                    {
+                        installer.updateStatusScan("Progress... " + (i * 100 / restPkgs.Count) + " % ");
+                    }
+                    FindTextures(textures, restPkgs[i], 2);
+                }
             }
 
             using (FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
@@ -188,10 +204,20 @@ namespace MassEffectModder
                         fs.WriteStringASCIINull(textures[i].list[k].path);
                     }
                 }
-                fs.WriteInt32(GameData.packageFiles.Count);
+                if (GameData.gameType == MeType.ME1_TYPE)
+                    fs.WriteInt32(GameData.packageFiles.Count + restPkgs.Count);
+                else
+                    fs.WriteInt32(GameData.packageFiles.Count);
                 for (int i = 0; i < GameData.packageFiles.Count; i++)
                 {
                     fs.WriteStringASCIINull(GameData.RelativeGameData(GameData.packageFiles[i]));
+                }
+                if (GameData.gameType == MeType.ME1_TYPE)
+                {
+                    for (int i = 0; i < restPkgs.Count; i++)
+                    {
+                        fs.WriteStringASCIINull(GameData.RelativeGameData(restPkgs[i]));
+                    }
                 }
             }
             if (mainWindow != null)
@@ -202,7 +228,7 @@ namespace MassEffectModder
             return textures;
         }
 
-        public void sortPackagesME1(MainWindow mainWindow, Installer installer)
+        public List<string> sortPackagesME1(MainWindow mainWindow, Installer installer)
         {
             if (mainWindow != null)
             {
@@ -227,16 +253,52 @@ namespace MassEffectModder
                     installer.updateStatusScan("Sorting packages... " + (i * 100 / GameData.packageFiles.Count) + " %");
                 }
             }
-            sortedList.AddRange(restList);
+
+            for (int l = 0; l < sortedList.Count; l++)
+            {
+                Package package = new Package(sortedList[l]);
+                for (int i = 0; i < package.exportsTable.Count; i++)
+                {
+                    if (mainWindow != null)
+                    {
+                        mainWindow.updateStatusLabel("Sorting packages - phase 2... " + (l + 1) + " of " + sortedList.Count);
+                    }
+                    if (installer != null)
+                    {
+                        installer.updateStatusScan("Sorting packages - phase 2... " + (l * 100 / sortedList.Count) + " %");
+                    }
+                    int id = package.getClassNameId(package.exportsTable[i].classId);
+                    if (id == package.nameIdTexture2D ||
+                        id == package.nameIdLightMapTexture2D ||
+                        id == package.nameIdShadowMapTexture2D ||
+                        id == package.nameIdTextureFlipBook)
+                    {
+                        Texture texture = new Texture(package, i, package.getExportData(i));
+                        if (!texture.hasImageData())
+                            continue;
+                        if (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extLZO) ||
+                            texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extZlib) ||
+                            texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extUnc))
+                        {
+                            restList.Add(sortedList[l]);
+                            sortedList.RemoveAt(l--);
+                            break;
+                        }
+                    }
+                }
+            }
+            restList.Sort();
+
             GameData.packageFiles = sortedList;
             if (mainWindow != null)
             {
                 mainWindow.updateStatusLabel("Done.");
                 mainWindow.updateStatusLabel("");
             }
+            return restList;
         }
 
-        private void FindTextures(List<FoundTexture> textures, string packagePath)
+        private void FindTextures(List<FoundTexture> textures, string packagePath, int phase)
         {
             Package package = new Package(packagePath);
             for (int i = 0; i < package.exportsTable.Count; i++)
@@ -265,7 +327,7 @@ namespace MassEffectModder
                         {
                             uint crc = texture.getCrcTopMipmap();
                             FoundTexture foundTexName = textures.Find(s => s.crc == crc);
-                            if (foundTexName.name != null && package.compressed)
+                            if (foundTexName.name != null && phase == 2)
                             {
                                 foundTexName.list.Add(matchTexture);
                             }
@@ -284,7 +346,19 @@ namespace MassEffectModder
                         {
                             FoundTexture foundTexName;
                             List<FoundTexture> foundList = textures.FindAll(s => s.name == name && s.packageName == texture.packageName);
-                            if (foundList.Count > 1)
+                            if (foundList.Count == 0)
+                            {
+                                uint crc = texture.getCrcTopMipmap();
+                                FoundTexture foundTex = new FoundTexture();
+                                foundTex.list = new List<MatchedTexture>();
+                                foundTex.list.Add(matchTexture);
+                                foundTex.name = name;
+                                foundTex.crc = crc;
+                                foundTex.packageName = texture.packageName;
+                                textures.Add(foundTex);
+                                continue;
+                            }
+                            else if (foundList.Count > 1)
                                 foundTexName = textures.Find(s => s.name == name && s.packageName == texture.packageName && s.crc == texture.getCrcTopMipmap());
                             else
                                 foundTexName = foundList[0];
