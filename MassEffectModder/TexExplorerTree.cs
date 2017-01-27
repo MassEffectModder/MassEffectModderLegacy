@@ -228,6 +228,10 @@ namespace MassEffectModder
                         slave = true;
                     }
                     uint crc = texture.getCrcTopMipmap();
+                    if (crc == 0)
+                    {
+                        continue;
+                    }
                     FoundTexture foundTexName = textures.Find(s => s.crc == crc);
                     if (foundTexName.crc != 0)
                     {

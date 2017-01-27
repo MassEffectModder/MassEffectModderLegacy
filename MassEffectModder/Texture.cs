@@ -324,12 +324,18 @@ namespace MassEffectModder
 
         public uint getCrcMipmap(MipMap mipmap)
         {
-            return getCrcData(getMipMapData(mipmap));
+            byte[] data = getMipMapData(mipmap);
+            if (data == null)
+                return 0;
+            return getCrcData(data);
         }
 
         public uint getCrcTopMipmap()
         {
-            return getCrcData(getTopImageData());
+            byte[] data = getTopImageData();
+            if (data == null)
+                return 0;
+            return getCrcData(data);
         }
 
         public MipMap getTopMipmap()
@@ -426,17 +432,24 @@ namespace MassEffectModder
                         {
                             using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
                             {
-                                fs.JumpTo(mipmap.dataOffset);
-                                if (mipmap.storageType == StorageTypes.extLZO || mipmap.storageType == StorageTypes.extZlib)
+                                try
                                 {
-                                    using (MemoryStream tmpStream = new MemoryStream(fs.ReadToBuffer(mipmap.compressedSize)))
+                                    fs.JumpTo(mipmap.dataOffset);
+                                    if (mipmap.storageType == StorageTypes.extLZO || mipmap.storageType == StorageTypes.extZlib)
                                     {
-                                        mipMapData = decompressTexture(tmpStream, mipmap.storageType, mipmap.uncompressedSize, mipmap.compressedSize);
+                                        using (MemoryStream tmpStream = new MemoryStream(fs.ReadToBuffer(mipmap.compressedSize)))
+                                        {
+                                            mipMapData = decompressTexture(tmpStream, mipmap.storageType, mipmap.uncompressedSize, mipmap.compressedSize);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        mipMapData = fs.ReadToBuffer(mipmap.uncompressedSize);
                                     }
                                 }
-                                else
+                                catch
                                 {
-                                    mipMapData = fs.ReadToBuffer(mipmap.uncompressedSize);
+                                    return null;
                                 }
                             }
                         }

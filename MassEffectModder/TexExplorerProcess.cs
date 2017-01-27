@@ -474,7 +474,13 @@ namespace MassEffectModder
             DDSFormat format = DDSImage.convertFormat(texture.properties.getProperty("Format").valueName);
             for (int i = 0; i < texture.mipMapsList.Count; i++)
             {
-                mipmaps.Add(new DDSImage.MipMap(texture.getMipMapDataByIndex(i), format, texture.mipMapsList[i].width, texture.mipMapsList[i].height));
+                byte[] data = texture.getMipMapDataByIndex(i);
+                if (data == null)
+                {
+                    MessageBox.Show("Failed to extract to DDS file. Broken game files!");
+                    return;
+                }
+                mipmaps.Add(new DDSImage.MipMap(data, format, texture.mipMapsList[i].width, texture.mipMapsList[i].height));
             }
             DDSImage dds = new DDSImage(mipmaps);
             if (File.Exists(outputFile))
@@ -491,7 +497,13 @@ namespace MassEffectModder
             Texture texture = new Texture(package, exportID, package.getExportData(exportID));
             DDSFormat format = DDSImage.convertFormat(texture.properties.getProperty("Format").valueName);
             Texture.MipMap mipmap = texture.getTopMipmap();
-            PngBitmapEncoder image = DDSImage.ToPng(texture.getTopImageData(), format, mipmap.width, mipmap.height);
+            byte[] data = texture.getTopImageData();
+            if (data == null)
+            {
+                MessageBox.Show("Failed to extract to PNG file. Broken game files!");
+                return;
+            }
+            PngBitmapEncoder image = DDSImage.ToPng(data, format, mipmap.width, mipmap.height);
             if (File.Exists(outputFile))
                 File.Delete(outputFile);
             using (FileStream fs = new FileStream(outputFile, FileMode.CreateNew, FileAccess.Write))

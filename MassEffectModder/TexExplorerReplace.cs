@@ -132,6 +132,7 @@ namespace MassEffectModder
                     }
                 }
 
+                bool skip = false;
                 // reuse lower mipmaps from game data which not exist in source image
                 for (int t = 0; t < texture.mipMapsList.Count; t++)
                 {
@@ -140,11 +141,20 @@ namespace MassEffectModder
                     {
                         if (!image.mipMaps.Exists(m => m.origWidth == texture.mipMapsList[t].width && m.origHeight == texture.mipMapsList[t].height))
                         {
-                            DDSImage.MipMap mipmap = new DDSImage.MipMap(texture.getMipMapData(texture.mipMapsList[t]), ddsFormat, texture.mipMapsList[t].width, texture.mipMapsList[t].height);
+                            byte[] data = texture.getMipMapData(texture.mipMapsList[t]);
+                            if (data == null)
+                            {
+                                errors += "Error in game data: " + nodeTexture.path + ", skipping texture..." + Environment.NewLine;
+                                skip = true;
+                                break;
+                            }
+                            DDSImage.MipMap mipmap = new DDSImage.MipMap(data, ddsFormat, texture.mipMapsList[t].width, texture.mipMapsList[t].height);
                             image.mipMaps.Add(mipmap);
                         }
                     }
                 }
+                if (skip)
+                    break;
 
                 package.DisposeCache();
 

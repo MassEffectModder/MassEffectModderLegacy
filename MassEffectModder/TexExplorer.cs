@@ -275,12 +275,15 @@ namespace MassEffectModder
                     Package package = cachePackageMgr.OpenPackage(GameData.GamePath + nodeTexture.path);
                     Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
                     byte[] textureData = texture.getTopImageData();
-                    int width = texture.getTopMipmap().width;
-                    int height = texture.getTopMipmap().height;
-                    DDSFormat format = DDSImage.convertFormat(texture.properties.getProperty("Format").valueName);
-                    pictureBoxPreview.Image = DDSImage.ToBitmap(textureData, format, width, height);
-                    pictureBoxPreview.Show();
-                    richTextBoxInfo.Hide();
+                    if (textureData != null)
+                    {
+                        int width = texture.getTopMipmap().width;
+                        int height = texture.getTopMipmap().height;
+                        DDSFormat format = DDSImage.convertFormat(texture.properties.getProperty("Format").valueName);
+                        pictureBoxPreview.Image = DDSImage.ToBitmap(textureData, format, width, height);
+                        pictureBoxPreview.Show();
+                        richTextBoxInfo.Hide();
+                    }
                 }
                 else
                 {
