@@ -489,10 +489,10 @@ namespace MassEffectModder
                 modFile.Title = "Please select Mod file";
                 modFile.Filter = "MOD file | *.mem";
                 modFile.Multiselect = true;
-                modFile.InitialDirectory = gameData.lastLoadMODPath;
+                modFile.InitialDirectory = GameData.lastLoadMODPath;
                 if (modFile.ShowDialog() != DialogResult.OK)
                     return;
-                gameData.lastLoadMODPath = Path.GetDirectoryName(modFile.FileNames[0]);
+                GameData.lastLoadMODPath = Path.GetDirectoryName(modFile.FileNames[0]);
 
                 EnableMenuOptions(false);
 
@@ -637,10 +637,10 @@ namespace MassEffectModder
 
             using (FolderBrowserDialog modFile = new FolderBrowserDialog())
             {
-                modFile.SelectedPath = gameData.lastExtractMODPath;
+                modFile.SelectedPath = GameData.lastExtractMODPath;
                 if (modFile.ShowDialog() == DialogResult.OK)
                 {
-                    gameData.lastExtractMODPath = modFile.SelectedPath;
+                    GameData.lastExtractMODPath = modFile.SelectedPath;
                     long diskFreeSpace = Misc.getDiskFreeSpace(modFile.SelectedPath);
                     long diskUsage = 0;
                     foreach (ListViewItem item in listViewMods.SelectedItems)

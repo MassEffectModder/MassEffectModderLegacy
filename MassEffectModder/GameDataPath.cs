@@ -32,7 +32,7 @@ namespace MassEffectModder
     {
         static private string _path = null;
         static public MeType gameType;
-        private ConfIni _configIni;
+        static private ConfIni _configIni;
         static public List<string> packageFiles;
         static public List<string> tfcFiles;
 
@@ -268,7 +268,7 @@ namespace MassEffectModder
             return true;
         }
 
-        public string lastLoadMODPath
+        static public string lastLoadMODPath
         {
             get
             {
@@ -304,7 +304,7 @@ namespace MassEffectModder
             }
         }
 
-        public string lastExtractMODPath
+        static public string lastExtractMODPath
         {
             get
             {

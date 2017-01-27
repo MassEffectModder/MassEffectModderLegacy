@@ -442,7 +442,7 @@ namespace MassEffectModder
                         }
                         catch
                         {
-                            throw new Exception("Problem with access to TFC file: " + filename);
+                            throw new Exception("Problem with access to file: " + filename);
                         }
                         break;
                     }

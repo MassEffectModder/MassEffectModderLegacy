@@ -38,7 +38,7 @@ namespace MassEffectModder
             public uint crc;
         }
 
-        public void removeMipMaps(List<FoundTexture> textures, CachePackageMgr cachePackageMgr, MainWindow mainWindow, Installer installer, bool forceZlib = false)
+        public void removeMipMaps(int phase, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, MainWindow mainWindow, Installer installer, bool forceZlib = false)
         {
             for (int i = 0; i < GameData.packageFiles.Count; i++)
             {
@@ -74,34 +74,34 @@ namespace MassEffectModder
                             texture.properties.setIntValue("SizeY", texture.mipMapsList.First().height);
                             texture.properties.setIntValue("MipTailBaseIdx", texture.mipMapsList.Count() - 1);
 
-                            if (GameData.gameType == MeType.ME1_TYPE && package.compressed)
+                            if (GameData.gameType == MeType.ME1_TYPE)
                             {
                                 if (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extLZO) ||
                                     texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extZlib) ||
                                     texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extUnc))
                                 {
-                                    string textureName = package.exportsTable[l].objectName;
-                                    FoundTexture foundTexName;
-                                    List<FoundTexture> foundList = textures.FindAll(s => s.name == textureName && s.packageName == texture.packageName);
-                                    if (foundList.Count > 1)
+                                    if (phase == 1)
+                                        continue;
+
+                                    int found = -1;
+                                    FoundTexture foundTexName = new FoundTexture();
+                                    string pkgName = texture.packageName.ToLower();
+                                    for (int k = 0; k < textures.Count; k++)
                                     {
-                                        foundTexName = new FoundTexture();
-                                        for (int t = 0; t < foundList.Count; t++)
+                                        for (int t = 0; t < textures[k].list.Count; t++)
                                         {
-                                            if (foundList[t].list.Exists(s => s.exportID == l))
+                                            if (Path.GetFileNameWithoutExtension(textures[k].list[t].path).ToLower() == pkgName)
                                             {
-                                                foundTexName = foundList[t];
+                                                foundTexName = textures[k];
+                                                found = t;
                                                 break;
                                             }
                                         }
-                                        if (foundTexName.crc == 0)
-                                            throw new Exception();
                                     }
-                                    else
-                                    {
-                                        foundTexName = foundList[0];
-                                    }
-                                    Package refPkg = new Package(GameData.GamePath + foundTexName.list[0].path, true);
+                                    if (found == -1)
+                                        throw new Exception();
+
+                                    Package refPkg = new Package(GameData.GamePath + foundTexName.list[found].path, true);
                                     int refExportId = foundTexName.list[0].exportID;
                                     byte[] refData = refPkg.getExportData(refExportId);
                                     refPkg.DisposeCache();
@@ -601,12 +601,12 @@ namespace MassEffectModder
             EnableMenuOptions(false);
 
             _mainWindow.GetPackages(gameData);
-            if (_gameSelected == MeType.ME1_TYPE)
-                treeScan.sortPackagesME1(_mainWindow, null);
 
             Misc.startTimer();
             MipMaps mipmaps = new MipMaps();
-            mipmaps.removeMipMaps(_textures, cachePackageMgr, _mainWindow, null);
+            mipmaps.removeMipMaps(1, _textures, cachePackageMgr, _mainWindow, null);
+            if (GameData.gameType == MeType.ME1_TYPE)
+                mipmaps.removeMipMaps(2, _textures, cachePackageMgr, _mainWindow, null);
             var time = Misc.stopTimer();
 
             EnableMenuOptions(true);

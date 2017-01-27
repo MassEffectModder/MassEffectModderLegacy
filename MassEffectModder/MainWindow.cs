@@ -633,5 +633,62 @@ namespace MassEffectModder
             MessageBox.Show("Game configuration file at " + path + " updated.");
             enableGameDataMenu(true);
         }
+
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog modFile = new OpenFileDialog())
+            {
+                modFile.Title = "Please select Mod file";
+                modFile.Filter = "MOD file | *.mem";
+                modFile.Multiselect = true;
+                modFile.InitialDirectory = GameData.lastLoadMODPath;
+                if (modFile.ShowDialog() != DialogResult.OK)
+                    return;
+                GameData.lastLoadMODPath = Path.GetDirectoryName(modFile.FileNames[0]);
+
+                using (FolderBrowserDialog modDir = new FolderBrowserDialog())
+                {
+                    modDir.SelectedPath = GameData.lastExtractMODPath;
+                    if (modDir.ShowDialog() != DialogResult.OK)
+                        return;
+                    GameData.lastExtractMODPath = modDir.SelectedPath;
+
+                    enableGameDataMenu(false);
+
+                    string errors = "";
+                    string[] files = modFile.FileNames;
+                    foreach (string file in files)
+                    {
+                        long diskFreeSpace = Misc.getDiskFreeSpace(modDir.SelectedPath);
+                        long diskUsage = 0;
+                        foreach (string item in files)
+                        {
+                            diskUsage += new FileInfo(item).Length;
+                        }
+                        diskUsage = (long)(diskUsage * 2.5);
+                        if (diskUsage < diskFreeSpace)
+                        {
+                            Misc.startTimer();
+                            foreach (string item in files)
+                            {
+                                string outDir = Path.Combine(modDir.SelectedPath, Path.GetFileNameWithoutExtension(item));
+                                Directory.CreateDirectory(outDir);
+                                errors += new MipMaps().extractTextureMod(item, outDir, null, null, null);
+                            }
+                            var time = Misc.stopTimer();
+                            if (errors != "")
+                            {
+                                MessageBox.Show("WARNING: Some errors have occured!");
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("You have not enough disk space remaining. You need about " + Misc.getBytesFormat(diskUsage) + " free.");
+                        }
+                    }
+                }
+            }
+            enableGameDataMenu(false);
+        }
     }
 }

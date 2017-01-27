@@ -73,7 +73,8 @@ namespace MassEffectModder
 
         public string replaceTexture(DDSImage image, List<MatchedTexture> list, CachePackageMgr cachePackageMgr, string textureName)
         {
-            Texture firstTexture = null, arcTexture = null, cprTexture = null;
+            List<Texture> masterTextures = new List<Texture>();
+            Texture arcTexture = null, cprTexture = null;
             string errors = "";
 
             for (int n = 0; n < list.Count; n++)
@@ -84,6 +85,16 @@ namespace MassEffectModder
                 while (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty))
                 {
                     texture.mipMapsList.Remove(texture.mipMapsList.First(s => s.storageType == Texture.StorageTypes.empty));
+                }
+                bool master = true;
+                if (GameData.gameType == MeType.ME1_TYPE)
+                {
+                    if (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extLZO) ||
+                        texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extZlib) ||
+                        texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extUnc))
+                    {
+                        master = false;
+                    }
                 }
 
                 if (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1)
@@ -203,7 +214,7 @@ namespace MassEffectModder
                     else
                     {
                         mipmap.storageType = texture.getTopMipmap().storageType;
-                        if (GameData.gameType == MeType.ME1_TYPE && n > 0)
+                        if (GameData.gameType == MeType.ME1_TYPE && master == false)
                         {
                             if (mipmap.storageType == Texture.StorageTypes.pccUnc ||
                                 mipmap.storageType == Texture.StorageTypes.pccLZO ||
@@ -251,10 +262,10 @@ namespace MassEffectModder
                         if (mipmap.storageType == Texture.StorageTypes.pccLZO ||
                             mipmap.storageType == Texture.StorageTypes.pccZlib)
                         {
-                            if (n == 0)
+                            if (master)
                                 mipmap.newData = texture.compressTexture(image.mipMaps[m].data, mipmap.storageType);
                             else
-                                mipmap.newData = firstTexture.mipMapsList[m].newData;
+                                mipmap.newData = masterTextures.Find(s => s.packageName == texture.packageName).mipMapsList[m].newData;
                             mipmap.compressedSize = mipmap.newData.Length;
                         }
                         if (mipmap.storageType == Texture.StorageTypes.pccUnc)
@@ -263,10 +274,10 @@ namespace MassEffectModder
                             mipmap.newData = image.mipMaps[m].data;
                         }
                         if ((mipmap.storageType == Texture.StorageTypes.extLZO ||
-                            mipmap.storageType == Texture.StorageTypes.extZlib) && n > 0)
+                            mipmap.storageType == Texture.StorageTypes.extZlib) && master == false)
                         {
-                            mipmap.compressedSize = firstTexture.mipMapsList[m].compressedSize;
-                            mipmap.dataOffset = firstTexture.mipMapsList[m].dataOffset;
+                            mipmap.compressedSize = masterTextures.Find(s => s.packageName == texture.packageName).mipMapsList[m].compressedSize;
+                            mipmap.dataOffset = masterTextures.Find(s => s.packageName == texture.packageName).mipMapsList[m].dataOffset;
                         }
                     }
                     else
@@ -378,8 +389,8 @@ namespace MassEffectModder
 
                 if (GameData.gameType == MeType.ME1_TYPE)
                 {
-                    if (n == 0)
-                        firstTexture = texture;
+                    if (master)
+                        masterTextures.Add(texture);
                 }
                 else
                 {
@@ -390,7 +401,8 @@ namespace MassEffectModder
                 }
                 package = null;
             }
-            firstTexture = arcTexture = cprTexture = null;
+            masterTextures = null;
+            arcTexture = cprTexture = null;
 
             return errors;
         }

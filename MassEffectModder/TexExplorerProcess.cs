@@ -91,7 +91,7 @@ namespace MassEffectModder
                     if (version == TexExplorer.TextureModVersion)
                         fs.JumpTo(fs.ReadInt64());
                     gameType = fs.ReadUInt32();
-                    if ((MeType)gameType != GameData.gameType)
+                    if (textures != null && (MeType)gameType != GameData.gameType)
                     {
                         errors += "File " + filenameMod + " is not a MEM mod valid for this game" + Environment.NewLine;
                         if (previewIndex == -1 && !extract && !replace)
@@ -158,10 +158,7 @@ namespace MassEffectModder
                         if (version == TexExplorer.TextureModVersion1)
                             fs.Skip(size);
                         FoundTexture foundTexture;
-                        if (GameData.gameType == MeType.ME1_TYPE)
-                            foundTexture = textures.Find(s => s.crc == crc && s.name == name);
-                        else
-                            foundTexture = textures.Find(s => s.crc == crc);
+                        foundTexture = textures.Find(s => s.crc == crc);
                         if (foundTexture.crc != 0)
                         {
                             ListViewItem item = new ListViewItem(foundTexture.name + " (" + foundTexture.packageName + ")");
@@ -208,10 +205,7 @@ namespace MassEffectModder
                     else
                     {
                         FoundTexture foundTexture;
-                        if (GameData.gameType == MeType.ME1_TYPE)
-                            foundTexture = textures.Find(s => s.crc == crc && s.name == name);
-                        else
-                            foundTexture = textures.Find(s => s.crc == crc);
+                        foundTexture = textures.Find(s => s.crc == crc);
                         if (foundTexture.crc != 0)
                         {
                             if (replace)
@@ -283,9 +277,7 @@ namespace MassEffectModder
                     idx = filename.IndexOf(crcStr);
                     string name = filename.Substring(0, idx - "_0x".Length);
 
-                    string textureName = "";
                     List<FoundTexture> foundCrcList = textures.FindAll(s => s.crc == crc);
-                    FoundTexture foundTexture = textures.Find(s => s.crc == crc && s.name.ToLower() == name);
                     if (foundCrcList.Count == 0)
                     {
                         errors += "Texture skipped. Texture " + Path.GetFileName(file) + " is not present in your game setup" + Environment.NewLine;
@@ -293,70 +285,57 @@ namespace MassEffectModder
                     }
 
                     int savedCount = count;
-                    for (int l = 0; l < foundCrcList.Count; l++)
+                    using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
                     {
-                        if (foundTexture.crc == crc)
+                        byte[] src = fs.ReadToBuffer((int)fs.Length);
+                        DDSImage image = new DDSImage(new MemoryStream(src));
+                        if (!image.checkExistAllMipmaps())
                         {
-                            if (l > 0)
-                                break;
-                            textureName = foundTexture.name;
+                            errors += "Error in texture: " + Path.GetFileName(file) + " This texture has not all the required mipmaps, skipping texture..." + Environment.NewLine;
+                            continue;
                         }
-                        else
+
+                        Package pkg = new Package(GameData.GamePath + foundCrcList[0].list[0].path);
+                        Texture texture = new Texture(pkg, foundCrcList[0].list[0].exportID, pkg.getExportData(foundCrcList[0].list[0].exportID));
+
+                        if (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1)
                         {
-                            textureName = foundCrcList[l].name;
+                            errors += "Error in texture: " + Path.GetFileName(file) + " This texture must have mipmaps, skipping texture..." + Environment.NewLine;
+                            continue;
                         }
-                        using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
+
+                        string fmt = texture.properties.getProperty("Format").valueName;
+                        DDSFormat ddsFormat = DDSImage.convertFormat(fmt);
+                        if (image.ddsFormat != ddsFormat)
                         {
-                            byte[] src = fs.ReadToBuffer((int)fs.Length);
-                            DDSImage image = new DDSImage(new MemoryStream(src));
-                            if (!image.checkExistAllMipmaps())
-                            {
-                                errors += "Error in texture: " + Path.GetFileName(file) + " This texture has not all the required mipmaps, skipping texture..." + Environment.NewLine;
-                                continue;
-                            }
-
-                            Package pkg = new Package(GameData.GamePath + foundCrcList[l].list[0].path);
-                            Texture texture = new Texture(pkg, foundCrcList[l].list[0].exportID, pkg.getExportData(foundCrcList[l].list[0].exportID));
-
-                            if (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1)
-                            {
-                                errors += "Error in texture: " + Path.GetFileName(file) + " This texture must have mipmaps, skipping texture..." + Environment.NewLine;
-                                continue;
-                            }
-
-                            string fmt = texture.properties.getProperty("Format").valueName;
-                            DDSFormat ddsFormat = DDSImage.convertFormat(fmt);
-                            if (image.ddsFormat != ddsFormat)
-                            {
-                                errors += "Error in texture: " + Path.GetFileName(file) + " This texture has wrong texture format, should be: " + ddsFormat + ", skipping texture..." + Environment.NewLine;
-                                continue;
-                            }
-
-                            if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
-                                texture.mipMapsList[0].width / texture.mipMapsList[0].height)
-                            {
-                                errors += "Error in texture: " + Path.GetFileName(file) + " This texture has wrong aspect ratio, skipping texture..." + Environment.NewLine;
-                                continue;
-                            }
-
-                            if (mainWindow != null)
-                                mainWindow.updateStatusLabel2("Texture " + (n + 1) + " of " + files.Count() + ", Name: " + textureName);
-
-                            Stream dst = compressData(src);
-                            dst.SeekBegin();
-
-                            FileMod fileMod = new FileMod();
-                            fileMod.tag = FileTextureTag;
-                            fileMod.name = Path.GetFileName(file);
-                            fileMod.offset = outFs.Position;
-                            fileMod.size = dst.Length;
-                            count++;
-                            modFiles.Add(fileMod);
-
-                            outFs.WriteStringASCIINull(textureName);
-                            outFs.WriteUInt32(crc);
-                            outFs.WriteFromStream(dst, dst.Length);
+                            errors += "Error in texture: " + Path.GetFileName(file) + " This texture has wrong texture format, should be: " + ddsFormat + ", skipping texture..." + Environment.NewLine;
+                            continue;
                         }
+
+                        if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
+                            texture.mipMapsList[0].width / texture.mipMapsList[0].height)
+                        {
+                            errors += "Error in texture: " + Path.GetFileName(file) + " This texture has wrong aspect ratio, skipping texture..." + Environment.NewLine;
+                            continue;
+                        }
+
+                        if (mainWindow != null)
+                            mainWindow.updateStatusLabel2("Texture " + (n + 1) + " of " + files.Count() + ", Name: " + foundCrcList[0].name);
+
+                        Stream dst = compressData(src);
+                        dst.SeekBegin();
+
+                        FileMod fileMod = new FileMod();
+                        fileMod.tag = FileTextureTag;
+                        fileMod.name = Path.GetFileName(file);
+                        fileMod.offset = outFs.Position;
+                        fileMod.size = dst.Length;
+                        count++;
+                        modFiles.Add(fileMod);
+
+                        outFs.WriteStringASCIINull(foundCrcList[0].name);
+                        outFs.WriteUInt32(crc);
+                        outFs.WriteFromStream(dst, dst.Length);
                     }
                     if (count == savedCount)
                     {

@@ -526,7 +526,9 @@ namespace MassEffectModder
 
 
             updateStatusMipMaps("In progress...");
-            mipMaps.removeMipMaps(textures, cachePackageMgr, null, this, checkBoxPreEnableRepack.Checked);
+            mipMaps.removeMipMaps(1, textures, cachePackageMgr, null, this, checkBoxPreEnableRepack.Checked);
+            if (GameData.gameType == MeType.ME1_TYPE)
+                mipMaps.removeMipMaps(2, textures, cachePackageMgr, null, this, checkBoxPreEnableRepack.Checked);
             checkBoxMipMaps.Checked = true;
             updateStatusMipMaps("");
 
