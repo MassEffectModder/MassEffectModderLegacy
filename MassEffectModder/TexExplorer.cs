@@ -656,9 +656,9 @@ namespace MassEffectModder
                         {
                             string outDir = Path.Combine(modFile.SelectedPath, Path.GetFileNameWithoutExtension(item.Name));
                             Directory.CreateDirectory(outDir);
-                            richTextBoxInfo.Text += mipMaps.extractTextureMod(item.Name, outDir, _textures, cachePackageMgr, this);
                             _mainWindow.updateStatusLabel("MOD: " + item.Text + "extracting...");
                             _mainWindow.updateStatusLabel2("");
+                            richTextBoxInfo.Text += mipMaps.extractTextureMod(item.Name, outDir, _textures, cachePackageMgr, this);
                         }
                         var time = Misc.stopTimer();
                         _mainWindow.updateStatusLabel("MODs extracted. Process total time: " + Misc.getTimerFormat(time));

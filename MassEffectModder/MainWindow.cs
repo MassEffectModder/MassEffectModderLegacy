@@ -634,24 +634,21 @@ namespace MassEffectModder
             enableGameDataMenu(true);
         }
 
-        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+
+        private void toolStripExtractMEMMenuItem_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog modFile = new OpenFileDialog())
             {
                 modFile.Title = "Please select Mod file";
                 modFile.Filter = "MOD file | *.mem";
                 modFile.Multiselect = true;
-                modFile.InitialDirectory = GameData.lastLoadMODPath;
                 if (modFile.ShowDialog() != DialogResult.OK)
                     return;
-                GameData.lastLoadMODPath = Path.GetDirectoryName(modFile.FileNames[0]);
 
                 using (FolderBrowserDialog modDir = new FolderBrowserDialog())
                 {
-                    modDir.SelectedPath = GameData.lastExtractMODPath;
                     if (modDir.ShowDialog() != DialogResult.OK)
                         return;
-                    GameData.lastExtractMODPath = modDir.SelectedPath;
 
                     enableGameDataMenu(false);
 
@@ -673,9 +670,13 @@ namespace MassEffectModder
                             {
                                 string outDir = Path.Combine(modDir.SelectedPath, Path.GetFileNameWithoutExtension(item));
                                 Directory.CreateDirectory(outDir);
+                                updateStatusLabel("MOD: " + item + "extracting...");
+                                updateStatusLabel2("");
                                 errors += new MipMaps().extractTextureMod(item, outDir, null, null, null);
                             }
                             var time = Misc.stopTimer();
+                            updateStatusLabel("MODs extracted. Process total time: " + Misc.getTimerFormat(time));
+                            updateStatusLabel2("");
                             if (errors != "")
                             {
                                 MessageBox.Show("WARNING: Some errors have occured!");

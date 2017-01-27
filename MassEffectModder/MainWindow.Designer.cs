@@ -94,6 +94,7 @@ namespace MassEffectModder
             this.toolStripCheckFilesME3MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
             this.modME3ExportDataToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripExtractMEMMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.wikiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.githubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -103,7 +104,6 @@ namespace MassEffectModder
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.statusStrip2 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuGame.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.statusStrip2.SuspendLayout();
@@ -115,7 +115,7 @@ namespace MassEffectModder
             this.toolStripMenuME1,
             this.toolStripMenuME2,
             this.toolStripMenuME3,
-            this.toolStripMenuItem1,
+            this.toolStripExtractMEMMenuItem,
             this.helpToolStripMenuItem});
             this.menuGame.Location = new System.Drawing.Point(0, 0);
             this.menuGame.Name = "menuGame";
@@ -447,6 +447,13 @@ namespace MassEffectModder
             this.modME3ExportDataToolStripMenuItem1.Text = "Load Data Mod";
             this.modME3ExportDataToolStripMenuItem1.Click += new System.EventHandler(this.modME3ExportDataToolStripMenuItem1_Click);
             // 
+            // toolStripExtractMEMMenuItem
+            // 
+            this.toolStripExtractMEMMenuItem.Name = "toolStripExtractMEMMenuItem";
+            this.toolStripExtractMEMMenuItem.Size = new System.Drawing.Size(109, 20);
+            this.toolStripExtractMEMMenuItem.Text = "Extract MEM files";
+            this.toolStripExtractMEMMenuItem.Click += new System.EventHandler(this.toolStripExtractMEMMenuItem_Click);
+            // 
             // helpToolStripMenuItem
             // 
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -461,28 +468,28 @@ namespace MassEffectModder
             // wikiToolStripMenuItem
             // 
             this.wikiToolStripMenuItem.Name = "wikiToolStripMenuItem";
-            this.wikiToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.wikiToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
             this.wikiToolStripMenuItem.Text = "Wiki";
             this.wikiToolStripMenuItem.Click += new System.EventHandler(this.wikiToolStripMenuItem_Click);
             // 
             // githubToolStripMenuItem
             // 
             this.githubToolStripMenuItem.Name = "githubToolStripMenuItem";
-            this.githubToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.githubToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
             this.githubToolStripMenuItem.Text = "Github";
             this.githubToolStripMenuItem.Click += new System.EventHandler(this.githubToolStripMenuItem_Click);
             // 
             // releasesToolStripMenuItem
             // 
             this.releasesToolStripMenuItem.Name = "releasesToolStripMenuItem";
-            this.releasesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.releasesToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
             this.releasesToolStripMenuItem.Text = "Releases";
             this.releasesToolStripMenuItem.Click += new System.EventHandler(this.releasesToolStripMenuItem_Click);
             // 
             // reportIssueToolStripMenuItem
             // 
             this.reportIssueToolStripMenuItem.Name = "reportIssueToolStripMenuItem";
-            this.reportIssueToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.reportIssueToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
             this.reportIssueToolStripMenuItem.Text = "Report Issue";
             this.reportIssueToolStripMenuItem.Click += new System.EventHandler(this.reportIssueToolStripMenuItem_Click);
             // 
@@ -514,13 +521,6 @@ namespace MassEffectModder
             // 
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
             this.toolStripStatusLabel2.Size = new System.Drawing.Size(0, 17);
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(109, 20);
-            this.toolStripMenuItem1.Text = "Extract MEM files";
-            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
             // 
             // MainWindow
             // 
@@ -602,7 +602,7 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripMenuItem toolStripUpdateGfxME1MenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripUpdateGfxME2MenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripUpdateGfxME3MenuItem;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem toolStripExtractMEMMenuItem;
     }
 }
 
