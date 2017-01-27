@@ -138,7 +138,7 @@ namespace MassEffectModder
                 if (modified)
                 {
                     if (package.compressed && package.compressionType != Package.CompressionType.Zlib)
-                        package.SaveToFile(true);
+                        package.SaveToFile(forceZlib);
                     else
                         package.SaveToFile();
                 }
