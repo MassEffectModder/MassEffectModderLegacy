@@ -94,6 +94,11 @@ namespace MassEffectModder
                         texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extUnc))
                     {
                         master = false;
+                        if (!masterTextures.Exists(s => s.packageName == texture.packageName))
+                        {
+                            errors += "Error in texture: " + textureName + " Broken game file: " + nodeTexture.path + ", skipping texture..." + Environment.NewLine;
+                            continue;
+                        }
                     }
                 }
 
@@ -154,7 +159,7 @@ namespace MassEffectModder
                     }
                 }
                 if (skip)
-                    break;
+                    continue;
 
                 package.DisposeCache();
 
