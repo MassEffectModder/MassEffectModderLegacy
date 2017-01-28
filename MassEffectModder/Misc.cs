@@ -259,7 +259,7 @@ namespace MassEffectModder
             public byte[] md5;
         }
 
-        static MD5FileEntry[] ME1BadCcontrollerMOD = new MD5FileEntry[]
+        static MD5FileEntry[] ME1BadControllerMOD = new MD5FileEntry[]
         {
             new MD5FileEntry
             {
@@ -295,6 +295,30 @@ namespace MassEffectModder
             {
                 path = @"\BioGame\CookedPC\Startup_int.upk",
                 md5 = new byte[] { 0xB5, 0x4E, 0x98, 0x0F, 0x58, 0x4F, 0xD2, 0x0C, 0xBA, 0x63, 0xAB, 0x02, 0x90, 0x9D, 0xB7, 0x3E, },
+            },
+        };
+
+        static MD5FileEntry[] ME1BadFasterElevatorsMOD = new MD5FileEntry[]
+        {
+            new MD5FileEntry
+            {
+                path = @"\BioGame\CookedPC\Maps\ICE\PLC\BIOA_ICE60_11_PLC.SFM",
+                md5 = new byte[] { 0x2e, 0xab, 0xce, 0x34, 0x53, 0x57, 0xd6, 0xb8, 0x01, 0x4e, 0xf3, 0x37, 0x54, 0xc4, 0xf0, 0x65, },
+            },
+            new MD5FileEntry
+            {
+                path = @"\BioGame\CookedPC\Maps\JUG\PLC\BIOA_JUG80_00_PLC.SFM",
+                md5 = new byte[] { 0x35, 0x3e, 0x7d, 0x87, 0x7e, 0x76, 0x9d, 0x5d, 0x77, 0xdb, 0x09, 0x97, 0xcc, 0xfa, 0xf5, 0x42, },
+            },
+            new MD5FileEntry
+            {
+                path = @"\BioGame\CookedPC\Maps\LAV\PLC\BIOA_LAV70_00_PLC.SFM",
+                md5 = new byte[] { 0x4c, 0x56, 0x85, 0x01, 0x3e, 0xae, 0xd6, 0x4a, 0xf1, 0x23, 0x67, 0xf2, 0x7f, 0x35, 0x94, 0x90, },
+            },
+            new MD5FileEntry
+            {
+                path = @"\BioGame\CookedPC\Maps\STA\DSG\BIOA_STA70_01A_DSG.SFM",
+                md5 = new byte[] { 0x18, 0x52, 0x38, 0x58, 0xd3, 0x18, 0x3a, 0x2e, 0x04, 0x11, 0x45, 0x06, 0xeb, 0x25, 0xcb, 0xdb, },
             },
         };
 
@@ -496,10 +520,10 @@ namespace MassEffectModder
             {
                 //using (FileStream fs = new FileStream("MD5EntriesME" + (int)gameType + ".cs", FileMode.Create, FileAccess.Write))
                 {
-                    for (int l = 0; l < ME1BadCcontrollerMOD.Count(); l++)
+                    for (int l = 0; l < ME1BadControllerMOD.Count(); l++)
                     {
-                        byte[] md5 = calculateMD5(GameData.GamePath + ME1BadCcontrollerMOD[l].path);
-                        if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, ME1BadCcontrollerMOD[l].md5))
+                        byte[] md5 = calculateMD5(GameData.GamePath + ME1BadControllerMOD[l].path);
+                        if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, ME1BadControllerMOD[l].md5))
                         {
                             return true;
                         }
@@ -509,6 +533,14 @@ namespace MassEffectModder
                             fs.WriteStringASCII(string.Format("0x{0:X2}, ", md5[i]));
                         }
                         fs.WriteStringASCII("},\n},\n");*/
+                    }
+                    for (int l = 0; l < ME1BadFasterElevatorsMOD.Count(); l++)
+                    {
+                        byte[] md5 = calculateMD5(GameData.GamePath + ME1BadFasterElevatorsMOD[l].path);
+                        if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, ME1BadFasterElevatorsMOD[l].md5))
+                        {
+                            return true;
+                        }
                     }
                 }
             }
@@ -575,7 +607,7 @@ namespace MassEffectModder
 
             if (mainWindow != null && detectBrokenMod(gameType))
             {
-                errors += Environment.NewLine + "------- Detected ME1 Controller mod! MEM will not work properly due broken content in mod --------" + Environment.NewLine + Environment.NewLine;
+                errors += Environment.NewLine + "------- Detected ME1 Controller or/and Faster Elevators mod! MEM will not work properly due broken content in mod --------" + Environment.NewLine + Environment.NewLine;
             }
 
             //using (FileStream fs = new FileStream("MD5EntriesME" + (int)gameType + ".cs", FileMode.Create, FileAccess.Write))

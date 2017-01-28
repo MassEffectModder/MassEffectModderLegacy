@@ -142,7 +142,7 @@ namespace MassEffectModder
             {
                 if (mainWindow != null)
                 {
-                    MessageBox.Show("Detected ME1 Controller mod!\nMEM will not work properly due broken content in mod.");
+                    MessageBox.Show("Detected ME1 Controller or/and Faster Elevators mod!\nMEM will not work properly due broken content in mod.");
                 }
                 return "";
             }
