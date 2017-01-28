@@ -53,6 +53,7 @@ namespace MassEffectModder
             toolStripMenuME1.Enabled = enable;
             toolStripMenuME2.Enabled = enable;
             toolStripMenuME3.Enabled = enable;
+            toolStripExtractMEMMenuItem.Enabled = enable;
         }
 
         public void updateStatusLabel(string text)
