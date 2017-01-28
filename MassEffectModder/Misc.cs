@@ -492,21 +492,24 @@ namespace MassEffectModder
                 sfarFiles.Sort();
 
 
-            //using (FileStream fs = new FileStream("MD5EntriesME" + (int)gameType + ".cs", FileMode.Create, FileAccess.Write))
+            if (GameData.gameType == MeType.ME1_TYPE)
             {
-                for (int l = 0; l < ME1BadCcontrollerMOD.Count(); l++)
+                //using (FileStream fs = new FileStream("MD5EntriesME" + (int)gameType + ".cs", FileMode.Create, FileAccess.Write))
                 {
-                    byte[] md5 = calculateMD5(GameData.GamePath + ME1BadCcontrollerMOD[l].path);
-                    if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, ME1BadCcontrollerMOD[l].md5))
+                    for (int l = 0; l < ME1BadCcontrollerMOD.Count(); l++)
                     {
-                        return true;
+                        byte[] md5 = calculateMD5(GameData.GamePath + ME1BadCcontrollerMOD[l].path);
+                        if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, ME1BadCcontrollerMOD[l].md5))
+                        {
+                            return true;
+                        }
+                        /*fs.WriteStringASCII(",\nmd5 = new byte[] { ");
+                        for (int i = 0; i < md5.Length; i++)
+                        {
+                            fs.WriteStringASCII(string.Format("0x{0:X2}, ", md5[i]));
+                        }
+                        fs.WriteStringASCII("},\n},\n");*/
                     }
-                    /*fs.WriteStringASCII(",\nmd5 = new byte[] { ");
-                    for (int i = 0; i < md5.Length; i++)
-                    {
-                        fs.WriteStringASCII(string.Format("0x{0:X2}, ", md5[i]));
-                    }
-                    fs.WriteStringASCII("},\n},\n");*/
                 }
             }
             return false;
