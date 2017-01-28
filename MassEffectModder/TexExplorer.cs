@@ -214,6 +214,8 @@ namespace MassEffectModder
             if (GameData.packageFiles != null)
                 GameData.packageFiles.Clear();
             cachePackageMgr.CloseAllWithoutSave();
+            _mainWindow.updateStatusLabel("");
+            _mainWindow.updateStatusLabel2("");
             _mainWindow.enableGameDataMenu(true);
         }
 
