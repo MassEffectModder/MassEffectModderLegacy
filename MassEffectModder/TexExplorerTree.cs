@@ -137,6 +137,16 @@ namespace MassEffectModder
 
             if (File.Exists(filename))
                 File.Delete(filename);
+
+            if (Misc.detectBrokenMod(GameData.gameType))
+            {
+                if (mainWindow != null)
+                {
+                    MessageBox.Show("Detected ME1 Controller mod!\nMEM will not work properly due broken content in mod.");
+                }
+                return "";
+            }
+
             if (MipMaps.checkGameDataModded())
             {
                 if (mainWindow != null)

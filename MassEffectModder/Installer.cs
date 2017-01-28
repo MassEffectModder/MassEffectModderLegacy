@@ -321,15 +321,24 @@ namespace MassEffectModder
             labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
             labelPreVanilla.Text = "Checking...";
             Application.DoEvents();
+            if (Misc.detectBrokenMod((MeType)gameId))
+            {
+                labelPreVanilla.Text = "Detected ME1 Controller mod!";
+                labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.Red);
+                labelFinalStatus.Text = "Preliminary check detected issue...";
+                buttonPreInstallCheck.Enabled = true;
+                return;
+            }
+
             errors = Misc.checkGameFiles((MeType)gameId, null, this);
             if (errors != "")
             {
                 using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate))
                 {
                     fs.SeekEnd();
-                    fs.WriteStringASCII("=========================================================\n");
-                    fs.WriteStringASCII("WARNING: looks like the following file(s) are not vanilla\n");
-                    fs.WriteStringASCII("=========================================================\n\n");
+                    fs.WriteStringASCII("=========================================================" + Environment.NewLine);
+                    fs.WriteStringASCII("WARNING: looks like the following file(s) are not vanilla" + Environment.NewLine);
+                    fs.WriteStringASCII("=========================================================" + Environment.NewLine + Environment.NewLine);
                     fs.WriteStringASCII(errors);
                 }
                 Process.Start(filename);

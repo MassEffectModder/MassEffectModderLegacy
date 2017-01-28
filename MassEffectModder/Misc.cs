@@ -259,6 +259,45 @@ namespace MassEffectModder
             public byte[] md5;
         }
 
+        static MD5FileEntry[] ME1BadCcontrollerMOD = new MD5FileEntry[]
+        {
+            new MD5FileEntry
+            {
+                path = @"\BioGame\CookedPC\BIOC_Base.u",
+                md5 = new byte[] { 0xB0, 0xC3, 0x30, 0x9A, 0x1A, 0x24, 0x27, 0xCC, 0x3C, 0xC7, 0xF4, 0xD0, 0xCC, 0x36, 0xE0, 0x85, },
+            },
+            new MD5FileEntry
+            {
+                path = @"\BioGame\CookedPC\BIOC_Materials.u",
+                md5 = new byte[] { 0xE0, 0x05, 0x5B, 0xE6, 0x52, 0x4C, 0xF3, 0x6E, 0xFE, 0xAF, 0x7D, 0xF9, 0x59, 0xFD, 0x4F, 0xDE, },
+            },
+            new MD5FileEntry
+            {
+                path = @"\BioGame\CookedPC\Engine.u",
+                md5 = new byte[] { 0x1C, 0x9F, 0xE4, 0x85, 0x6F, 0xF5, 0x3E, 0xEE, 0xAC, 0x47, 0x64, 0x0D, 0x24, 0xBA, 0xA5, 0xE0, },
+            },
+            new MD5FileEntry
+            {
+                path = @"\BioGame\CookedPC\Startup_int.upk",
+                md5 = new byte[] { 0x77, 0x87, 0xC6, 0x24, 0x48, 0x8C, 0x71, 0x89, 0xF8, 0xFE, 0x3F, 0xF3, 0x03, 0xA6, 0x93, 0x53, },
+            },
+            new MD5FileEntry
+            {
+                path = @"\BioGame\CookedPC\BIOC_Materials.u",
+                md5 = new byte[] { 0x0D, 0x0E, 0x4D, 0x96, 0xAC, 0x8E, 0x86, 0x0E, 0xBE, 0x19, 0x71, 0x97, 0x3E, 0xB5, 0xA8, 0x5A, },
+            },
+            new MD5FileEntry
+            {
+                path = @"\BioGame\CookedPC\Engine.u",
+                md5 = new byte[] { 0x1C, 0x9F, 0xE4, 0x85, 0x6F, 0xF5, 0x3E, 0xEE, 0xAC, 0x47, 0x64, 0x0D, 0x24, 0xBA, 0xA5, 0xE0, },
+            },
+            new MD5FileEntry
+            {
+                path = @"\BioGame\CookedPC\Startup_int.upk",
+                md5 = new byte[] { 0xB5, 0x4E, 0x98, 0x0F, 0x58, 0x4F, 0xD2, 0x0C, 0xBA, 0x63, 0xAB, 0x02, 0x90, 0x9D, 0xB7, 0x3E, },
+            },
+        };
+
         static public void VerifyME1Exe(GameData gameData, bool gui = true)
         {
             if (File.Exists(GameData.GameExePath))
@@ -395,6 +434,84 @@ namespace MassEffectModder
         }
 
 
+        static public bool detectBrokenMod(MeType gameType)
+        {
+            List<string> packageMainFiles = null;
+            List<string> packageDLCFiles = null;
+            List<string> sfarFiles = null;
+            MD5FileEntry[] entries = null;
+
+            if (gameType == MeType.ME1_TYPE)
+            {
+                packageMainFiles = Directory.GetFiles(GameData.MainData, "*.*",
+                SearchOption.AllDirectories).Where(s => s.EndsWith(".upk",
+                    StringComparison.OrdinalIgnoreCase) ||
+                    s.EndsWith(".u", StringComparison.OrdinalIgnoreCase) ||
+                    s.EndsWith(".sfm", StringComparison.OrdinalIgnoreCase)).ToList();
+                if (Directory.Exists(GameData.DLCData))
+                {
+                    packageDLCFiles = Directory.GetFiles(GameData.DLCData, "*.*",
+                    SearchOption.AllDirectories).Where(s => s.EndsWith(".upk",
+                        StringComparison.OrdinalIgnoreCase) ||
+                        s.EndsWith(".u", StringComparison.OrdinalIgnoreCase) ||
+                        s.EndsWith(".sfm", StringComparison.OrdinalIgnoreCase)).ToList();
+                }
+                packageMainFiles.RemoveAll(s => s.Contains("LocalShaderCache-PC-D3D-SM3.upk"));
+                packageMainFiles.RemoveAll(s => s.Contains("RefShaderCache-PC-D3D-SM3.upk"));
+                entries = entriesME1;
+            }
+            else if (gameType == MeType.ME2_TYPE)
+            {
+                packageMainFiles = Directory.GetFiles(GameData.MainData, "*.pcc", SearchOption.AllDirectories).Where(item => item.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase)).ToList();
+                if (Directory.Exists(GameData.DLCData))
+                    packageDLCFiles = Directory.GetFiles(GameData.DLCData, "*.pcc", SearchOption.AllDirectories).Where(item => item.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase)).ToList();
+                entries = entriesME2;
+            }
+            else if (gameType == MeType.ME3_TYPE)
+            {
+                packageMainFiles = Directory.GetFiles(GameData.MainData, "*.pcc", SearchOption.AllDirectories).Where(item => item.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase)).ToList();
+                if (Directory.Exists(GameData.DLCData))
+                {
+                    packageDLCFiles = Directory.GetFiles(GameData.DLCData, "*.pcc", SearchOption.AllDirectories).Where(item => item.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase)).ToList();
+                    sfarFiles = Directory.GetFiles(GameData.DLCData, "Default.sfar", SearchOption.AllDirectories).ToList();
+                    for (int i = 0; i < sfarFiles.Count; i++)
+                    {
+                        if (new FileInfo(sfarFiles[i]).Length <= 32)
+                            sfarFiles.RemoveAt(i--);
+                    }
+                    packageDLCFiles.RemoveAll(s => s.Contains("GuidCache"));
+                }
+                packageMainFiles.RemoveAll(s => s.Contains("GuidCache"));
+                entries = entriesME3;
+            }
+
+            packageMainFiles.Sort();
+            if (packageDLCFiles != null)
+                packageDLCFiles.Sort();
+            if (sfarFiles != null)
+                sfarFiles.Sort();
+
+
+            //using (FileStream fs = new FileStream("MD5EntriesME" + (int)gameType + ".cs", FileMode.Create, FileAccess.Write))
+            {
+                for (int l = 0; l < ME1BadCcontrollerMOD.Count(); l++)
+                {
+                    byte[] md5 = calculateMD5(GameData.GamePath + ME1BadCcontrollerMOD[l].path);
+                    if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, ME1BadCcontrollerMOD[l].md5))
+                    {
+                        return true;
+                    }
+                    /*fs.WriteStringASCII(",\nmd5 = new byte[] { ");
+                    for (int i = 0; i < md5.Length; i++)
+                    {
+                        fs.WriteStringASCII(string.Format("0x{0:X2}, ", md5[i]));
+                    }
+                    fs.WriteStringASCII("},\n},\n");*/
+                }
+            }
+            return false;
+        }
+
         static public string checkGameFiles(MeType gameType, MainWindow mainWindow = null, Installer installer = null)
         {
             string errors = "";
@@ -453,10 +570,14 @@ namespace MassEffectModder
             if (sfarFiles != null)
                 sfarFiles.Sort();
 
+            if (mainWindow != null && detectBrokenMod(gameType))
+            {
+                errors += Environment.NewLine + "------- Detected ME1 Controller mod! MEM will not work properly due broken content in mod --------" + Environment.NewLine + Environment.NewLine;
+            }
+
             //using (FileStream fs = new FileStream("MD5EntriesME" + (int)gameType + ".cs", FileMode.Create, FileAccess.Write))
             {
                 //fs.WriteStringASCII("MD5FileEntry[] entries = new MD5FileEntry[]\n{\n");
-
                 for (int l = 0; l < packageMainFiles.Count; l++)
                 {
                     if (mainWindow != null)

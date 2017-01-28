@@ -558,9 +558,9 @@ namespace MassEffectModder
                 {
                     using (FileStream fs = new FileStream(filename, FileMode.CreateNew))
                     {
-                        fs.WriteStringASCII("=========================================================\n");
-                        fs.WriteStringASCII("WARNING: looks like the following file(s) are not vanilla\n");
-                        fs.WriteStringASCII("=========================================================\n\n");
+                        fs.WriteStringASCII("=========================================================" + Environment.NewLine);
+                        fs.WriteStringASCII("WARNING: looks like the following file(s) are not vanilla" + Environment.NewLine);
+                        fs.WriteStringASCII("=========================================================" + Environment.NewLine + Environment.NewLine);
                         fs.WriteStringASCII(errors);
                     }
                     MessageBox.Show("Finished checking game files.\n\nWARNING: Some errors have occured!");
