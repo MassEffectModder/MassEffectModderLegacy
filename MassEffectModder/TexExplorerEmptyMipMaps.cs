@@ -22,6 +22,7 @@
 using StreamHelpers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -38,8 +39,10 @@ namespace MassEffectModder
             public uint crc;
         }
 
-        public void removeMipMaps(int phase, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, MainWindow mainWindow, Installer installer, bool forceZlib = false)
+        public string removeMipMaps(int phase, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, MainWindow mainWindow, Installer installer, bool forceZlib = false)
         {
+            string errors = "";
+
             for (int i = 0; i < GameData.packageFiles.Count; i++)
             {
                 bool modified = false;
@@ -82,33 +85,41 @@ namespace MassEffectModder
                                 {
                                     if (phase == 1)
                                         continue;
-
-                                    int found = -1;
                                     FoundTexture foundTexName = new FoundTexture();
-                                    string pkgName = texture.packageName.ToLower();
+                                    string pkgName = Path.GetFileNameWithoutExtension(GameData.packageFiles[i]).ToLower();
                                     for (int k = 0; k < textures.Count; k++)
                                     {
                                         for (int t = 0; t < textures[k].list.Count; t++)
                                         {
-                                            if (Path.GetFileNameWithoutExtension(textures[k].list[t].path).ToLower() == pkgName)
+                                            if (textures[k].list[t].exportID == l &&
+                                                Path.GetFileNameWithoutExtension(textures[k].list[t].path).ToLower() == pkgName)
                                             {
                                                 foundTexName = textures[k];
-                                                found = t;
                                                 break;
                                             }
                                         }
                                     }
-                                    if (found == -1)
-                                        throw new Exception();
+                                    if (foundTexName.crc == 0)
+                                    {
+                                        errors += "Error: Texture " + package.exportsTable[l].objectName + " not found in package: " + GameData.packageFiles[i] + ", skipping..." + Environment.NewLine;
+                                        goto skip;
+                                    }
 
-                                    Package refPkg = new Package(GameData.GamePath + foundTexName.list[found].path, true);
-                                    int refExportId = foundTexName.list[0].exportID;
+                                    pkgName = texture.packageName.ToLower();
+                                    MatchedTexture foundTex = foundTexName.list.Find(s => Path.GetFileNameWithoutExtension(s.path).ToLower() == pkgName);
+                                    if (foundTex.path == null)
+                                        throw new Exception();
+                                    Package refPkg = new Package(GameData.GamePath + foundTex.path, true);
+                                    int refExportId = foundTex.exportID;
                                     byte[] refData = refPkg.getExportData(refExportId);
                                     refPkg.DisposeCache();
                                     using (Texture refTexture = new Texture(refPkg, refExportId, refData, false))
                                     {
                                         if (texture.mipMapsList.Count != refTexture.mipMapsList.Count)
-                                            throw new Exception("");
+                                        {
+                                            errors += "Error: Texture " + package.exportsTable[l].objectName + " in package: " + GameData.packageFiles[i] + " has wrong reference, skipping..." + Environment.NewLine;
+                                            goto skip;
+                                        }
                                         for (int t = 0; t < texture.mipMapsList.Count; t++)
                                         {
                                             Texture.MipMap mipmap = texture.mipMapsList[t];
@@ -124,7 +135,7 @@ namespace MassEffectModder
                                     }
                                 }
                             }
-
+skip:
                             using (MemoryStream newData = new MemoryStream())
                             {
                                 newData.WriteFromBuffer(texture.properties.toArray());
@@ -149,6 +160,7 @@ namespace MassEffectModder
                 CachePackageMgr.updateMainTOC();
                 CachePackageMgr.updateDLCsTOC();
             }
+            return errors;
         }
 
         static public bool verifyGameDataEmptyMipMapsRemoval()
@@ -602,16 +614,28 @@ namespace MassEffectModder
 
             _mainWindow.GetPackages(gameData);
 
+            string errors = "";
             Misc.startTimer();
             MipMaps mipmaps = new MipMaps();
-            mipmaps.removeMipMaps(1, _textures, cachePackageMgr, _mainWindow, null);
+            errors += mipmaps.removeMipMaps(1, _textures, cachePackageMgr, _mainWindow, null);
             if (GameData.gameType == MeType.ME1_TYPE)
-                mipmaps.removeMipMaps(2, _textures, cachePackageMgr, _mainWindow, null);
+                errors += mipmaps.removeMipMaps(2, _textures, cachePackageMgr, _mainWindow, null);
             var time = Misc.stopTimer();
-
             EnableMenuOptions(true);
             _mainWindow.updateStatusLabel("Done. Process total time: " + Misc.getTimerFormat(time));
             _mainWindow.updateStatusLabel2("");
+            if (errors != "")
+            {
+                MessageBox.Show("WARNING: Some errors have occured!");
+                string errorFile = "errors-remove.txt";
+                if (File.Exists(errorFile))
+                    File.Delete(errorFile);
+                using (FileStream fs = new FileStream(errorFile, FileMode.CreateNew))
+                {
+                    fs.WriteStringASCII(errors);
+                }
+                Process.Start(errorFile);
+            }
         }
     }
 }

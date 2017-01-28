@@ -30,8 +30,13 @@ namespace MassEffectModder
 {
     public partial class TreeScan
     {
-        public List<FoundTexture> PrepareListOfTextures(TexExplorer texEplorer, MainWindow mainWindow, Installer installer, bool force = false)
+        public List<FoundTexture> treeScan = null;
+
+        public string PrepareListOfTextures(TexExplorer texEplorer, MainWindow mainWindow, Installer installer, bool force = false)
         {
+            string errors = "";
+            treeScan = null;
+
             List<FoundTexture> textures = new List<FoundTexture>();
             string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                     Assembly.GetExecutingAssembly().GetName().Name);
@@ -57,7 +62,7 @@ namespace MassEffectModder
                             texEplorer.Close();
                         }
                         fs.Close();
-                        return null;
+                        return "Wrong " + filename + " file!" + Environment.NewLine;
                     }
 
                     uint countTexture = fs.ReadUInt32();
@@ -98,7 +103,7 @@ namespace MassEffectModder
                                     "\n\nYou need to restore the game to vanilla state and reinstall vanilla DLCs and DLC mods." +
                                     "\n\nThen from the main menu, select 'Remove Textures Scan File' and start Texture Manager again.");
                                 }
-                                return null;
+                                return "";
                             }
                         }
                         for (int i = 0; i < GameData.packageFiles.Count; i++)
@@ -111,7 +116,7 @@ namespace MassEffectModder
                                     "\n\nYou need to restore the game to vanilla state and reinstall vanilla DLCs and DLC mods." +
                                     "\n\nThen from the main menu, select 'Remove Textures Scan File' and start Texture Manager again.");
                                 }
-                                return null;
+                                return "";
                             }
                         }
                     }
@@ -124,7 +129,8 @@ namespace MassEffectModder
                             fs.WriteStringASCIINull(GameData.RelativeGameData(GameData.packageFiles[i]));
                         }
                     }
-                    return textures;
+                    treeScan = textures;
+                    return errors;
                 }
             }
 
@@ -139,7 +145,7 @@ namespace MassEffectModder
                     "\n\nYou need to restore the game to vanilla state and reinstall vanilla DLCs and DLC mods." +
                     "\n\nThen start Texture Manager again.");
                 }
-                return null;
+                return "";
             }
 
             if (mainWindow != null)
@@ -151,22 +157,20 @@ namespace MassEffectModder
                 if (result == DialogResult.No)
                 {
                     texEplorer.Close();
-                    return null;
+                    return "";
                 }
             }
 
             GameData.packageFiles.Sort();
+            if (mainWindow != null)
+                Misc.startTimer();
             for (int i = 0; i < GameData.packageFiles.Count; i++)
             {
                 if (mainWindow != null)
-                {
                     mainWindow.updateStatusLabel("Finding textures in package " + (i + 1) + " of " + GameData.packageFiles.Count + " - " + GameData.packageFiles[i]);
-                }
                 if (installer != null)
-                {
                     installer.updateStatusScan("Progress... " + (i * 100 / GameData.packageFiles.Count) + " % ");
-                }
-                FindTextures(textures, GameData.packageFiles[i]);
+                errors += FindTextures(textures, GameData.packageFiles[i]);
             }
 
             using (FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
@@ -194,14 +198,18 @@ namespace MassEffectModder
             }
             if (mainWindow != null)
             {
-                mainWindow.updateStatusLabel("Done.");
-                mainWindow.updateStatusLabel("");
+                var time = Misc.stopTimer();
+                mainWindow.updateStatusLabel("Done. Process total time: " + Misc.getTimerFormat(time));
+                mainWindow.updateStatusLabel2("");
             }
-            return textures;
+            treeScan = textures;
+            return errors;
         }
 
-        private void FindTextures(List<FoundTexture> textures, string packagePath)
+        private string FindTextures(List<FoundTexture> textures, string packagePath)
         {
+            string errors = "";
+
             Package package = new Package(packagePath);
             for (int i = 0; i < package.exportsTable.Count; i++)
             {
@@ -230,6 +238,7 @@ namespace MassEffectModder
                     uint crc = texture.getCrcTopMipmap();
                     if (crc == 0)
                     {
+                        errors += "Error: Texture " + package.exportsTable[i].objectName + " is broken in package: " + packagePath + ", skipping..." + Environment.NewLine;
                         continue;
                     }
                     FoundTexture foundTexName = textures.Find(s => s.crc == crc);
@@ -253,6 +262,7 @@ namespace MassEffectModder
                 }
             }
             package.Dispose();
+            return errors;
         }
     }
 

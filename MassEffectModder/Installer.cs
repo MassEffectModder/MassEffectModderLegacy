@@ -508,7 +508,8 @@ namespace MassEffectModder
 
 
             updateStatusScan("In progress...");
-            textures = treeScan.PrepareListOfTextures(null, null, this, true);
+            errors += treeScan.PrepareListOfTextures(null, null, this, true);
+            textures = treeScan.treeScan;
             checkBoxScan.Checked = true;
             updateStatusScan("");
 
@@ -526,9 +527,9 @@ namespace MassEffectModder
 
 
             updateStatusMipMaps("In progress...");
-            mipMaps.removeMipMaps(1, textures, cachePackageMgr, null, this, checkBoxPreEnableRepack.Checked);
+            errors += mipMaps.removeMipMaps(1, textures, cachePackageMgr, null, this, checkBoxPreEnableRepack.Checked);
             if (GameData.gameType == MeType.ME1_TYPE)
-                mipMaps.removeMipMaps(2, textures, cachePackageMgr, null, this, checkBoxPreEnableRepack.Checked);
+                errors += mipMaps.removeMipMaps(2, textures, cachePackageMgr, null, this, checkBoxPreEnableRepack.Checked);
             checkBoxMipMaps.Checked = true;
             updateStatusMipMaps("");
 

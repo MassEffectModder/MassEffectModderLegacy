@@ -27,6 +27,7 @@ using StreamHelpers;
 using AmaroK86.ImageFormat;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace MassEffectModder
 {
@@ -178,13 +179,23 @@ namespace MassEffectModder
             }
             else
             {
+                string errors = "";
                 _mainWindow.updateStatusLabel("");
                 _mainWindow.updateStatusLabel("Preparing tree...");
-                Misc.startTimer();
-                _textures = treeScan.PrepareListOfTextures(this, _mainWindow, null);
-                var time = Misc.stopTimer();
-                _mainWindow.updateStatusLabel("Done. Process total time: " + Misc.getTimerFormat(time));
-                _mainWindow.updateStatusLabel("");
+                errors += treeScan.PrepareListOfTextures(this, _mainWindow, null);
+                _textures = treeScan.treeScan;
+                if (errors != "")
+                {
+                    MessageBox.Show("WARNING: Some errors have occured!");
+                    string errorFile = "errors-scan.txt";
+                    if (File.Exists(errorFile))
+                        File.Delete(errorFile);
+                    using (FileStream fs = new FileStream(errorFile, FileMode.CreateNew))
+                    {
+                        fs.WriteStringASCII(errors);
+                    }
+                    Process.Start(errorFile);
+                }
             }
 
             if (_textures == null)
