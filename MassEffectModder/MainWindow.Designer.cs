@@ -49,10 +49,12 @@ namespace MassEffectModder
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.menuGame = new System.Windows.Forms.MenuStrip();
             this.toolStripMenuME1 = new System.Windows.Forms.ToolStripMenuItem();
             this.massEffect1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripME1RemoveTreeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripExtractME1MEMMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.repackME1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -65,6 +67,7 @@ namespace MassEffectModder
             this.toolStripMenuME2 = new System.Windows.Forms.ToolStripMenuItem();
             this.massEffect2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripME2RemoveTreeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripExtractME2MEMMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.repackME2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
@@ -77,6 +80,7 @@ namespace MassEffectModder
             this.toolStripMenuME3 = new System.Windows.Forms.ToolStripMenuItem();
             this.massEffect3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripME3RemoveTreeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripExtractME3MEMMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemUpdateTOCs = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
             this.extractME3DLCPackagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -99,9 +103,6 @@ namespace MassEffectModder
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.statusStrip2 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripExtractME1MEMMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripExtractME2MEMMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripExtractME3MEMMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuGame.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.statusStrip2.SuspendLayout();
@@ -151,6 +152,13 @@ namespace MassEffectModder
             this.toolStripME1RemoveTreeMenuItem.Size = new System.Drawing.Size(260, 22);
             this.toolStripME1RemoveTreeMenuItem.Text = "Remove Textures Scan File";
             this.toolStripME1RemoveTreeMenuItem.Click += new System.EventHandler(this.toolStripME1RemoveTreeMenuItem_Click);
+            // 
+            // toolStripExtractME1MEMMenuItem
+            // 
+            this.toolStripExtractME1MEMMenuItem.Name = "toolStripExtractME1MEMMenuItem";
+            this.toolStripExtractME1MEMMenuItem.Size = new System.Drawing.Size(260, 22);
+            this.toolStripExtractME1MEMMenuItem.Text = "Extract textures from MEM mod file";
+            this.toolStripExtractME1MEMMenuItem.Click += new System.EventHandler(this.toolStripExtractME1MEMMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
@@ -241,6 +249,13 @@ namespace MassEffectModder
             this.toolStripME2RemoveTreeMenuItem.Size = new System.Drawing.Size(260, 22);
             this.toolStripME2RemoveTreeMenuItem.Text = "Remove Textures Scan File";
             this.toolStripME2RemoveTreeMenuItem.Click += new System.EventHandler(this.toolStripME2RemoveTreeMenuItem_Click);
+            // 
+            // toolStripExtractME2MEMMenuItem
+            // 
+            this.toolStripExtractME2MEMMenuItem.Name = "toolStripExtractME2MEMMenuItem";
+            this.toolStripExtractME2MEMMenuItem.Size = new System.Drawing.Size(260, 22);
+            this.toolStripExtractME2MEMMenuItem.Text = "Extract textures from MEM mod file";
+            this.toolStripExtractME2MEMMenuItem.Click += new System.EventHandler(this.toolStripExtractME2MEMMenuItem_Click);
             // 
             // toolStripSeparator5
             // 
@@ -335,6 +350,13 @@ namespace MassEffectModder
             this.toolStripME3RemoveTreeMenuItem.Size = new System.Drawing.Size(308, 22);
             this.toolStripME3RemoveTreeMenuItem.Text = "Remove Textures Scan File";
             this.toolStripME3RemoveTreeMenuItem.Click += new System.EventHandler(this.toolStripME3RemoveTreeMenuItem_Click);
+            // 
+            // toolStripExtractME3MEMMenuItem
+            // 
+            this.toolStripExtractME3MEMMenuItem.Name = "toolStripExtractME3MEMMenuItem";
+            this.toolStripExtractME3MEMMenuItem.Size = new System.Drawing.Size(308, 22);
+            this.toolStripExtractME3MEMMenuItem.Text = "Extract textures from MEM mod file";
+            this.toolStripExtractME3MEMMenuItem.Click += new System.EventHandler(this.toolStripExtractME3MEMMenuItem_Click);
             // 
             // toolStripMenuItemUpdateTOCs
             // 
@@ -487,27 +509,6 @@ namespace MassEffectModder
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
             this.toolStripStatusLabel2.Size = new System.Drawing.Size(0, 17);
             // 
-            // toolStripExtractME1MEMMenuItem
-            // 
-            this.toolStripExtractME1MEMMenuItem.Name = "toolStripExtractME1MEMMenuItem";
-            this.toolStripExtractME1MEMMenuItem.Size = new System.Drawing.Size(260, 22);
-            this.toolStripExtractME1MEMMenuItem.Text = "Extract textures from MEM mod file";
-            this.toolStripExtractME1MEMMenuItem.Click += new System.EventHandler(this.toolStripExtractME1MEMMenuItem_Click);
-            // 
-            // toolStripExtractME2MEMMenuItem
-            // 
-            this.toolStripExtractME2MEMMenuItem.Name = "toolStripExtractME2MEMMenuItem";
-            this.toolStripExtractME2MEMMenuItem.Size = new System.Drawing.Size(260, 22);
-            this.toolStripExtractME2MEMMenuItem.Text = "Extract textures from MEM mod file";
-            this.toolStripExtractME2MEMMenuItem.Click += new System.EventHandler(this.toolStripExtractME2MEMMenuItem_Click);
-            // 
-            // toolStripExtractME3MEMMenuItem
-            // 
-            this.toolStripExtractME3MEMMenuItem.Name = "toolStripExtractME3MEMMenuItem";
-            this.toolStripExtractME3MEMMenuItem.Size = new System.Drawing.Size(308, 22);
-            this.toolStripExtractME3MEMMenuItem.Text = "Extract textures from MEM mod file";
-            this.toolStripExtractME3MEMMenuItem.Click += new System.EventHandler(this.toolStripExtractME3MEMMenuItem_Click);
-            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -516,6 +517,7 @@ namespace MassEffectModder
             this.Controls.Add(this.statusStrip2);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.menuGame);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.IsMdiContainer = true;
             this.MainMenuStrip = this.menuGame;
             this.MinimumSize = new System.Drawing.Size(1080, 550);

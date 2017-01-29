@@ -49,6 +49,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Installer));
             this.checkBoxPreMods = new System.Windows.Forms.CheckBox();
             this.checkBoxLOD = new System.Windows.Forms.CheckBox();
             this.buttonSTART = new System.Windows.Forms.Button();
@@ -678,6 +679,7 @@
             this.Controls.Add(this.labelFinalStatus);
             this.Controls.Add(this.groupBoxInstaller);
             this.Controls.Add(this.groupBoxPreInstallCheck);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Installer";
             this.Text = "MEM Installer for ALOT";
             this.groupBoxPreInstallCheck.ResumeLayout(false);

@@ -105,7 +105,7 @@ namespace MassEffectModder
             this.extractToPNGFileToolStripMenuItem,
             this.viewToolStripMenuItem});
             this.contextMenuStripTextures.Name = "contextMenuStripTextures";
-            this.contextMenuStripTextures.Size = new System.Drawing.Size(212, 114);
+            this.contextMenuStripTextures.Size = new System.Drawing.Size(212, 92);
             // 
             // replaceTextureToolStripMenuItem
             // 
@@ -428,6 +428,7 @@ namespace MassEffectModder
             this.Controls.Add(this.splitContainer1);
             this.MinimumSize = new System.Drawing.Size(1024, 500);
             this.Name = "TexExplorer";
+            this.ShowIcon = false;
             this.Text = "Texture Manager ";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.TexExplorer_FormClosed);
             this.contextMenuStripTextures.ResumeLayout(false);
