@@ -48,12 +48,12 @@ namespace MassEffectModder
                 bool modified = false;
                 if (mainWindow != null)
                 {
-                    mainWindow.updateStatusLabel("Removing empty mipmaps - package " + (i + 1) + " of " + GameData.packageFiles.Count);
+                    mainWindow.updateStatusLabel("Removing empty mipmaps (" + phase + ") - package " + (i + 1) + " of " + GameData.packageFiles.Count);
                     mainWindow.updateStatusLabel2("");
                 }
                 if (installer != null)
                 {
-                    installer.updateStatusMipMaps("Progress... " + (i * 100 / GameData.packageFiles.Count) + " % ");
+                    installer.updateStatusMipMaps("Progress (" + phase + ") ... " + (i * 100 / GameData.packageFiles.Count) + " % ");
                 }
                 Package package = new Package(GameData.packageFiles[i], true);
                 for (int l = 0; l < package.exportsTable.Count; l++)
