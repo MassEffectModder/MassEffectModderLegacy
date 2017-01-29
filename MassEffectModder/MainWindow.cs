@@ -53,7 +53,7 @@ namespace MassEffectModder
             toolStripMenuME1.Enabled = enable;
             toolStripMenuME2.Enabled = enable;
             toolStripMenuME3.Enabled = enable;
-            toolStripExtractMEMMenuItem.Enabled = enable;
+            toolStripExtractME1MEMMenuItem.Enabled = enable;
         }
 
         public void updateStatusLabel(string text)
@@ -136,64 +136,157 @@ namespace MassEffectModder
             return true;
         }
 
-        private void replaceExportDataMod(MeType gameType)
+        struct BinaryMod
         {
-            GameData gameData = new GameData(gameType, _configIni);
+            public string packagePath;
+            public int exportId;
+            public byte[] data;
+        };
+
+        private string convertDataModtoMem()
+        {
+            string errors = "";
+
+            GameData gameData = new GameData(MeType.ME3_TYPE, _configIni);
             if (!Directory.Exists(GameData.GamePath))
             {
                 MessageBox.Show("Game path is wrong!");
-                return;
+                return "";
             }
+
             using (OpenFileDialog modFile = new OpenFileDialog())
             {
-                modFile.Title = "Please select Mod file";
-                modFile.Filter = "MOD file | *.mem";
+                modFile.Title = "Please select ME3Explorer .mod (binary)";
+                modFile.Filter = "MOD file | *.mod";
                 if (modFile.ShowDialog() != DialogResult.OK)
-                    return;
+                    return "";
+
                 updateStatusLabel("Processing mod: " + modFile.FileName);
+                int numEntries = 0;
+                List<BinaryMod> mods = new List<BinaryMod>();
                 using (FileStream fs = new FileStream(modFile.FileName, FileMode.Open))
                 {
-                    uint tag = fs.ReadUInt32();
-                    uint version = fs.ReadUInt32();
-                    if (tag == TexExplorer.TextureModTag)
+                    string package = "";
+                    int len = fs.ReadInt32();
+                    fs.ReadStringASCII(len); // version
+                    numEntries = fs.ReadInt32();
+                    for (int i = 0; i < numEntries; i++)
                     {
-                        MessageBox.Show("This is not a valid MEM mod. This is a textures Mod!");
-                        return;
-                    }
-                    if (tag != ExportModTag || version != ExportModVersion)
-                    {
-                        MessageBox.Show("This is mod is not compatible!");
-                        return;
-                    }
-                    else
-                    {
-                        if ((MeType)fs.ReadUInt32() != gameType)
+                        BinaryMod mod = new BinaryMod();
+                        try
                         {
-                            MessageBox.Show("This is not a MEM mod valid for this game!");
-                            return;
+                            len = fs.ReadInt32();
+                            string desc = fs.ReadStringASCII(len); // description
+                            if (!desc.Contains("Binary Replacement for file"))
+                                throw new Exception();
+                            len = fs.ReadInt32();
+                            string scriptLegacy = fs.ReadStringASCII(len);
+                            Misc.ParseLegacyME3ScriptMod(scriptLegacy, ref package, ref mod.exportId);
+                            if (mod.exportId == -1 || package == "")
+                                throw new Exception();
+                            len = fs.ReadInt32();
+                            mod.data = fs.ReadToBuffer(len);
+                            mod.packagePath = GameData.RelativeGameData(Path.Combine(GameData.MainData, package));
+                            mods.Add(mod);
                         }
-                        int numEntries = fs.ReadInt32();
-                        for (int i = 0; i < numEntries; i++)
+                        catch
                         {
-                            string package = fs.ReadStringASCIINull();
-                            int expId = fs.ReadInt32();
-                            uint uncSize = fs.ReadUInt32();
-                            uint compSize = fs.ReadUInt32();
-                            byte[] src = fs.ReadToBuffer(compSize);
-                            byte[] dst = new byte[uncSize];
-                            ZlibHelper.Zlib.Decompress(src, (uint)src.Length, dst);
-                            string[] packages = Directory.GetFiles(GameData.MainData, package, SearchOption.AllDirectories);
-                            if (packages.Count() != 0)
-                            {
-                                Package pkg = new Package(packages[0]);
-                                pkg.setExportData(expId, dst);
-                                pkg.SaveToFile();
-                            }
+                            MessageBox.Show("This mod is not compatible!");
+                            return "";
                         }
                     }
                 }
-                updateStatusLabel("Mod applied");
+
+                using (SaveFileDialog memFile = new SaveFileDialog())
+                {
+                    memFile.Title = "Select a MEM .mem file, or create a new one";
+                    memFile.Filter = "MEM file | *.mem";
+                    if (memFile.ShowDialog() != DialogResult.OK)
+                        return "";
+
+                    List<MipMaps.FileMod> modFiles = new List<MipMaps.FileMod>();
+                    FileStream outFs;
+                    if (File.Exists(memFile.FileName))
+                    {
+                        outFs = new FileStream(memFile.FileName, FileMode.Open, FileAccess.ReadWrite);
+                        uint tag = outFs.ReadUInt32();
+                        uint version = outFs.ReadUInt32();
+                        if (tag != TexExplorer.TextureModTag || version != TexExplorer.TextureModVersion)
+                        {
+                            if (version != TexExplorer.TextureModVersion)
+                                errors += "File " + memFile.FileName + " was made with an older version of MEM, skipping..." + Environment.NewLine;
+                            else
+                                errors += "File " + memFile.FileName + " is not a valid MEM mod, skipping..." + Environment.NewLine;
+                            return errors;
+                        }
+                        else
+                        {
+                            uint gameType = 0;
+                            outFs.JumpTo(outFs.ReadInt64());
+                            gameType = outFs.ReadUInt32();
+                            if ((MeType)gameType != GameData.gameType)
+                            {
+                                errors += "File " + memFile.FileName + " is not a MEM mod valid for this game" + Environment.NewLine;
+                                return errors;
+                            }
+                        }
+                        int numFiles = outFs.ReadInt32();
+                        for (int l = 0; l < numFiles; l++)
+                        {
+                            MipMaps.FileMod fileMod = new MipMaps.FileMod();
+                            fileMod.tag = outFs.ReadUInt32();
+                            fileMod.name = outFs.ReadStringASCIINull();
+                            fileMod.offset = outFs.ReadInt64();
+                            fileMod.size = outFs.ReadInt64();
+                            modFiles.Add(fileMod);
+                        }
+                        outFs.SeekEnd();
+                    }
+                    else
+                    {
+                        outFs = new FileStream(memFile.FileName, FileMode.Create, FileAccess.Write);
+                        outFs.WriteUInt32(TexExplorer.TextureModTag);
+                        outFs.WriteUInt32(TexExplorer.TextureModVersion);
+                        outFs.WriteInt64(0); // filled later
+                    }
+
+                    for (int l = 0; l < mods.Count; l++)
+                    {
+                        Stream dst = MipMaps.compressData(mods[l].data);
+                        dst.SeekBegin();
+
+                        MipMaps.FileMod fileMod = new MipMaps.FileMod();
+                        fileMod.tag = MipMaps.FileBinaryTag;
+                        fileMod.name = Path.GetFileNameWithoutExtension(mods[l].packagePath) + "_" + mods[l].exportId + ".bin";
+                        fileMod.offset = outFs.Position;
+                        fileMod.size = dst.Length;
+                        modFiles.Add(fileMod);
+
+                        outFs.WriteInt32(mods[l].exportId);
+                        outFs.WriteStringASCIINull(mods[l].packagePath);
+                        outFs.WriteFromStream(dst, dst.Length);
+                    }
+
+                    long pos = outFs.Position;
+                    outFs.SeekBegin();
+                    outFs.WriteUInt32(TexExplorer.TextureModTag);
+                    outFs.WriteUInt32(TexExplorer.TextureModVersion);
+                    outFs.WriteInt64(pos);
+                    outFs.JumpTo(pos);
+                    outFs.WriteUInt32((uint)GameData.gameType);
+                    outFs.WriteInt32(modFiles.Count);
+                    for (int i = 0; i < modFiles.Count; i++)
+                    {
+                        outFs.WriteUInt32(modFiles[i].tag);
+                        outFs.WriteStringASCIINull(modFiles[i].name);
+                        outFs.WriteInt64(modFiles[i].offset);
+                        outFs.WriteInt64(modFiles[i].size);
+                    }
+                    outFs.Close();
+                }
+                updateStatusLabel("Mod converted");
             }
+            return errors;
         }
 
         public void repackME12(MeType gametype)
@@ -223,13 +316,6 @@ namespace MassEffectModder
             enableGameDataMenu(true);
         }
 
-        private void modME1ExportDataToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            enableGameDataMenu(false);
-            replaceExportDataMod(MeType.ME1_TYPE);
-            enableGameDataMenu(true);
-        }
-
         private void repackME2ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             enableGameDataMenu(false);
@@ -249,13 +335,6 @@ namespace MassEffectModder
             LODSettings.updateLOD(MeType.ME2_TYPE, engineConf);
             MessageBox.Show("Game configuration file at " + path + " updated." +
                 "\n\nYou will have to remove empty mipmaps if you haven't already done.");
-            enableGameDataMenu(true);
-        }
-
-        private void modME2ExportDataToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            enableGameDataMenu(false);
-            replaceExportDataMod(MeType.ME2_TYPE);
             enableGameDataMenu(true);
         }
 
@@ -383,7 +462,7 @@ namespace MassEffectModder
         private void modME3ExportDataToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             enableGameDataMenu(false);
-            replaceExportDataMod(MeType.ME3_TYPE);
+            convertDataModtoMem();
             enableGameDataMenu(true);
         }
 
@@ -635,13 +714,12 @@ namespace MassEffectModder
             enableGameDataMenu(true);
         }
 
-
-        private void toolStripExtractMEMMenuItem_Click(object sender, EventArgs e)
+        private void toolStripExtractMEMMenuItem()
         {
             using (OpenFileDialog modFile = new OpenFileDialog())
             {
                 modFile.Title = "Please select Mod file";
-                modFile.Filter = "MOD file | *.mem";
+                modFile.Filter = "MEM mod file | *.mem";
                 modFile.Multiselect = true;
                 if (modFile.ShowDialog() != DialogResult.OK)
                     return;
@@ -691,6 +769,21 @@ namespace MassEffectModder
                 }
             }
             enableGameDataMenu(false);
+        }
+
+        private void toolStripExtractME1MEMMenuItem_Click(object sender, EventArgs e)
+        {
+            toolStripExtractMEMMenuItem();
+        }
+
+        private void toolStripExtractME2MEMMenuItem_Click(object sender, EventArgs e)
+        {
+            toolStripExtractMEMMenuItem();
+        }
+
+        private void toolStripExtractME3MEMMenuItem_Click(object sender, EventArgs e)
+        {
+            toolStripExtractMEMMenuItem();
         }
     }
 }

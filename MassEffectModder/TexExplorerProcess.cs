@@ -37,6 +37,7 @@ namespace MassEffectModder
         const int SizeOfChunkBlock = 8;
         const int SizeOfChunk = 8;
         public const uint FileTextureTag = 0x53444446;
+        public const uint FileBinaryTag = 0x4E494246;
 
         public struct FileMod
         {
@@ -78,9 +79,12 @@ namespace MassEffectModder
                 }
                 uint tag = fs.ReadUInt32();
                 uint version = fs.ReadUInt32();
-                if (tag != TexExplorer.TextureModTag || (version != TexExplorer.TextureModVersion1 && version != TexExplorer.TextureModVersion))
+                if (tag != TexExplorer.TextureModTag || version != TexExplorer.TextureModVersion)
                 {
-                    errors += "File " + filenameMod + " is not a valid MEM mod" + Environment.NewLine;
+                    if (version != TexExplorer.TextureModVersion)
+                        errors += "File " + filenameMod + " was made with an older version of MEM, skipping..." + Environment.NewLine;
+                    else
+                        errors += "File " + filenameMod + " is not a valid MEM mod, skipping..." + Environment.NewLine;
                     if (previewIndex == -1 && !extract && !replace)
                         texExplorer.listViewTextures.EndUpdate();
                     return errors;
@@ -88,8 +92,7 @@ namespace MassEffectModder
                 else
                 {
                     uint gameType = 0;
-                    if (version == TexExplorer.TextureModVersion)
-                        fs.JumpTo(fs.ReadInt64());
+                    fs.JumpTo(fs.ReadInt64());
                     gameType = fs.ReadUInt32();
                     if (textures != null && (MeType)gameType != GameData.gameType)
                     {
@@ -101,114 +104,130 @@ namespace MassEffectModder
                 }
                 int numFiles = fs.ReadInt32();
                 List<FileMod> modFiles = new List<FileMod>();
-                if (version == TexExplorer.TextureModVersion)
+                for (int i = 0; i < numFiles; i++)
                 {
-                    for (int i = 0; i < numFiles; i++)
-                    {
-                        FileMod fileMod = new FileMod();
-                        fileMod.tag = fs.ReadUInt32();
-                        fileMod.name = fs.ReadStringASCIINull();
-                        fileMod.offset = fs.ReadInt64();
-                        fileMod.size = fs.ReadInt64();
-                        if (fileMod.tag == FileTextureTag)
-                            modFiles.Add(fileMod);
-                    }
-                    numFiles = modFiles.Count;
+                    FileMod fileMod = new FileMod();
+                    fileMod.tag = fs.ReadUInt32();
+                    fileMod.name = fs.ReadStringASCIINull();
+                    fileMod.offset = fs.ReadInt64();
+                    fileMod.size = fs.ReadInt64();
+                    modFiles.Add(fileMod);
                 }
+                numFiles = modFiles.Count;
 
                 for (int i = 0; i < numFiles; i++)
                 {
-                    string name;
-                    uint crc;
-                    long size = 0, dstLen = 0, decSize = 0;
+                    string name = "";
+                    uint crc = 0;
+                    long size = 0, dstLen = 0;
+                    int exportId = -1;
+                    string pkgPath = "";
                     byte[] dst = null;
-                    byte[] src = null;
-                    if (version == TexExplorer.TextureModVersion)
+                    if (previewIndex != -1)
+                        i = previewIndex;
+                    fs.JumpTo(modFiles[i].offset);
+                    size = modFiles[i].size;
+                    if (modFiles[i].tag == FileTextureTag)
                     {
-                        if (previewIndex != -1)
-                            i = previewIndex;
-                        fs.JumpTo(modFiles[i].offset);
-                        size = modFiles[i].size;
+                        name = fs.ReadStringASCIINull();
+                        crc = fs.ReadUInt32();
                     }
-                    name = fs.ReadStringASCIINull();
-                    crc = fs.ReadUInt32();
-                    if (version == TexExplorer.TextureModVersion1)
+                    else if (modFiles[i].tag == FileBinaryTag)
                     {
-                        decSize = fs.ReadUInt32();
-                        size = fs.ReadUInt32();
+                        name = modFiles[i].name;
+                        exportId = fs.ReadInt32();
+                        pkgPath = fs.ReadStringASCIINull();
                     }
 
                     if (texExplorer != null)
                     {
                         texExplorer._mainWindow.updateStatusLabel("Processing MOD " + Path.GetFileName(filenameMod) +
-                            " - Texture " + (i + 1) + " of " + numFiles + " - " + name);
-                    }
-
-                    if (version == TexExplorer.TextureModVersion1)
-                    {
-                        if (previewIndex != -1 && i != previewIndex)
-                        {
-                            fs.Skip(size);
-                            continue;
-                        }
+                            " - File " + (i + 1) + " of " + numFiles + " - " + name);
                     }
 
                     if (previewIndex == -1 && !extract && !replace)
                     {
-                        if (version == TexExplorer.TextureModVersion1)
-                            fs.Skip(size);
-                        FoundTexture foundTexture;
-                        foundTexture = textures.Find(s => s.crc == crc);
-                        if (foundTexture.crc != 0)
+                        if (modFiles[i].tag == FileTextureTag)
                         {
-                            ListViewItem item = new ListViewItem(foundTexture.name + " (" + foundTexture.packageName + ")");
+                            FoundTexture foundTexture;
+                            foundTexture = textures.Find(s => s.crc == crc);
+                            if (foundTexture.crc != 0)
+                            {
+                                ListViewItem item = new ListViewItem(foundTexture.name + " (" + foundTexture.packageName + ")");
+                                item.Name = i.ToString();
+                                texExplorer.listViewTextures.Items.Add(item);
+                            }
+                            else
+                            {
+                                ListViewItem item = new ListViewItem(name + " (Texture not found: " + name + string.Format("_0x{0:X8}", crc) + ")");
+                                item.Name = i.ToString();
+                                texExplorer.listViewTextures.Items.Add(item);
+                                errors += "Texture skipped. Texture " + name + string.Format("_0x{0:X8}", crc) + " is not present in your game setup" + Environment.NewLine;
+                            }
+                        }
+                        else if (modFiles[i].tag == FileBinaryTag)
+                        {
+                            ListViewItem item = new ListViewItem(name + " (Binary Mod)");
                             item.Name = i.ToString();
                             texExplorer.listViewTextures.Items.Add(item);
                         }
                         else
                         {
-                            ListViewItem item = new ListViewItem(name + " (Texture not found: " + name + string.Format("_0x{0:X8}", crc) + ")");
+                            ListViewItem item = new ListViewItem(name + " (Unknown)");
                             item.Name = i.ToString();
-                            texExplorer.listViewTextures.Items.Add(item);
-                            errors += "Texture skipped. Texture " + name + string.Format("_0x{0:X8}", crc) + " is not present in your game setup" + Environment.NewLine;
+                            errors += "Unknown tag for file: " + name + Environment.NewLine;
                         }
                         continue;
                     }
 
-                    if (version == TexExplorer.TextureModVersion1)
-                    {
-                        src = fs.ReadToBuffer(size);
-                        dst = new byte[decSize];
-                        dstLen = ZlibHelper.Zlib.Decompress(src, (uint)size, dst);
-                    }
-                    else
-                    {
-                        dst = decompressData(fs, size);
-                        dstLen = dst.Length;
-                    }
+                    dst = decompressData(fs, size);
+                    dstLen = dst.Length;
 
                     if (extract)
                     {
-                        string filename = name + "_" + string.Format("0x{0:X8}", crc) + ".dds";
-                        using (FileStream output = new FileStream(Path.Combine(outDir, Path.GetFileName(filename)), FileMode.Create, FileAccess.Write))
+                        if (modFiles[i].tag == FileTextureTag)
                         {
-                            output.Write(dst, 0, (int)dstLen);
+                            string filename = name + "_" + string.Format("0x{0:X8}", crc) + ".dds";
+                            using (FileStream output = new FileStream(Path.Combine(outDir, Path.GetFileName(filename)), FileMode.Create, FileAccess.Write))
+                            {
+                                output.Write(dst, 0, (int)dstLen);
+                            }
+                        }
+                        else if (modFiles[i].tag == FileBinaryTag)
+                        {
+                            string filename = name;
+                            using (FileStream output = new FileStream(Path.Combine(outDir, Path.GetFileName(filename)), FileMode.Create, FileAccess.Write))
+                            {
+                                output.Write(dst, 0, (int)dstLen);
+                            }
+                        }
+                        else
+                        {
+                            errors += "Unknown tag for file: " + name + Environment.NewLine;
                         }
                         continue;
                     }
+
                     if (previewIndex != -1)
                     {
-                        DDSImage image = new DDSImage(new MemoryStream(dst, 0, (int)dstLen));
-                        texExplorer.pictureBoxPreview.Image = image.mipMaps[0].bitmap;
+                        if (modFiles[i].tag == FileTextureTag)
+                        {
+                            DDSImage image = new DDSImage(new MemoryStream(dst, 0, (int)dstLen));
+                            texExplorer.pictureBoxPreview.Image = image.mipMaps[0].bitmap;
+                        }
+                        else
+                        {
+                            texExplorer.pictureBoxPreview.Image = null;
+                        }
                         break;
                     }
-                    else
+                    else if (replace)
                     {
-                        FoundTexture foundTexture;
-                        foundTexture = textures.Find(s => s.crc == crc);
-                        if (foundTexture.crc != 0)
+                        if (modFiles[i].tag == FileTextureTag)
                         {
-                            if (replace)
+                            FoundTexture foundTexture;
+                            foundTexture = textures.Find(s => s.crc == crc);
+                            if (foundTexture.crc != 0)
                             {
                                 DDSImage image = new DDSImage(new MemoryStream(dst, 0, (int)dstLen));
                                 if (!image.checkExistAllMipmaps())
@@ -218,12 +237,29 @@ namespace MassEffectModder
                                 }
                                 errors += replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name);
                             }
+                            else
+                            {
+                                errors += "Texture skipped. Texture " + name + string.Format("_0x{0:X8}", crc) + "is not present in your game setup" + Environment.NewLine;
+                            }
+                        }
+                        else if (modFiles[i].tag == FileBinaryTag)
+                        {
+                            string path = GameData.GamePath + pkgPath;
+                            if (!File.Exists(path))
+                            {
+                                errors += "File " + path + " not exists in game setup: ";
+                                continue;
+                            }
+                            Package pkg = cachePackageMgr.OpenPackage(path);
+                            pkg.setExportData(exportId, dst);
                         }
                         else
                         {
-                            errors += "Texture " + name + string.Format("_0x{0:X8}", crc) + "is not present in your game setup" + Environment.NewLine;
+                            errors += "Unknown tag for file: " + name + Environment.NewLine;
                         }
                     }
+                    else
+                        throw new Exception();
                 }
                 if (previewIndex == -1 && !extract && !replace)
                     texExplorer.listViewTextures.EndUpdate();

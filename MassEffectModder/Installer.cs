@@ -137,20 +137,22 @@ namespace MassEffectModder
                 {
                     uint tag = fs.ReadUInt32();
                     uint version = fs.ReadUInt32();
-                    if (tag != TexExplorer.TextureModTag || (version != TexExplorer.TextureModVersion1 && version != TexExplorer.TextureModVersion))
+                    if (tag != TexExplorer.TextureModTag || version != TexExplorer.TextureModVersion)
                     {
-                        errors += "File " + memFiles[i] + " is not a valid MEM mod" + Environment.NewLine;
+                        if (version != TexExplorer.TextureModVersion)
+                            errors += "File " + memFiles[i] + " was made with an older version of MEM, skipping..." + Environment.NewLine;
+                        else
+                            errors += "File " + memFiles[i] + " is not a valid MEM mod, skipping..." + Environment.NewLine;
                         continue;
                     }
                     else
                     {
                         uint gameType = 0;
-                        if (version == TexExplorer.TextureModVersion)
-                            fs.JumpTo(fs.ReadInt64());
+                        fs.JumpTo(fs.ReadInt64());
                         gameType = fs.ReadUInt32();
                         if (gameType != gameId)
                         {
-                            errors += "File " + memFiles[i] + " is not a MEM mod valid for this game" + Environment.NewLine;
+                            errors += "File " + memFiles[i] + " is not a MEM mod valid for this game, skipping..." + Environment.NewLine;
                             continue;
                         }
                     }
@@ -367,86 +369,100 @@ namespace MassEffectModder
                 {
                     uint tag = fs.ReadUInt32();
                     uint version = fs.ReadUInt32();
-                    if (tag != TexExplorer.TextureModTag || (version != TexExplorer.TextureModVersion1 && version != TexExplorer.TextureModVersion))
+                    if (tag != TexExplorer.TextureModTag || version != TexExplorer.TextureModVersion)
                     {
-                        errors += "File " + memFiles[i] + " is not a valid MEM mod" + Environment.NewLine;
+                        if (version != TexExplorer.TextureModVersion)
+                            errors += "File " + memFiles[i] + " was made with an older version of MEM, skipping..." + Environment.NewLine;
+                        else
+                            errors += "File " + memFiles[i] + " is not a valid MEM mod, skipping..." + Environment.NewLine;
                         continue;
                     }
                     else
                     {
                         uint gameType = 0;
-                        if (version == TexExplorer.TextureModVersion)
-                            fs.JumpTo(fs.ReadInt64());
+                        fs.JumpTo(fs.ReadInt64());
                         gameType = fs.ReadUInt32();
                         if ((MeType)gameType != GameData.gameType)
                         {
-                            errors += "File " + memFiles[i] + " is not a MEM mod valid for this game" + Environment.NewLine;
+                            errors += "File " + memFiles[i] + " is not a MEM mod valid for this game, skipping..." + Environment.NewLine;
                             continue;
                         }
                     }
                     int numFiles = fs.ReadInt32();
                     List<MipMaps.FileMod> modFiles = new List<MipMaps.FileMod>();
-                    if (version == TexExplorer.TextureModVersion)
+                    for (int k = 0; k < numFiles; k++)
                     {
-                        for (int k = 0; k < numFiles; k++)
-                        {
-                            MipMaps.FileMod fileMod = new MipMaps.FileMod();
-                            fileMod.tag = fs.ReadUInt32();
-                            fileMod.name = fs.ReadStringASCIINull();
-                            fileMod.offset = fs.ReadInt64();
-                            fileMod.size = fs.ReadInt64();
-                            if (fileMod.tag == MipMaps.FileTextureTag)
-                                modFiles.Add(fileMod);
-                        }
-                        numFiles = modFiles.Count;
+                        MipMaps.FileMod fileMod = new MipMaps.FileMod();
+                        fileMod.tag = fs.ReadUInt32();
+                        fileMod.name = fs.ReadStringASCIINull();
+                        fileMod.offset = fs.ReadInt64();
+                        fileMod.size = fs.ReadInt64();
+                        modFiles.Add(fileMod);
                     }
+                    numFiles = modFiles.Count;
                     for (int l = 0; l < numFiles; l++)
                     {
-                        string name;
-                        uint crc;
-                        long size = 0, dstLen = 0, decSize = 0;
+                        string name = "";
+                        uint crc = 0;
+                        long size = 0, dstLen = 0;
+                        int exportId = -1;
+                        string pkgPath = "";
                         byte[] dst = null;
-                        if (version == TexExplorer.TextureModVersion)
+                        fs.JumpTo(modFiles[l].offset);
+                        size = modFiles[l].size;
+                        if (modFiles[i].tag == MipMaps.FileTextureTag)
                         {
-                            fs.JumpTo(modFiles[l].offset);
-                            size = modFiles[l].size;
+                            name = fs.ReadStringASCIINull();
+                            crc = fs.ReadUInt32();
                         }
-                        name = fs.ReadStringASCIINull();
-                        crc = fs.ReadUInt32();
-                        if (version == TexExplorer.TextureModVersion1)
+                        else if (modFiles[i].tag == MipMaps.FileBinaryTag)
                         {
-                            decSize = fs.ReadUInt32();
-                            size = fs.ReadUInt32();
-                            byte[] src = fs.ReadToBuffer(size);
-                            dst = new byte[decSize];
-                            dstLen = ZlibHelper.Zlib.Decompress(src, (uint)size, dst);
+                            name = modFiles[i].name;
+                            exportId = fs.ReadInt32();
+                            pkgPath = fs.ReadStringASCIINull();
                         }
-                        else
-                        {
-                            dst = MipMaps.decompressData(fs, size);
-                            dstLen = dst.Length;
-                        }
+
+                        dst = MipMaps.decompressData(fs, size);
+                        dstLen = dst.Length;
 
                         updateStatusTextures("Mod: " + (i + 1) + " of " + memFiles.Count + " - in progress: " + ((l + 1) * 100 / numFiles) + " % ");
 
-                        FoundTexture foundTexture;
-                        if (GameData.gameType == MeType.ME1_TYPE)
-                            foundTexture = textures.Find(s => s.crc == crc && s.name == name);
-                        else
-                            foundTexture = textures.Find(s => s.crc == crc);
-                        if (foundTexture.crc != 0)
+                        if (modFiles[i].tag == MipMaps.FileTextureTag)
                         {
-                            DDSImage image = new DDSImage(new MemoryStream(dst, 0, (int)dstLen));
-                            if (!image.checkExistAllMipmaps())
+                            FoundTexture foundTexture;
+                            if (GameData.gameType == MeType.ME1_TYPE)
+                                foundTexture = textures.Find(s => s.crc == crc && s.name == name);
+                            else
+                                foundTexture = textures.Find(s => s.crc == crc);
+                            if (foundTexture.crc != 0)
                             {
-                                errors += "Error in texture: " + name + string.Format("_0x{0:X8}", crc) + " Texture skipped. This texture has not all the required mipmaps" +  Environment.NewLine;
+                                DDSImage image = new DDSImage(new MemoryStream(dst, 0, (int)dstLen));
+                                if (!image.checkExistAllMipmaps())
+                                {
+                                    errors += "Error in texture: " + name + string.Format("_0x{0:X8}", crc) + " Texture skipped. This texture has not all the required mipmaps" + Environment.NewLine;
+                                    continue;
+                                }
+                                errors += mipMaps.replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name);
+                            }
+                            else
+                            {
+                                errors += "Texture skipped. Texture " + name + string.Format("_0x{0:X8}", crc) + " is not present in your game setup" + Environment.NewLine;
+                            }
+                        }
+                        else if (modFiles[i].tag == MipMaps.FileBinaryTag)
+                        {
+                            string path = GameData.GamePath + pkgPath;
+                            if (!File.Exists(path))
+                            {
+                                errors += "File " + path + " not exists in game setup: ";
                                 continue;
                             }
-                            errors += mipMaps.replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name);
+                            Package pkg = cachePackageMgr.OpenPackage(path);
+                            pkg.setExportData(exportId, dst);
                         }
                         else
                         {
-                            errors += "Texture skipped. Texture " + name + string.Format("_0x{0:X8}", crc) + " is not present in your game setup" + Environment.NewLine;
+                            errors += "Unknown tag for file: " + name + Environment.NewLine;
                         }
                     }
                 }

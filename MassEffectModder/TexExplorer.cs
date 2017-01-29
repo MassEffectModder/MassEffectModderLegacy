@@ -65,7 +65,6 @@ namespace MassEffectModder
         public const uint TextureModTag = 0x444F4D54;
         public const uint FileTextureTag = 0x53444446;
         public const uint FileBinTag = 0x4E494246;
-        public const uint TextureModVersion1 = 1;
         public const uint TextureModVersion = 2;
 
         MeType _gameSelected;
@@ -525,9 +524,12 @@ namespace MassEffectModder
                     {
                         uint tag = fs.ReadUInt32();
                         uint version = fs.ReadUInt32();
-                        if (tag != TextureModTag || (version != TextureModVersion1 && version != TextureModVersion))
+                        if (tag != TextureModTag || version != TextureModVersion)
                         {
-                            MessageBox.Show("File " + file + " is not a valid MEM mod, skipping...");
+                            if (version != TextureModVersion)
+                                MessageBox.Show("File " + file + "  was made with an older version of MEM, skipping...");
+                            else
+                                MessageBox.Show("File " + file + " is not a valid MEM mod, skipping...");
                             continue;
                         }
                     }

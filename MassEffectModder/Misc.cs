@@ -27,6 +27,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Principal;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace MassEffectModder
@@ -433,6 +434,30 @@ namespace MassEffectModder
             }
         }
 
+        static public void ParseLegacyME3ScriptMod(string script, ref string package, ref int expId)
+        {
+            Regex parts = new Regex("int objidx = [0-9]*");
+            Match match = parts.Match(script);
+            if (match.Success)
+            {
+                expId = int.Parse(match.ToString().Split(' ').Last());
+
+                parts = new Regex("string filename = \"[A-z,0-9,.]*\";");
+                match = parts.Match(script);
+                if (match.Success)
+                {
+                    package = match.ToString().Split('\"')[1];
+
+                    parts = new Regex("string pathtarget = ME3Directory.cookedPath;");
+                    match = parts.Match(script);
+                    if (match.Success)
+                    {
+                        return;
+                    }
+                }
+            }
+        }
+
         static public byte[] calculateSHA1(string filePath)
         {
             using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
@@ -456,7 +481,6 @@ namespace MassEffectModder
                 }
             }
         }
-
 
         static public bool detectBrokenMod(MeType gameType)
         {
