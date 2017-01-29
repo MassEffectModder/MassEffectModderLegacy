@@ -116,6 +116,7 @@ namespace MassEffectModder
             clearPreCheckStatus();
 
             buttonPreInstallCheck.Enabled = false;
+            buttonsEnable(false);
             labelFinalStatus.Text = "Checking...";
             labelPreMods.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
             labelPreMods.Text = "Checking...";
@@ -128,6 +129,7 @@ namespace MassEffectModder
                 labelPreMods.ForeColor = Color.FromKnownColor(KnownColor.Red);
                 labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
                 buttonPreInstallCheck.Enabled = true;
+                buttonsEnable(true);
                 return;
             }
             errors = "";
@@ -167,6 +169,7 @@ namespace MassEffectModder
                 labelPreMods.ForeColor = Color.FromKnownColor(KnownColor.Red);
                 labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
                 buttonPreInstallCheck.Enabled = true;
+                buttonsEnable(true);
 
                 if (File.Exists(filename))
                     File.Delete(filename);
@@ -193,6 +196,7 @@ namespace MassEffectModder
                 labelPreGamePath.ForeColor = Color.FromKnownColor(KnownColor.Red);
                 labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
                 buttonPreInstallCheck.Enabled = true;
+                buttonsEnable(true);
                 return;
             }
             if (!gameData.getPackages(true))
@@ -201,6 +205,7 @@ namespace MassEffectModder
                 labelPreGamePath.ForeColor = Color.FromKnownColor(KnownColor.Red);
                 labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
                 buttonPreInstallCheck.Enabled = true;
+                buttonsEnable(true);
                 return;
             }
             if (gameId == (int)MeType.ME1_TYPE)
@@ -211,6 +216,7 @@ namespace MassEffectModder
                     labelPreGamePath.ForeColor = Color.FromKnownColor(KnownColor.Red);
                     labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
                     buttonPreInstallCheck.Enabled = true;
+                    buttonsEnable(true);
                     return;
                 }
             }
@@ -222,6 +228,7 @@ namespace MassEffectModder
                     labelPreGamePath.ForeColor = Color.FromKnownColor(KnownColor.Red);
                     labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
                     buttonPreInstallCheck.Enabled = true;
+                    buttonsEnable(true);
                     return;
                 }
             }
@@ -233,6 +240,7 @@ namespace MassEffectModder
                     labelPreGamePath.ForeColor = Color.FromKnownColor(KnownColor.Red);
                     labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
                     buttonPreInstallCheck.Enabled = true;
+                    buttonsEnable(true);
                     return;
                 }
             }
@@ -273,6 +281,7 @@ namespace MassEffectModder
                 labelPreAccess.ForeColor = Color.FromKnownColor(KnownColor.Red);
                 labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
                 buttonPreInstallCheck.Enabled = true;
+                buttonsEnable(true);
                 return;
             }
             labelPreAccess.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
@@ -313,6 +322,7 @@ namespace MassEffectModder
                 labelPreSpace.ForeColor = Color.FromKnownColor(KnownColor.Red);
                 labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
                 buttonPreInstallCheck.Enabled = true;
+                buttonsEnable(true);
                 return;
             }
             labelPreSpace.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
@@ -329,6 +339,7 @@ namespace MassEffectModder
                 labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.Red);
                 labelFinalStatus.Text = "Preliminary check detected issue...";
                 buttonPreInstallCheck.Enabled = true;
+                buttonsEnable(true);
                 return;
             }
 
@@ -358,6 +369,7 @@ namespace MassEffectModder
 
 
             buttonPreInstallCheck.Enabled = true;
+            buttonsEnable(true);
             buttonSTART.Enabled = true;
         }
 
@@ -511,9 +523,10 @@ namespace MassEffectModder
             buttonPreInstallCheck.Enabled = false;
             buttonSTART.Enabled = false;
             buttonPreChangePath.Enabled = false;
+            buttonExit.Enabled = false;
+            buttonNormal.Enabled = false;
             checkBoxPreEnableRepack.Enabled = false;
             checkBoxPreEnablePack.Enabled = false;
-            buttonsEnable(false);
             labelFinalStatus.Text = "Process in progress...";
 
             Misc.startTimer();
