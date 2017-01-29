@@ -181,12 +181,13 @@ namespace MassEffectModder
                                 throw new Exception();
                             len = fs.ReadInt32();
                             string scriptLegacy = fs.ReadStringASCII(len);
-                            Misc.ParseLegacyME3ScriptMod(scriptLegacy, ref package, ref mod.exportId);
-                            if (mod.exportId == -1 || package == "")
+                            string path = "";
+                            Misc.ParseLegacyME3ScriptMod(scriptLegacy, ref package, ref mod.exportId, ref path);
+                            if (mod.exportId == -1 || package == "" || path == "")
                                 throw new Exception();
                             len = fs.ReadInt32();
                             mod.data = fs.ReadToBuffer(len);
-                            mod.packagePath = GameData.RelativeGameData(Path.Combine(GameData.MainData, package));
+                            mod.packagePath = GameData.RelativeGameData(Path.Combine(path, package));
                             mods.Add(mod);
                         }
                         catch
