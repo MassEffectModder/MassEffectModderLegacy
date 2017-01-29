@@ -130,6 +130,11 @@ namespace MassEffectModder
                         }
                     }
                     treeScan = textures;
+                    if (mainWindow != null)
+                    {
+                        mainWindow.updateStatusLabel("");
+                        mainWindow.updateStatusLabel2("");
+                    }
                     return errors;
                 }
             }
