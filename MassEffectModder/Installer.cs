@@ -530,6 +530,7 @@ namespace MassEffectModder
             checkBoxPreEnablePack.Enabled = false;
             labelFinalStatus.Text = "Process in progress...";
 
+            errors = "";
             Misc.startTimer();
 
             updateStatusPrepare("In progress...");
