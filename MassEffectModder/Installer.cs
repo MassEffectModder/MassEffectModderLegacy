@@ -422,14 +422,14 @@ namespace MassEffectModder
                         byte[] dst = null;
                         fs.JumpTo(modFiles[l].offset);
                         size = modFiles[l].size;
-                        if (modFiles[i].tag == MipMaps.FileTextureTag)
+                        if (modFiles[l].tag == MipMaps.FileTextureTag)
                         {
                             name = fs.ReadStringASCIINull();
                             crc = fs.ReadUInt32();
                         }
-                        else if (modFiles[i].tag == MipMaps.FileBinaryTag)
+                        else if (modFiles[l].tag == MipMaps.FileBinaryTag)
                         {
-                            name = modFiles[i].name;
+                            name = modFiles[l].name;
                             exportId = fs.ReadInt32();
                             pkgPath = fs.ReadStringASCIINull();
                         }
@@ -439,7 +439,7 @@ namespace MassEffectModder
 
                         updateStatusTextures("Mod: " + (i + 1) + " of " + memFiles.Count + " - in progress: " + ((l + 1) * 100 / numFiles) + " % ");
 
-                        if (modFiles[i].tag == MipMaps.FileTextureTag)
+                        if (modFiles[l].tag == MipMaps.FileTextureTag)
                         {
                             FoundTexture foundTexture;
                             if (GameData.gameType == MeType.ME1_TYPE)
@@ -461,7 +461,7 @@ namespace MassEffectModder
                                 errors += "Texture skipped. Texture " + name + string.Format("_0x{0:X8}", crc) + " is not present in your game setup" + Environment.NewLine;
                             }
                         }
-                        else if (modFiles[i].tag == MipMaps.FileBinaryTag)
+                        else if (modFiles[l].tag == MipMaps.FileBinaryTag)
                         {
                             string path = GameData.GamePath + pkgPath;
                             if (!File.Exists(path))
