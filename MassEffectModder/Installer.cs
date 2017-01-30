@@ -442,10 +442,7 @@ namespace MassEffectModder
                         if (modFiles[l].tag == MipMaps.FileTextureTag)
                         {
                             FoundTexture foundTexture;
-                            if (GameData.gameType == MeType.ME1_TYPE)
-                                foundTexture = textures.Find(s => s.crc == crc && s.name == name);
-                            else
-                                foundTexture = textures.Find(s => s.crc == crc);
+                            foundTexture = textures.Find(s => s.crc == crc);
                             if (foundTexture.crc != 0)
                             {
                                 DDSImage image = new DDSImage(new MemoryStream(dst, 0, (int)dstLen));
