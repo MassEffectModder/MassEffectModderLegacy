@@ -515,6 +515,7 @@ namespace MassEffectModder
         {
             buttonExit.Enabled = enabled;
             buttonNormal.Enabled = enabled;
+            buttonPreChangePath.Enabled = enabled;
             Application.DoEvents();
         }
 
