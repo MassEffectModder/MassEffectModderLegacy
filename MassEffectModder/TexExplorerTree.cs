@@ -102,8 +102,14 @@ namespace MassEffectModder
                                     MessageBox.Show("Detected removal of game files since last game data scan." +
                                     "\n\nYou need to restore the game to vanilla state and reinstall vanilla DLCs and DLC mods." +
                                     "\n\nThen from the main menu, select 'Remove Textures Scan File' and start Texture Manager again.");
+                                    return "";
                                 }
-                                return "";
+                                else if (!force)
+                                {
+                                    errors += "Detected removal of game files since last game data scan." + Environment.NewLine + Environment.NewLine +
+                                    "You need to restore the game to vanilla state and reinstall vanilla DLCs and DLC mods.";
+                                    return "";
+                                }
                             }
                         }
                         for (int i = 0; i < GameData.packageFiles.Count; i++)
@@ -115,8 +121,14 @@ namespace MassEffectModder
                                     MessageBox.Show("Detected additional game files not present in latest game data scan." +
                                     "\n\nYou need to restore the game to vanilla state and reinstall vanilla DLCs and DLC mods." +
                                     "\n\nThen from the main menu, select 'Remove Textures Scan File' and start Texture Manager again.");
+                                    return "";
                                 }
-                                return "";
+                                else if (!force)
+                                {
+                                    errors += "Detected additional game files not present in latest game data scan." + Environment.NewLine + Environment.NewLine +
+                                    "You need to restore the game to vanilla state and reinstall vanilla DLCs and DLC mods.";
+                                    return "";
+                                }
                             }
                         }
                     }
@@ -159,8 +171,14 @@ namespace MassEffectModder
                     MessageBox.Show("Detected modded game. Can not continue." +
                     "\n\nYou need to restore the game to vanilla state and reinstall vanilla DLCs and DLC mods." +
                     "\n\nThen start Texture Manager again.");
+                    return "";
                 }
-                return "";
+                else if (!force)
+                {
+                    errors += "Detected modded game. Can not continue." + Environment.NewLine + Environment.NewLine +
+                    "You need to restore the game to vanilla state and reinstall vanilla DLCs and DLC mods.";
+                    return "";
+                }
             }
 
             if (mainWindow != null)
