@@ -514,6 +514,9 @@ namespace MassEffectModder
             buttonExit.Enabled = enabled;
             buttonNormal.Enabled = enabled;
             buttonPreChangePath.Enabled = enabled;
+            checkBoxPreEnableRepack.Enabled = enabled;
+            checkBoxPreEnablePack.Enabled = enabled;
+            checkBoxOptionVanilla.Enabled = enabled;
             Application.DoEvents();
         }
 
