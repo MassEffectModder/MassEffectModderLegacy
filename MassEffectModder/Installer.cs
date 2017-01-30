@@ -343,7 +343,8 @@ namespace MassEffectModder
                 return;
             }
 
-            errors = Misc.checkGameFiles((MeType)gameId, null, this);
+            if (!checkBoxOptionVanilla.Checked)
+                errors = Misc.checkGameFiles((MeType)gameId, null, this);
             if (errors != "")
             {
                 using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate))
@@ -525,6 +526,7 @@ namespace MassEffectModder
             buttonNormal.Enabled = false;
             checkBoxPreEnableRepack.Enabled = false;
             checkBoxPreEnablePack.Enabled = false;
+            checkBoxOptionVanilla.Enabled = false;
             labelFinalStatus.Text = "Process in progress...";
 
             errors = "";

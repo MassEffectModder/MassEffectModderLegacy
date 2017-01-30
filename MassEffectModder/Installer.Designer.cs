@@ -101,6 +101,7 @@
             this.checkBoxPreEnableRepack = new System.Windows.Forms.CheckBox();
             this.checkBoxPreEnablePack = new System.Windows.Forms.CheckBox();
             this.groupBoxOptions = new System.Windows.Forms.GroupBox();
+            this.checkBoxOptionVanilla = new System.Windows.Forms.CheckBox();
             this.groupBoxPreInstallCheck.SuspendLayout();
             this.groupBoxInstaller.SuspendLayout();
             this.groupBoxOptions.SuspendLayout();
@@ -659,6 +660,7 @@
             // 
             // groupBoxOptions
             // 
+            this.groupBoxOptions.Controls.Add(this.checkBoxOptionVanilla);
             this.groupBoxOptions.Controls.Add(this.checkBoxPreEnableRepack);
             this.groupBoxOptions.Controls.Add(this.checkBoxPreEnablePack);
             this.groupBoxOptions.Location = new System.Drawing.Point(12, 214);
@@ -667,6 +669,17 @@
             this.groupBoxOptions.TabIndex = 27;
             this.groupBoxOptions.TabStop = false;
             this.groupBoxOptions.Text = "Options";
+            // 
+            // checkBoxOptionVanilla
+            // 
+            this.checkBoxOptionVanilla.AutoSize = true;
+            this.checkBoxOptionVanilla.Location = new System.Drawing.Point(190, 19);
+            this.checkBoxOptionVanilla.Name = "checkBoxOptionVanilla";
+            this.checkBoxOptionVanilla.Size = new System.Drawing.Size(161, 17);
+            this.checkBoxOptionVanilla.TabIndex = 38;
+            this.checkBoxOptionVanilla.TabStop = false;
+            this.checkBoxOptionVanilla.Text = "Skip vanilla check (Optional)";
+            this.checkBoxOptionVanilla.UseVisualStyleBackColor = true;
             // 
             // Installer
             // 
@@ -744,5 +757,6 @@
         private System.Windows.Forms.CheckBox checkBoxPreVanilla;
         private System.Windows.Forms.CheckBox checkBoxPreSpace;
         private System.Windows.Forms.GroupBox groupBoxOptions;
+        private System.Windows.Forms.CheckBox checkBoxOptionVanilla;
     }
 }
