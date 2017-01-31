@@ -284,6 +284,14 @@ namespace AmaroK86.ImageFormat
                            header.ddspf.dwABitMask == 0x00)
                         return DDSFormat.RGB;
                     break;
+                case 60:
+                        return DDSFormat.V8U8;
+                case 41:
+                        return DDSFormat.G8;
+                case 21:
+                        return DDSFormat.ARGB;
+                case 20:
+                        return DDSFormat.RGB;
                 default: break;
             }
             throw new Exception("invalid texture format");
