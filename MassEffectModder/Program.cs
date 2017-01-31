@@ -30,8 +30,6 @@ namespace MassEffectModder
 {
     static class Program
     {
-        [STAThread]
-
         [DllImport("kernel32", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr LoadLibrary(string lpFileName);
 
@@ -59,6 +57,8 @@ namespace MassEffectModder
                 }
             }
         }
+
+        [STAThread]
 
         static void Main()
         {
