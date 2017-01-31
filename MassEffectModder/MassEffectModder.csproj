@@ -77,6 +77,8 @@
     <Compile Include="DDSImage.cs" />
     <Compile Include="DLC.cs" />
     <Compile Include="GameDataPath.cs" />
+    <Compile Include="Helpers\7Zip\SevenZipHelper.cs" />
+    <Compile Include="Helpers\StreamIO.cs" />
     <Compile Include="IniConf.cs" />
     <Compile Include="Installer.cs">
       <SubType>Form</SubType>
@@ -84,6 +86,7 @@
     <Compile Include="Installer.Designer.cs">
       <DependentUpon>Installer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\LZO2\LZO2Helper.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -113,6 +116,7 @@
     <Compile Include="TexProperties.cs" />
     <Compile Include="Texture.cs" />
     <Compile Include="TOCFile.cs" />
+    <Compile Include="Helpers\Zlib\ZlibHelper.cs" />
     <EmbeddedResource Include="Installer.resx">
       <DependentUpon>Installer.cs</DependentUpon>
     </EmbeddedResource>
@@ -163,26 +167,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Helpers\LZO2Wrapper\LZO2Helper.csproj">
-      <Project>{5e10735c-e0be-4003-a085-4d51434682f4}</Project>
-      <Name>LZO2Helper</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Helpers\SevenZipWrapper\SevenZipHelper.csproj">
-      <Project>{a3a102e9-e5aa-4bed-a86b-757f668ebfe5}</Project>
-      <Name>SevenZipHelper</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Helpers\SharpZipLib\ICSharpCode.SharpZipLib.csproj">
-      <Project>{60A20279-748E-445D-BA68-AB6EE7B4C38D}</Project>
-      <Name>ICSharpCode.SharpZipLib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Helpers\StreamHelpers\StreamHelpers.csproj">
-      <Project>{8ee302b7-4989-47d3-870c-bf38c88b1f38}</Project>
-      <Name>StreamHelpers</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Helpers\ZlibWrapper\ZlibHelper.csproj">
-      <Project>{7c8af7ae-d0d9-4355-8d1f-8420c133db31}</Project>
-      <Name>ZlibHelper</Name>
-    </ProjectReference>
+    <EmbeddedResource Include="Dlls\lzo2wrapper.dll" />
+    <EmbeddedResource Include="Dlls\sevenzipwrapper.dll" />
+    <EmbeddedResource Include="Dlls\zlibwrapper.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

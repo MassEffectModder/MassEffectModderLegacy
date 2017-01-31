@@ -19,8 +19,11 @@
  *
  */
 
+using StreamHelpers;
 using System;
 using System.IO;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace MassEffectModder
@@ -28,8 +31,38 @@ namespace MassEffectModder
     static class Program
     {
         [STAThread]
+
+        [DllImport("kernel32", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr LoadLibrary(string lpFileName);
+
+        static void loadEmbeddedDlls()
+        {
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            string[] resources = assembly.GetManifestResourceNames();
+            for (int l = 0; l < resources.Length; l++)
+            {
+                if (resources[l].EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
+                {
+                    string dllName = resources[l].Split('.')[2] + ".dll";
+                    string dllPath = Path.Combine(Path.GetTempPath(), dllName);
+
+                    using (Stream s = Assembly.GetEntryAssembly().GetManifestResourceStream(resources[l]))
+                    {
+                        byte[] buf = s.ReadToBuffer(s.Length);
+                        if (File.Exists(dllPath))
+                            File.Delete(dllPath);
+                        File.WriteAllBytes(dllPath, buf);
+                    }
+
+                    if (LoadLibrary(dllPath) == IntPtr.Zero)
+                        throw new Exception();
+                }
+            }
+        }
+
         static void Main()
         {
+            loadEmbeddedDlls();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             bool runAsAdmin = false;
