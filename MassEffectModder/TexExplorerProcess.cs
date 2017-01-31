@@ -285,7 +285,10 @@ namespace MassEffectModder
                 {
                     string file = files[n];
                     if (mainWindow != null)
+                    {
                         mainWindow.updateStatusLabel("Creating MOD: " + Path.GetFileName(outFile));
+                        mainWindow.updateStatusLabel2("Texture " + (n + 1) + " of " + files.Count() + ", File: " + Path.GetFileName(file));
+                    }
                     string filename = Path.GetFileNameWithoutExtension(file).ToLower();
                     if (!filename.Contains("_0x"))
                     {
@@ -354,9 +357,6 @@ namespace MassEffectModder
                             errors += "Error in texture: " + Path.GetFileName(file) + " This texture has wrong aspect ratio, skipping texture..." + Environment.NewLine;
                             continue;
                         }
-
-                        if (mainWindow != null)
-                            mainWindow.updateStatusLabel2("Texture " + (n + 1) + " of " + files.Count() + ", Name: " + foundCrcList[0].name);
 
                         Stream dst = compressData(src);
                         dst.SeekBegin();
