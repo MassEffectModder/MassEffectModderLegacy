@@ -246,7 +246,12 @@ namespace MassEffectModder
                                 {
                                     mipmap.storageType = Texture.StorageTypes.pccUnc;
                                     if (!texture.properties.exists("NeverStream"))
-                                        texture.properties.addBoolValue("NeverStream", true);
+                                    {
+                                        if (package.existsNameId("NeverStream"))
+                                            texture.properties.addBoolValue("NeverStream", true);
+                                        else
+                                            goto skip;
+                                    }
                                 }
                                 else
                                 {
@@ -414,6 +419,7 @@ namespace MassEffectModder
                     if (triggerCacheArc)
                         arcTexture = texture;
                 }
+                skip:
                 package = null;
             }
             masterTextures = null;
