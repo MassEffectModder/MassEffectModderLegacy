@@ -57,6 +57,9 @@
     <Prefer32Bit>false</Prefer32Bit>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>MEM.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="PresentationCore" />
@@ -170,6 +173,9 @@
     <EmbeddedResource Include="Dlls\lzo2wrapper.dll" />
     <EmbeddedResource Include="Dlls\sevenzipwrapper.dll" />
     <EmbeddedResource Include="Dlls\zlibwrapper.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="MEM.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
