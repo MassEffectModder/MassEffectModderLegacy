@@ -110,6 +110,7 @@ namespace MassEffectModder
             }
             checkBoxOptionVanilla.Checked = false;
             checkBoxOptionFaster.Checked = false;
+            checkBoxOptionFaster.Visible = false;
 
             clearPreCheckStatus();
 
