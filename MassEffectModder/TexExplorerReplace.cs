@@ -263,10 +263,7 @@ namespace MassEffectModder
                         {
                             if (texture.properties.exists("TextureFileCacheName") && texture.mipMapsList.Count > 1)
                             {
-                                if (archiveFile.Contains("\\DLC"))
-                                    mipmap.storageType = Texture.StorageTypes.extUnc;
-                                else
-                                    mipmap.storageType = Texture.StorageTypes.extZlib;
+                                mipmap.storageType = Texture.StorageTypes.extZlib;
                             }
                         }
                     }

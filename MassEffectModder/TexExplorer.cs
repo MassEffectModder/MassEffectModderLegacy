@@ -181,7 +181,7 @@ namespace MassEffectModder
                 string errors = "";
                 _mainWindow.updateStatusLabel("");
                 _mainWindow.updateStatusLabel("Preparing tree...");
-                errors += treeScan.PrepareListOfTextures(this, _mainWindow, null);
+                errors += treeScan.PrepareListOfTextures(this, null, _mainWindow, null);
                 _textures = treeScan.treeScan;
                 if (errors != "")
                 {
@@ -841,7 +841,7 @@ namespace MassEffectModder
                     {
                         _mainWindow.updateStatusLabel("Generating textures information from package " + (l + 1) + " of " + GameData.packageFiles.Count);
                         _mainWindow.updateStatusLabel2("");
-                        Package package = new Package(GameData.packageFiles[l]);
+                        Package package = new Package(GameData.packageFiles[l], true);
                         fs.WriteStringASCII("--- Package: " + Path.GetFileName(GameData.packageFiles[l]) + " ---\n");
                         for (int i = 0; i < package.exportsTable.Count; i++)
                         {

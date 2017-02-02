@@ -41,7 +41,7 @@ namespace MassEffectModder
         public MainWindow(bool runAsAdmin)
         {
             InitializeComponent();
-            Text = "Mass Effect Modder v1.70";
+            Text = "Mass Effect Modder v1.71";
             if (runAsAdmin)
                 Text += " (run as Administrator)";
             _configIni = new ConfIni();
@@ -302,9 +302,13 @@ namespace MassEffectModder
             for (int i = 0; i < GameData.packageFiles.Count; i++)
             {
                 updateStatusLabel("Repack PCC file " + (i + 1) + " of " + GameData.packageFiles.Count);
-                Package package = new Package(GameData.packageFiles[i]);
+                Package package = new Package(GameData.packageFiles[i], true, true);
                 if (package.compressed && package.compressionType != Package.CompressionType.Zlib)
+                {
+                    package.Dispose();
+                    package = new Package(GameData.packageFiles[i], true);
                     package.SaveToFile(true);
+                }
             }
             updateStatusLabel("Done");
             updateStatusLabel2("");

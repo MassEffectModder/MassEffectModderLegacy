@@ -102,6 +102,7 @@
             this.checkBoxPreEnablePack = new System.Windows.Forms.CheckBox();
             this.groupBoxOptions = new System.Windows.Forms.GroupBox();
             this.checkBoxOptionVanilla = new System.Windows.Forms.CheckBox();
+            this.checkBoxOptionFaster = new System.Windows.Forms.CheckBox();
             this.groupBoxPreInstallCheck.SuspendLayout();
             this.groupBoxInstaller.SuspendLayout();
             this.groupBoxOptions.SuspendLayout();
@@ -639,10 +640,10 @@
             this.checkBoxPreEnableRepack.AutoSize = true;
             this.checkBoxPreEnableRepack.Location = new System.Drawing.Point(18, 19);
             this.checkBoxPreEnableRepack.Name = "checkBoxPreEnableRepack";
-            this.checkBoxPreEnableRepack.Size = new System.Drawing.Size(167, 17);
+            this.checkBoxPreEnableRepack.Size = new System.Drawing.Size(119, 17);
             this.checkBoxPreEnableRepack.TabIndex = 35;
             this.checkBoxPreEnableRepack.TabStop = false;
-            this.checkBoxPreEnableRepack.Text = "Repack Game Files (Optional)";
+            this.checkBoxPreEnableRepack.Text = "Repack Game Files";
             this.checkBoxPreEnableRepack.UseVisualStyleBackColor = true;
             this.checkBoxPreEnableRepack.CheckedChanged += new System.EventHandler(this.checkBoxPreEnableRepack_CheckedChanged);
             // 
@@ -651,15 +652,16 @@
             this.checkBoxPreEnablePack.AutoSize = true;
             this.checkBoxPreEnablePack.Location = new System.Drawing.Point(18, 42);
             this.checkBoxPreEnablePack.Name = "checkBoxPreEnablePack";
-            this.checkBoxPreEnablePack.Size = new System.Drawing.Size(141, 17);
+            this.checkBoxPreEnablePack.Size = new System.Drawing.Size(93, 17);
             this.checkBoxPreEnablePack.TabIndex = 37;
             this.checkBoxPreEnablePack.TabStop = false;
-            this.checkBoxPreEnablePack.Text = "Repack DLCs (Optional)";
+            this.checkBoxPreEnablePack.Text = "Repack DLCs";
             this.checkBoxPreEnablePack.UseVisualStyleBackColor = true;
             this.checkBoxPreEnablePack.CheckedChanged += new System.EventHandler(this.checkBoxPreEnablePack_CheckedChanged);
             // 
             // groupBoxOptions
             // 
+            this.groupBoxOptions.Controls.Add(this.checkBoxOptionFaster);
             this.groupBoxOptions.Controls.Add(this.checkBoxOptionVanilla);
             this.groupBoxOptions.Controls.Add(this.checkBoxPreEnableRepack);
             this.groupBoxOptions.Controls.Add(this.checkBoxPreEnablePack);
@@ -673,13 +675,24 @@
             // checkBoxOptionVanilla
             // 
             this.checkBoxOptionVanilla.AutoSize = true;
-            this.checkBoxOptionVanilla.Location = new System.Drawing.Point(190, 19);
+            this.checkBoxOptionVanilla.Location = new System.Drawing.Point(167, 19);
             this.checkBoxOptionVanilla.Name = "checkBoxOptionVanilla";
-            this.checkBoxOptionVanilla.Size = new System.Drawing.Size(161, 17);
+            this.checkBoxOptionVanilla.Size = new System.Drawing.Size(113, 17);
             this.checkBoxOptionVanilla.TabIndex = 38;
             this.checkBoxOptionVanilla.TabStop = false;
-            this.checkBoxOptionVanilla.Text = "Skip vanilla check (Optional)";
+            this.checkBoxOptionVanilla.Text = "Skip vanilla check";
             this.checkBoxOptionVanilla.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxOptionFaster
+            // 
+            this.checkBoxOptionFaster.AutoSize = true;
+            this.checkBoxOptionFaster.Location = new System.Drawing.Point(167, 42);
+            this.checkBoxOptionFaster.Name = "checkBoxOptionFaster";
+            this.checkBoxOptionFaster.Size = new System.Drawing.Size(283, 17);
+            this.checkBoxOptionFaster.TabIndex = 39;
+            this.checkBoxOptionFaster.TabStop = false;
+            this.checkBoxOptionFaster.Text = "Faster method (8GB RAM required) - EXPERIMENTAL";
+            this.checkBoxOptionFaster.UseVisualStyleBackColor = true;
             // 
             // Installer
             // 
@@ -758,5 +771,6 @@
         private System.Windows.Forms.CheckBox checkBoxPreSpace;
         private System.Windows.Forms.GroupBox groupBoxOptions;
         private System.Windows.Forms.CheckBox checkBoxOptionVanilla;
+        private System.Windows.Forms.CheckBox checkBoxOptionFaster;
     }
 }

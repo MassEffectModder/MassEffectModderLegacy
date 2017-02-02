@@ -53,7 +53,12 @@ namespace MassEffectModder
                 {
                     installer.updateStatusMipMaps("Progress (" + phase + ") ... " + (i * 100 / GameData.packageFiles.Count) + " % ");
                 }
-                Package package = new Package(GameData.packageFiles[i], true);
+                Package package = null;
+
+                if (cachePackageMgr != null)
+                    package = cachePackageMgr.OpenPackage(GameData.packageFiles[i]);
+                else
+                    package = new Package(GameData.packageFiles[i], true);
                 for (int l = 0; l < package.exportsTable.Count; l++)
                 {
                     int id = package.getClassNameId(package.exportsTable[l].classId);
@@ -107,7 +112,11 @@ namespace MassEffectModder
                                     MatchedTexture foundTex = foundTexName.list.Find(s => Path.GetFileNameWithoutExtension(s.path).ToLower() == pkgName);
                                     if (foundTex.path == null)
                                         throw new Exception();
-                                    Package refPkg = new Package(GameData.GamePath + foundTex.path, true);
+                                    Package refPkg = null;
+                                    if (cachePackageMgr != null)
+                                        refPkg = cachePackageMgr.OpenPackage(GameData.GamePath + foundTex.path);
+                                    else
+                                        refPkg = new Package(GameData.GamePath + foundTex.path, true);
                                     int refExportId = foundTex.exportID;
                                     byte[] refData = refPkg.getExportData(refExportId);
                                     refPkg.DisposeCache();
@@ -129,7 +138,6 @@ namespace MassEffectModder
                                                 texture.mipMapsList[t] = mipmap;
                                             }
                                         }
-                                        refPkg = null;
                                     }
                                 }
                             }
@@ -144,14 +152,21 @@ skip:
                         }
                     }
                 }
-                if (modified)
+                if (cachePackageMgr == null)
                 {
-                    if (package.compressed && package.compressionType != Package.CompressionType.Zlib)
-                        package.SaveToFile(forceZlib);
-                    else
-                        package.SaveToFile();
+                    if (modified)
+                    {
+                        if (package.compressed && package.compressionType != Package.CompressionType.Zlib)
+                            package.SaveToFile(forceZlib);
+                        else
+                            package.SaveToFile();
+                    }
+                    package.Dispose();
                 }
-                package.Dispose();
+                else
+                {
+                    package.DisposeCache();
+                }
             }
             if (GameData.gameType == MeType.ME3_TYPE)
             {
@@ -192,7 +207,7 @@ skip:
             {
                 if (GameData.gameType == entries[i].gameType)
                 {
-                    Package package = new Package(GameData.GamePath + entries[i].packagePath);
+                    Package package = new Package(GameData.GamePath + entries[i].packagePath, true);
                     Texture texture = new Texture(package, entries[i].exportId, package.getExportData(entries[i].exportId));
                     if (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty))
                         return false;
@@ -202,7 +217,7 @@ skip:
             return true;
         }
 
-        static public bool checkGameDataModded()
+        static public bool checkGameDataModded(CachePackageMgr cachePackageMgr)
         {
             EmptyMipMaps[] entries = new EmptyMipMaps[]
             {
@@ -580,7 +595,11 @@ skip:
             {
                 if (GameData.gameType == entries[i].gameType)
                 {
-                    Package package = new Package(GameData.GamePath + entries[i].packagePath);
+                    Package package = null;
+                    if (cachePackageMgr != null)
+                        package = cachePackageMgr.OpenPackage(GameData.GamePath + entries[i].packagePath);
+                    else
+                        package = new Package(GameData.GamePath + entries[i].packagePath, true);
                     Texture texture = new Texture(package, entries[i].exportId, package.getExportData(entries[i].exportId));
                     if (texture.getCrcTopMipmap() != entries[i].crc)
                         return true;

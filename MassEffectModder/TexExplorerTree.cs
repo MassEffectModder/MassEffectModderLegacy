@@ -33,7 +33,7 @@ namespace MassEffectModder
     {
         public List<FoundTexture> treeScan = null;
 
-        public string PrepareListOfTextures(TexExplorer texEplorer, MainWindow mainWindow, Installer installer, bool force = false)
+        public string PrepareListOfTextures(TexExplorer texEplorer, CachePackageMgr cachePackageMgr, MainWindow mainWindow, Installer installer, bool force = false)
         {
             string errors = "";
             treeScan = null;
@@ -165,7 +165,7 @@ namespace MassEffectModder
                 return "";
             }
 
-            if (MipMaps.checkGameDataModded())
+            if (MipMaps.checkGameDataModded(cachePackageMgr))
             {
                 if (mainWindow != null)
                 {
@@ -209,7 +209,7 @@ namespace MassEffectModder
                 }
                 if (installer != null)
                     installer.updateStatusScan("Progress... " + (i * 100 / GameData.packageFiles.Count) + " % ");
-                errors += FindTextures(textures, GameData.packageFiles[i]);
+                errors += FindTextures(textures, GameData.packageFiles[i], cachePackageMgr);
             }
 
             using (FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
@@ -253,12 +253,16 @@ namespace MassEffectModder
             return errors;
         }
 
-        private string FindTextures(List<FoundTexture> textures, string packagePath)
+        private string FindTextures(List<FoundTexture> textures, string packagePath, CachePackageMgr cachePackageMgr)
         {
             string errors = "";
             bool modified = false;
+            Package package = null;
 
-            Package package = new Package(packagePath);
+            if (cachePackageMgr != null)
+                package = cachePackageMgr.OpenPackage(packagePath);
+            else
+                package = new Package(packagePath, true);
             for (int i = 0; i < package.exportsTable.Count; i++)
             {
                 int id = package.getClassNameId(package.exportsTable[i].classId);
@@ -329,9 +333,16 @@ namespace MassEffectModder
                     }
                 }
             }
-            if (modified)
-                package.SaveToFile();
-            package.Dispose();
+            if (cachePackageMgr == null)
+            {
+                if (modified)
+                    package.SaveToFile();
+                package.Dispose();
+            }
+            else
+            {
+                package.DisposeCache();
+            }
             return errors;
         }
     }

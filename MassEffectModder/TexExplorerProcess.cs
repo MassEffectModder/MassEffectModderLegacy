@@ -334,7 +334,7 @@ namespace MassEffectModder
                             continue;
                         }
 
-                        Package pkg = new Package(GameData.GamePath + foundCrcList[0].list[0].path);
+                        Package pkg = new Package(GameData.GamePath + foundCrcList[0].list[0].path, true);
                         Texture texture = new Texture(pkg, foundCrcList[0].list[0].exportID, pkg.getExportData(foundCrcList[0].list[0].exportID));
 
                         if (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1)

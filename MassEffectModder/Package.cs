@@ -448,10 +448,10 @@ namespace MassEffectModder
             if (version != packageFileVersion)
                 throw new Exception("Wrong PCC version");
 
+            compressionType = (CompressionType)packageFile.ReadUInt32();
+
             if (headerOnly)
                 return;
-
-            compressionType = (CompressionType)packageFile.ReadUInt32();
 
             numChunks = packageFile.ReadUInt32();
 
@@ -749,9 +749,9 @@ namespace MassEffectModder
             namesTableEnd = (uint)input.Position;
         }
 
-        private void saveNames(Stream output, bool modified = false)
+        private void saveNames(Stream output, bool mod = false)
         {
-            if (!modified)
+            if (!mod)
             {
                 packageFile.JumpTo(namesOffset);
                 output.WriteFromStream(packageFile, namesTableEnd - namesOffset);
@@ -883,9 +883,9 @@ namespace MassEffectModder
             }
         }
 
-        private void saveImports(Stream output, bool modified = false)
+        private void saveImports(Stream output, bool mod = false)
         {
-            if (!modified)
+            if (!mod)
             {
                 packageFile.JumpTo(importsOffset);
                 output.WriteFromStream(packageFile, importsTableEnd - importsOffset);

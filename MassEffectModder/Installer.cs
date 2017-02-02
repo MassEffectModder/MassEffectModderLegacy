@@ -48,7 +48,7 @@ namespace MassEffectModder
         public Installer(bool runAsAdmin)
         {
             InitializeComponent();
-            Text = "MEM Installer v1.70 for ALOT";
+            Text = "MEM Installer v1.71 for ALOT";
             if (runAsAdmin)
                 Text += " (run as Administrator)";
             mipMaps = new MipMaps();
@@ -108,6 +108,8 @@ namespace MassEffectModder
                 labelMipMaps.Visible = false;
                 checkBoxMipMaps.Visible = false;
             }
+            checkBoxOptionVanilla.Checked = false;
+            checkBoxOptionFaster.Checked = false;
 
             clearPreCheckStatus();
 
@@ -522,6 +524,7 @@ namespace MassEffectModder
             checkBoxPreEnableRepack.Enabled = enabled;
             checkBoxPreEnablePack.Enabled = enabled;
             checkBoxOptionVanilla.Enabled = enabled;
+            checkBoxOptionFaster.Enabled = false;// enabled;
             Application.DoEvents();
         }
 
@@ -535,6 +538,7 @@ namespace MassEffectModder
             checkBoxPreEnableRepack.Enabled = false;
             checkBoxPreEnablePack.Enabled = false;
             checkBoxOptionVanilla.Enabled = false;
+            checkBoxOptionFaster.Enabled = false;
             labelFinalStatus.Text = "Process in progress...";
 
             errors = "";
@@ -555,10 +559,26 @@ namespace MassEffectModder
 
 
             updateStatusScan("In progress...");
-            errors += treeScan.PrepareListOfTextures(null, null, this, true);
+            if (checkBoxOptionFaster.Checked)
+                errors += treeScan.PrepareListOfTextures(null, cachePackageMgr, null, this, true);
+            else
+                errors += treeScan.PrepareListOfTextures(null, null, null, this, true);
             textures = treeScan.treeScan;
             checkBoxScan.Checked = true;
             updateStatusScan("");
+
+
+            if (checkBoxOptionFaster.Checked)
+            {
+                if (GameData.gameType == MeType.ME1_TYPE)
+                {
+                    updateStatusMipMaps("In progress...");
+                    errors += mipMaps.removeMipMaps(1, textures, cachePackageMgr, null, this, checkBoxPreEnableRepack.Checked);
+                    errors += mipMaps.removeMipMaps(2, textures, cachePackageMgr, null, this, checkBoxPreEnableRepack.Checked);
+                    checkBoxMipMaps.Checked = true;
+                    updateStatusMipMaps("");
+                }
+            }
 
 
             updateStatusTextures("In progress...");
@@ -573,13 +593,16 @@ namespace MassEffectModder
             updateStatusStore("");
 
 
-            if (GameData.gameType == MeType.ME1_TYPE)
+            if (!checkBoxOptionFaster.Checked)
             {
-                updateStatusMipMaps("In progress...");
-                errors += mipMaps.removeMipMaps(1, textures, cachePackageMgr, null, this, checkBoxPreEnableRepack.Checked);
-                errors += mipMaps.removeMipMaps(2, textures, cachePackageMgr, null, this, checkBoxPreEnableRepack.Checked);
-                checkBoxMipMaps.Checked = true;
-                updateStatusMipMaps("");
+                if (GameData.gameType == MeType.ME1_TYPE)
+                {
+                    updateStatusMipMaps("In progress...");
+                    errors += mipMaps.removeMipMaps(1, textures, null, null, this, checkBoxPreEnableRepack.Checked);
+                    errors += mipMaps.removeMipMaps(2, textures, null, null, this, checkBoxPreEnableRepack.Checked);
+                    checkBoxMipMaps.Checked = true;
+                    updateStatusMipMaps("");
+                }
             }
 
             updateStatusLOD("In progress...");
@@ -599,9 +622,13 @@ namespace MassEffectModder
                 for (int i = 0; i < GameData.packageFiles.Count; i++)
                 {
                     updateStatusRepackZlib("Repacking PCC files... " + ((i + 1) * 100 / GameData.packageFiles.Count) + " %");
-                    Package package = new Package(GameData.packageFiles[i]);
+                    Package package = new Package(GameData.packageFiles[i], true, true);
                     if (package.compressed && package.compressionType != Package.CompressionType.Zlib)
+                    {
+                        package.Dispose();
+                        package = new Package(GameData.packageFiles[i], true);
                         package.SaveToFile(true);
+                    }
                 }
                 checkBoxRepackZlib.Checked = true;
                 updateStatusRepackZlib("");
