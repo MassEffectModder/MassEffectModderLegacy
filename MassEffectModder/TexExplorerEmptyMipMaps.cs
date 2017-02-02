@@ -22,10 +22,8 @@
 using StreamHelpers;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
 
 namespace MassEffectModder
 {
@@ -590,52 +588,6 @@ skip:
             }
 
             return false;
-        }
-    }
-
-    public partial class TexExplorer : Form
-    {
-        private void removeEmptyMipmapsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (MipMaps.verifyGameDataEmptyMipMapsRemoval())
-            {
-                DialogResult result = MessageBox.Show("It seems empty mipmaps were already removed.\nAre you sure you want to proceed?", "Remove empty mipmaps", MessageBoxButtons.YesNo);
-                if (result == DialogResult.No)
-                    return;
-            }
-            else
-            {
-                DialogResult result = MessageBox.Show("Are you sure you want to proceed?", "Remove empty mipmaps", MessageBoxButtons.YesNo);
-                if (result == DialogResult.No)
-                    return;
-            }
-
-            EnableMenuOptions(false);
-
-            _mainWindow.GetPackages(gameData);
-
-            string errors = "";
-            Misc.startTimer();
-            MipMaps mipmaps = new MipMaps();
-            errors += mipmaps.removeMipMaps(1, _textures, cachePackageMgr, _mainWindow, null);
-            if (GameData.gameType == MeType.ME1_TYPE)
-                errors += mipmaps.removeMipMaps(2, _textures, cachePackageMgr, _mainWindow, null);
-            var time = Misc.stopTimer();
-            EnableMenuOptions(true);
-            _mainWindow.updateStatusLabel("Done. Process total time: " + Misc.getTimerFormat(time));
-            _mainWindow.updateStatusLabel2("");
-            if (errors != "")
-            {
-                MessageBox.Show("WARNING: Some errors have occured!");
-                string errorFile = "errors-remove.txt";
-                if (File.Exists(errorFile))
-                    File.Delete(errorFile);
-                using (FileStream fs = new FileStream(errorFile, FileMode.CreateNew))
-                {
-                    fs.WriteStringASCII(errors);
-                }
-                Process.Start(errorFile);
-            }
         }
     }
 }

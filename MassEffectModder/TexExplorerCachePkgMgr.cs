@@ -70,7 +70,7 @@ namespace MassEffectModder
             packages.Clear();
         }
 
-        public void CloseAllWithSave()
+        public void CloseAllWithSave(bool forceZlib = false)
         {
             for (int i = 0; i < packages.Count; i++)
             {
@@ -79,7 +79,7 @@ namespace MassEffectModder
                     mainWindow.updateStatusLabel2("Saving package " + (i + 1) + " of " + packages.Count);
                 if (_installer != null)
                     _installer.updateStatusStore("Progress... " + (i * 100 / packages.Count) + " % ");
-                pkg.SaveToFile();
+                pkg.SaveToFile(forceZlib);
                 pkg.Dispose();
             }
 

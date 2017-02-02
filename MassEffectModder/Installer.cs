@@ -48,7 +48,7 @@ namespace MassEffectModder
         public Installer(bool runAsAdmin)
         {
             InitializeComponent();
-            Text = "MEM Installer v1.69 for ALOT";
+            Text = "MEM Installer v1.70 for ALOT";
             if (runAsAdmin)
                 Text += " (run as Administrator)";
             mipMaps = new MipMaps();
@@ -102,6 +102,11 @@ namespace MassEffectModder
                 labelME3DLCPack.Visible = false;
                 checkBoxPackDLC.Visible = false;
                 labelStatusPackDLC.Visible = false;
+            }
+            if (gameId == 1)
+            {
+                labelMipMaps.Visible = false;
+                checkBoxMipMaps.Visible = false;
             }
 
             clearPreCheckStatus();
@@ -563,18 +568,19 @@ namespace MassEffectModder
 
 
             updateStatusStore("Progress...");
-            cachePackageMgr.CloseAllWithSave();
+            cachePackageMgr.CloseAllWithSave(checkBoxPreEnableRepack.Checked);
             checkBoxStore.Checked = true;
             updateStatusStore("");
 
 
-            updateStatusMipMaps("In progress...");
-            errors += mipMaps.removeMipMaps(1, textures, cachePackageMgr, null, this, checkBoxPreEnableRepack.Checked);
             if (GameData.gameType == MeType.ME1_TYPE)
+            {
+                updateStatusMipMaps("In progress...");
+                errors += mipMaps.removeMipMaps(1, textures, cachePackageMgr, null, this, checkBoxPreEnableRepack.Checked);
                 errors += mipMaps.removeMipMaps(2, textures, cachePackageMgr, null, this, checkBoxPreEnableRepack.Checked);
-            checkBoxMipMaps.Checked = true;
-            updateStatusMipMaps("");
-
+                checkBoxMipMaps.Checked = true;
+                updateStatusMipMaps("");
+            }
 
             updateStatusLOD("In progress...");
             LODSettings.updateLOD((MeType)gameId, configIni);

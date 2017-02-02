@@ -80,7 +80,6 @@ namespace MassEffectModder
             this.packMODToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createMODBatchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miscToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.removeEmptyMipmapsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dumpAllTexturesMipmapsInfoTXTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.searchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStripTextures.SuspendLayout();
@@ -391,18 +390,10 @@ namespace MassEffectModder
             // miscToolStripMenuItem
             // 
             this.miscToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.removeEmptyMipmapsToolStripMenuItem,
             this.dumpAllTexturesMipmapsInfoTXTToolStripMenuItem});
             this.miscToolStripMenuItem.Name = "miscToolStripMenuItem";
             this.miscToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.miscToolStripMenuItem.Text = "Scan";
-            // 
-            // removeEmptyMipmapsToolStripMenuItem
-            // 
-            this.removeEmptyMipmapsToolStripMenuItem.Name = "removeEmptyMipmapsToolStripMenuItem";
-            this.removeEmptyMipmapsToolStripMenuItem.Size = new System.Drawing.Size(216, 22);
-            this.removeEmptyMipmapsToolStripMenuItem.Text = "Remove empty mipmaps";
-            this.removeEmptyMipmapsToolStripMenuItem.Click += new System.EventHandler(this.removeEmptyMipmapsToolStripMenuItem_Click);
             // 
             // dumpAllTexturesMipmapsInfoTXTToolStripMenuItem
             // 
@@ -477,7 +468,6 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripMenuItem extractModsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem packMODToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem miscToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem removeEmptyMipmapsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem dumpAllTexturesMipmapsInfoTXTToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem createMODBatchToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem extractToDDSFileToolStripMenuItem;
