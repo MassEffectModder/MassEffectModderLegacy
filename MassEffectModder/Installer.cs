@@ -583,8 +583,13 @@ namespace MassEffectModder
             }
 
             updateStatusLOD("In progress...");
-            LODSettings.updateLOD((MeType)gameId, configIni);
-            LODSettings.updateGFXSettings((MeType)gameId, configIni);
+            string path = gameData.EngineConfigIniPath;
+            bool exist = File.Exists(path);
+            if (!exist)
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+            ConfIni engineConf = new ConfIni(path);
+            LODSettings.updateLOD((MeType)gameId, engineConf);
+            LODSettings.updateGFXSettings((MeType)gameId, engineConf);
             checkBoxLOD.Checked = true;
             updateStatusLOD("");
 
