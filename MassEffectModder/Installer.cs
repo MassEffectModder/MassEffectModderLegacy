@@ -103,7 +103,7 @@ namespace MassEffectModder
                 checkBoxPackDLC.Visible = false;
                 labelStatusPackDLC.Visible = false;
             }
-            if (gameId == 1)
+            if (gameId != 1)
             {
                 labelMipMaps.Visible = false;
                 checkBoxMipMaps.Visible = false;
