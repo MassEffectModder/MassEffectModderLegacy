@@ -288,6 +288,13 @@ namespace MassEffectModder
                         slave = true;
                     }
 
+                    uint crc = texture.getCrcTopMipmap();
+                    if (crc == 0)
+                    {
+                        errors += "Error: Texture " + package.exportsTable[i].objectName + " is broken in package: " + packagePath + ", skipping..." + Environment.NewLine;
+                        continue;
+                    }
+
                     if (GameData.gameType != MeType.ME1_TYPE &&
                         texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty))
                     {
@@ -307,12 +314,6 @@ namespace MassEffectModder
                         modified = true;
                     }
 
-                    uint crc = texture.getCrcTopMipmap();
-                    if (crc == 0)
-                    {
-                        errors += "Error: Texture " + package.exportsTable[i].objectName + " is broken in package: " + packagePath + ", skipping..." + Environment.NewLine;
-                        continue;
-                    }
                     FoundTexture foundTexName = textures.Find(s => s.crc == crc);
                     if (foundTexName.crc != 0)
                     {
