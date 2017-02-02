@@ -110,7 +110,6 @@ namespace MassEffectModder
             }
             checkBoxOptionVanilla.Checked = false;
             checkBoxOptionFaster.Checked = false;
-            checkBoxOptionFaster.Enabled = false;
 
             clearPreCheckStatus();
 
@@ -525,7 +524,7 @@ namespace MassEffectModder
             checkBoxPreEnableRepack.Enabled = enabled;
             checkBoxPreEnablePack.Enabled = enabled;
             checkBoxOptionVanilla.Enabled = enabled;
-            checkBoxOptionFaster.Enabled = false;// enabled;
+            checkBoxOptionFaster.Enabled = enabled;
             Application.DoEvents();
         }
 

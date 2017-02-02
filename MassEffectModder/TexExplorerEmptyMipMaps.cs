@@ -168,7 +168,7 @@ skip:
                     package.DisposeCache();
                 }
             }
-            if (GameData.gameType == MeType.ME3_TYPE)
+            if (cachePackageMgr == null && GameData.gameType == MeType.ME3_TYPE)
             {
                 CachePackageMgr.updateMainTOC();
                 CachePackageMgr.updateDLCsTOC();
@@ -338,7 +338,7 @@ skip:
                 new EmptyMipMaps
                 {
                     gameType = MeType.ME2_TYPE,
-                    packagePath = @"\\BioGame\CookedPC\BioD_HorCr1_303AshKaidan.pcc",
+                    packagePath = @"\BioGame\CookedPC\BioD_HorCr1_303AshKaidan.pcc",
                     exportId = 3781,
                     crc = 0x0898E4C4,
                 },
