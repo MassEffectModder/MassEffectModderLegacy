@@ -446,7 +446,7 @@ namespace MassEffectModder
                 match = parts.Match(script);
                 if (match.Success)
                 {
-                    package = match.ToString().Split('\"')[1];
+                    package = match.ToString().Split('\"')[1].Replace("\\\\", "\\");
 
                     parts = new Regex("string pathtarget = ME3Directory.cookedPath;");
                     match = parts.Match(script);
@@ -457,12 +457,22 @@ namespace MassEffectModder
                     }
                     else
                     {
-                        parts = new Regex("string pathtarget = new DirectoryInfo[(]ME3Directory[.]cookedPath[)][.]Parent.FullName [+] \"[A-z,0-9,_,.]*\";");
+                        parts = new Regex("string pathtarget = Path.GetDirectoryName[(]ME3Directory[.]cookedPath[)];");
                         match = parts.Match(script);
                         if (match.Success)
                         {
-                            path = Path.GetDirectoryName(GameData.bioGamePath + match.ToString().Split('\"')[1]);
+                            path = Path.GetDirectoryName(GameData.MainData);
                             return;
+                        }
+                        else
+                        {
+                            parts = new Regex("string pathtarget = new DirectoryInfo[(]ME3Directory[.]cookedPath[)][.]Parent.FullName [+] \"[A-z,0-9,_,.]*\";");
+                            match = parts.Match(script);
+                            if (match.Success)
+                            {
+                                path = Path.GetDirectoryName(GameData.bioGamePath + match.ToString().Split('\"')[1]);
+                                return;
+                            }
                         }
                     }
                 }

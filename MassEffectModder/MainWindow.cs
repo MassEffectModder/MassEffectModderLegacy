@@ -41,7 +41,7 @@ namespace MassEffectModder
         public MainWindow(bool runAsAdmin)
         {
             InitializeComponent();
-            Text = "Mass Effect Modder v1.73";
+            Text = "Mass Effect Modder v1.74";
             if (runAsAdmin)
                 Text += " (run as Administrator)";
             _configIni = new ConfIni();
@@ -168,7 +168,9 @@ namespace MassEffectModder
                 {
                     string package = "";
                     int len = fs.ReadInt32();
-                    fs.ReadStringASCII(len); // version
+                    string version = fs.ReadStringASCII(len); // version
+                    if (version.Length < 5) // legacy .mod
+                        fs.SeekBegin();
                     numEntries = fs.ReadInt32();
                     for (int i = 0; i < numEntries; i++)
                     {
@@ -177,11 +179,11 @@ namespace MassEffectModder
                         {
                             len = fs.ReadInt32();
                             string desc = fs.ReadStringASCII(len); // description
-                            if (!desc.Contains("Binary Replacement for file"))
-                                throw new Exception();
                             len = fs.ReadInt32();
                             string scriptLegacy = fs.ReadStringASCII(len);
                             string path = "";
+                            if (!desc.Contains("Binary Replacement for file"))
+                                throw new Exception();
                             Misc.ParseLegacyME3ScriptMod(scriptLegacy, ref package, ref mod.exportId, ref path);
                             if (mod.exportId == -1 || package == "" || path == "")
                                 throw new Exception();
@@ -192,6 +194,8 @@ namespace MassEffectModder
                         }
                         catch
                         {
+                            len = fs.ReadInt32();
+                            fs.Skip(len);
                             errors += "Skipping not Binary Replacement content, entry: " + (i + 1) + Environment.NewLine;
                         }
                     }
@@ -199,6 +203,7 @@ namespace MassEffectModder
                 if (mods.Count == 0)
                 {
                     MessageBox.Show("This mod is not compatible!");
+                    updateStatusLabel("Mod conversion failed");
                     return "This mod is not compatible!" + Environment.NewLine;
                 }
 
@@ -207,7 +212,10 @@ namespace MassEffectModder
                     memFile.Title = "Select a MEM .mem file, or create a new one";
                     memFile.Filter = "MEM file | *.mem";
                     if (memFile.ShowDialog() != DialogResult.OK)
+                    {
+                        updateStatusLabel("");
                         return "";
+                    }
 
                     List<MipMaps.FileMod> modFiles = new List<MipMaps.FileMod>();
                     FileStream outFs;
@@ -232,6 +240,7 @@ namespace MassEffectModder
                             if ((MeType)gameType != GameData.gameType)
                             {
                                 errors += "File " + memFile.FileName + " is not a MEM mod valid for this game" + Environment.NewLine;
+                                updateStatusLabel("Mod conversion failed");
                                 return errors;
                             }
                         }
@@ -471,7 +480,19 @@ namespace MassEffectModder
         private void modME3ExportDataToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             enableGameDataMenu(false);
-            convertDataModtoMem();
+            string errors = convertDataModtoMem();
+            if (errors != "")
+            {
+                string filename = "mod-errors.txt";
+                if (File.Exists(filename))
+                    File.Delete(filename);
+                using (FileStream fs = new FileStream(filename, FileMode.CreateNew))
+                {
+                    fs.WriteStringASCII(errors);
+                }
+                MessageBox.Show("WARNING: Some errors have occured!");
+                Process.Start(filename);
+            }
             enableGameDataMenu(true);
         }
 
