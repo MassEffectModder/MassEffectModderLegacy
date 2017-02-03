@@ -82,6 +82,7 @@ namespace MassEffectModder
             this.miscToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dumpAllTexturesMipmapsInfoTXTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.searchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.info2TextureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStripTextures.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -104,7 +105,7 @@ namespace MassEffectModder
             this.extractToPNGFileToolStripMenuItem,
             this.viewToolStripMenuItem});
             this.contextMenuStripTextures.Name = "contextMenuStripTextures";
-            this.contextMenuStripTextures.Size = new System.Drawing.Size(212, 92);
+            this.contextMenuStripTextures.Size = new System.Drawing.Size(212, 114);
             // 
             // replaceTextureToolStripMenuItem
             // 
@@ -134,7 +135,8 @@ namespace MassEffectModder
             // 
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.previewTextureToolStripMenuItem,
-            this.infoTextureToolStripMenuItem});
+            this.infoTextureToolStripMenuItem,
+            this.info2TextureToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
             this.viewToolStripMenuItem.Text = "View";
@@ -410,6 +412,13 @@ namespace MassEffectModder
             this.searchToolStripMenuItem.Text = "Search";
             this.searchToolStripMenuItem.Click += new System.EventHandler(this.searchToolStripMenuItem_Click);
             // 
+            // info2TextureToolStripMenuItem
+            // 
+            this.info2TextureToolStripMenuItem.Name = "info2TextureToolStripMenuItem";
+            this.info2TextureToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.info2TextureToolStripMenuItem.Text = "Info (all)";
+            this.info2TextureToolStripMenuItem.Click += new System.EventHandler(this.info2TextureToolStripMenuItem_Click);
+            // 
             // TexExplorer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -472,5 +481,6 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripMenuItem createMODBatchToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem extractToDDSFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem extractToPNGFileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem info2TextureToolStripMenuItem;
     }
 }

@@ -73,6 +73,7 @@ namespace MassEffectModder
         public static GameData gameData;
         List<FoundTexture> _textures;
         bool previewShow = true;
+        bool detailedInfo = false;
         CachePackageMgr cachePackageMgr;
         TreeScan treeScan;
         MipMaps mipMaps;
@@ -303,8 +304,7 @@ namespace MassEffectModder
                     text += "Texture original CRC:  " + string.Format("0x{0:X8}", node.textures[index].crc) + "\n";
                     text += "Node name:     " + node.textures[index].name + "\n";
                     text += "Package name:  " + node.textures[index].packageName + "\n";
-                    //for (int index2 = 0; index2 < node.textures[index].list.Count; index2++)
-                    int index2 = 0;
+                    for (int index2 = 0; index2 < (detailedInfo ? node.textures[index].list.Count : 1); index2++)
                     {
                         MatchedTexture nodeTexture = node.textures[index].list[index2];
                         Package package = cachePackageMgr.OpenPackage(GameData.GamePath + nodeTexture.path);
@@ -388,6 +388,16 @@ namespace MassEffectModder
 
         private void infoToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            detailedInfo = false;
+            richTextBoxInfo.Show();
+            pictureBoxPreview.Hide();
+            previewShow = false;
+            updateViewFromListView();
+        }
+
+        private void info2TextureToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            detailedInfo = true;
             richTextBoxInfo.Show();
             pictureBoxPreview.Hide();
             previewShow = false;
@@ -396,6 +406,7 @@ namespace MassEffectModder
 
         private void previewToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            detailedInfo = false;
             richTextBoxInfo.Hide();
             pictureBoxPreview.Show();
             previewShow = true;
