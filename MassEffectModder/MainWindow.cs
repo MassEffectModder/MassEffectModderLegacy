@@ -41,7 +41,7 @@ namespace MassEffectModder
         public MainWindow(bool runAsAdmin)
         {
             InitializeComponent();
-            Text = "Mass Effect Modder v1.72";
+            Text = "Mass Effect Modder v1.73";
             if (runAsAdmin)
                 Text += " (run as Administrator)";
             _configIni = new ConfIni();
@@ -192,10 +192,14 @@ namespace MassEffectModder
                         }
                         catch
                         {
-                            MessageBox.Show("This mod is not compatible!");
-                            return "";
+                            errors += "Skipping not Binary Replacement content, entry: " + (i + 1) + Environment.NewLine;
                         }
                     }
+                }
+                if (mods.Count == 0)
+                {
+                    MessageBox.Show("This mod is not compatible!");
+                    return "This mod is not compatible!" + Environment.NewLine;
                 }
 
                 using (SaveFileDialog memFile = new SaveFileDialog())
