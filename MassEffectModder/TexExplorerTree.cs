@@ -259,10 +259,18 @@ namespace MassEffectModder
             bool modified = false;
             Package package = null;
 
-            if (cachePackageMgr != null)
-                package = cachePackageMgr.OpenPackage(packagePath);
-            else
-                package = new Package(packagePath, true);
+            try
+            {
+                if (cachePackageMgr != null)
+                    package = cachePackageMgr.OpenPackage(packagePath);
+                else
+                    package = new Package(packagePath, true);
+            }
+            catch
+            {
+                errors += "The file is propably broken, skipped: " + packagePath + Environment.NewLine;
+                return errors;
+            }
             for (int i = 0; i < package.exportsTable.Count; i++)
             {
                 int id = package.getClassNameId(package.exportsTable[i].classId);

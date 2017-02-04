@@ -41,7 +41,7 @@ namespace MassEffectModder
         public MainWindow(bool runAsAdmin)
         {
             InitializeComponent();
-            Text = "Mass Effect Modder v1.75";
+            Text = "Mass Effect Modder v1.76";
             if (runAsAdmin)
                 Text += " (run as Administrator)";
             _configIni = new ConfIni();
@@ -305,6 +305,7 @@ namespace MassEffectModder
 
         public void repackME12(MeType gametype)
         {
+            string errors = "";
             GameData gameData = new GameData(gametype, _configIni);
             if (!Directory.Exists(GameData.GamePath))
             {
@@ -315,13 +316,32 @@ namespace MassEffectModder
             for (int i = 0; i < GameData.packageFiles.Count; i++)
             {
                 updateStatusLabel("Repack PCC file " + (i + 1) + " of " + GameData.packageFiles.Count);
-                Package package = new Package(GameData.packageFiles[i], true, true);
-                if (package.compressed && package.compressionType != Package.CompressionType.Zlib)
+                try
                 {
-                    package.Dispose();
-                    package = new Package(GameData.packageFiles[i], true);
-                    package.SaveToFile(true);
+                    Package package = new Package(GameData.packageFiles[i], true, true);
+                    if (package.compressed && package.compressionType != Package.CompressionType.Zlib)
+                    {
+                        package.Dispose();
+                        package = new Package(GameData.packageFiles[i], true);
+                        package.SaveToFile(true);
+                    }
                 }
+                catch
+                {
+                    errors += "The file is propably broken, skipped: " + GameData.packageFiles[i] + Environment.NewLine;
+                }
+            }
+            if (errors != "")
+            {
+                string filename = "pcc-errors.txt";
+                if (File.Exists(filename))
+                    File.Delete(filename);
+                using (FileStream fs = new FileStream(filename, FileMode.CreateNew))
+                {
+                    fs.WriteStringASCII(errors);
+                }
+                MessageBox.Show("WARNING: Some errors have occured!");
+                Process.Start(filename);
             }
             updateStatusLabel("Done");
             updateStatusLabel2("");
