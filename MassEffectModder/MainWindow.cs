@@ -41,7 +41,7 @@ namespace MassEffectModder
         public MainWindow(bool runAsAdmin)
         {
             InitializeComponent();
-            Text = "Mass Effect Modder v1.77";
+            Text = "Mass Effect Modder v1.78";
             if (runAsAdmin)
                 Text += " (run as Administrator)";
             _configIni = new ConfIni();
@@ -106,8 +106,7 @@ namespace MassEffectModder
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
             ConfIni engineConf = new ConfIni(path);
             LODSettings.updateLOD(MeType.ME1_TYPE, engineConf);
-            MessageBox.Show("Game configuration file at " + path + " updated." +
-                "\n\nYou will have to remove empty mipmaps if you haven't already done.");
+            MessageBox.Show("Game configuration file at " + path + " updated.");
             enableGameDataMenu(true);
         }
 
@@ -371,8 +370,7 @@ namespace MassEffectModder
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
             ConfIni engineConf = new ConfIni(path);
             LODSettings.updateLOD(MeType.ME2_TYPE, engineConf);
-            MessageBox.Show("Game configuration file at " + path + " updated." +
-                "\n\nYou will have to remove empty mipmaps if you haven't already done.");
+            MessageBox.Show("Game configuration file at " + path + " updated.");
             enableGameDataMenu(true);
         }
 
@@ -492,8 +490,7 @@ namespace MassEffectModder
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
             ConfIni engineConf = new ConfIni(path);
             LODSettings.updateLOD(MeType.ME3_TYPE, engineConf);
-            MessageBox.Show("Game configuration file at " + path + " updated." +
-                "\n\nYou will have to remove empty mipmaps if you haven't already done.");
+            MessageBox.Show("Game configuration file at " + path + " updated.");
             enableGameDataMenu(true);
         }
 
