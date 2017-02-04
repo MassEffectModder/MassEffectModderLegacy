@@ -799,7 +799,7 @@ namespace MassEffectModder
                             {
                                 string outDir = Path.Combine(modDir.SelectedPath, Path.GetFileNameWithoutExtension(item));
                                 Directory.CreateDirectory(outDir);
-                                updateStatusLabel("MOD: " + item + "extracting...");
+                                updateStatusLabel("MOD: " + item + " - extracting...");
                                 updateStatusLabel2("");
                                 errors += new MipMaps().extractTextureMod(item, outDir, null, null, null);
                             }
