@@ -41,7 +41,7 @@ namespace MassEffectModder
         public MainWindow(bool runAsAdmin)
         {
             InitializeComponent();
-            Text = "Mass Effect Modder v1.74";
+            Text = "Mass Effect Modder v1.75";
             if (runAsAdmin)
                 Text += " (run as Administrator)";
             _configIni = new ConfIni();
@@ -182,7 +182,7 @@ namespace MassEffectModder
                             len = fs.ReadInt32();
                             string scriptLegacy = fs.ReadStringASCII(len);
                             string path = "";
-                            if (!desc.Contains("Binary Replacement for file"))
+                            if (!desc.Contains("Binary Replacement"))
                                 throw new Exception();
                             Misc.ParseLegacyME3ScriptMod(scriptLegacy, ref package, ref mod.exportId, ref path);
                             if (mod.exportId == -1 || package == "" || path == "")
