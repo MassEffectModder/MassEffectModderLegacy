@@ -1,7 +1,7 @@
 /*  Copyright (C) 2013 AmaroK86 (marcidm 'at' hotmail 'dot' com)
  *  Copyright (C) 2013 saltisgood
  *  Copyright (C) 2013-2014 KFreon
- *  Copyright (C) 2016 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ *  Copyright (C) 2016-2017 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
