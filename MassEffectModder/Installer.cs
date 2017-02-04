@@ -48,7 +48,7 @@ namespace MassEffectModder
         public Installer(bool runAsAdmin)
         {
             InitializeComponent();
-            Text = "MEM Installer v1.76 for ALOT";
+            Text = "MEM Installer v1.77 for ALOT";
             if (runAsAdmin)
                 Text += " (run as Administrator)";
             mipMaps = new MipMaps();
@@ -503,8 +503,6 @@ namespace MassEffectModder
             checkBoxPreSpace.Checked = false;
             checkBoxPreVanilla.Checked = false;
 
-            checkBoxPreEnableRepack.Checked = false;
-            checkBoxPreEnablePack.Checked = false;
             Application.DoEvents();
         }
 
