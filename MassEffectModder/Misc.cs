@@ -207,7 +207,7 @@ namespace MassEffectModder
                 engineConf.Write("MaxAnisotropy", "16", "SystemSettings");
                 engineConf.Write("TextureLODLevel", "3", "WinDrv.WindowsClient");
                 engineConf.Write("FilterLevel", "2", "WinDrv.WindowsClient");
-                engineConf.Write("Trilinear", "False", "SystemSettings");
+                engineConf.Write("Trilinear", "True", "SystemSettings");
                 engineConf.Write("MotionBlur", "True", "SystemSettings");
                 engineConf.Write("DepthOfField", "True", "SystemSettings");
                 engineConf.Write("Bloom", "True", "SystemSettings");
@@ -222,7 +222,7 @@ namespace MassEffectModder
                 engineConf.Write("ShadowFilterRadius", "5", "SystemSettings");
                 engineConf.Write("bEnableBranchingPCFShadows", "True", "SystemSettings");
                 engineConf.Write("MaxAnisotropy", "16", "SystemSettings");
-                engineConf.Write("Trilinear", "False", "SystemSettings");
+                engineConf.Write("Trilinear", "True", "SystemSettings");
                 engineConf.Write("MotionBlur", "True", "SystemSettings");
                 engineConf.Write("DepthOfField", "True", "SystemSettings");
                 engineConf.Write("Bloom", "True", "SystemSettings");
@@ -237,7 +237,6 @@ namespace MassEffectModder
                 engineConf.Write("ShadowFilterRadius", "5", "SystemSettings");
                 engineConf.Write("bEnableBranchingPCFShadows", "True", "SystemSettings");
                 engineConf.Write("MaxAnisotropy", "16", "SystemSettings");
-                engineConf.Write("Trilinear", "False", "SystemSettings");
                 engineConf.Write("MotionBlur", "True", "SystemSettings");
                 engineConf.Write("DepthOfField", "True", "SystemSettings");
                 engineConf.Write("Bloom", "True", "SystemSettings");
