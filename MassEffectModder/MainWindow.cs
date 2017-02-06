@@ -99,8 +99,19 @@ namespace MassEffectModder
         private void updateME1ConfigToolStripMenuItem_Click(object sender, EventArgs e)
         {
             enableGameDataMenu(false);
+            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    Assembly.GetExecutingAssembly().GetName().Name);
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            string filename = Path.Combine(path, "me" + (int)GameData.gameType + "map.bin");
+            if (!File.Exists(filename))
+            {
+                MessageBox.Show("Unable to update LOD settings.\nYou must scan your game using Texture Manager first always!");
+                enableGameDataMenu(true);
+                return;
+            }
             GameData gameData = new GameData(MeType.ME1_TYPE, _configIni);
-            string path = gameData.EngineConfigIniPath;
+            path = gameData.EngineConfigIniPath;
             bool exist = File.Exists(path);
             if (!exist)
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
@@ -363,8 +374,19 @@ namespace MassEffectModder
         private void updateME2ConfigToolStripMenuItem_Click(object sender, EventArgs e)
         {
             enableGameDataMenu(false);
+            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    Assembly.GetExecutingAssembly().GetName().Name);
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            string filename = Path.Combine(path, "me" + (int)GameData.gameType + "map.bin");
+            if (!File.Exists(filename))
+            {
+                MessageBox.Show("Unable to update LOD settings.\nYou must scan your game using Texture Manager first always!");
+                enableGameDataMenu(true);
+                return;
+            }
             GameData gameData = new GameData(MeType.ME2_TYPE, _configIni);
-            string path = gameData.EngineConfigIniPath;
+            path = gameData.EngineConfigIniPath;
             bool exist = File.Exists(path);
             if (!exist)
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
@@ -483,8 +505,19 @@ namespace MassEffectModder
         private void updateME3ConfigToolStripMenuItem_Click(object sender, EventArgs e)
         {
             enableGameDataMenu(false);
+            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    Assembly.GetExecutingAssembly().GetName().Name);
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            string filename = Path.Combine(path, "me" + (int)GameData.gameType + "map.bin");
+            if (!File.Exists(filename))
+            {
+                MessageBox.Show("Unable to update LOD settings.\nYou must scan your game using Texture Manager first always!");
+                enableGameDataMenu(true);
+                return;
+            }
             GameData gameData = new GameData(MeType.ME3_TYPE, _configIni);
-            string path = gameData.EngineConfigIniPath;
+            path = gameData.EngineConfigIniPath;
             bool exist = File.Exists(path);
             if (!exist)
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
@@ -779,6 +812,7 @@ namespace MassEffectModder
                     enableGameDataMenu(false);
 
                     string errors = "";
+                    string log = "";
                     string[] files = modFile.FileNames;
                     foreach (string file in files)
                     {
@@ -798,7 +832,7 @@ namespace MassEffectModder
                                 Directory.CreateDirectory(outDir);
                                 updateStatusLabel("MOD: " + item + " - extracting...");
                                 updateStatusLabel2("");
-                                errors += new MipMaps().extractTextureMod(item, outDir, null, null, null);
+                                errors += new MipMaps().extractTextureMod(item, outDir, null, null, null, ref log);
                             }
                             var time = Misc.stopTimer();
                             updateStatusLabel("MODs extracted. Process total time: " + Misc.getTimerFormat(time));

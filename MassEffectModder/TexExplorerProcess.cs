@@ -47,27 +47,27 @@ namespace MassEffectModder
             public long size;
         }
 
-        public string extractTextureMod(string filenameMod, string outDir, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer)
+        public string extractTextureMod(string filenameMod, string outDir, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer, ref string log)
         {
-            return processTextureMod(filenameMod, -1, true, false, outDir, textures, cachePackageMgr, texExplorer);
+            return processTextureMod(filenameMod, -1, true, false, outDir, textures, cachePackageMgr, texExplorer, ref log);
         }
 
-        public string previewTextureMod(string filenameMod, int previewIndex, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer)
+        public string previewTextureMod(string filenameMod, int previewIndex, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer, ref string log)
         {
-            return processTextureMod(filenameMod, previewIndex, false, false, "", textures, cachePackageMgr, texExplorer);
+            return processTextureMod(filenameMod, previewIndex, false, false, "", textures, cachePackageMgr, texExplorer, ref log);
         }
 
-        public string replaceTextureMod(string filenameMod, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer)
+        public string replaceTextureMod(string filenameMod, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer, ref string log)
         {
-            return processTextureMod(filenameMod, -1, false, true, "", textures, cachePackageMgr, texExplorer);
+            return processTextureMod(filenameMod, -1, false, true, "", textures, cachePackageMgr, texExplorer, ref log);
         }
 
-        public string listTextureMod(string filenameMod, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer)
+        public string listTextureMod(string filenameMod, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer, ref string log)
         {
-            return processTextureMod(filenameMod, -1, false, false, "", textures, cachePackageMgr, texExplorer);
+            return processTextureMod(filenameMod, -1, false, false, "", textures, cachePackageMgr, texExplorer, ref log);
         }
 
-        private string processTextureMod(string filenameMod, int previewIndex, bool extract, bool replace, string outDir, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer)
+        private string processTextureMod(string filenameMod, int previewIndex, bool extract, bool replace, string outDir, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer, ref string log)
         {
             string errors = "";
 
@@ -82,9 +82,15 @@ namespace MassEffectModder
                 if (tag != TexExplorer.TextureModTag || version != TexExplorer.TextureModVersion)
                 {
                     if (version != TexExplorer.TextureModVersion)
+                    {
                         errors += "File " + filenameMod + " was made with an older version of MEM, skipping..." + Environment.NewLine;
+                        log += "File " + filenameMod + " was made with an older version of MEM, skipping..." + Environment.NewLine;
+                    }
                     else
+                    {
                         errors += "File " + filenameMod + " is not a valid MEM mod, skipping..." + Environment.NewLine;
+                        log += "File " + filenameMod + " is not a valid MEM mod, skipping..." + Environment.NewLine;
+                    }
                     if (previewIndex == -1 && !extract && !replace)
                         texExplorer.listViewTextures.EndUpdate();
                     return errors;
@@ -97,6 +103,7 @@ namespace MassEffectModder
                     if (textures != null && (MeType)gameType != GameData.gameType)
                     {
                         errors += "File " + filenameMod + " is not a MEM mod valid for this game" + Environment.NewLine;
+                        log += "File " + filenameMod + " is not a MEM mod valid for this game" + Environment.NewLine;
                         if (previewIndex == -1 && !extract && !replace)
                             texExplorer.listViewTextures.EndUpdate();
                         return errors;
@@ -162,7 +169,7 @@ namespace MassEffectModder
                                 ListViewItem item = new ListViewItem(name + " (Texture not found: " + name + string.Format("_0x{0:X8}", crc) + ")");
                                 item.Name = i.ToString();
                                 texExplorer.listViewTextures.Items.Add(item);
-                                errors += "Texture skipped. Texture " + name + string.Format("_0x{0:X8}", crc) + " is not present in your game setup" + Environment.NewLine;
+                                log += "Texture skipped. Texture " + name + string.Format("_0x{0:X8}", crc) + " is not present in your game setup" + Environment.NewLine;
                             }
                         }
                         else if (modFiles[i].tag == FileBinaryTag)
@@ -176,6 +183,7 @@ namespace MassEffectModder
                             ListViewItem item = new ListViewItem(name + " (Unknown)");
                             item.Name = i.ToString();
                             errors += "Unknown tag for file: " + name + Environment.NewLine;
+                            log += "Unknown tag for file: " + name + Environment.NewLine;
                         }
                         continue;
                     }
@@ -204,6 +212,7 @@ namespace MassEffectModder
                         else
                         {
                             errors += "Unknown tag for file: " + name + Environment.NewLine;
+                            log += "Unknown tag for file: " + name + Environment.NewLine;
                         }
                         continue;
                     }
@@ -232,14 +241,15 @@ namespace MassEffectModder
                                 DDSImage image = new DDSImage(new MemoryStream(dst, 0, (int)dstLen));
                                 if (!image.checkExistAllMipmaps())
                                 {
-                                    errors += "Error in texture: " + name + string.Format("_0x{0:X8}", crc) + " Texture skipped. This texture has not all the required mipmaps" + Environment.NewLine;
+                                    errors += "Error in texture: " + name + string.Format("_0x{0:X8}", crc) + " Texture skipped. This texture has not all the required mipmaps." + Environment.NewLine;
+                                    log += "Error in texture: " + name + string.Format("_0x{0:X8}", crc) + " Texture skipped. This texture has not all the required mipmaps." + Environment.NewLine;
                                     continue;
                                 }
                                 errors += replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name);
                             }
                             else
                             {
-                                errors += "Texture skipped. Texture " + name + string.Format("_0x{0:X8}", crc) + "is not present in your game setup" + Environment.NewLine;
+                                log += "Error: Texture " + name + string.Format("_0x{0:X8}", crc) + "is not present in your game setup. Texture skipped." + Environment.NewLine;
                             }
                         }
                         else if (modFiles[i].tag == FileBinaryTag)
@@ -247,7 +257,8 @@ namespace MassEffectModder
                             string path = GameData.GamePath + pkgPath;
                             if (!File.Exists(path))
                             {
-                                errors += "File " + path + " not exists in game setup: ";
+                                errors += "Warning: File " + path + " not exists in your game setup." + Environment.NewLine;
+                                log += "Warning: File " + path + " not exists in your game setup." + Environment.NewLine;
                                 continue;
                             }
                             Package pkg = cachePackageMgr.OpenPackage(path);
@@ -255,7 +266,8 @@ namespace MassEffectModder
                         }
                         else
                         {
-                            errors += "Unknown tag for file: " + name + Environment.NewLine;
+                            errors += "Error: Unknown tag for file: " + name + Environment.NewLine;
+                            log += "Error: Unknown tag for file: " + name + Environment.NewLine;
                         }
                     }
                     else
@@ -267,7 +279,7 @@ namespace MassEffectModder
             return errors;
         }
 
-        public string createTextureMod(string inDir, string outFile, List<FoundTexture> textures, MainWindow mainWindow)
+        public string createTextureMod(string inDir, string outFile, List<FoundTexture> textures, MainWindow mainWindow, ref string log)
         {
             string errors = "";
             int count = 0;
@@ -293,12 +305,14 @@ namespace MassEffectModder
                     if (!filename.Contains("_0x"))
                     {
                         errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (_0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
+                        log += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (_0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
                         continue;
                     }
                     int idx = filename.IndexOf("_0x");
                     if (filename.Length - idx < 11)
                     {
                         errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (_0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
+                        log += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (_0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
                         continue;
                     }
                     uint crc;
@@ -310,6 +324,7 @@ namespace MassEffectModder
                     catch
                     {
                         errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (_0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
+                        log += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (_0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
                         continue;
                     }
 
@@ -319,7 +334,8 @@ namespace MassEffectModder
                     List<FoundTexture> foundCrcList = textures.FindAll(s => s.crc == crc);
                     if (foundCrcList.Count == 0)
                     {
-                        errors += "Texture skipped. Texture " + Path.GetFileName(file) + " is not present in your game setup" + Environment.NewLine;
+                        errors += "Texture skipped. Texture " + Path.GetFileName(file) + " is not present in your game setup." + Environment.NewLine;
+                        log += "Texture skipped. Texture " + Path.GetFileName(file) + " is not present in your game setup." + Environment.NewLine;
                         continue;
                     }
 
@@ -331,6 +347,7 @@ namespace MassEffectModder
                         if (!image.checkExistAllMipmaps())
                         {
                             errors += "Error in texture: " + Path.GetFileName(file) + " This texture has not all the required mipmaps, skipping texture..." + Environment.NewLine;
+                            log += "Error in texture: " + Path.GetFileName(file) + " This texture has not all the required mipmaps, skipping texture..." + Environment.NewLine;
                             continue;
                         }
 
@@ -340,6 +357,7 @@ namespace MassEffectModder
                         if (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1)
                         {
                             errors += "Error in texture: " + Path.GetFileName(file) + " This texture must have mipmaps, skipping texture..." + Environment.NewLine;
+                            log += "Error in texture: " + Path.GetFileName(file) + " This texture must have mipmaps, skipping texture..." + Environment.NewLine;
                             continue;
                         }
 
@@ -348,6 +366,7 @@ namespace MassEffectModder
                         if (image.ddsFormat != ddsFormat)
                         {
                             errors += "Error in texture: " + Path.GetFileName(file) + " This texture has wrong texture format, should be: " + ddsFormat + ", skipping texture..." + Environment.NewLine;
+                            log += "Error in texture: " + Path.GetFileName(file) + " This texture has wrong texture format, should be: " + ddsFormat + ", skipping texture..." + Environment.NewLine;
                             continue;
                         }
 
@@ -355,6 +374,7 @@ namespace MassEffectModder
                             texture.mipMapsList[0].width / texture.mipMapsList[0].height)
                         {
                             errors += "Error in texture: " + Path.GetFileName(file) + " This texture has wrong aspect ratio, skipping texture..." + Environment.NewLine;
+                            log += "Error in texture: " + Path.GetFileName(file) + " This texture has wrong aspect ratio, skipping texture..." + Environment.NewLine;
                             continue;
                         }
 
@@ -397,6 +417,7 @@ namespace MassEffectModder
             if (count == 0)
             {
                 errors += "There are no texture files in " + inDir + ", mod not generated." + Environment.NewLine;
+                log += "There are no texture files in " + inDir + ", mod not generated." + Environment.NewLine;
                 File.Delete(outFile);
             }
             return errors;

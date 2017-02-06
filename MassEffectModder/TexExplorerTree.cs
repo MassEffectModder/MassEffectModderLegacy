@@ -33,7 +33,7 @@ namespace MassEffectModder
     {
         public List<FoundTexture> treeScan = null;
 
-        public string PrepareListOfTextures(TexExplorer texEplorer, CachePackageMgr cachePackageMgr, MainWindow mainWindow, Installer installer, bool force = false)
+        public string PrepareListOfTextures(TexExplorer texEplorer, CachePackageMgr cachePackageMgr, MainWindow mainWindow, Installer installer, ref string log, bool force = false)
         {
             string errors = "";
             treeScan = null;
@@ -63,6 +63,7 @@ namespace MassEffectModder
                             texEplorer.Close();
                         }
                         fs.Close();
+                        log += "Wrong " + filename + " file!" + Environment.NewLine;
                         return "Wrong " + filename + " file!" + Environment.NewLine;
                     }
 
@@ -209,7 +210,7 @@ namespace MassEffectModder
                 }
                 if (installer != null)
                     installer.updateStatusScan("Progress... " + (i * 100 / GameData.packageFiles.Count) + " % ");
-                errors += FindTextures(textures, GameData.packageFiles[i], cachePackageMgr);
+                errors += FindTextures(textures, GameData.packageFiles[i], cachePackageMgr, ref log);
             }
 
             using (FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
@@ -253,7 +254,7 @@ namespace MassEffectModder
             return errors;
         }
 
-        private string FindTextures(List<FoundTexture> textures, string packagePath, CachePackageMgr cachePackageMgr)
+        private string FindTextures(List<FoundTexture> textures, string packagePath, CachePackageMgr cachePackageMgr, ref string log)
         {
             string errors = "";
             bool modified = false;
@@ -269,6 +270,7 @@ namespace MassEffectModder
             catch
             {
                 errors += "The file is propably broken, skipped: " + packagePath + Environment.NewLine;
+                log += "The file is propably broken, skipped: " + packagePath + Environment.NewLine;
                 return errors;
             }
             for (int i = 0; i < package.exportsTable.Count; i++)
@@ -300,6 +302,7 @@ namespace MassEffectModder
                     if (crc == 0)
                     {
                         errors += "Error: Texture " + package.exportsTable[i].objectName + " is broken in package: " + packagePath + ", skipping..." + Environment.NewLine;
+                        log += "Error: Texture " + package.exportsTable[i].objectName + " is broken in package: " + packagePath + ", skipping..." + Environment.NewLine;
                         continue;
                     }
 

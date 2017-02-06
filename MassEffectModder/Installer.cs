@@ -44,6 +44,7 @@ namespace MassEffectModder
         MipMaps mipMaps;
         TreeScan treeScan;
         string errors = "";
+        string log = "";
 
         public Installer(bool runAsAdmin)
         {
@@ -392,9 +393,15 @@ namespace MassEffectModder
                     if (tag != TexExplorer.TextureModTag || version != TexExplorer.TextureModVersion)
                     {
                         if (version != TexExplorer.TextureModVersion)
+                        {
                             errors += "File " + memFiles[i] + " was made with an older version of MEM, skipping..." + Environment.NewLine;
+                            log += "File " + memFiles[i] + " was made with an older version of MEM, skipping..." + Environment.NewLine;
+                        }
                         else
+                        {
                             errors += "File " + memFiles[i] + " is not a valid MEM mod, skipping..." + Environment.NewLine;
+                            log += "File " + memFiles[i] + " is not a valid MEM mod, skipping..." + Environment.NewLine;
+                        }
                         continue;
                     }
                     else
@@ -405,6 +412,7 @@ namespace MassEffectModder
                         if ((MeType)gameType != GameData.gameType)
                         {
                             errors += "File " + memFiles[i] + " is not a MEM mod valid for this game, skipping..." + Environment.NewLine;
+                            log += "File " + memFiles[i] + " is not a MEM mod valid for this game, skipping..." + Environment.NewLine;
                             continue;
                         }
                     }
@@ -446,6 +454,7 @@ namespace MassEffectModder
                         dstLen = dst.Length;
 
                         updateStatusTextures("Mod: " + (i + 1) + " of " + memFiles.Count + " - in progress: " + ((l + 1) * 100 / numFiles) + " % ");
+                        log += "Mod: " + (i + 1) + " of " + memFiles.Count + " started:";
 
                         if (modFiles[l].tag == MipMaps.FileTextureTag)
                         {
@@ -457,13 +466,14 @@ namespace MassEffectModder
                                 if (!image.checkExistAllMipmaps())
                                 {
                                     errors += "Error in texture: " + name + string.Format("_0x{0:X8}", crc) + " Texture skipped. This texture has not all the required mipmaps" + Environment.NewLine;
+                                    log += "Error in texture: " + name + string.Format("_0x{0:X8}", crc) + " Texture skipped. This texture has not all the required mipmaps" + Environment.NewLine;
                                     continue;
                                 }
                                 errors += mipMaps.replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name);
                             }
                             else
                             {
-                                errors += "Texture skipped. Texture " + name + string.Format("_0x{0:X8}", crc) + " is not present in your game setup" + Environment.NewLine;
+                                log += "Texture skipped. Texture " + name + string.Format("_0x{0:X8}", crc) + " is not present in your game setup" + Environment.NewLine;
                             }
                         }
                         else if (modFiles[l].tag == MipMaps.FileBinaryTag)
@@ -472,6 +482,7 @@ namespace MassEffectModder
                             if (!File.Exists(path))
                             {
                                 errors += "File " + path + " not exists in game setup: ";
+                                log += "File " + path + " not exists in game setup: ";
                                 continue;
                             }
                             Package pkg = cachePackageMgr.OpenPackage(path);
@@ -480,6 +491,7 @@ namespace MassEffectModder
                         else
                         {
                             errors += "Unknown tag for file: " + name + Environment.NewLine;
+                            log += "Unknown tag for file: " + name + Environment.NewLine;
                         }
                     }
                 }
@@ -555,12 +567,26 @@ namespace MassEffectModder
             checkBoxPrepare.Checked = true;
             updateStatusPrepare("");
 
+            if (Directory.Exists(GameData.DLCData))
+            {
+                List<string> dirs = Directory.EnumerateDirectories(GameData.DLCData).ToList();
+                log += "Detected folowing folders in DLC path:" + Environment.NewLine;
+                for (int dl = 0; dl < dirs.Count; dl++)
+                {
+                    log += dirs[dl] + Environment.NewLine;
+                }
+            }
+            else
+            {
+                log += "Not detected folders in DLC path" + Environment.NewLine;
+            }
+            log += Environment.NewLine;
 
             updateStatusScan("In progress...");
             if (checkBoxOptionFaster.Checked)
-                errors += treeScan.PrepareListOfTextures(null, cachePackageMgr, null, this, true);
+                errors += treeScan.PrepareListOfTextures(null, cachePackageMgr, null, this, ref log, true);
             else
-                errors += treeScan.PrepareListOfTextures(null, null, null, this, true);
+                errors += treeScan.PrepareListOfTextures(null, null, null, this, ref log, true);
             textures = treeScan.treeScan;
             checkBoxScan.Checked = true;
             updateStatusScan("");
@@ -668,7 +694,20 @@ namespace MassEffectModder
             labelFinalStatus.Text = "Process finished. Process total time: " + Misc.getTimerFormat(time);
             buttonsEnable(true);
 
-            string filename = "errors-install.txt";
+            log += "==========================================" + Environment.NewLine;
+            log += "LOD settings:" + Environment.NewLine;
+            LODSettings.readLOD((MeType)gameId, engineConf, ref log);
+            log += "==========================================" + Environment.NewLine;
+
+            string filename = "install-log.txt";
+            if (File.Exists(filename))
+                File.Delete(filename);
+            using (FileStream fs = new FileStream(filename, FileMode.CreateNew))
+            {
+                fs.WriteStringASCII(log);
+            }
+
+            filename = "errors-install.txt";
             if (File.Exists(filename))
                 File.Delete(filename);
             if (errors != "")

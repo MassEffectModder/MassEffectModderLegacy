@@ -34,6 +34,86 @@ namespace MassEffectModder
 {
     static class LODSettings
     {
+        static public void readLOD(MeType gameId, ConfIni engineConf, ref string log)
+        {
+            if (gameId == MeType.ME1_TYPE)
+            {
+                log += "TEXTUREGROUP_LightAndShadowMap=" + engineConf.Read("TEXTUREGROUP_LightAndShadowMap", "TextureLODSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_Environment_64=" + engineConf.Read("TEXTUREGROUP_Environment_64", "TextureLODSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_Environment_128=" + engineConf.Read("TEXTUREGROUP_Environment_128", "TextureLODSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_Environment_256=" + engineConf.Read("TEXTUREGROUP_Environment_256", "TextureLODSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_Environment_512=" + engineConf.Read("TEXTUREGROUP_Environment_512", "TextureLODSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_Environment_1024=" + engineConf.Read("TEXTUREGROUP_Environment_1024", "TextureLODSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_VFX_64=" + engineConf.Read("TEXTUREGROUP_VFX_64", "TextureLODSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_VFX_128=" + engineConf.Read("TEXTUREGROUP_VFX_128", "TextureLODSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_VFX_256=" + engineConf.Read("TEXTUREGROUP_VFX_256", "TextureLODSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_VFX_512" + engineConf.Read("TEXTUREGROUP_VFX_512", "TextureLODSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_VFX_1024=" + engineConf.Read("TEXTUREGROUP_VFX_1024", "TextureLODSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_APL_128=" + engineConf.Read("TEXTUREGROUP_APL_128", "TextureLODSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_APL_256=" + engineConf.Read("TEXTUREGROUP_APL_256", "TextureLODSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_APL_512=" + engineConf.Read("TEXTUREGROUP_APL_512", "TextureLODSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_APL_1024=" + engineConf.Read("TEXTUREGROUP_APL_1024", "TextureLODSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_GUI=" + engineConf.Read("TEXTUREGROUP_GUI", "TextureLODSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_Promotional=" + engineConf.Read("TEXTUREGROUP_Promotional", "TextureLODSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_Character_1024=" + engineConf.Read("TEXTUREGROUP_Character_1024", "TextureLODSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_Character_Diff=" + engineConf.Read("TEXTUREGROUP_Character_Diff", "TextureLODSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_Character_Norm=" + engineConf.Read("TEXTUREGROUP_Character_Norm", "TextureLODSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_Character_Spec=" + engineConf.Read("TEXTUREGROUP_Character_Spec", "TextureLODSettings") + Environment.NewLine;
+            }
+            else if (gameId == MeType.ME2_TYPE)
+            {
+                log += "TEXTUREGROUP_LightAndShadowMap=" + engineConf.Read("TEXTUREGROUP_LightAndShadowMap", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_RenderTarget=" + engineConf.Read("TEXTUREGROUP_RenderTarget", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_Environment_64=" + engineConf.Read("TEXTUREGROUP_Environment_64", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_Environment_128=" + engineConf.Read("TEXTUREGROUP_Environment_128", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_Environment_256=" + engineConf.Read("TEXTUREGROUP_Environment_256", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_Environment_512=" + engineConf.Read("TEXTUREGROUP_Environment_512", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_Environment_1024=" + engineConf.Read("TEXTUREGROUP_Environment_1024", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_VFX_64=" + engineConf.Read("TEXTUREGROUP_VFX_64", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_VFX_128=" + engineConf.Read("TEXTUREGROUP_VFX_128", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_VFX_256=" + engineConf.Read("TEXTUREGROUP_VFX_256", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_VFX_512=" + engineConf.Read("TEXTUREGROUP_VFX_512", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_VFX_1024=" + engineConf.Read("TEXTUREGROUP_VFX_1024", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_APL_128=" + engineConf.Read("TEXTUREGROUP_APL_128", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_APL_256=" + engineConf.Read("TEXTUREGROUP_APL_256", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_APL_512=" + engineConf.Read("TEXTUREGROUP_APL_512", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_APL_1024=" + engineConf.Read("TEXTUREGROUP_APL_1024", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_UI=" + engineConf.Read("TEXTUREGROUP_UI", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_Promotional=" + engineConf.Read("TEXTUREGROUP_Promotional", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_Character_1024=" + engineConf.Read("TEXTUREGROUP_Character_1024", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_Character_Diff=" + engineConf.Read("TEXTUREGROUP_Character_Diff", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_Character_Norm=" + engineConf.Read("TEXTUREGROUP_Character_Norm", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_Character_Spec=" + engineConf.Read("TEXTUREGROUP_Character_Spec", "SystemSettings") + Environment.NewLine;
+            }
+            else if (gameId == MeType.ME3_TYPE)
+            {
+                log += "TEXTUREGROUP_Environment_64=" + engineConf.Read("TEXTUREGROUP_Environment_64", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_Environment_128=" + engineConf.Read("TEXTUREGROUP_Environment_128", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_Environment_256=" + engineConf.Read("TEXTUREGROUP_Environment_256", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_Environment_512=" + engineConf.Read("TEXTUREGROUP_Environment_512", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_Environment_1024=" + engineConf.Read("TEXTUREGROUP_Environment_1024", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_VFX_64=" + engineConf.Read("TEXTUREGROUP_VFX_64", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_VFX_128=" + engineConf.Read("TEXTUREGROUP_VFX_128", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_VFX_256=" + engineConf.Read("TEXTUREGROUP_VFX_256", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_VFX_512=" + engineConf.Read("TEXTUREGROUP_VFX_512", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_VFX_1024=" + engineConf.Read("TEXTUREGROUP_VFX_1024", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_APL_128=" + engineConf.Read("TEXTUREGROUP_APL_128", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_APL_256=" + engineConf.Read("TEXTUREGROUP_APL_256", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_APL_512=" + engineConf.Read("TEXTUREGROUP_APL_512", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_APL_1024=" + engineConf.Read("TEXTUREGROUP_APL_1024", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_UI=" + engineConf.Read("TEXTUREGROUP_UI", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_Promotional=" + engineConf.Read("TEXTUREGROUP_Promotional", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_Character_1024=" + engineConf.Read("TEXTUREGROUP_Character_1024", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_Character_Diff=" + engineConf.Read("TEXTUREGROUP_Character_Diff", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_Character_Norm=" + engineConf.Read("TEXTUREGROUP_Character_Norm", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_Character_Spec=" + engineConf.Read("TEXTUREGROUP_Character_Spec", "SystemSettings") + Environment.NewLine;
+            }
+            else
+            {
+                throw new Exception("");
+            }
+        }
+
         static public void updateLOD(MeType gameId, ConfIni engineConf)
         {
             if (gameId == MeType.ME1_TYPE)
@@ -559,7 +639,6 @@ namespace MassEffectModder
             if (sfarFiles != null)
                 sfarFiles.Sort();
 
-
             if (GameData.gameType == MeType.ME1_TYPE)
             {
                 //using (FileStream fs = new FileStream("MD5EntriesME" + (int)gameType + ".cs", FileMode.Create, FileAccess.Write))
@@ -597,6 +676,7 @@ namespace MassEffectModder
             List<string> packageMainFiles = null;
             List<string> packageDLCFiles = null;
             List<string> sfarFiles = null;
+            List<string> tfcFiles = null;
             MD5FileEntry[] entries = null;
 
             if (gameType == MeType.ME1_TYPE)
@@ -621,13 +701,18 @@ namespace MassEffectModder
             else if (gameType == MeType.ME2_TYPE)
             {
                 packageMainFiles = Directory.GetFiles(GameData.MainData, "*.pcc", SearchOption.AllDirectories).Where(item => item.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase)).ToList();
+                tfcFiles = Directory.GetFiles(GameData.MainData, "*.tfc", SearchOption.AllDirectories).Where(item => item.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase)).ToList();
                 if (Directory.Exists(GameData.DLCData))
+                {
                     packageDLCFiles = Directory.GetFiles(GameData.DLCData, "*.pcc", SearchOption.AllDirectories).Where(item => item.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase)).ToList();
+                    tfcFiles.AddRange(Directory.GetFiles(GameData.DLCData, "*.tfc", SearchOption.AllDirectories).Where(item => item.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase)).ToList());
+                }
                 entries = entriesME2;
             }
             else if (gameType == MeType.ME3_TYPE)
             {
                 packageMainFiles = Directory.GetFiles(GameData.MainData, "*.pcc", SearchOption.AllDirectories).Where(item => item.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase)).ToList();
+                tfcFiles = Directory.GetFiles(GameData.MainData, "*.tfc", SearchOption.AllDirectories).Where(item => item.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase)).ToList();
                 if (Directory.Exists(GameData.DLCData))
                 {
                     packageDLCFiles = Directory.GetFiles(GameData.DLCData, "*.pcc", SearchOption.AllDirectories).Where(item => item.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase)).ToList();
@@ -638,6 +723,7 @@ namespace MassEffectModder
                             sfarFiles.RemoveAt(i--);
                     }
                     packageDLCFiles.RemoveAll(s => s.Contains("GuidCache"));
+                    tfcFiles.AddRange(Directory.GetFiles(GameData.DLCData, "*.tfc", SearchOption.AllDirectories).Where(item => item.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase)).ToList());
                 }
                 packageMainFiles.RemoveAll(s => s.Contains("GuidCache"));
                 entries = entriesME3;
@@ -648,6 +734,8 @@ namespace MassEffectModder
                 packageDLCFiles.Sort();
             if (sfarFiles != null)
                 sfarFiles.Sort();
+            if (tfcFiles != null)
+                tfcFiles.Sort();
 
             if (mainWindow != null && detectBrokenMod(gameType))
             {
@@ -704,6 +792,7 @@ namespace MassEffectModder
                     }
                     fs.WriteStringASCII("},\n},\n");*/
                 }
+
                 if (packageDLCFiles != null)
                 {
                     for (int l = 0; l < packageDLCFiles.Count; l++)
@@ -754,6 +843,7 @@ namespace MassEffectModder
                         fs.WriteStringASCII("},\n},\n");*/
                     }
                 }
+
                 if (sfarFiles != null)
                 {
                     for (int l = 0; l < sfarFiles.Count; l++)
@@ -797,6 +887,58 @@ namespace MassEffectModder
                         errors += Environment.NewLine;
 
                         /*fs.WriteStringASCII("new MD5FileEntry\n{\npath = @\"" + GameData.RelativeGameData(sfarFiles[l]) + "\",\nmd5 = new byte[] { ");
+                        for (int i = 0; i < md5.Length; i++)
+                        {
+                            fs.WriteStringASCII(string.Format("0x{0:X2}, ", md5[i]));
+                        }
+                        fs.WriteStringASCII("},\n},\n");*/
+                    }
+                }
+                //fs.WriteStringASCII("};\n");
+
+                if (tfcFiles != null)
+                {
+                    for (int l = 0; l < tfcFiles.Count; l++)
+                    {
+                        if (mainWindow != null)
+                        {
+                            mainWindow.updateStatusLabel("Checking TFC archive files - " + (l + 1) + " of " + tfcFiles.Count);
+                        }
+                        if (installer != null)
+                        {
+                            installer.updateLabelPreVanilla("Progress (TFC Archives) ... " + (l * 100 / tfcFiles.Count) + "%");
+                        }
+                        byte[] md5 = calculateMD5(tfcFiles[l]);
+                        bool found = false;
+                        for (int p = 0; p < entries.Count(); p++)
+                        {
+                            if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, entries[p].md5))
+                            {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (found)
+                            continue;
+                        int index = -1;
+                        for (int p = 0; p < entries.Count(); p++)
+                        {
+                            if (GameData.RelativeGameData(sfarFiles[l]) == entries[p].path)
+                            {
+                                index = p;
+                                break;
+                            }
+                        }
+                        if (index == -1)
+                            continue;
+                        errors += "File " + tfcFiles[l] + " has wrong MD5 checksum, expected: ";
+                        for (int i = 0; i < entries[index].md5.Count(); i++)
+                        {
+                            errors += string.Format("{0:x2}", entries[index].md5[i]);
+                        }
+                        errors += Environment.NewLine;
+
+                        /*fs.WriteStringASCII("new MD5FileEntry\n{\npath = @\"" + GameData.RelativeGameData(tfcFiles[l]) + "\",\nmd5 = new byte[] { ");
                         for (int i = 0; i < md5.Length; i++)
                         {
                             fs.WriteStringASCII(string.Format("0x{0:X2}, ", md5[i]));
