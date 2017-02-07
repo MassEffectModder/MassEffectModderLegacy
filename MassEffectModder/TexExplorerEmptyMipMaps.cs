@@ -116,7 +116,7 @@ namespace MassEffectModder
                                     if (cachePackageMgr != null)
                                         refPkg = cachePackageMgr.OpenPackage(GameData.GamePath + foundTex.path);
                                     else
-                                        refPkg = new Package(GameData.GamePath + foundTex.path, true);
+                                        refPkg = new Package(GameData.GamePath + foundTex.path);
                                     int refExportId = foundTex.exportID;
                                     byte[] refData = refPkg.getExportData(refExportId);
                                     refPkg.DisposeCache();
@@ -207,7 +207,7 @@ skip:
             {
                 if (GameData.gameType == entries[i].gameType)
                 {
-                    Package package = new Package(GameData.GamePath + entries[i].packagePath, true);
+                    Package package = new Package(GameData.GamePath + entries[i].packagePath);
                     Texture texture = new Texture(package, entries[i].exportId, package.getExportData(entries[i].exportId));
                     if (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty))
                         return false;
@@ -599,7 +599,7 @@ skip:
                     if (cachePackageMgr != null)
                         package = cachePackageMgr.OpenPackage(GameData.GamePath + entries[i].packagePath);
                     else
-                        package = new Package(GameData.GamePath + entries[i].packagePath, true);
+                        package = new Package(GameData.GamePath + entries[i].packagePath);
                     Texture texture = new Texture(package, entries[i].exportId, package.getExportData(entries[i].exportId));
                     if (texture.getCrcTopMipmap() != entries[i].crc)
                         return true;

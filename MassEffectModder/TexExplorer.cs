@@ -860,7 +860,7 @@ namespace MassEffectModder
                     {
                         _mainWindow.updateStatusLabel("Generating textures information from package " + (l + 1) + " of " + GameData.packageFiles.Count);
                         _mainWindow.updateStatusLabel2("");
-                        Package package = new Package(GameData.packageFiles[l], true);
+                        Package package = new Package(GameData.packageFiles[l]);
                         fs.WriteStringASCII("--- Package: " + Path.GetFileName(GameData.packageFiles[l]) + " ---\n");
                         for (int i = 0; i < package.exportsTable.Count; i++)
                         {
