@@ -660,7 +660,8 @@ namespace MassEffectModder
 
             if (memoryMode)
             {
-                export.newData = data;
+                export.newData = new byte[data.Length];
+                Array.Copy(data, export.newData, data.Length);
             }
             else
             {
