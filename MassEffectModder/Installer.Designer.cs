@@ -101,8 +101,8 @@
             this.checkBoxPreEnableRepack = new System.Windows.Forms.CheckBox();
             this.checkBoxPreEnablePack = new System.Windows.Forms.CheckBox();
             this.groupBoxOptions = new System.Windows.Forms.GroupBox();
-            this.checkBoxOptionVanilla = new System.Windows.Forms.CheckBox();
             this.checkBoxOptionFaster = new System.Windows.Forms.CheckBox();
+            this.checkBoxOptionVanilla = new System.Windows.Forms.CheckBox();
             this.groupBoxPreInstallCheck.SuspendLayout();
             this.groupBoxInstaller.SuspendLayout();
             this.groupBoxOptions.SuspendLayout();
@@ -672,6 +672,17 @@
             this.groupBoxOptions.TabStop = false;
             this.groupBoxOptions.Text = "Options";
             // 
+            // checkBoxOptionFaster
+            // 
+            this.checkBoxOptionFaster.AutoSize = true;
+            this.checkBoxOptionFaster.Location = new System.Drawing.Point(167, 42);
+            this.checkBoxOptionFaster.Name = "checkBoxOptionFaster";
+            this.checkBoxOptionFaster.Size = new System.Drawing.Size(153, 17);
+            this.checkBoxOptionFaster.TabIndex = 39;
+            this.checkBoxOptionFaster.TabStop = false;
+            this.checkBoxOptionFaster.Text = "Faster (8GB RAM required)";
+            this.checkBoxOptionFaster.UseVisualStyleBackColor = true;
+            // 
             // checkBoxOptionVanilla
             // 
             this.checkBoxOptionVanilla.AutoSize = true;
@@ -682,17 +693,6 @@
             this.checkBoxOptionVanilla.TabStop = false;
             this.checkBoxOptionVanilla.Text = "Skip vanilla check";
             this.checkBoxOptionVanilla.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxOptionFaster
-            // 
-            this.checkBoxOptionFaster.AutoSize = true;
-            this.checkBoxOptionFaster.Location = new System.Drawing.Point(167, 42);
-            this.checkBoxOptionFaster.Name = "checkBoxOptionFaster";
-            this.checkBoxOptionFaster.Size = new System.Drawing.Size(283, 17);
-            this.checkBoxOptionFaster.TabIndex = 39;
-            this.checkBoxOptionFaster.TabStop = false;
-            this.checkBoxOptionFaster.Text = "Faster method (8GB RAM required) - EXPERIMENTAL";
-            this.checkBoxOptionFaster.UseVisualStyleBackColor = true;
             // 
             // Installer
             // 
