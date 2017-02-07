@@ -141,6 +141,7 @@ namespace MassEffectModder
                 return;
             }
             errors = "";
+            log = "";
             for (int i = 0; i < memFiles.Count; i++)
             {
                 using (FileStream fs = new FileStream(memFiles[i], FileMode.Open, FileAccess.Read))
@@ -386,7 +387,7 @@ namespace MassEffectModder
         {
             for (int i = 0; i < memFiles.Count; i++)
             {
-                log += "Mod: " + (i + 1) + " of " + memFiles.Count + " started:" + Environment.NewLine;
+                log += "Mod: " + (i + 1) + " of " + memFiles.Count + " started: " + Path.GetFileName(memFiles[i]) + Environment.NewLine;
                 using (FileStream fs = new FileStream(memFiles[i], FileMode.Open, FileAccess.Read))
                 {
                     uint tag = fs.ReadUInt32();
@@ -552,8 +553,10 @@ namespace MassEffectModder
             labelFinalStatus.Text = "Process in progress...";
 
             errors = "";
+            log = "";
             Misc.startTimer();
 
+            log += "Prepare game data started..." + Environment.NewLine;
             updateStatusPrepare("In progress...");
             if (GameData.gameType == MeType.ME1_TYPE)
                 Misc.VerifyME1Exe(gameData, false);
@@ -566,6 +569,7 @@ namespace MassEffectModder
 
             checkBoxPrepare.Checked = true;
             updateStatusPrepare("");
+            log += "Prepare game data finished" + Environment.NewLine + Environment.NewLine;
 
             if (Directory.Exists(GameData.DLCData))
             {
@@ -582,6 +586,7 @@ namespace MassEffectModder
             }
             log += Environment.NewLine;
 
+            log += "Scan textures started..." + Environment.NewLine;
             updateStatusScan("In progress...");
             if (checkBoxOptionFaster.Checked)
                 errors += treeScan.PrepareListOfTextures(null, cachePackageMgr, null, this, ref log, true);
@@ -590,25 +595,30 @@ namespace MassEffectModder
             textures = treeScan.treeScan;
             checkBoxScan.Checked = true;
             updateStatusScan("");
+            log += "Scan textures finished" + Environment.NewLine + Environment.NewLine;
 
 
             if (checkBoxOptionFaster.Checked)
             {
                 if (GameData.gameType == MeType.ME1_TYPE)
                 {
+                    log += "Remove mipmaps started..." + Environment.NewLine;
                     updateStatusMipMaps("In progress...");
                     errors += mipMaps.removeMipMaps(1, textures, cachePackageMgr, null, this, checkBoxPreEnableRepack.Checked);
                     errors += mipMaps.removeMipMaps(2, textures, cachePackageMgr, null, this, checkBoxPreEnableRepack.Checked);
                     checkBoxMipMaps.Checked = true;
                     updateStatusMipMaps("");
+                    log += "Remove mipmaps finished" + Environment.NewLine + Environment.NewLine;
                 }
             }
 
 
+            log += "Process textures started..." + Environment.NewLine;
             updateStatusTextures("In progress...");
             applyModules();
             checkBoxTextures.Checked = true;
             updateStatusTextures("");
+            log += "Process textures finished" + Environment.NewLine + Environment.NewLine;
 
 
             updateStatusStore("Progress...");
@@ -621,14 +631,17 @@ namespace MassEffectModder
             {
                 if (GameData.gameType == MeType.ME1_TYPE)
                 {
+                    log += "Remove mipmaps started..." + Environment.NewLine;
                     updateStatusMipMaps("In progress...");
                     errors += mipMaps.removeMipMaps(1, textures, null, null, this, checkBoxPreEnableRepack.Checked);
                     errors += mipMaps.removeMipMaps(2, textures, null, null, this, checkBoxPreEnableRepack.Checked);
                     checkBoxMipMaps.Checked = true;
                     updateStatusMipMaps("");
+                    log += "Remove mipmaps finished" + Environment.NewLine + Environment.NewLine;
                 }
             }
 
+            log += "Updating LODs and other settings started..." + Environment.NewLine;
             updateStatusLOD("In progress...");
             string path = gameData.EngineConfigIniPath;
             bool exist = File.Exists(path);
@@ -639,10 +652,12 @@ namespace MassEffectModder
             LODSettings.updateGFXSettings((MeType)gameId, engineConf);
             checkBoxLOD.Checked = true;
             updateStatusLOD("");
+            log += "Updating LODs and other settings finished" + Environment.NewLine + Environment.NewLine;
 
 
             if (checkBoxPreEnableRepack.Checked)
             {
+                log += "Repack started..." + Environment.NewLine;
                 for (int i = 0; i < GameData.packageFiles.Count; i++)
                 {
                     updateStatusRepackZlib("Repacking PCC files... " + ((i + 1) * 100 / GameData.packageFiles.Count) + " %");
@@ -656,6 +671,7 @@ namespace MassEffectModder
                 }
                 checkBoxRepackZlib.Checked = true;
                 updateStatusRepackZlib("");
+                log += "Repack finished" + Environment.NewLine + Environment.NewLine;
             }
 
 
@@ -663,6 +679,7 @@ namespace MassEffectModder
             {
                 if (Directory.Exists(GameData.DLCData))
                 {
+                    log += "Repack started..." + Environment.NewLine;
                     updateStatusPackDLC("In progress...");
                     List<string> DLCs = Directory.GetDirectories(GameData.DLCData).ToList();
                     for (int i = 0; i < DLCs.Count; i++)
@@ -685,6 +702,7 @@ namespace MassEffectModder
                     Directory.Move(tmpDlcDir, GameData.DLCData);
 
                     updateStatusPackDLC("");
+                    log += "Repack started finished" + Environment.NewLine + Environment.NewLine;
                 }
                 checkBoxPackDLC.Checked = true;
             }
