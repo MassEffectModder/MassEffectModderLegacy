@@ -386,6 +386,7 @@ namespace MassEffectModder
         {
             for (int i = 0; i < memFiles.Count; i++)
             {
+                log += "Mod: " + (i + 1) + " of " + memFiles.Count + " started:" + Environment.NewLine;
                 using (FileStream fs = new FileStream(memFiles[i], FileMode.Open, FileAccess.Read))
                 {
                     uint tag = fs.ReadUInt32();
@@ -454,7 +455,6 @@ namespace MassEffectModder
                         dstLen = dst.Length;
 
                         updateStatusTextures("Mod: " + (i + 1) + " of " + memFiles.Count + " - in progress: " + ((l + 1) * 100 / numFiles) + " % ");
-                        log += "Mod: " + (i + 1) + " of " + memFiles.Count + " started:";
 
                         if (modFiles[l].tag == MipMaps.FileTextureTag)
                         {
@@ -573,7 +573,7 @@ namespace MassEffectModder
                 log += "Detected folowing folders in DLC path:" + Environment.NewLine;
                 for (int dl = 0; dl < dirs.Count; dl++)
                 {
-                    log += dirs[dl] + Environment.NewLine;
+                    log += Path.GetFileName(dirs[dl]) + Environment.NewLine;
                 }
             }
             else
