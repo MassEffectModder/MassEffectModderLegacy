@@ -40,11 +40,11 @@ namespace MassEffectModder
             _installer = installer;
         }
 
-        public Package OpenPackage(string path, bool headerOnly = false)
+        public Package OpenPackage(string path, bool memMode = false, bool headerOnly = false)
         {
             if (!packages.Exists(p => p.packagePath == path))
             {
-                Package pkg = new Package(path, headerOnly);
+                Package pkg = new Package(path, memMode, headerOnly);
                 packages.Add(pkg);
                 return pkg;
             }
