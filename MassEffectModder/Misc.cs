@@ -923,7 +923,7 @@ namespace MassEffectModder
                         int index = -1;
                         for (int p = 0; p < entries.Count(); p++)
                         {
-                            if (GameData.RelativeGameData(sfarFiles[l]) == entries[p].path)
+                            if (GameData.RelativeGameData(tfcFiles[l]) == entries[p].path)
                             {
                                 index = p;
                                 break;
