@@ -312,17 +312,20 @@ namespace MassEffectModder
 
             if (gameId == (int)MeType.ME3_TYPE)
             {
-                List<string> sfarFiles = Directory.GetFiles(GameData.DLCData, "Default.sfar", SearchOption.AllDirectories).ToList();
-                for (int i = 0; i < sfarFiles.Count; i++)
+                if (Directory.Exists(GameData.DLCData))
                 {
-                    if (new FileInfo(sfarFiles[i]).Length <= 32)
-                        sfarFiles.RemoveAt(i--);
+                    List<string> sfarFiles = Directory.GetFiles(GameData.DLCData, "Default.sfar", SearchOption.AllDirectories).ToList();
+                    for (int i = 0; i < sfarFiles.Count; i++)
+                    {
+                        if (new FileInfo(sfarFiles[i]).Length <= 32)
+                            sfarFiles.RemoveAt(i--);
+                    }
+                    for (int i = 0; i < sfarFiles.Count; i++)
+                    {
+                        diskUsage += new FileInfo(sfarFiles[i]).Length;
+                    }
+                    diskUsage = (long)(diskUsage * 2.5);
                 }
-                for (int i = 0; i < sfarFiles.Count; i++)
-                {
-                    diskUsage += new FileInfo(sfarFiles[i]).Length;
-                }
-                diskUsage = (long)(diskUsage * 2.5);
             }
 
             if (diskUsage > diskFreeSpace)
