@@ -652,10 +652,10 @@
             this.checkBoxPreEnablePack.AutoSize = true;
             this.checkBoxPreEnablePack.Location = new System.Drawing.Point(18, 42);
             this.checkBoxPreEnablePack.Name = "checkBoxPreEnablePack";
-            this.checkBoxPreEnablePack.Size = new System.Drawing.Size(93, 17);
+            this.checkBoxPreEnablePack.Size = new System.Drawing.Size(125, 17);
             this.checkBoxPreEnablePack.TabIndex = 37;
             this.checkBoxPreEnablePack.TabStop = false;
-            this.checkBoxPreEnablePack.Text = "Repack DLCs";
+            this.checkBoxPreEnablePack.Text = "Repack DLCs (Slow)";
             this.checkBoxPreEnablePack.UseVisualStyleBackColor = true;
             this.checkBoxPreEnablePack.CheckedChanged += new System.EventHandler(this.checkBoxPreEnablePack_CheckedChanged);
             // 
