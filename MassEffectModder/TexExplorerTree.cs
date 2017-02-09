@@ -212,6 +212,11 @@ namespace MassEffectModder
                     installer.updateStatusScan("Progress... " + (i * 100 / GameData.packageFiles.Count) + " % ");
                 errors += FindTextures(textures, GameData.packageFiles[i], cachePackageMgr, ref log);
             }
+            if (cachePackageMgr == null && GameData.gameType == MeType.ME3_TYPE)
+            {
+                CachePackageMgr.updateMainTOC();
+                CachePackageMgr.updateDLCsTOC();
+            }
 
             using (FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
             {
@@ -307,6 +312,8 @@ namespace MassEffectModder
                     }
 
                     if (GameData.gameType != MeType.ME1_TYPE &&
+                        (id == package.nameIdTexture2D ||
+                        id == package.nameIdTextureFlipBook) &&
                         texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty))
                     {
                         do
