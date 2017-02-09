@@ -312,8 +312,6 @@ namespace MassEffectModder
                     }
 
                     if (GameData.gameType != MeType.ME1_TYPE &&
-                        (id == package.nameIdTexture2D ||
-                        id == package.nameIdTextureFlipBook) &&
                         texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty))
                     {
                         do
