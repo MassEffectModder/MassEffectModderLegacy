@@ -332,7 +332,7 @@ namespace MassEffectModder
                     if (package.compressed && package.compressionType != Package.CompressionType.Zlib)
                     {
                         package.Dispose();
-                        package = new Package(GameData.packageFiles[i], true);
+                        package = new Package(GameData.packageFiles[i]);
                         package.SaveToFile(true);
                     }
                 }
