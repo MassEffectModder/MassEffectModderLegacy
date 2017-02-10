@@ -98,6 +98,7 @@ namespace MassEffectModder
             {
                 checkBoxPreEnableRepack.Visible = false;
                 labelMERepackZlib.Visible = false;
+                labelME3DLCPack.Visible = false;
                 checkBoxRepackZlib.Visible = false;
                 labelStatusRepackZlib.Visible = false;
 
