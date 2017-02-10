@@ -46,18 +46,16 @@ namespace MassEffectModder
         string errors = "";
         string log = "";
 
-        public Installer(bool runAsAdmin)
+        public Installer()
         {
             InitializeComponent();
             Text = "MEM Installer v1.81 for ALOT";
-            if (runAsAdmin)
-                Text += " (run as Administrator)";
             mipMaps = new MipMaps();
             treeScan = new TreeScan();
             cachePackageMgr = new CachePackageMgr(null, this);
         }
 
-        public bool Run()
+        public bool Run(bool runAsAdmin)
         {
             installerIni = new ConfIni(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "installer.ini"));
             string gameIdStr = installerIni.Read("GameId", "Main");
@@ -72,6 +70,9 @@ namespace MassEffectModder
                 MessageBox.Show("Game ID not recognized in installer.ini, exiting...", "Installer");
                 return false;
             }
+            Text += " ME" + gameId;
+            if (runAsAdmin)
+                Text += " (run as Administrator)";
             configIni = new ConfIni();
 
             labelStatusPrepare.Text = "";

@@ -75,8 +75,8 @@ namespace MassEffectModder
             string iniPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "installer.ini");
             if (File.Exists(iniPath))
             {
-                Installer installer = new Installer(runAsAdmin);
-                if (installer.Run())
+                Installer installer = new Installer();
+                if (installer.Run(runAsAdmin))
                     Application.Run(installer);
                 if (installer.exitToModder)
                     Application.Run(new MainWindow(runAsAdmin));
