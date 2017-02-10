@@ -37,7 +37,7 @@ namespace MassEffectModder
             public uint crc;
         }
 
-        public string removeMipMaps(int phase, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, MainWindow mainWindow, Installer installer, bool forceZlib = false)
+        public string removeMipMapsME1(int phase, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, MainWindow mainWindow, Installer installer, bool forceZlib = false)
         {
             string errors = "";
 
@@ -80,68 +80,137 @@ namespace MassEffectModder
                             texture.properties.setIntValue("SizeY", texture.mipMapsList.First().height);
                             texture.properties.setIntValue("MipTailBaseIdx", texture.mipMapsList.Count() - 1);
 
-                            if (GameData.gameType == MeType.ME1_TYPE)
+                            if (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extLZO) ||
+                                texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extZlib) ||
+                                texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extUnc))
                             {
-                                if (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extLZO) ||
-                                    texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extZlib) ||
-                                    texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extUnc))
+                                if (phase == 1)
+                                    continue;
+                                FoundTexture foundTexName = new FoundTexture();
+                                string pkgName = Path.GetFileNameWithoutExtension(GameData.packageFiles[i]).ToLower();
+                                for (int k = 0; k < textures.Count; k++)
                                 {
-                                    if (phase == 1)
-                                        continue;
-                                    FoundTexture foundTexName = new FoundTexture();
-                                    string pkgName = Path.GetFileNameWithoutExtension(GameData.packageFiles[i]).ToLower();
-                                    for (int k = 0; k < textures.Count; k++)
+                                    for (int t = 0; t < textures[k].list.Count; t++)
                                     {
-                                        for (int t = 0; t < textures[k].list.Count; t++)
+                                        if (textures[k].list[t].exportID == l &&
+                                            Path.GetFileNameWithoutExtension(textures[k].list[t].path).ToLower() == pkgName)
                                         {
-                                            if (textures[k].list[t].exportID == l &&
-                                                Path.GetFileNameWithoutExtension(textures[k].list[t].path).ToLower() == pkgName)
-                                            {
-                                                foundTexName = textures[k];
-                                                break;
-                                            }
+                                            foundTexName = textures[k];
+                                            break;
                                         }
                                     }
-                                    if (foundTexName.crc == 0)
+                                }
+                                if (foundTexName.crc == 0)
+                                {
+                                    errors += "Error: Texture " + package.exportsTable[l].objectName + " not found in package: " + GameData.packageFiles[i] + ", skipping..." + Environment.NewLine;
+                                    goto skip;
+                                }
+
+                                pkgName = texture.packageName.ToLower();
+                                MatchedTexture foundTex = foundTexName.list.Find(s => Path.GetFileNameWithoutExtension(s.path).ToLower() == pkgName);
+                                if (foundTex.path == null)
+                                    throw new Exception();
+                                Package refPkg = null;
+                                if (cachePackageMgr != null)
+                                    refPkg = cachePackageMgr.OpenPackage(GameData.GamePath + foundTex.path);
+                                else
+                                    refPkg = new Package(GameData.GamePath + foundTex.path);
+                                int refExportId = foundTex.exportID;
+                                byte[] refData = refPkg.getExportData(refExportId);
+                                refPkg.DisposeCache();
+                                using (Texture refTexture = new Texture(refPkg, refExportId, refData, false))
+                                {
+                                    if (texture.mipMapsList.Count != refTexture.mipMapsList.Count)
                                     {
-                                        errors += "Error: Texture " + package.exportsTable[l].objectName + " not found in package: " + GameData.packageFiles[i] + ", skipping..." + Environment.NewLine;
+                                        errors += "Error: Texture " + package.exportsTable[l].objectName + " in package: " + GameData.packageFiles[i] + " has wrong reference, skipping..." + Environment.NewLine;
                                         goto skip;
                                     }
-
-                                    pkgName = texture.packageName.ToLower();
-                                    MatchedTexture foundTex = foundTexName.list.Find(s => Path.GetFileNameWithoutExtension(s.path).ToLower() == pkgName);
-                                    if (foundTex.path == null)
-                                        throw new Exception();
-                                    Package refPkg = null;
-                                    if (cachePackageMgr != null)
-                                        refPkg = cachePackageMgr.OpenPackage(GameData.GamePath + foundTex.path);
-                                    else
-                                        refPkg = new Package(GameData.GamePath + foundTex.path);
-                                    int refExportId = foundTex.exportID;
-                                    byte[] refData = refPkg.getExportData(refExportId);
-                                    refPkg.DisposeCache();
-                                    using (Texture refTexture = new Texture(refPkg, refExportId, refData, false))
+                                    for (int t = 0; t < texture.mipMapsList.Count; t++)
                                     {
-                                        if (texture.mipMapsList.Count != refTexture.mipMapsList.Count)
+                                        Texture.MipMap mipmap = texture.mipMapsList[t];
+                                        if (mipmap.storageType == Texture.StorageTypes.extLZO ||
+                                            mipmap.storageType == Texture.StorageTypes.extZlib ||
+                                            mipmap.storageType == Texture.StorageTypes.extUnc)
                                         {
-                                            errors += "Error: Texture " + package.exportsTable[l].objectName + " in package: " + GameData.packageFiles[i] + " has wrong reference, skipping..." + Environment.NewLine;
-                                            goto skip;
-                                        }
-                                        for (int t = 0; t < texture.mipMapsList.Count; t++)
-                                        {
-                                            Texture.MipMap mipmap = texture.mipMapsList[t];
-                                            if (mipmap.storageType == Texture.StorageTypes.extLZO ||
-                                                mipmap.storageType == Texture.StorageTypes.extZlib ||
-                                                mipmap.storageType == Texture.StorageTypes.extUnc)
-                                            {
-                                                mipmap.dataOffset = refPkg.exportsTable[refExportId].dataOffset + (uint)refTexture.properties.propertyEndOffset + refTexture.mipMapsList[t].internalOffset;
-                                                texture.mipMapsList[t] = mipmap;
-                                            }
+                                            mipmap.dataOffset = refPkg.exportsTable[refExportId].dataOffset + (uint)refTexture.properties.propertyEndOffset + refTexture.mipMapsList[t].internalOffset;
+                                            texture.mipMapsList[t] = mipmap;
                                         }
                                     }
                                 }
                             }
 skip:
+                            using (MemoryStream newData = new MemoryStream())
+                            {
+                                newData.WriteFromBuffer(texture.properties.toArray());
+                                newData.WriteFromBuffer(texture.toArray(package.exportsTable[l].dataOffset + (uint)newData.Position));
+                                package.setExportData(l, newData.ToArray());
+                            }
+                            modified = true;
+                        }
+                    }
+                }
+                if (cachePackageMgr == null)
+                {
+                    if (modified)
+                    {
+                        if (package.compressed && package.compressionType != Package.CompressionType.Zlib)
+                            package.SaveToFile(forceZlib);
+                        else
+                            package.SaveToFile();
+                    }
+                    package.Dispose();
+                }
+                else
+                {
+                    package.DisposeCache();
+                }
+            }
+            return errors;
+        }
+
+        public string removeMipMapsME2ME3(List<FoundTexture> textures, CachePackageMgr cachePackageMgr, MainWindow mainWindow, Installer installer, bool forceZlib = false)
+        {
+            string errors = "";
+
+            for (int i = 0; i < GameData.packageFiles.Count; i++)
+            {
+                bool modified = false;
+                if (mainWindow != null)
+                {
+                    mainWindow.updateStatusLabel("Removing empty mipmaps - package " + (i + 1) + " of " + GameData.packageFiles.Count);
+                    mainWindow.updateStatusLabel2("");
+                }
+                if (installer != null)
+                {
+                    installer.updateStatusMipMaps("Progress ... " + (i * 100 / GameData.packageFiles.Count) + " % ");
+                }
+                Package package = null;
+
+                if (cachePackageMgr != null)
+                    package = cachePackageMgr.OpenPackage(GameData.packageFiles[i]);
+                else
+                    package = new Package(GameData.packageFiles[i], true);
+                for (int l = 0; l < package.exportsTable.Count; l++)
+                {
+                    int id = package.getClassNameId(package.exportsTable[l].classId);
+                    if (id == package.nameIdTexture2D ||
+                        id == package.nameIdTextureFlipBook)
+                    {
+                        using (Texture texture = new Texture(package, l, package.getExportData(l), false))
+                        {
+                            if (!texture.hasImageData() ||
+                                !texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty))
+                            {
+                                continue;
+                            }
+                            do
+                            {
+                                texture.mipMapsList.Remove(texture.mipMapsList.First(s => s.storageType == Texture.StorageTypes.empty));
+                            } while (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty));
+                            texture.properties.setIntValue("SizeX", texture.mipMapsList.First().width);
+                            texture.properties.setIntValue("SizeY", texture.mipMapsList.First().height);
+                            texture.properties.setIntValue("MipTailBaseIdx", texture.mipMapsList.Count() - 1);
+
                             using (MemoryStream newData = new MemoryStream())
                             {
                                 newData.WriteFromBuffer(texture.properties.toArray());

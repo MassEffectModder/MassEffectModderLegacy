@@ -203,19 +203,11 @@ namespace MassEffectModder
             {
                 if (mainWindow != null)
                 {
-                    if (GameData.gameType == MeType.ME1_TYPE)
-                        mainWindow.updateStatusLabel("Finding textures in package " + (i + 1) + " of " + GameData.packageFiles.Count + " - " + GameData.packageFiles[i]);
-                    else
-                        mainWindow.updateStatusLabel("Finding and removing empty textures in package " + (i + 1) + " of " + GameData.packageFiles.Count + " - " + GameData.packageFiles[i]);
+                    mainWindow.updateStatusLabel("Finding textures in package " + (i + 1) + " of " + GameData.packageFiles.Count + " - " + GameData.packageFiles[i]);
                 }
                 if (installer != null)
                     installer.updateStatusScan("Progress... " + (i * 100 / GameData.packageFiles.Count) + " % ");
                 errors += FindTextures(textures, GameData.packageFiles[i], cachePackageMgr, ref log);
-            }
-            if (cachePackageMgr == null && GameData.gameType == MeType.ME3_TYPE)
-            {
-                CachePackageMgr.updateMainTOC();
-                CachePackageMgr.updateDLCsTOC();
             }
 
             using (FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
@@ -242,15 +234,20 @@ namespace MassEffectModder
                 }
             }
 
-            if (GameData.gameType == MeType.ME1_TYPE)
-            {
-                MipMaps mipmaps = new MipMaps();
-                errors += mipmaps.removeMipMaps(1, textures, null, mainWindow, null);
-                errors += mipmaps.removeMipMaps(2, textures, null, mainWindow, null);
-            }
-
             if (mainWindow != null)
             {
+                if (GameData.gameType == MeType.ME1_TYPE)
+                {
+                    MipMaps mipmaps = new MipMaps();
+                    errors += mipmaps.removeMipMapsME1(1, textures, null, mainWindow, null);
+                    errors += mipmaps.removeMipMapsME1(2, textures, null, mainWindow, null);
+                }
+                else
+                {
+                    MipMaps mipmaps = new MipMaps();
+                    errors += mipmaps.removeMipMapsME2ME3(textures, null, mainWindow, null);
+                }
+
                 var time = Misc.stopTimer();
                 mainWindow.updateStatusLabel("Done. Process total time: " + Misc.getTimerFormat(time));
                 mainWindow.updateStatusLabel2("");
@@ -262,7 +259,6 @@ namespace MassEffectModder
         private string FindTextures(List<FoundTexture> textures, string packagePath, CachePackageMgr cachePackageMgr, ref string log)
         {
             string errors = "";
-            bool modified = false;
             Package package = null;
 
             try
@@ -311,25 +307,6 @@ namespace MassEffectModder
                         continue;
                     }
 
-                    if (GameData.gameType != MeType.ME1_TYPE &&
-                        texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty))
-                    {
-                        do
-                        {
-                            texture.mipMapsList.Remove(texture.mipMapsList.First(s => s.storageType == Texture.StorageTypes.empty));
-                        } while (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty));
-                        texture.properties.setIntValue("SizeX", texture.mipMapsList.First().width);
-                        texture.properties.setIntValue("SizeY", texture.mipMapsList.First().height);
-                        texture.properties.setIntValue("MipTailBaseIdx", texture.mipMapsList.Count() - 1);
-                        using (MemoryStream newData = new MemoryStream())
-                        {
-                            newData.WriteFromBuffer(texture.properties.toArray());
-                            newData.WriteFromBuffer(texture.toArray(package.exportsTable[i].dataOffset + (uint)newData.Position));
-                            package.setExportData(i, newData.ToArray());
-                        }
-                        modified = true;
-                    }
-
                     FoundTexture foundTexName = textures.Find(s => s.crc == crc);
                     if (foundTexName.crc != 0)
                     {
@@ -352,14 +329,13 @@ namespace MassEffectModder
             }
             if (cachePackageMgr == null)
             {
-                if (modified)
-                    package.SaveToFile();
                 package.Dispose();
             }
             else
             {
                 package.DisposeCache();
             }
+
             return errors;
         }
     }

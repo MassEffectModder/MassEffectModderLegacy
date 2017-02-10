@@ -104,11 +104,7 @@ namespace MassEffectModder
                 checkBoxPackDLC.Visible = false;
                 labelStatusPackDLC.Visible = false;
             }
-            if (gameId != 1)
-            {
-                labelMipMaps.Visible = false;
-                checkBoxMipMaps.Visible = false;
-            }
+
             checkBoxOptionVanilla.Checked = false;
             checkBoxOptionFaster.Checked = false;
 
@@ -607,8 +603,17 @@ namespace MassEffectModder
                 {
                     log += "Remove mipmaps started..." + Environment.NewLine;
                     updateStatusMipMaps("In progress...");
-                    errors += mipMaps.removeMipMaps(1, textures, cachePackageMgr, null, this, checkBoxPreEnableRepack.Checked);
-                    errors += mipMaps.removeMipMaps(2, textures, cachePackageMgr, null, this, checkBoxPreEnableRepack.Checked);
+                    errors += mipMaps.removeMipMapsME1(1, textures, cachePackageMgr, null, this, checkBoxPreEnableRepack.Checked);
+                    errors += mipMaps.removeMipMapsME1(2, textures, cachePackageMgr, null, this, checkBoxPreEnableRepack.Checked);
+                    checkBoxMipMaps.Checked = true;
+                    updateStatusMipMaps("");
+                    log += "Remove mipmaps finished" + Environment.NewLine + Environment.NewLine;
+                }
+                else
+                {
+                    log += "Remove mipmaps started..." + Environment.NewLine;
+                    updateStatusMipMaps("In progress...");
+                    errors += mipMaps.removeMipMapsME2ME3(textures, cachePackageMgr, null, this, checkBoxPreEnableRepack.Checked);
                     checkBoxMipMaps.Checked = true;
                     updateStatusMipMaps("");
                     log += "Remove mipmaps finished" + Environment.NewLine + Environment.NewLine;
@@ -636,8 +641,17 @@ namespace MassEffectModder
                 {
                     log += "Remove mipmaps started..." + Environment.NewLine;
                     updateStatusMipMaps("In progress...");
-                    errors += mipMaps.removeMipMaps(1, textures, null, null, this, checkBoxPreEnableRepack.Checked);
-                    errors += mipMaps.removeMipMaps(2, textures, null, null, this, checkBoxPreEnableRepack.Checked);
+                    errors += mipMaps.removeMipMapsME1(1, textures, null, null, this, checkBoxPreEnableRepack.Checked);
+                    errors += mipMaps.removeMipMapsME1(2, textures, null, null, this, checkBoxPreEnableRepack.Checked);
+                    checkBoxMipMaps.Checked = true;
+                    updateStatusMipMaps("");
+                    log += "Remove mipmaps finished" + Environment.NewLine + Environment.NewLine;
+                }
+                else
+                {
+                    log += "Remove mipmaps started..." + Environment.NewLine;
+                    updateStatusMipMaps("In progress...");
+                    errors += mipMaps.removeMipMapsME2ME3(textures, null, null, this, checkBoxPreEnableRepack.Checked);
                     checkBoxMipMaps.Checked = true;
                     updateStatusMipMaps("");
                     log += "Remove mipmaps finished" + Environment.NewLine + Environment.NewLine;
