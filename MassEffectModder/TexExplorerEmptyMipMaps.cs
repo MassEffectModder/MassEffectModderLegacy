@@ -58,7 +58,7 @@ namespace MassEffectModder
                 if (cachePackageMgr != null)
                     package = cachePackageMgr.OpenPackage(GameData.packageFiles[i]);
                 else
-                    package = new Package(GameData.packageFiles[i], true);
+                    package = new Package(GameData.packageFiles[i]);
                 for (int l = 0; l < package.exportsTable.Count; l++)
                 {
                     int id = package.getClassNameId(package.exportsTable[l].classId);
@@ -189,7 +189,7 @@ skip:
                 if (cachePackageMgr != null)
                     package = cachePackageMgr.OpenPackage(GameData.packageFiles[i]);
                 else
-                    package = new Package(GameData.packageFiles[i], true);
+                    package = new Package(GameData.packageFiles[i]);
                 for (int l = 0; l < package.exportsTable.Count; l++)
                 {
                     int id = package.getClassNameId(package.exportsTable[l].classId);

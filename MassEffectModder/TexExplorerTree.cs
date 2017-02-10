@@ -266,7 +266,7 @@ namespace MassEffectModder
                 if (cachePackageMgr != null)
                     package = cachePackageMgr.OpenPackage(packagePath);
                 else
-                    package = new Package(packagePath, true);
+                    package = new Package(packagePath);
             }
             catch
             {
