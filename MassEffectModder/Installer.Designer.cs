@@ -682,6 +682,7 @@
             this.checkBoxOptionFaster.TabStop = false;
             this.checkBoxOptionFaster.Text = "Faster (8GB RAM required)";
             this.checkBoxOptionFaster.UseVisualStyleBackColor = true;
+            this.checkBoxOptionFaster.Visible = false;
             // 
             // checkBoxOptionVanilla
             // 
