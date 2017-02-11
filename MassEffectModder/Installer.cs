@@ -49,7 +49,7 @@ namespace MassEffectModder
         public Installer()
         {
             InitializeComponent();
-            Text = "MEM Installer v1.84 for ALOT";
+            Text = "MEM Installer v1.85 for ALOT";
             mipMaps = new MipMaps();
             treeScan = new TreeScan();
             cachePackageMgr = new CachePackageMgr(null, this);
@@ -483,7 +483,6 @@ namespace MassEffectModder
                             string path = GameData.GamePath + pkgPath;
                             if (!File.Exists(path))
                             {
-                                errors += "File " + path + " not exists in your game setup." + Environment.NewLine;
                                 log += "File " + path + " not exists in your game setup." + Environment.NewLine;
                                 continue;
                             }
