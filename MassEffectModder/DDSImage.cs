@@ -286,7 +286,7 @@ namespace AmaroK86.ImageFormat
                     break;
                 case 60:
                         return DDSFormat.V8U8;
-                case 41:
+                case 50:
                         return DDSFormat.G8;
                 case 21:
                         return DDSFormat.ARGB;
