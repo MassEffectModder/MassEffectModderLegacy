@@ -483,7 +483,7 @@ namespace MassEffectModder
                             string path = GameData.GamePath + pkgPath;
                             if (!File.Exists(path))
                             {
-                                log += "File " + path + " not exists in your game setup." + Environment.NewLine;
+                                log += "Warning: File " + path + " not exists in your game setup." + Environment.NewLine;
                                 continue;
                             }
                             Package pkg = cachePackageMgr.OpenPackage(path);
