@@ -596,22 +596,23 @@ namespace MassEffectModder
             diskUsage = (long)(diskUsage * 2.5);
             if (diskUsage < diskFreeSpace)
             {
+                string errors = "";
                 Misc.startTimer();
                 foreach (ListViewItem item in listViewMods.SelectedItems)
                 {
-                    richTextBoxInfo.Text += mipMaps.replaceTextureMod(item.Name, _textures, cachePackageMgr, this, ref log);
+                    errors += mipMaps.replaceTextureMod(item.Name, _textures, cachePackageMgr, this, ref log);
                     _mainWindow.updateStatusLabel("MOD: " + item.Text + " applying...");
                     listViewMods.Items.Remove(item);
                 }
-                _mainWindow.updateStatusLabel("");
                 cachePackageMgr.CloseAllWithSave();
                 var time = Misc.stopTimer();
-                _mainWindow.updateStatusLabel("MODs applied. Process total time: " + Misc.getTimerFormat(time));
-                _mainWindow.updateStatusLabel2("");
                 if (listViewMods.Items.Count == 0)
                     clearMODsView();
-                if (richTextBoxInfo.Text != "")
+                _mainWindow.updateStatusLabel("MODs applied. Process total time: " + Misc.getTimerFormat(time));
+                _mainWindow.updateStatusLabel2("");
+                if (errors != "")
                 {
+                    richTextBoxInfo.Text = errors;
                     richTextBoxInfo.Show();
                     pictureBoxPreview.Hide();
                     MessageBox.Show("WARNING: Some errors have occured!");
