@@ -80,9 +80,7 @@ namespace MassEffectModder
                             texture.properties.setIntValue("SizeY", texture.mipMapsList.First().height);
                             texture.properties.setIntValue("MipTailBaseIdx", texture.mipMapsList.Count() - 1);
 
-                            if (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extLZO) ||
-                                texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extZlib) ||
-                                texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extUnc))
+                            if (texture.packageName.ToUpper() != Path.GetFileNameWithoutExtension(package.packageFile.Name).ToUpper())
                             {
                                 if (phase == 1)
                                     continue;

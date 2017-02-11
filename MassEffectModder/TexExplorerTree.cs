@@ -292,12 +292,11 @@ namespace MassEffectModder
                     bool slave = false;
                     matchTexture.exportID = i;
                     matchTexture.path = GameData.RelativeGameData(packagePath);
-                    if (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extLZO) ||
-                        texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extZlib) ||
-                        texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extUnc))
-                    {
+                    if (GameData.gameType != MeType.ME1_TYPE)
                         slave = true;
-                    }
+                    else
+                        if (texture.packageName.ToUpper() != Path.GetFileNameWithoutExtension(package.packageFile.Name).ToUpper())
+                            slave = true;
 
                     uint crc = texture.getCrcTopMipmap();
                     if (crc == 0)

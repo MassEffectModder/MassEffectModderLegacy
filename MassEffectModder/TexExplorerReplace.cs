@@ -89,9 +89,7 @@ namespace MassEffectModder
                 bool master = true;
                 if (GameData.gameType == MeType.ME1_TYPE)
                 {
-                    if (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extLZO) ||
-                        texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extZlib) ||
-                        texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.extUnc))
+                    if (texture.packageName.ToUpper() != Path.GetFileNameWithoutExtension(package.packageFile.Name).ToUpper())
                     {
                         master = false;
                         if (!masterTextures.Exists(s => s.packageName == texture.packageName))
