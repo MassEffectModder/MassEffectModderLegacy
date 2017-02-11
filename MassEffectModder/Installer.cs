@@ -49,7 +49,7 @@ namespace MassEffectModder
         public Installer()
         {
             InitializeComponent();
-            Text = "MEM Installer v1.85 for ALOT";
+            Text = "MEM Installer v1.86 for ALOT";
             mipMaps = new MipMaps();
             treeScan = new TreeScan();
             cachePackageMgr = new CachePackageMgr(null, this);
