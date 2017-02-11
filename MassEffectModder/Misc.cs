@@ -292,7 +292,9 @@ namespace MassEffectModder
                 engineConf.Write("DepthOfField", "True", "SystemSettings");
                 engineConf.Write("Bloom", "True", "SystemSettings");
                 engineConf.Write("QualityBloom", "True", "SystemSettings");
-                engineConf.Write("ParticleLODBias", "2", "SystemSettings");
+                engineConf.Write("ParticleLODBias", "0", "SystemSettings");
+                engineConf.Write("SkeletalMeshLODBias", "0", "SystemSettings");
+                engineConf.Write("DetailMode", "2", "SystemSettings");
             }
             else if (gameId == MeType.ME2_TYPE)
             {
@@ -307,7 +309,9 @@ namespace MassEffectModder
                 engineConf.Write("DepthOfField", "True", "SystemSettings");
                 engineConf.Write("Bloom", "True", "SystemSettings");
                 engineConf.Write("QualityBloom", "True", "SystemSettings");
-                engineConf.Write("ParticleLODBias", "2", "SystemSettings");
+                engineConf.Write("ParticleLODBias", "0", "SystemSettings");
+                engineConf.Write("SkeletalMeshLODBias", "0", "SystemSettings");
+                engineConf.Write("DetailMode", "2", "SystemSettings");
             }
             else if (gameId == MeType.ME3_TYPE)
             {
@@ -321,7 +325,9 @@ namespace MassEffectModder
                 engineConf.Write("DepthOfField", "True", "SystemSettings");
                 engineConf.Write("Bloom", "True", "SystemSettings");
                 engineConf.Write("QualityBloom", "True", "SystemSettings");
-                engineConf.Write("ParticleLODBias", "2", "SystemSettings");
+                engineConf.Write("ParticleLODBias", "0", "SystemSettings");
+                engineConf.Write("SkeletalMeshLODBias", "0", "SystemSettings");
+                engineConf.Write("DetailMode", "2", "SystemSettings");
             }
             else
             {
