@@ -707,6 +707,8 @@
             this.Controls.Add(this.groupBoxInstaller);
             this.Controls.Add(this.groupBoxPreInstallCheck);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximumSize = new System.Drawing.Size(611, 609);
+            this.MinimumSize = new System.Drawing.Size(611, 609);
             this.Name = "Installer";
             this.Text = "MEM Installer for ALOT";
             this.groupBoxPreInstallCheck.ResumeLayout(false);
