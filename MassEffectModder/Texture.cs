@@ -415,15 +415,26 @@ namespace MassEffectModder
                             filename = Path.Combine(GameData.MainData, archive + ".tfc");
                             if (packagePath.Contains("\\DLC"))
                             {
-                                string DLCArchiveFile = Path.Combine(Path.GetDirectoryName((packagePath)), archive + ".tfc");
+                                string DLCArchiveFile = Path.Combine(Path.GetDirectoryName(packagePath), archive + ".tfc");
                                 if (File.Exists(DLCArchiveFile))
                                     filename = DLCArchiveFile;
-                                else if (GameData.gameType == MeType.ME2_TYPE)
-                                    filename = Path.Combine(GameData.MainData, "Textures.tfc");
-                                else if (GameData.gameType == MeType.ME3_TYPE)
+                                else if (!File.Exists(filename))
                                 {
-                                    if (!File.Exists(filename))
+                                    if (GameData.gameType == MeType.ME2_TYPE)
+                                    {
+                                        List<string> files = Directory.GetFiles(GameData.bioGamePath, archive + ".tfc",
+                                            SearchOption.AllDirectories).Where(item => item.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase)).ToList();
+                                        if (files.Count == 0)
+                                            filename = Path.Combine(GameData.MainData, "Textures.tfc");
+                                        else if (files.Count == 1)
+                                            filename = files[0];
+                                        else
+                                            throw new Exception("");
+                                    }
+                                    else if (GameData.gameType == MeType.ME3_TYPE)
+                                    {
                                         filename = Directory.GetFiles(GameData.bioGamePath, archive + ".tfc", SearchOption.AllDirectories).Where(item => item.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase)).ToList()[0];
+                                    }
                                 }
                             }
                         }
