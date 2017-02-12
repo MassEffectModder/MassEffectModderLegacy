@@ -311,7 +311,7 @@ namespace MassEffectModder
                         if (mipmap.storageType == Texture.StorageTypes.extZlib ||
                             mipmap.storageType == Texture.StorageTypes.extLZO)
                         {
-                            if (cprTexture == null)
+                            if (cprTexture == null || (cprTexture != null && mipmap.storageType != cprTexture.mipMapsList[m].storageType))
                             {
                                 mipmap.newData = texture.compressTexture(image.mipMaps[m].data, mipmap.storageType);
                                 triggerCacheCpr = true;
