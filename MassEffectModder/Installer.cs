@@ -831,7 +831,7 @@ namespace MassEffectModder
 
         private void checkBoxPreEnablePack_CheckedChanged(object sender, EventArgs e)
         {
-            labelME3DLCPack.Visible = checkBoxPreEnablePack.Checked;
+            labelME3DLCPack.Visible = false;//checkBoxPreEnablePack.Checked;
             checkBoxPackDLC.Visible = checkBoxPreEnablePack.Checked;
             labelStatusPackDLC.Visible = checkBoxPreEnablePack.Checked;
         }

@@ -657,6 +657,7 @@
             this.checkBoxPreEnablePack.TabStop = false;
             this.checkBoxPreEnablePack.Text = "Repack DLCs (Slow)";
             this.checkBoxPreEnablePack.UseVisualStyleBackColor = true;
+            this.checkBoxPreEnablePack.Visible = false;
             this.checkBoxPreEnablePack.CheckedChanged += new System.EventHandler(this.checkBoxPreEnablePack_CheckedChanged);
             // 
             // groupBoxOptions
