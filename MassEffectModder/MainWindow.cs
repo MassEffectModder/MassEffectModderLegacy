@@ -41,7 +41,7 @@ namespace MassEffectModder
         public MainWindow(bool runAsAdmin)
         {
             InitializeComponent();
-            Text = "Mass Effect Modder v1.86";
+            Text = "Mass Effect Modder v1.87";
             if (runAsAdmin)
                 Text += " (run as Administrator)";
             _configIni = new ConfIni();
@@ -103,7 +103,7 @@ namespace MassEffectModder
                     Assembly.GetExecutingAssembly().GetName().Name);
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
-            string filename = Path.Combine(path, "me" + (int)GameData.gameType + "map.bin");
+            string filename = Path.Combine(path, "me1map.bin");
             if (!File.Exists(filename))
             {
                 MessageBox.Show("Unable to update LOD settings.\nYou must scan your game using Texture Manager first always!");
@@ -378,7 +378,7 @@ namespace MassEffectModder
                     Assembly.GetExecutingAssembly().GetName().Name);
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
-            string filename = Path.Combine(path, "me" + (int)GameData.gameType + "map.bin");
+            string filename = Path.Combine(path, "me2map.bin");
             if (!File.Exists(filename))
             {
                 MessageBox.Show("Unable to update LOD settings.\nYou must scan your game using Texture Manager first always!");
@@ -509,7 +509,7 @@ namespace MassEffectModder
                     Assembly.GetExecutingAssembly().GetName().Name);
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
-            string filename = Path.Combine(path, "me" + (int)GameData.gameType + "map.bin");
+            string filename = Path.Combine(path, "me3map.bin");
             if (!File.Exists(filename))
             {
                 MessageBox.Show("Unable to update LOD settings.\nYou must scan your game using Texture Manager first always!");
