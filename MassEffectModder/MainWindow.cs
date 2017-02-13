@@ -41,7 +41,7 @@ namespace MassEffectModder
         public MainWindow(bool runAsAdmin)
         {
             InitializeComponent();
-            Text = "Mass Effect Modder v1.88";
+            Text = "Mass Effect Modder v1.89";
             if (runAsAdmin)
                 Text += " (run as Administrator)";
             _configIni = new ConfIni();

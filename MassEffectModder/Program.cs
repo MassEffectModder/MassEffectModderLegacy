@@ -21,6 +21,8 @@
 
 using StreamHelpers;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -33,6 +35,12 @@ namespace MassEffectModder
         [DllImport("kernel32", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr LoadLibrary(string lpFileName);
 
+        [DllImport("kernel32", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int FreeLibrary(IntPtr hModule);
+
+        private static List<string> dlls = new List<string>();
+        private static string dllPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+
         static void loadEmbeddedDlls()
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
@@ -42,19 +50,46 @@ namespace MassEffectModder
                 if (resources[l].EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
                 {
                     string dllName = resources[l].Split('.')[2] + ".dll";
-                    string dllPath = Path.Combine(Path.GetTempPath(), dllName);
+                    string dllFilePath = Path.Combine(dllPath, dllName);
+                    if (!Directory.Exists(dllPath))
+                        Directory.CreateDirectory(dllPath);
 
                     using (Stream s = Assembly.GetEntryAssembly().GetManifestResourceStream(resources[l]))
                     {
                         byte[] buf = s.ReadToBuffer(s.Length);
-                        if (File.Exists(dllPath))
-                            File.Delete(dllPath);
-                        File.WriteAllBytes(dllPath, buf);
+                        if (File.Exists(dllFilePath))
+                            File.Delete(dllFilePath);
+                        File.WriteAllBytes(dllFilePath, buf);
                     }
 
-                    if (LoadLibrary(dllPath) == IntPtr.Zero)
+                    IntPtr handle = LoadLibrary(dllFilePath);
+                    if (handle == IntPtr.Zero)
                         throw new Exception();
+                    dlls.Add(dllName);
                 }
+            }
+        }
+
+        static void unloadEmbeddedDlls()
+        {
+            for (int l = 0; l < 10; l++)
+            {
+                foreach (ProcessModule mod in Process.GetCurrentProcess().Modules)
+                {
+                    if (dlls.Contains(mod.ModuleName))
+                    {
+                        FreeLibrary(mod.BaseAddress);
+                    }
+                }
+            }
+
+            try
+            {
+                if (Directory.Exists(dllPath))
+                    Directory.Delete(dllPath, true);
+            }
+            catch
+            {
             }
         }
 
@@ -83,6 +118,8 @@ namespace MassEffectModder
             }
             else
                 Application.Run(new MainWindow(runAsAdmin));
+
+            unloadEmbeddedDlls();
         }
     }
 }
