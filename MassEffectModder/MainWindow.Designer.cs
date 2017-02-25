@@ -92,8 +92,6 @@ namespace MassEffectModder
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
             this.changeGamePathME3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripCheckFilesME3MenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
-            this.modME3ExportDataToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.wikiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.githubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -330,9 +328,7 @@ namespace MassEffectModder
             this.toolStripUpdateGfxME3MenuItem,
             this.toolStripSeparator11,
             this.changeGamePathME3ToolStripMenuItem,
-            this.toolStripCheckFilesME3MenuItem,
-            this.toolStripSeparator12,
-            this.modME3ExportDataToolStripMenuItem1});
+            this.toolStripCheckFilesME3MenuItem});
             this.toolStripMenuME3.Name = "toolStripMenuME3";
             this.toolStripMenuME3.Size = new System.Drawing.Size(88, 20);
             this.toolStripMenuME3.Text = "Mass Effect 3";
@@ -340,106 +336,94 @@ namespace MassEffectModder
             // massEffect3ToolStripMenuItem
             // 
             this.massEffect3ToolStripMenuItem.Name = "massEffect3ToolStripMenuItem";
-            this.massEffect3ToolStripMenuItem.Size = new System.Drawing.Size(308, 22);
+            this.massEffect3ToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
             this.massEffect3ToolStripMenuItem.Text = "Texture Manager";
             this.massEffect3ToolStripMenuItem.Click += new System.EventHandler(this.massEffect3ToolStripMenuItem_Click);
             // 
             // toolStripME3RemoveTreeMenuItem
             // 
             this.toolStripME3RemoveTreeMenuItem.Name = "toolStripME3RemoveTreeMenuItem";
-            this.toolStripME3RemoveTreeMenuItem.Size = new System.Drawing.Size(308, 22);
+            this.toolStripME3RemoveTreeMenuItem.Size = new System.Drawing.Size(227, 22);
             this.toolStripME3RemoveTreeMenuItem.Text = "Remove Textures Scan File";
             this.toolStripME3RemoveTreeMenuItem.Click += new System.EventHandler(this.toolStripME3RemoveTreeMenuItem_Click);
             // 
             // toolStripExtractME3MEMMenuItem
             // 
             this.toolStripExtractME3MEMMenuItem.Name = "toolStripExtractME3MEMMenuItem";
-            this.toolStripExtractME3MEMMenuItem.Size = new System.Drawing.Size(308, 22);
+            this.toolStripExtractME3MEMMenuItem.Size = new System.Drawing.Size(227, 22);
             this.toolStripExtractME3MEMMenuItem.Text = "Extract MEM mod file";
             this.toolStripExtractME3MEMMenuItem.Click += new System.EventHandler(this.toolStripExtractME3MEMMenuItem_Click);
             // 
             // toolStripMenuItemUpdateTOCs
             // 
             this.toolStripMenuItemUpdateTOCs.Name = "toolStripMenuItemUpdateTOCs";
-            this.toolStripMenuItemUpdateTOCs.Size = new System.Drawing.Size(308, 22);
+            this.toolStripMenuItemUpdateTOCs.Size = new System.Drawing.Size(227, 22);
             this.toolStripMenuItemUpdateTOCs.Text = "Update TOCs";
             this.toolStripMenuItemUpdateTOCs.Click += new System.EventHandler(this.toolStripMenuItemUpdateTOCs_Click);
             // 
             // toolStripSeparator9
             // 
             this.toolStripSeparator9.Name = "toolStripSeparator9";
-            this.toolStripSeparator9.Size = new System.Drawing.Size(305, 6);
+            this.toolStripSeparator9.Size = new System.Drawing.Size(224, 6);
             // 
             // extractME3DLCPackagesToolStripMenuItem
             // 
             this.extractME3DLCPackagesToolStripMenuItem.Name = "extractME3DLCPackagesToolStripMenuItem";
-            this.extractME3DLCPackagesToolStripMenuItem.Size = new System.Drawing.Size(308, 22);
+            this.extractME3DLCPackagesToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
             this.extractME3DLCPackagesToolStripMenuItem.Text = "Extract DLCs";
             this.extractME3DLCPackagesToolStripMenuItem.Click += new System.EventHandler(this.extractME3DLCPackagesToolStripMenuItem_Click);
             // 
             // packME3DLCPackagesLZMAToolStripMenuItem
             // 
             this.packME3DLCPackagesLZMAToolStripMenuItem.Name = "packME3DLCPackagesLZMAToolStripMenuItem";
-            this.packME3DLCPackagesLZMAToolStripMenuItem.Size = new System.Drawing.Size(308, 22);
+            this.packME3DLCPackagesLZMAToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
             this.packME3DLCPackagesLZMAToolStripMenuItem.Text = "Repack DLCs";
             this.packME3DLCPackagesLZMAToolStripMenuItem.Click += new System.EventHandler(this.packME3DLCPackagesLZMAToolStripMenuItem_Click);
             // 
             // toolStripSeparator10
             // 
             this.toolStripSeparator10.Name = "toolStripSeparator10";
-            this.toolStripSeparator10.Size = new System.Drawing.Size(305, 6);
+            this.toolStripSeparator10.Size = new System.Drawing.Size(224, 6);
             // 
             // updateME3ConfigToolStripMenuItem
             // 
             this.updateME3ConfigToolStripMenuItem.Name = "updateME3ConfigToolStripMenuItem";
-            this.updateME3ConfigToolStripMenuItem.Size = new System.Drawing.Size(308, 22);
+            this.updateME3ConfigToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
             this.updateME3ConfigToolStripMenuItem.Text = "Update LOD Settings";
             this.updateME3ConfigToolStripMenuItem.Click += new System.EventHandler(this.updateME3ConfigToolStripMenuItem_Click);
             // 
             // removeLODSetME3MenuItem
             // 
             this.removeLODSetME3MenuItem.Name = "removeLODSetME3MenuItem";
-            this.removeLODSetME3MenuItem.Size = new System.Drawing.Size(308, 22);
+            this.removeLODSetME3MenuItem.Size = new System.Drawing.Size(227, 22);
             this.removeLODSetME3MenuItem.Text = "Remove LOD Settings";
             this.removeLODSetME3MenuItem.Click += new System.EventHandler(this.removeLODSetME3MenuItem_Click);
             // 
             // toolStripUpdateGfxME3MenuItem
             // 
             this.toolStripUpdateGfxME3MenuItem.Name = "toolStripUpdateGfxME3MenuItem";
-            this.toolStripUpdateGfxME3MenuItem.Size = new System.Drawing.Size(308, 22);
+            this.toolStripUpdateGfxME3MenuItem.Size = new System.Drawing.Size(227, 22);
             this.toolStripUpdateGfxME3MenuItem.Text = "Optimize Game\'s INI Settings";
             this.toolStripUpdateGfxME3MenuItem.Click += new System.EventHandler(this.toolStripUpdateGfxME3MenuItem_Click);
             // 
             // toolStripSeparator11
             // 
             this.toolStripSeparator11.Name = "toolStripSeparator11";
-            this.toolStripSeparator11.Size = new System.Drawing.Size(305, 6);
+            this.toolStripSeparator11.Size = new System.Drawing.Size(224, 6);
             // 
             // changeGamePathME3ToolStripMenuItem
             // 
             this.changeGamePathME3ToolStripMenuItem.Name = "changeGamePathME3ToolStripMenuItem";
-            this.changeGamePathME3ToolStripMenuItem.Size = new System.Drawing.Size(308, 22);
+            this.changeGamePathME3ToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
             this.changeGamePathME3ToolStripMenuItem.Text = "Change Game Path";
             this.changeGamePathME3ToolStripMenuItem.Click += new System.EventHandler(this.changeGamePathME3ToolStripMenuItem_Click);
             // 
             // toolStripCheckFilesME3MenuItem
             // 
             this.toolStripCheckFilesME3MenuItem.Name = "toolStripCheckFilesME3MenuItem";
-            this.toolStripCheckFilesME3MenuItem.Size = new System.Drawing.Size(308, 22);
+            this.toolStripCheckFilesME3MenuItem.Size = new System.Drawing.Size(227, 22);
             this.toolStripCheckFilesME3MenuItem.Text = "Check Game Files";
             this.toolStripCheckFilesME3MenuItem.Click += new System.EventHandler(this.toolStripCheckFilesME3MenuItem_Click);
-            // 
-            // toolStripSeparator12
-            // 
-            this.toolStripSeparator12.Name = "toolStripSeparator12";
-            this.toolStripSeparator12.Size = new System.Drawing.Size(305, 6);
-            // 
-            // modME3ExportDataToolStripMenuItem1
-            // 
-            this.modME3ExportDataToolStripMenuItem1.Name = "modME3ExportDataToolStripMenuItem1";
-            this.modME3ExportDataToolStripMenuItem1.Size = new System.Drawing.Size(308, 22);
-            this.modME3ExportDataToolStripMenuItem1.Text = "Convert ME3Explorer .mod (binary) for MEM";
-            this.modME3ExportDataToolStripMenuItem1.Click += new System.EventHandler(this.modME3ExportDataToolStripMenuItem1_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -554,7 +538,6 @@ namespace MassEffectModder
         private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.StatusStrip statusStrip2;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
-        private System.Windows.Forms.ToolStripMenuItem modME3ExportDataToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem changeGamePathME1ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem changeGamePathME2ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem changeGamePathME3ToolStripMenuItem;
@@ -574,7 +557,6 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator11;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator12;
         public System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem wikiToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem githubToolStripMenuItem;

@@ -519,7 +519,61 @@ namespace MassEffectModder
             }
         }
 
-        static public void ParseLegacyME3ScriptMod(string script, ref string package, ref int expId, ref string path)
+        static public FoundTexture ParseLegacyMe3xScriptMod(List<FoundTexture> textures, string script, string textureName)
+        {
+            Regex parts = new Regex("pccs.Add[(]\"[A-z,0-9/,..]*\"");
+            Match match = parts.Match(script);
+            if (match.Success)
+            {
+                string packageName = match.ToString().Replace('/', '\\').Split('\"')[1].Split('\\').Last().Split('.')[0].ToLower();
+                parts = new Regex("IDs.Add[(][0-9]*[)];");
+                match = parts.Match(script);
+                if (match.Success)
+                {
+                    int exportId = int.Parse(match.ToString().Split('(')[1].Split(')')[0]);
+                    if (exportId != 0)
+                    {
+                        textureName = textureName.ToLower();
+                        for (int i = 0; i < textures.Count; i++)
+                        {
+                            if (textures[i].name.ToLower() == textureName)
+                            {
+                                for (int l = 0; l < textures[i].list.Count; l++)
+                                {
+                                    if (textures[i].list[l].exportID == exportId)
+                                    {
+                                        string pkg = textures[i].list[l].path.Split('\\').Last().Split('.')[0].ToLower();
+                                        if (pkg == packageName)
+                                        {
+                                            return textures[i];
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        // search again but without name match
+                        for (int i = 0; i < textures.Count; i++)
+                        {
+                            for (int l = 0; l < textures[i].list.Count; l++)
+                            {
+                                if (textures[i].list[l].exportID == exportId)
+                                {
+                                    string pkg = textures[i].list[l].path.Split('\\').Last().Split('.')[0];
+                                    if (pkg == packageName)
+                                    {
+                                        return textures[i];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return new FoundTexture();
+        }
+
+        static public void ParseME3xBinaryScriptMod(string script, ref string package, ref int expId, ref string path)
         {
             Regex parts = new Regex("int objidx = [0-9]*");
             Match match = parts.Match(script);
