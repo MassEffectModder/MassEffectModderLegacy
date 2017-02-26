@@ -1,11 +1,11 @@
-/* zlibwrapper.c
+/* iomemapi.h
 
         Copyright (C) 2017 Pawel Kolodziejski <aquadran at users.sourceforge.net>
 
         ---------------------------------------------------------------------------------
 
         Condition of use and distribution are the same than zlib :
- 
+
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
   arising from the use of this software.
@@ -25,36 +25,23 @@
   ---------------------------------------------------------------------------------
 */
 
-#define _WIN32_WINNT 0x0501
-#include <windows.h>
+#ifndef _IOMEMAPI_H
+#define _IOMEMAPI_H
+
 #include "zlib.h"
+#include "ioapi.h"
+#include "unzip.h"
 
-BOOL WINAPI DllMain(HINSTANCE hin, DWORD reason, LPVOID lpvReserved) { return TRUE; }
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#define ZLIB_EXPORT __declspec(dllexport)
+ZEXTERN voidpf create_iomem_from_buffer(zlib_filefunc64_def* ioMemApi, voidpf buffer, size_t bufferLen);
 
-ZLIB_EXPORT int ZlibDecompress(unsigned char *src, unsigned int src_len, unsigned char *dst, unsigned int *dst_len)
-{
-	uLongf len = *dst_len;
+unzFile unzOpenIoMem(voidpf stream, zlib_filefunc64_def* pzlib_filefunc64_def, int is64bitOpenFunction);
 
-	int status = uncompress((Bytef *)dst, &len, (Bytef *)src, (uLong)src_len);
-	if (status == Z_OK)
-		*dst_len = len;
-	else
-		*dst_len = 0;
-
-	return status;
+#ifdef __cplusplus
 }
+#endif
 
-ZLIB_EXPORT int ZlibCompress(int compression_level, unsigned char *src, unsigned int src_len, unsigned char *dst, unsigned int *dst_len)
-{
-	uLongf len = *dst_len;
-
-	int status = compress2((Bytef *)dst, &len, (Bytef *)src, (uLong)src_len, compression_level);
-	if (status == Z_OK)
-		*dst_len = len;
-	else
-		*dst_len = 0;
-
-	return status;
-}
+#endif

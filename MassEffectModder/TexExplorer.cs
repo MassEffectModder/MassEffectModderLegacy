@@ -28,6 +28,7 @@ using AmaroK86.ImageFormat;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using System.Text;
 
 namespace MassEffectModder
 {
@@ -961,6 +962,251 @@ namespace MassEffectModder
             EnableMenuOptions(true);
         }
 
+        private string convertDataTpftoMem()
+        {
+            string errors = "";
+
+            using (OpenFileDialog modFile = new OpenFileDialog())
+            {
+                modFile.Title = "Please select Texmod file .tpf";
+                modFile.Filter = "TPF file | *.tpf";
+                if (modFile.ShowDialog() != DialogResult.OK)
+                    return "";
+
+                _mainWindow.updateStatusLabel("Processing mod: " + modFile.FileName);
+                ulong numEntries = 0;
+                List<BinaryMod> mods = new List<BinaryMod>();
+                byte[] buffer = File.ReadAllBytes(modFile.FileName);
+                uint dstLen = 0;
+                string fileName = "";
+                int result;
+                string[] ddsList;
+
+                IntPtr handle = IntPtr.Zero;
+                try
+                {
+                    handle = ZlibHelper.Zip.Open(buffer, ref numEntries, 1);
+                    if (ZlibHelper.Zip.LocateFile(handle, "texmod.def") != 0)
+                        throw new Exception();
+                    result = ZlibHelper.Zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
+                    if (result != 0)
+                        throw new Exception();
+                    byte[] listText = new byte[dstLen];
+                    result = ZlibHelper.Zip.ReadCurrentFile(handle, listText, dstLen);
+                    if (result != 0)
+                        throw new Exception();
+                    ddsList = Encoding.ASCII.GetString(listText).Trim('\0').Replace("\r", "").TrimEnd('\n').Split('\n');
+                }
+                catch
+                {
+                    MessageBox.Show("This mod is not compatible!");
+                    _mainWindow.updateStatusLabel("Mod conversion failed");
+                    _mainWindow.updateStatusLabel2("");
+                    if (handle != IntPtr.Zero)
+                        ZlibHelper.Zip.Close(handle);
+                    return "This mod is not compatible!" + Environment.NewLine;
+                }
+                result = ZlibHelper.Zip.GoToFirstFile(handle);
+                if (result != 0)
+                    throw new Exception();
+
+                for (uint i = 0; i < numEntries; i++)
+                {
+                    BinaryMod mod = new BinaryMod();
+                    try
+                    {
+                        uint crc = 0;
+                        result = ZlibHelper.Zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
+                        if (result != 0)
+                            throw new Exception();
+                        string filename = Path.GetFileName(fileName);
+                        foreach (string dds in ddsList)
+                        {
+                            string ddsFile = dds.Split('|')[1];
+                            if (ddsFile.ToLower() != filename.ToLower())
+                                continue;
+                            crc = uint.Parse(dds.Split('|')[0].Substring(2), System.Globalization.NumberStyles.HexNumber);
+                            break;
+                        }
+                        if (crc == 0)
+                            continue;
+
+                        List<FoundTexture> foundCrcList = _textures.FindAll(s => s.crc == crc);
+                        if (foundCrcList.Count == 0)
+                        {
+                            errors += "Texture skipped. Texture " + filename + " is not present in your game setup." + Environment.NewLine;
+                            continue;
+                        }
+
+                        _mainWindow.updateStatusLabel2("Processing texture: " + (i + 1) + " of " + numEntries + " - " + foundCrcList[0].name);
+
+                        string textureName = foundCrcList[0].name;
+                        mod.textureName = textureName;
+                        mod.binaryMod = false;
+                        mod.textureCrc = crc;
+                        mod.data = new byte[dstLen];
+                        result = ZlibHelper.Zip.ReadCurrentFile(handle, mod.data, dstLen);
+                        DDSImage image = new DDSImage(new MemoryStream(mod.data));
+                        if (result != 0)
+                        {
+                            errors += "Error in texture: " + textureName + ", skipping texture, entry: " + (i + 1) + Environment.NewLine;
+                            continue;
+                        }
+                        if (!image.checkExistAllMipmaps())
+                        {
+                            errors += "Error in texture: " + textureName + " This texture has not all the required mipmaps, skipping texture, entry: " + (i + 1) + Environment.NewLine;
+                            continue;
+                        }
+                        Package pkg = new Package(GameData.GamePath + foundCrcList[0].list[0].path);
+                        Texture texture = new Texture(pkg, foundCrcList[0].list[0].exportID, pkg.getExportData(foundCrcList[0].list[0].exportID));
+
+                        if (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1)
+                        {
+                            errors += "Error in texture: " + textureName + " This texture must have mipmaps, skipping texture, entry: " + (i + 1) + Environment.NewLine;
+                            continue;
+                        }
+
+                        string fmt = texture.properties.getProperty("Format").valueName;
+                        DDSFormat ddsFormat = DDSImage.convertFormat(fmt);
+                        if (image.ddsFormat != ddsFormat)
+                        {
+                            errors += "Error in texture: " + textureName + " This texture has wrong texture format, should be: " + ddsFormat + ", skipping texture, entry: " + (i + 1) + Environment.NewLine;
+                            continue;
+                        }
+
+                        if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
+                            texture.mipMapsList[0].width / texture.mipMapsList[0].height)
+                        {
+                            errors += "Error in texture: " + textureName + " This texture has wrong aspect ratio, skipping texture, entry: " + (i + 1) + Environment.NewLine;
+                            continue;
+                        }
+                        mods.Add(mod);
+                    }
+                    catch
+                    {
+                        errors += "Skipping not compatible content, entry: " + (i + 1) + Environment.NewLine;
+                    }
+                    ZlibHelper.Zip.GoToNextFile(handle);
+                }
+                ZlibHelper.Zip.Close(handle);
+
+                if (mods.Count == 0)
+                {
+                    MessageBox.Show("This mod is not compatible!");
+                    _mainWindow.updateStatusLabel("Mod conversion failed");
+                    _mainWindow.updateStatusLabel2("");
+                    return "This mod is not compatible!" + Environment.NewLine + errors;
+                }
+
+                using (SaveFileDialog memFile = new SaveFileDialog())
+                {
+                    memFile.Title = "Select a MEM .mem file, or create a new one";
+                    memFile.Filter = "MEM file | *.mem";
+                    if (memFile.ShowDialog() != DialogResult.OK)
+                    {
+                        _mainWindow.updateStatusLabel("");
+                        return "";
+                    }
+
+                    _mainWindow.updateStatusLabel("Saving to MEM file...");
+                    List<MipMaps.FileMod> modFiles = new List<MipMaps.FileMod>();
+                    FileStream outFs;
+                    if (File.Exists(memFile.FileName))
+                    {
+                        outFs = new FileStream(memFile.FileName, FileMode.Open, FileAccess.ReadWrite);
+                        uint tag = outFs.ReadUInt32();
+                        uint version = outFs.ReadUInt32();
+                        if (tag != TextureModTag || version != TextureModVersion)
+                        {
+                            if (version != TextureModVersion)
+                                errors += "File " + memFile.FileName + " was made with an older version of MEM, skipping..." + Environment.NewLine;
+                            else
+                                errors += "File " + memFile.FileName + " is not a valid MEM mod, skipping..." + Environment.NewLine;
+                            return errors;
+                        }
+                        else
+                        {
+                            uint gameType = 0;
+                            outFs.JumpTo(outFs.ReadInt64());
+                            gameType = outFs.ReadUInt32();
+                            if ((MeType)gameType != GameData.gameType)
+                            {
+                                errors += "File " + memFile.FileName + " is not a MEM mod valid for this game" + Environment.NewLine;
+                                _mainWindow.updateStatusLabel("Mod conversion failed");
+                                return errors;
+                            }
+                        }
+                        int numFiles = outFs.ReadInt32();
+                        for (int l = 0; l < numFiles; l++)
+                        {
+                            MipMaps.FileMod fileMod = new MipMaps.FileMod();
+                            fileMod.tag = outFs.ReadUInt32();
+                            fileMod.name = outFs.ReadStringASCIINull();
+                            fileMod.offset = outFs.ReadInt64();
+                            fileMod.size = outFs.ReadInt64();
+                            modFiles.Add(fileMod);
+                        }
+                        outFs.SeekEnd();
+                    }
+                    else
+                    {
+                        outFs = new FileStream(memFile.FileName, FileMode.Create, FileAccess.Write);
+                        outFs.WriteUInt32(TextureModTag);
+                        outFs.WriteUInt32(TextureModVersion);
+                        outFs.WriteInt64(0); // filled later
+                    }
+
+                    for (int l = 0; l < mods.Count; l++)
+                    {
+                        MipMaps.FileMod fileMod = new MipMaps.FileMod();
+                        Stream dst = MipMaps.compressData(mods[l].data);
+                        dst.SeekBegin();
+                        fileMod.offset = outFs.Position;
+                        fileMod.size = dst.Length;
+
+                        if (mods[l].binaryMod)
+                        {
+                            fileMod.tag = MipMaps.FileBinaryTag;
+                            fileMod.name = Path.GetFileNameWithoutExtension(mods[l].packagePath) + "_" + mods[l].exportId + ".bin";
+
+                            outFs.WriteInt32(mods[l].exportId);
+                            outFs.WriteStringASCIINull(mods[l].packagePath);
+                        }
+                        else
+                        {
+                            fileMod.tag = MipMaps.FileTextureTag;
+                            fileMod.name = mods[l].textureName + string.Format("_0x{0:X8}", mods[l].textureCrc) + ".dds";
+                            outFs.WriteStringASCIINull(mods[l].textureName);
+                            outFs.WriteUInt32(mods[l].textureCrc);
+                        }
+                        _mainWindow.updateStatusLabel2("Processing texture " + (l + 1) + " of " + mods.Count + " - " + fileMod.name);
+                        outFs.WriteFromStream(dst, dst.Length);
+                        modFiles.Add(fileMod);
+                    }
+
+                    long pos = outFs.Position;
+                    outFs.SeekBegin();
+                    outFs.WriteUInt32(TextureModTag);
+                    outFs.WriteUInt32(TextureModVersion);
+                    outFs.WriteInt64(pos);
+                    outFs.JumpTo(pos);
+                    outFs.WriteUInt32((uint)GameData.gameType);
+                    outFs.WriteInt32(modFiles.Count);
+                    for (int i = 0; i < modFiles.Count; i++)
+                    {
+                        outFs.WriteUInt32(modFiles[i].tag);
+                        outFs.WriteStringASCIINull(modFiles[i].name);
+                        outFs.WriteInt64(modFiles[i].offset);
+                        outFs.WriteInt64(modFiles[i].size);
+                    }
+                    outFs.Close();
+                }
+                _mainWindow.updateStatusLabel("Mod converted");
+            }
+            _mainWindow.updateStatusLabel2("");
+            return errors;
+        }
+
         private string convertDataModtoMem()
         {
             string errors = "";
@@ -985,6 +1231,7 @@ namespace MassEffectModder
                     numEntries = fs.ReadInt32();
                     for (int i = 0; i < numEntries; i++)
                     {
+                        _mainWindow.updateStatusLabel2("Mod entry " + (i + 1) + " of " + numEntries);
                         BinaryMod mod = new BinaryMod();
                         try
                         {
@@ -1059,7 +1306,8 @@ namespace MassEffectModder
                 {
                     MessageBox.Show("This mod is not compatible!");
                     _mainWindow.updateStatusLabel("Mod conversion failed");
-                    return "This mod is not compatible!" + Environment.NewLine;
+                    _mainWindow.updateStatusLabel2("");
+                    return "This mod is not compatible!" + Environment.NewLine + errors;
                 }
 
                 using (SaveFileDialog memFile = new SaveFileDialog())
@@ -1069,9 +1317,11 @@ namespace MassEffectModder
                     if (memFile.ShowDialog() != DialogResult.OK)
                     {
                         _mainWindow.updateStatusLabel("");
+                        _mainWindow.updateStatusLabel2("");
                         return "";
                     }
 
+                    _mainWindow.updateStatusLabel("Saving to MEM file...");
                     List<MipMaps.FileMod> modFiles = new List<MipMaps.FileMod>();
                     FileStream outFs;
                     if (File.Exists(memFile.FileName))
@@ -1142,6 +1392,7 @@ namespace MassEffectModder
                             outFs.WriteStringASCIINull(mods[l].textureName);
                             outFs.WriteUInt32(mods[l].textureCrc);
                         }
+                        _mainWindow.updateStatusLabel2("Mod entry " + (l + 1) + " of " + mods.Count);
                         outFs.WriteFromStream(dst, dst.Length);
                         modFiles.Add(fileMod);
                     }
@@ -1165,6 +1416,7 @@ namespace MassEffectModder
                 }
                 _mainWindow.updateStatusLabel("Mod converted");
             }
+            _mainWindow.updateStatusLabel2("");
             return errors;
         }
 
@@ -1172,6 +1424,25 @@ namespace MassEffectModder
         {
             EnableMenuOptions(false);
             string errors = convertDataModtoMem();
+            if (errors != "")
+            {
+                string filename = "mod-errors.txt";
+                if (File.Exists(filename))
+                    File.Delete(filename);
+                using (FileStream fs = new FileStream(filename, FileMode.CreateNew))
+                {
+                    fs.WriteStringASCII(errors);
+                }
+                MessageBox.Show("WARNING: Some errors have occured!");
+                Process.Start(filename);
+            }
+            EnableMenuOptions(true);
+        }
+
+        private void converttpfTomemToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            EnableMenuOptions(false);
+            string errors = convertDataTpftoMem();
             if (errors != "")
             {
                 string filename = "mod-errors.txt";
