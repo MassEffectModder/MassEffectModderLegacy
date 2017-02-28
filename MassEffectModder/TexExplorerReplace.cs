@@ -71,7 +71,7 @@ namespace MassEffectModder
             }
         };
 
-        public string replaceTexture(DDSImage image, List<MatchedTexture> list, CachePackageMgr cachePackageMgr, string textureName)
+        public string replaceTexture(DDSImage image, List<MatchedTexture> list, CachePackageMgr cachePackageMgr, string textureName, uint crc)
         {
             List<Texture> masterTextures = new List<Texture>();
             Texture arcTexture = null, cprTexture = null;
@@ -466,7 +466,7 @@ namespace MassEffectModder
                 int index = Convert.ToInt32(item.Name);
 
                 MipMaps mipMaps = new MipMaps();
-                richTextBoxInfo.Text = mipMaps.replaceTexture(image, node.textures[index].list, cachePackageMgr,  node.textures[index].name);
+                richTextBoxInfo.Text = mipMaps.replaceTexture(image, node.textures[index].list, cachePackageMgr,  node.textures[index].name, node.textures[index].crc);
                 if (richTextBoxInfo.Text != "")
                 {
                     richTextBoxInfo.Show();
