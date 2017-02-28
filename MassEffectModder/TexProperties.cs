@@ -256,6 +256,33 @@ namespace MassEffectModder
             texPropertyList[texPropertyList.FindIndex(s => s.name == name)] = texProperty;
         }
 
+        public void addByteValue(string name, string valueName, int valueInt = 0)
+        {
+            TexPropertyEntry texProperty = new TexPropertyEntry();
+            if (GameData.gameType == MeType.ME3_TYPE)
+                texProperty.valueRaw = new byte[16];
+            else
+                texProperty.valueRaw = new byte[8];
+            texProperty.type = "ByteProperty";
+            texProperty.name = name;
+            texProperty.fetched = true;
+            if (!package.existsNameId(name))
+                throw new Exception("Not able to add property: " + name);
+            if (GameData.gameType == MeType.ME3_TYPE)
+            {
+                Buffer.BlockCopy(BitConverter.GetBytes(package.getNameId(valueName)), 8, texProperty.valueRaw, 8, sizeof(int));
+                Buffer.BlockCopy(BitConverter.GetBytes(valueInt), 0, texProperty.valueRaw, 12, sizeof(int));
+            }
+            else
+            {
+                Buffer.BlockCopy(BitConverter.GetBytes(package.getNameId(valueName)), 0, texProperty.valueRaw, 0, sizeof(int));
+                Buffer.BlockCopy(BitConverter.GetBytes(valueInt), 0, texProperty.valueRaw, 4, sizeof(int));
+            }
+            texProperty.valueName = valueName;
+            texProperty.valueInt = valueInt;
+            texPropertyList.Insert(0, texProperty);
+        }
+
         public void setBoolValue(string name, bool value)
         {
             TexPropertyEntry texProperty = texPropertyList.Find(s => s.name == name);
@@ -276,9 +303,9 @@ namespace MassEffectModder
                 texProperty.valueRaw = new byte[1];
             else
                 texProperty.valueRaw = new byte[4];
-            texProperty.type = "BoolProperty";
             if (!package.existsNameId(name))
                 throw new Exception("Not able to add property: " + name);
+            texProperty.type = "BoolProperty";
             texProperty.name = name;
             texProperty.fetched = true;
             if (value)
@@ -299,6 +326,22 @@ namespace MassEffectModder
             texProperty.valueName = valueName;
             texProperty.valueInt = valueInt;
             texPropertyList[texPropertyList.FindIndex(s => s.name == name)] = texProperty;
+        }
+
+        public void addNameValue(string name, string valueName, int valueInt = 0)
+        {
+            TexPropertyEntry texProperty = new TexPropertyEntry();
+            texProperty.type = "NameProperty";
+            if (!package.existsNameId(name))
+                throw new Exception("Not able to add property: " + name);
+            texProperty.name = name;
+            texProperty.fetched = true;
+            texProperty.valueRaw = new byte[8];
+            Buffer.BlockCopy(BitConverter.GetBytes(package.getNameId(valueName)), 0, texProperty.valueRaw, 0, sizeof(int));
+            Buffer.BlockCopy(BitConverter.GetBytes(valueInt), 0, texProperty.valueRaw, 4, sizeof(int));
+            texProperty.valueName = valueName;
+            texProperty.valueInt = valueInt;
+            texPropertyList.Insert(0, texProperty);
         }
 
         public void setStructValue(string name, string valueName, byte[] valueStruct)
