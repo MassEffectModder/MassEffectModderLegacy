@@ -176,21 +176,14 @@ namespace MassEffectModder
                             archiveFile = DLCArchiveFile;
                         else if (!File.Exists(archiveFile))
                         {
-                            if (GameData.gameType == MeType.ME2_TYPE)
-                            {
-                                List<string> files = Directory.GetFiles(GameData.bioGamePath, archive + ".tfc",
-                                    SearchOption.AllDirectories).Where(item => item.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase)).ToList();
-                                if (files.Count == 0)
-                                    archiveFile = Path.Combine(GameData.MainData, "Textures.tfc");
-                                else if (files.Count == 1)
-                                    archiveFile = files[0];
-                                else
-                                    throw new Exception("");
-                            }
-                            else if (GameData.gameType == MeType.ME3_TYPE)
-                            {
-                                archiveFile = Directory.GetFiles(GameData.bioGamePath, archive + ".tfc", SearchOption.AllDirectories).Where(item => item.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase)).ToList()[0];
-                            }
+                            List<string> files = Directory.GetFiles(GameData.bioGamePath, archive + ".tfc",
+                                SearchOption.AllDirectories).Where(item => item.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase)).ToList();
+                            if (files.Count == 0)
+                                archiveFile = Path.Combine(GameData.MainData, "Textures.tfc");
+                            else if (files.Count == 1)
+                                archiveFile = files[0];
+                            else
+                                throw new Exception("");
                         }
                     }
                     long fileLength = new FileInfo(archiveFile).Length;

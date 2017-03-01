@@ -420,21 +420,14 @@ namespace MassEffectModder
                                     filename = DLCArchiveFile;
                                 else if (!File.Exists(filename))
                                 {
-                                    if (GameData.gameType == MeType.ME2_TYPE)
-                                    {
-                                        List<string> files = Directory.GetFiles(GameData.bioGamePath, archive + ".tfc",
-                                            SearchOption.AllDirectories).Where(item => item.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase)).ToList();
-                                        if (files.Count == 0)
-                                            filename = Path.Combine(GameData.MainData, "Textures.tfc");
-                                        else if (files.Count == 1)
-                                            filename = files[0];
-                                        else
-                                            throw new Exception("");
-                                    }
-                                    else if (GameData.gameType == MeType.ME3_TYPE)
-                                    {
-                                        filename = Directory.GetFiles(GameData.bioGamePath, archive + ".tfc", SearchOption.AllDirectories).Where(item => item.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase)).ToList()[0];
-                                    }
+                                    List<string> files = Directory.GetFiles(GameData.bioGamePath, archive + ".tfc",
+                                        SearchOption.AllDirectories).Where(item => item.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase)).ToList();
+                                    if (files.Count == 0)
+                                        filename = Path.Combine(GameData.MainData, "Textures.tfc");
+                                    else if (files.Count == 1)
+                                        filename = files[0];
+                                    else
+                                        throw new Exception("");
                                 }
                             }
                         }
