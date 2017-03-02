@@ -84,6 +84,7 @@ namespace MassEffectModder
             this.converttpfTomemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miscToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dumpAllTexturesMipmapsInfoTXTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeEmptyMipmapsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.searchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStripTextures.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -417,7 +418,8 @@ namespace MassEffectModder
             // miscToolStripMenuItem
             // 
             this.miscToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.dumpAllTexturesMipmapsInfoTXTToolStripMenuItem});
+            this.dumpAllTexturesMipmapsInfoTXTToolStripMenuItem,
+            this.removeEmptyMipmapsToolStripMenuItem});
             this.miscToolStripMenuItem.Name = "miscToolStripMenuItem";
             this.miscToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.miscToolStripMenuItem.Text = "Scan";
@@ -428,6 +430,12 @@ namespace MassEffectModder
             this.dumpAllTexturesMipmapsInfoTXTToolStripMenuItem.Size = new System.Drawing.Size(216, 22);
             this.dumpAllTexturesMipmapsInfoTXTToolStripMenuItem.Text = "Dump Textures Tree as TXT";
             this.dumpAllTexturesMipmapsInfoTXTToolStripMenuItem.Click += new System.EventHandler(this.dumpAllTexturesMipmapsInfoTXTToolStripMenuItem_Click);
+            // 
+            // removeEmptyMipmapsToolStripMenuItem
+            // 
+            this.removeEmptyMipmapsToolStripMenuItem.Name = "removeEmptyMipmapsToolStripMenuItem";
+            this.removeEmptyMipmapsToolStripMenuItem.Size = new System.Drawing.Size(216, 22);
+            this.removeEmptyMipmapsToolStripMenuItem.Text = "Remove Empty Mipmaps";
             // 
             // searchToolStripMenuItem
             // 
@@ -502,5 +510,6 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripMenuItem info2TextureToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem convertME3ExplorermodForMEMToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem converttpfTomemToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem removeEmptyMipmapsToolStripMenuItem;
     }
 }

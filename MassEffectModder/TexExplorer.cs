@@ -1457,5 +1457,55 @@ namespace MassEffectModder
             }
             EnableMenuOptions(true);
         }
+
+        private void removeEmptyMipmapsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (MipMaps.verifyGameDataEmptyMipMapsRemoval())
+            {
+                DialogResult result = MessageBox.Show("It seems empty mipmaps were already removed.\nAre you sure you want to proceed?", "Remove empty mipmaps", MessageBoxButtons.YesNo);
+                if (result == DialogResult.No)
+                    return;
+            }
+            else
+            {
+                DialogResult result = MessageBox.Show("Are you sure you want to proceed?", "Remove empty mipmaps", MessageBoxButtons.YesNo);
+                if (result == DialogResult.No)
+                    return;
+            }
+
+            EnableMenuOptions(false);
+
+            _mainWindow.GetPackages(gameData);
+
+            string errors = "";
+            Misc.startTimer();
+            MipMaps mipmaps = new MipMaps();
+            if (GameData.gameType == MeType.ME1_TYPE)
+            {
+                errors += mipmaps.removeMipMapsME1(1, _textures, null, _mainWindow, null);
+                errors += mipmaps.removeMipMapsME1(2, _textures, null, _mainWindow, null);
+            }
+            else
+            {
+                errors += mipmaps.removeMipMapsME2ME3(_textures, null, _mainWindow, null);
+            }
+            var time = Misc.stopTimer();
+
+            EnableMenuOptions(true);
+            _mainWindow.updateStatusLabel("Done. Process total time: " + Misc.getTimerFormat(time));
+            _mainWindow.updateStatusLabel2("");
+            if (errors != "")
+            {
+                MessageBox.Show("WARNING: Some errors have occured!");
+                string errorFile = "errors-remove.txt";
+                if (File.Exists(errorFile))
+                    File.Delete(errorFile);
+                using (FileStream fs = new FileStream(errorFile, FileMode.CreateNew))
+                {
+                    fs.WriteStringASCII(errors);
+                }
+                Process.Start(errorFile);
+            }
+        }
     }
 }
