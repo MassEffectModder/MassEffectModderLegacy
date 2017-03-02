@@ -314,6 +314,7 @@ namespace MassEffectModder
             {
                 if (Directory.Exists(GameData.DLCData))
                 {
+                    long diskUsageDLC = 0;
                     List<string> sfarFiles = Directory.GetFiles(GameData.DLCData, "Default.sfar", SearchOption.AllDirectories).ToList();
                     for (int i = 0; i < sfarFiles.Count; i++)
                     {
@@ -322,9 +323,9 @@ namespace MassEffectModder
                     }
                     for (int i = 0; i < sfarFiles.Count; i++)
                     {
-                        diskUsage += new FileInfo(sfarFiles[i]).Length;
+                        diskUsageDLC += new FileInfo(sfarFiles[i]).Length;
                     }
-                    diskUsage = (long)(diskUsage * 2.1);
+                    diskUsage = (long)(diskUsageDLC * 2.1);
                 }
             }
 
