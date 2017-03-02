@@ -93,6 +93,8 @@ namespace MassEffectModder
                 labelMERepackZlib.Visible = false;
                 checkBoxRepackZlib.Visible = false;
                 labelStatusRepackZlib.Visible = false;
+                buttonUnpackDLC.Visible = false;
+                buttonUnpackDLC.Enabled = false;
             }
             if (gameId == 3)
             {
@@ -322,7 +324,7 @@ namespace MassEffectModder
                     {
                         diskUsage += new FileInfo(sfarFiles[i]).Length;
                     }
-                    diskUsage = (long)(diskUsage * 2.5);
+                    diskUsage = (long)(diskUsage * 2.1);
                 }
             }
 
@@ -834,6 +836,11 @@ namespace MassEffectModder
             labelME3DLCPack.Visible = false;//checkBoxPreEnablePack.Checked;
             checkBoxPackDLC.Visible = checkBoxPreEnablePack.Checked;
             labelStatusPackDLC.Visible = checkBoxPreEnablePack.Checked;
+        }
+
+        private void buttonUnpackDLC_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -296,7 +296,7 @@ namespace MassEffectModder
             {
                 diskUsage += Misc.getDirectorySize(DLCs[i]);
             }
-            diskUsage = (long)(diskUsage / 1.5);
+            diskUsage = (long)(diskUsage / 1.9);
             if (diskUsage < diskFreeSpace)
             {
                 for (int i = 0; i < DLCs.Count; i++)
