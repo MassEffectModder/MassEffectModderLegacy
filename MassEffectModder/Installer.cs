@@ -528,6 +528,7 @@ namespace MassEffectModder
             clearPreCheckStatus();
             labelPrePath.Text = GameData.GamePath;
             buttonSTART.Enabled = false;
+            buttonUnpackDLC.Enabled = false;
         }
 
         private void buttonsEnable(bool enabled)
@@ -545,16 +546,9 @@ namespace MassEffectModder
 
         private void buttonSTART_Click(object sender, EventArgs e)
         {
+            buttonsEnable(false);
             buttonPreInstallCheck.Enabled = false;
             buttonSTART.Enabled = false;
-            buttonPreChangePath.Enabled = false;
-            buttonExit.Enabled = false;
-            buttonNormal.Enabled = false;
-            checkBoxPreEnableRepack.Enabled = false;
-            checkBoxPreEnablePack.Enabled = false;
-            checkBoxOptionVanilla.Enabled = false;
-            checkBoxOptionFaster.Enabled = false;
-            buttonUnpackDLC.Enabled = false;
             labelFinalStatus.Text = "Process in progress...";
 
             errors = "";
