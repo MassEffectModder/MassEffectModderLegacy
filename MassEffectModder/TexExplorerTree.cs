@@ -236,15 +236,14 @@ namespace MassEffectModder
 
             if (mainWindow != null)
             {
+                MipMaps mipmaps = new MipMaps();
                 if (GameData.gameType == MeType.ME1_TYPE)
                 {
-                    MipMaps mipmaps = new MipMaps();
                     errors += mipmaps.removeMipMapsME1(1, textures, null, mainWindow, null);
                     errors += mipmaps.removeMipMapsME1(2, textures, null, mainWindow, null);
                 }
                 else
                 {
-                    MipMaps mipmaps = new MipMaps();
                     errors += mipmaps.removeMipMapsME2ME3(textures, null, mainWindow, null);
                 }
 
