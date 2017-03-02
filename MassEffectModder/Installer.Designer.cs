@@ -103,6 +103,7 @@
             this.groupBoxOptions = new System.Windows.Forms.GroupBox();
             this.checkBoxOptionFaster = new System.Windows.Forms.CheckBox();
             this.checkBoxOptionVanilla = new System.Windows.Forms.CheckBox();
+            this.buttonUnpackDLC = new System.Windows.Forms.Button();
             this.groupBoxPreInstallCheck.SuspendLayout();
             this.groupBoxInstaller.SuspendLayout();
             this.groupBoxOptions.SuspendLayout();
@@ -662,6 +663,7 @@
             // 
             // groupBoxOptions
             // 
+            this.groupBoxOptions.Controls.Add(this.buttonUnpackDLC);
             this.groupBoxOptions.Controls.Add(this.checkBoxOptionFaster);
             this.groupBoxOptions.Controls.Add(this.checkBoxOptionVanilla);
             this.groupBoxOptions.Controls.Add(this.checkBoxPreEnableRepack);
@@ -695,6 +697,16 @@
             this.checkBoxOptionVanilla.TabStop = false;
             this.checkBoxOptionVanilla.Text = "Skip vanilla check";
             this.checkBoxOptionVanilla.UseVisualStyleBackColor = true;
+            // 
+            // buttonUnpackDLC
+            // 
+            this.buttonUnpackDLC.Location = new System.Drawing.Point(445, 28);
+            this.buttonUnpackDLC.Name = "buttonUnpackDLC";
+            this.buttonUnpackDLC.Size = new System.Drawing.Size(111, 23);
+            this.buttonUnpackDLC.TabIndex = 51;
+            this.buttonUnpackDLC.Text = "Unpack DLCs";
+            this.buttonUnpackDLC.UseVisualStyleBackColor = true;
+            this.buttonUnpackDLC.Click += new System.EventHandler(this.buttonUnpackDLC_Click);
             // 
             // Installer
             // 
@@ -776,5 +788,6 @@
         private System.Windows.Forms.GroupBox groupBoxOptions;
         private System.Windows.Forms.CheckBox checkBoxOptionVanilla;
         private System.Windows.Forms.CheckBox checkBoxOptionFaster;
+        private System.Windows.Forms.Button buttonUnpackDLC;
     }
 }

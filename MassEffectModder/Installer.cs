@@ -94,7 +94,6 @@ namespace MassEffectModder
                 checkBoxRepackZlib.Visible = false;
                 labelStatusRepackZlib.Visible = false;
                 buttonUnpackDLC.Visible = false;
-                buttonUnpackDLC.Enabled = false;
             }
             if (gameId == 3)
             {
@@ -111,6 +110,7 @@ namespace MassEffectModder
 
             checkBoxOptionVanilla.Checked = false;
             checkBoxOptionFaster.Checked = false;
+            buttonUnpackDLC.Enabled = false;
 
             clearPreCheckStatus();
 
@@ -539,6 +539,7 @@ namespace MassEffectModder
             checkBoxPreEnablePack.Enabled = enabled;
             checkBoxOptionVanilla.Enabled = enabled;
             checkBoxOptionFaster.Enabled = enabled;
+            buttonUnpackDLC.Enabled = enabled;
             Application.DoEvents();
         }
 
@@ -731,7 +732,8 @@ namespace MassEffectModder
 
             var time = Misc.stopTimer();
             labelFinalStatus.Text = "Process finished. Process total time: " + Misc.getTimerFormat(time);
-            buttonsEnable(true);
+            buttonExit.Enabled = true;
+            buttonNormal.Enabled = true;
 
             log += "==========================================" + Environment.NewLine;
             log += "LOD settings:" + Environment.NewLine;
@@ -841,7 +843,9 @@ namespace MassEffectModder
 
         private void buttonUnpackDLC_Click(object sender, EventArgs e)
         {
-
+            buttonsEnable(false);
+            ME3DLC.unpackAllDLC(null, this);
+            buttonsEnable(true);
         }
     }
 }
