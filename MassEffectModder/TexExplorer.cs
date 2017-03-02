@@ -544,7 +544,7 @@ namespace MassEffectModder
                 foreach (string file in files)
                 {
                     _mainWindow.updateStatusLabel("MOD: " + Path.GetFileNameWithoutExtension(file) + " loading...");
-                    using (FileStream fs = new FileStream(file, FileMode.Open))
+                    using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
                     {
                         uint tag = fs.ReadUInt32();
                         uint version = fs.ReadUInt32();
@@ -1221,7 +1221,7 @@ namespace MassEffectModder
                 _mainWindow.updateStatusLabel("Processing mod: " + modFile.FileName);
                 int numEntries = 0;
                 List<BinaryMod> mods = new List<BinaryMod>();
-                using (FileStream fs = new FileStream(modFile.FileName, FileMode.Open))
+                using (FileStream fs = new FileStream(modFile.FileName, FileMode.Open, FileAccess.Read))
                 {
                     string package = "";
                     int len = fs.ReadInt32();
