@@ -187,7 +187,7 @@ namespace MassEffectModder
                         }
                     }
                     long fileLength = new FileInfo(archiveFile).Length;
-                    if (fileLength + 0x3000000 > 0x80000000)
+                    if (fileLength + 0x5000000 > 0x80000000)
                     {
                         archiveFile = "";
                         foreach (TFCTexture newGuid in guids)
@@ -206,7 +206,7 @@ namespace MassEffectModder
                             else
                             {
                                 fileLength = new FileInfo(archiveFile).Length;
-                                if (fileLength + 0x3000000 < 0x80000000)
+                                if (fileLength + 0x5000000 < 0x80000000)
                                 {
                                     texture.properties.setNameValue("TextureFileCacheName", newGuid.name);
                                     texture.properties.setStructValue("TFCFileGuid", "Guid", newGuid.guid);
