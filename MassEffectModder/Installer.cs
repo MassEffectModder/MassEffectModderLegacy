@@ -208,7 +208,7 @@ namespace MassEffectModder
                 buttonsEnable(true);
                 return;
             }
-            if (!gameData.getPackages(true))
+            if (!gameData.getPackages(true, true))
             {
                 labelPreGamePath.Text = "Missing game data!";
                 labelPreGamePath.ForeColor = Color.FromKnownColor(KnownColor.Red);
@@ -567,7 +567,10 @@ namespace MassEffectModder
                 Misc.VerifyME1Exe(gameData, false);
 
             if (GameData.gameType == MeType.ME3_TYPE)
+            {
                 ME3DLC.unpackAllDLC(null, this);
+                gameData.getPackages(true, true);
+            }
 
             if (GameData.gameType != MeType.ME1_TYPE)
                 gameData.getTfcTextures();

@@ -316,9 +316,9 @@ namespace MassEffectModder
             }
         }
 
-        public bool getPackages(bool installerMode = false)
+        public bool getPackages(bool force = false, bool installerMode = false)
         {
-            if (packageFiles != null && packageFiles.Count != 0)
+            if (packageFiles != null && (packageFiles.Count != 0 && !force))
                 return true;
 
             if (gameType == MeType.ME1_TYPE)
