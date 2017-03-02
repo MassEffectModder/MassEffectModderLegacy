@@ -554,6 +554,7 @@ namespace MassEffectModder
             checkBoxPreEnablePack.Enabled = false;
             checkBoxOptionVanilla.Enabled = false;
             checkBoxOptionFaster.Enabled = false;
+            buttonUnpackDLC.Enabled = false;
             labelFinalStatus.Text = "Process in progress...";
 
             errors = "";
