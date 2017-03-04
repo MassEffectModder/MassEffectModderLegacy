@@ -108,7 +108,7 @@ namespace MassEffectModder
             TOCBinFile tocFile = new TOCBinFile(tocFilename);
             for (int i = 0; i < mainFiles.Count; i++)
             {
-                int pos = mainFiles[i].IndexOf("BioGame", StringComparison.OrdinalIgnoreCase);
+                int pos = mainFiles[i].IndexOf("BIOGame", StringComparison.OrdinalIgnoreCase);
                 string filename = mainFiles[i].Substring(pos);
                 tocFile.updateFile(filename, mainFiles[i]);
             }
