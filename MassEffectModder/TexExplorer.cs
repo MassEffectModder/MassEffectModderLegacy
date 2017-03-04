@@ -366,7 +366,7 @@ namespace MassEffectModder
                             found = true;
                         }
                     }
-                    else if (foundTexture.name == name)
+                    else if (foundTexture.name.ToLower() == name.ToLower())
                     {
                         found = true;
                     }
@@ -461,12 +461,12 @@ namespace MassEffectModder
         {
             int pos1 = item.Text.IndexOf('(');
             int pos2 = item.Text.IndexOf(')');
-            string packageName = item.Text.Substring(pos1 + 1, pos2 - pos1 - 1);
+            string packageName = item.Text.Substring(pos1 + 1, pos2 - pos1 - 1).ToLower();
             listViewResults.Hide();
             for (int l = 0; l < treeViewPackages.Nodes[0].Nodes.Count; l++)
             {
                 PackageTreeNode node = (PackageTreeNode)treeViewPackages.Nodes[0].Nodes[l];
-                if (node.Name == packageName)
+                if (node.Name.ToLower() == packageName)
                 {
                     treeViewPackages.SelectedNode = node;
                     updateListViewTextures(node);

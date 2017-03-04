@@ -349,7 +349,7 @@ namespace MassEffectModder
                 bool found = false;
                 for (int i = 0; i < nodeList.Count; i++)
                 {
-                    if (nodeList[i].Name == _textures[l].packageName)
+                    if (nodeList[i].Name.ToLower() == _textures[l].packageName.ToLower())
                     {
                         nodeList[i].textures.Add(_textures[l]);
                         found = true;

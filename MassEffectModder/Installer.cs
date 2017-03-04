@@ -59,11 +59,11 @@ namespace MassEffectModder
         {
             installerIni = new ConfIni(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "installer.ini"));
             string gameIdStr = installerIni.Read("GameId", "Main");
-            if (gameIdStr == "ME1")
+            if (gameIdStr.ToLower() == "me1")
                 gameId = 1;
-            else if (gameIdStr == "ME2")
+            else if (gameIdStr.ToLower() == "me2")
                 gameId = 2;
-            else if (gameIdStr == "ME3")
+            else if (gameIdStr.ToLower() == "me3")
                 gameId = 3;
             else
             {

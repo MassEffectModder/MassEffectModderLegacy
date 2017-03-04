@@ -166,7 +166,7 @@ namespace MassEffectModder
             TOCFileIndex = -1;
             for (int i = 0; i < filesCount; i++)
             {
-                if (filesList[i].filenamePath != null && filesList[i].filenamePath.EndsWith("PCConsoleTOC.bin"))
+                if (filesList[i].filenamePath != null && filesList[i].filenamePath.EndsWith("PCConsoleTOC.bin", StringComparison.OrdinalIgnoreCase))
                 {
                     tocFile = new TOCBinFile(unpackFileEntry(filesList[i].filenamePath));
                     TOCFileIndex = i;
@@ -264,7 +264,7 @@ namespace MassEffectModder
                 if (mainWindow != null)
                     mainWindow.updateStatusLabel2("File " + (i + 1) + " of " + filesList.Count() + " - " + Path.GetFileName(filesList[i].filenamePath));
 
-                int pos = filesList[i].filenamePath.IndexOf("\\BIOGame\\DLC\\", StringComparison.CurrentCultureIgnoreCase);
+                int pos = filesList[i].filenamePath.IndexOf("\\BIOGame\\DLC\\", StringComparison.OrdinalIgnoreCase);
                 string filename = filesList[i].filenamePath.Substring(pos + ("\\BIOGame\\DLC\\").Length).Replace('/', '\\');
                 string dir = Path.GetDirectoryName(outPath);
                 Directory.CreateDirectory(Path.GetDirectoryName(dir + filename));
@@ -334,14 +334,14 @@ namespace MassEffectModder
             int indexTOC = -1;
             List<byte[]> hashList = new List<byte[]>();
             List<string> srcFilesList = Directory.GetFiles(inPath, "*.*", SearchOption.AllDirectories).ToList();
-            srcFilesList.RemoveAll(s => s.Contains("Default.sfar"));
+            srcFilesList.RemoveAll(s => s.ToLower().Contains("default.sfar"));
             using (FileStream outputFile = new FileStream(inPath + @"\TOC", FileMode.Create, FileAccess.Write))
             {
                 for (int i = 0; i < srcFilesList.Count(); i++)
                 {
-                    int pos = srcFilesList[i].IndexOf("\\BIOGame\\DLC\\", StringComparison.CurrentCultureIgnoreCase);
+                    int pos = srcFilesList[i].IndexOf("\\BIOGame\\DLC\\", StringComparison.OrdinalIgnoreCase);
                     string filename = srcFilesList[i].Substring(pos).Replace('\\', '/');
-                    if (filename.EndsWith("PCConsoleTOC.bin"))
+                    if (filename.EndsWith("PCConsoleTOC.bin", StringComparison.OrdinalIgnoreCase))
                     {
                         indexTOC = i;
                     }
@@ -371,7 +371,8 @@ namespace MassEffectModder
                 long sizesArrayOffset = dataOffset;
                 for (int i = 0; i < srcFilesList.Count(); i++)
                 {
-                    if (srcFilesList[i].EndsWith(".bik") || srcFilesList[i].EndsWith(".afc"))
+                    if (srcFilesList[i].EndsWith(".bik", StringComparison.OrdinalIgnoreCase) 
+                        || srcFilesList[i].EndsWith(".afc", StringComparison.OrdinalIgnoreCase))
                         continue;
                     long fileLen = new FileInfo(srcFilesList[i]).Length;
                     long numBlocks = (fileLen + MaxBlockSize - 1) / MaxBlockSize;
@@ -395,7 +396,8 @@ namespace MassEffectModder
                     file.dataOffset = curDataOffset;
                     file.uncomprSize = fileLen;
                     file.filenameHash = hashList[i];
-                    if (srcFilesList[i].EndsWith(".bik") || srcFilesList[i].EndsWith(".afc"))
+                    if (srcFilesList[i].EndsWith(".bik", StringComparison.OrdinalIgnoreCase)
+                        || srcFilesList[i].EndsWith(".afc", StringComparison.OrdinalIgnoreCase))
                     {
                         outputFile.WriteFromStream(inputFile, fileLen);
                         file.compressedBlockSizesIndex = -1;
