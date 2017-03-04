@@ -104,12 +104,13 @@ namespace MassEffectModder
 
         public void updateFile(string filename, string filePath, bool updateSHA1 = false)
         {
+            string searchFile = filename.ToLower();
             for (int b = 0; b < blockList.Count; b++)
             {
                 for (int f = 0; f < blockList[b].numFiles; f++)
                 {
                     FileEntry file = blockList[b].filesList[f];
-                    if (file.path == filename)
+                    if (file.path.ToLower() == searchFile)
                     {
                         file.size = (uint)new FileInfo(filePath).Length;
                         if (updateSHA1)
