@@ -46,7 +46,7 @@ namespace MassEffectModder
                 bool modified = false;
                 if (mainWindow != null)
                 {
-                    mainWindow.updateStatusLabel("Removing empty mipmaps (" + phase + ") - package " + (i + 1) + " of " + GameData.packageFiles.Count);
+                    mainWindow.updateStatusLabel("Removing empty mipmaps (" + phase + ") - package " + (i + 1) + " of " + GameData.packageFiles.Count + " - " + Path.GetFileName(GameData.packageFiles[i]));
                     mainWindow.updateStatusLabel2("");
                 }
                 if (installer != null)
@@ -175,7 +175,7 @@ skip:
                 bool modified = false;
                 if (mainWindow != null)
                 {
-                    mainWindow.updateStatusLabel("Removing empty mipmaps - package " + (i + 1) + " of " + GameData.packageFiles.Count);
+                    mainWindow.updateStatusLabel("Removing empty mipmaps - package " + (i + 1) + " of " + GameData.packageFiles.Count + " - " + Path.GetFileName(GameData.packageFiles[i]));
                     mainWindow.updateStatusLabel2("");
                 }
                 if (installer != null)
