@@ -528,7 +528,7 @@ namespace MassEffectModder
             Directory.CreateDirectory(tmpDlcDir);
             string originInstallFiles = Path.Combine(GameData.DLCData, "__metadata");
             if (Directory.Exists(originInstallFiles))
-                Directory.Move(originInstallFiles, tmpDlcDir + "\\");
+                Directory.Move(originInstallFiles, tmpDlcDir + "\\" + "__metadata");
             for (int i = 0; i < sfarFiles.Count; i++)
             {
                 string DLCname = Path.GetFileName(Path.GetDirectoryName(Path.GetDirectoryName(sfarFiles[i])));

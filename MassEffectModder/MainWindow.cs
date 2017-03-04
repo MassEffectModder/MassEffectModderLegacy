@@ -309,7 +309,7 @@ namespace MassEffectModder
                 string tmpDlcDir = Path.Combine(GameData.GamePath, "BIOGame", "DLCTemp");
                 string originInstallFiles = Path.Combine(GameData.DLCData, "__metadata");
                 if (Directory.Exists(originInstallFiles))
-                    Directory.Move(originInstallFiles, tmpDlcDir + "\\");
+                    Directory.Move(originInstallFiles, tmpDlcDir + "\\" + "__metadata");
                 DLCs = Directory.GetFiles(GameData.DLCData, "Default.sfar", SearchOption.AllDirectories).ToList();
                 for (int i = 0; i < DLCs.Count; i++)
                 {
