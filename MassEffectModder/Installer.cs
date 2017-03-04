@@ -318,7 +318,7 @@ namespace MassEffectModder
                     List<string> sfarFiles = Directory.GetFiles(GameData.DLCData, "Default.sfar", SearchOption.AllDirectories).ToList();
                     for (int i = 0; i < sfarFiles.Count; i++)
                     {
-                        if (new FileInfo(sfarFiles[i]).Length <= 32)
+                        if (File.Exists(Path.Combine(Path.GetDirectoryName(sfarFiles[i]), "Mount.dlc")))
                             sfarFiles.RemoveAt(i--);
                     }
                     for (int i = 0; i < sfarFiles.Count; i++)

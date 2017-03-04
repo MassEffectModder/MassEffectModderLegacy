@@ -498,7 +498,7 @@ namespace MassEffectModder
             List<string> sfarFiles = Directory.GetFiles(GameData.DLCData, "Default.sfar", SearchOption.AllDirectories).ToList();
             for (int i = 0; i < sfarFiles.Count; i++)
             {
-                if (new FileInfo(sfarFiles[i]).Length <= 32)
+                if (File.Exists(Path.Combine(Path.GetDirectoryName(sfarFiles[i]), "Mount.dlc")))
                     sfarFiles.RemoveAt(i--);
             }
             if (sfarFiles.Count() == 0)
@@ -528,7 +528,7 @@ namespace MassEffectModder
             Directory.CreateDirectory(tmpDlcDir);
             string originInstallFiles = Path.Combine(GameData.DLCData, "__metadata");
             if (Directory.Exists(originInstallFiles))
-                Directory.Move(originInstallFiles, tmpDlcDir + "\\" + "__metadata");
+                Directory.Move(originInstallFiles, tmpDlcDir + "\\__metadata");
             for (int i = 0; i < sfarFiles.Count; i++)
             {
                 string DLCname = Path.GetFileName(Path.GetDirectoryName(Path.GetDirectoryName(sfarFiles[i])));
@@ -549,7 +549,7 @@ namespace MassEffectModder
             sfarFiles = Directory.GetFiles(GameData.DLCData, "Default.sfar", SearchOption.AllDirectories).ToList();
             for (int i = 0; i < sfarFiles.Count; i++)
             {
-                if (new FileInfo(sfarFiles[i]).Length <= 32)
+                if (File.Exists(Path.Combine(Path.GetDirectoryName(sfarFiles[i]), "Mount.dlc")))
                 {
                     string source = Path.GetDirectoryName(Path.GetDirectoryName(sfarFiles[i]));
                     Directory.Move(source, tmpDlcDir + "\\" + Path.GetFileName(source));
