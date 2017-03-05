@@ -154,8 +154,9 @@ namespace MassEffectModder
                     {
                         case MeType.ME1_TYPE:
                         case MeType.ME2_TYPE:
-                        case MeType.ME3_TYPE:
                             return Path.Combine(_path, @"BioGame");
+                        case MeType.ME3_TYPE:
+                            return Path.Combine(_path, @"BIOGame");
                         default:
                             return null;
                     }
@@ -184,8 +185,9 @@ namespace MassEffectModder
                         case MeType.ME1_TYPE:
                             return Path.Combine(_path, @"DLC");
                         case MeType.ME2_TYPE:
-                        case MeType.ME3_TYPE:
                             return Path.Combine(_path, @"BioGame\DLC");
+                        case MeType.ME3_TYPE:
+                            return Path.Combine(_path, @"BIOGame\DLC");
                         default:
                             return null;
                     }
