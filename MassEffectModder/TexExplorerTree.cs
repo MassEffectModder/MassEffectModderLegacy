@@ -267,10 +267,16 @@ namespace MassEffectModder
                 else
                     package = new Package(packagePath);
             }
-            catch
+            catch (Exception e)
             {
-                errors += "The file is propably broken, skipped: " + packagePath + Environment.NewLine;
-                log += "The file is propably broken, skipped: " + packagePath + Environment.NewLine;
+                string err = "";
+                err += "---- Start --------------------------------------------" + Environment.NewLine;
+                err += "Issue with open package file: " + packagePath + Environment.NewLine;
+                err += e.Message + Environment.NewLine + Environment.NewLine;
+                err += e.StackTrace + Environment.NewLine + Environment.NewLine;
+                err += "---- End ----------------------------------------------" + Environment.NewLine + Environment.NewLine;
+                errors += err;
+                log += err;
                 return errors;
             }
             for (int i = 0; i < package.exportsTable.Count; i++)

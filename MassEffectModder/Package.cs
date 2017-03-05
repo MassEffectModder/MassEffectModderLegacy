@@ -441,12 +441,21 @@ namespace MassEffectModder
                 throw new Exception("File not found: " + filename);
 
             packageFile = new FileStream(filename, FileMode.Open, FileAccess.Read);
-            packageHeader = packageFile.ReadToBuffer(packageHeaderSize);
+            try
+            {
+                packageHeader = packageFile.ReadToBuffer(packageHeaderSize);
+            }
+            catch
+            {
+                if (new FileInfo(filename).Length == 0)
+                    throw new Exception("PCC file has 0 length: " + filename);
+                throw new Exception("Problem with PCC file header: " + filename);
+            }
             if (tag != packageTag)
-                throw new Exception("Wrong PCC tag");
+                throw new Exception("Wrong PCC tag: " + filename);
 
             if (version != packageFileVersion)
-                throw new Exception("Wrong PCC version");
+                throw new Exception("Wrong PCC version: " + filename);
 
             compressionType = (CompressionType)packageFile.ReadUInt32();
 

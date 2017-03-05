@@ -55,10 +55,25 @@ namespace MassEffectModder
                 }
                 Package package = null;
 
-                if (cachePackageMgr != null)
-                    package = cachePackageMgr.OpenPackage(GameData.packageFiles[i]);
-                else
-                    package = new Package(GameData.packageFiles[i], true);
+                try
+                {
+                    if (cachePackageMgr != null)
+                        package = cachePackageMgr.OpenPackage(GameData.packageFiles[i]);
+                    else
+                        package = new Package(GameData.packageFiles[i], true);
+                }
+                catch (Exception e)
+                {
+                    string err = "";
+                    err += "---- Start --------------------------------------------" + Environment.NewLine;
+                    err += "Issue with open package file: " + GameData.packageFiles[i] + Environment.NewLine;
+                    err += e.Message + Environment.NewLine + Environment.NewLine;
+                    err += e.StackTrace + Environment.NewLine + Environment.NewLine;
+                    err += "---- End ----------------------------------------------" + Environment.NewLine + Environment.NewLine;
+                    errors += err;
+                    continue;
+                }
+
                 for (int l = 0; l < package.exportsTable.Count; l++)
                 {
                     int id = package.getClassNameId(package.exportsTable[l].classId);
@@ -184,10 +199,25 @@ skip:
                 }
                 Package package = null;
 
-                if (cachePackageMgr != null)
-                    package = cachePackageMgr.OpenPackage(GameData.packageFiles[i]);
-                else
-                    package = new Package(GameData.packageFiles[i], true);
+                try
+                {
+                    if (cachePackageMgr != null)
+                        package = cachePackageMgr.OpenPackage(GameData.packageFiles[i]);
+                    else
+                        package = new Package(GameData.packageFiles[i], true);
+                }
+                catch (Exception e)
+                {
+                    string err = "";
+                    err += "---- Start --------------------------------------------" + Environment.NewLine;
+                    err += "Issue with open package file: " + GameData.packageFiles[i] + Environment.NewLine;
+                    err += e.Message + Environment.NewLine + Environment.NewLine;
+                    err += e.StackTrace + Environment.NewLine + Environment.NewLine;
+                    err += "---- End ----------------------------------------------" + Environment.NewLine + Environment.NewLine;
+                    errors += err;
+                    continue;
+                }
+                
                 for (int l = 0; l < package.exportsTable.Count; l++)
                 {
                     int id = package.getClassNameId(package.exportsTable[l].classId);
@@ -663,10 +693,19 @@ skip:
                 if (GameData.gameType == entries[i].gameType)
                 {
                     Package package = null;
-                    if (cachePackageMgr != null)
-                        package = cachePackageMgr.OpenPackage(GameData.GamePath + entries[i].packagePath);
-                    else
-                        package = new Package(GameData.GamePath + entries[i].packagePath);
+                    try
+                    {
+                        if (cachePackageMgr != null)
+                            package = cachePackageMgr.OpenPackage(GameData.GamePath + entries[i].packagePath);
+                        else
+                        {
+                            package = new Package(GameData.GamePath + entries[i].packagePath);
+                        }
+                    }
+                    catch
+                    {
+                        return false;
+                    }
                     Texture texture = new Texture(package, entries[i].exportId, package.getExportData(entries[i].exportId));
                     if (texture.getCrcTopMipmap() != entries[i].crc)
                         return true;
