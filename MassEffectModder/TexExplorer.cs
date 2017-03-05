@@ -979,10 +979,10 @@ namespace MassEffectModder
                     modDir.Description = "Please select source directory of .mod, .tpf files to convert";
                     if (modDir.ShowDialog() != DialogResult.OK)
                         return "";
-                    files = Directory.GetFiles(modDir.SelectedPath, "*.tpf").Where(item => item.EndsWith(".tpf", StringComparison.OrdinalIgnoreCase)).ToArray();
-                    string[] files2 = Directory.GetFiles(modDir.SelectedPath, "*.mod").Where(item => item.EndsWith(".mod", StringComparison.OrdinalIgnoreCase)).ToArray();
-                    Array.Resize(ref files, files.Count() + files2.Count());
-                    Array.Copy(files2, 0, files, files.Count() - files2.Count(), files2.Count());
+                    List<string> list = Directory.GetFiles(modDir.SelectedPath, "*.tpf").Where(item => item.EndsWith(".tpf", StringComparison.OrdinalIgnoreCase)).ToList();
+                    list.AddRange(Directory.GetFiles(modDir.SelectedPath, "*.mod").Where(item => item.EndsWith(".mod", StringComparison.OrdinalIgnoreCase)));
+                    list.Sort();
+                    files = list.ToArray();
                 }
                 using (FolderBrowserDialog modDir = new FolderBrowserDialog())
                 {
