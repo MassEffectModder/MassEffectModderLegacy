@@ -623,6 +623,7 @@ namespace MassEffectModder
 
                 using (FolderBrowserDialog modDir = new FolderBrowserDialog())
                 {
+                    modDir.Description = "Please select destination directory for MEM extraction";
                     if (modDir.ShowDialog() != DialogResult.OK)
                         return;
 
