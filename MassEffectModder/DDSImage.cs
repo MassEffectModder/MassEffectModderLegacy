@@ -362,8 +362,8 @@ namespace AmaroK86.ImageFormat
         {
             switch (ddsFormat)
             {
-                case DDSFormat.DXT1:
-                case DDSFormat.DXT3: return 0.5;
+                case DDSFormat.DXT1: return 0.5;
+                case DDSFormat.DXT3:
                 case DDSFormat.DXT5:
                 case DDSFormat.ATI2:
                 case DDSFormat.G8: return 1;
