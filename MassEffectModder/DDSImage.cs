@@ -136,6 +136,7 @@ namespace AmaroK86.ImageFormat
         private const int DDSCAPS_MIPMAP = 0x00400000;
         private const int DDSCAPS_TEXTURE = 0x00001000;
         private const int FOURCC_DXT1 = 0x31545844;
+        private const int FOURCC_DXT3 = 0x33545844;
         private const int FOURCC_DX10 = 0x30315844;
         private const int FOURCC_DXT5 = 0x35545844;
         private const int FOURCC_ATI2 = 0x32495441;
@@ -216,7 +217,7 @@ namespace AmaroK86.ImageFormat
                         origH = 1;
                     w = origW;
                     h = origH;
-                    if (ddsFormat == DDSFormat.DXT1 || ddsFormat == DDSFormat.DXT5)
+                    if (ddsFormat == DDSFormat.DXT1 || ddsFormat == DDSFormat.DXT3 || ddsFormat == DDSFormat.DXT5)
                     {
                         w = (w < 4) ? 4 : w;
                         h = (h < 4) ? 4 : h;
@@ -256,6 +257,7 @@ namespace AmaroK86.ImageFormat
             switch (header.ddspf.dwFourCC)
             {
                 case FOURCC_DXT1: return DDSFormat.DXT1;
+                case FOURCC_DXT3: return DDSFormat.DXT3;
                 case FOURCC_DXT5: return DDSFormat.DXT5;
                 case FOURCC_ATI2: return DDSFormat.ATI2;
                 case 0:
@@ -305,6 +307,10 @@ namespace AmaroK86.ImageFormat
                 case DDSFormat.DXT1:
                     pixelFormat.dwFlags = DDPF_FOURCC;
                     pixelFormat.dwFourCC = FOURCC_DXT1;
+                    break;
+                case DDSFormat.DXT3:
+                    pixelFormat.dwFlags = DDPF_FOURCC;
+                    pixelFormat.dwFourCC = FOURCC_DXT3;
                     break;
                 case DDSFormat.DXT5:
                     pixelFormat.dwFlags = DDPF_FOURCC;
@@ -356,7 +362,8 @@ namespace AmaroK86.ImageFormat
         {
             switch (ddsFormat)
             {
-                case DDSFormat.DXT1: return 0.5;
+                case DDSFormat.DXT1:
+                case DDSFormat.DXT3: return 0.5;
                 case DDSFormat.DXT5:
                 case DDSFormat.ATI2:
                 case DDSFormat.G8: return 1;
@@ -374,6 +381,8 @@ namespace AmaroK86.ImageFormat
             {
                 case "PF_DXT1":
                     return DDSFormat.DXT1;
+                case "PF_DXT3":
+                    return DDSFormat.DXT3;
                 case "PF_DXT5":
                     return DDSFormat.DXT5;
                 case "PF_NormalMap_HQ":
