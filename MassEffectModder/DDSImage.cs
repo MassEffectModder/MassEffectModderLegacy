@@ -101,7 +101,7 @@ namespace AmaroK86.ImageFormat
                 origWidth = w;
                 origHeight = h;
 
-                if (format == DDSFormat.DXT1 || format == DDSFormat.DXT5)
+                if (format == DDSFormat.DXT1 || format == DDSFormat.DXT3 || format == DDSFormat.DXT5)
                 {
                     w = (w < 4) ? 4 : w;
                     h = (h < 4) ? 4 : h;
