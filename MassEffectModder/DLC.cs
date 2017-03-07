@@ -44,7 +44,6 @@ namespace MassEffectModder
         MainWindow mainWindow;
         FileStream sfarFile;
         int filenamesIndex;
-        int TOCFileIndex;
         uint filesCount;
         List<FileEntry> filesList;
         uint maxBlockSize;
@@ -161,16 +160,6 @@ namespace MassEffectModder
             }
             if (filenamesIndex == -1)
                 throw new Exception("filenames entry not found");
-
-            TOCFileIndex = -1;
-            for (int i = 0; i < filesCount; i++)
-            {
-                if (filesList[i].filenamePath != null && filesList[i].filenamePath.EndsWith("PCConsoleTOC.bin", StringComparison.OrdinalIgnoreCase))
-                {
-                    TOCFileIndex = i;
-                    break;
-                }
-            }
         }
 
         public byte[] unpackFileEntry(string filename)
@@ -329,7 +318,6 @@ namespace MassEffectModder
             if (!Directory.Exists(inPath))
                 throw new Exception("Directory not found: " + inPath);
 
-            int indexTOC = -1;
             List<byte[]> hashList = new List<byte[]>();
             List<string> srcFilesList = Directory.GetFiles(inPath, "*.*", SearchOption.AllDirectories).ToList();
             srcFilesList.RemoveAll(s => s.ToLower().Contains("default.sfar"));
@@ -339,10 +327,6 @@ namespace MassEffectModder
                 {
                     int pos = srcFilesList[i].IndexOf("\\BIOGame\\DLC\\", StringComparison.OrdinalIgnoreCase);
                     string filename = srcFilesList[i].Substring(pos).Replace('\\', '/');
-                    if (filename.EndsWith("PCConsoleTOC.bin", StringComparison.OrdinalIgnoreCase))
-                    {
-                        indexTOC = i;
-                    }
                     hashList.Add(MD5.Create().ComputeHash(Encoding.ASCII.GetBytes(filename.ToLowerInvariant())));
                     outputFile.WriteStringASCII(filename + Environment.NewLine);
                 }
