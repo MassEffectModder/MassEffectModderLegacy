@@ -739,6 +739,8 @@ namespace MassEffectModder
             List<string> tfcFiles = null;
             MD5FileEntry[] entries = null;
 
+            startTimer();
+
             if (gameType == MeType.ME1_TYPE)
             {
                 packageMainFiles = Directory.GetFiles(GameData.MainData, "*.*",
@@ -1008,6 +1010,10 @@ namespace MassEffectModder
                 }
                 //fs.WriteStringASCII("};\n");
             }
+
+            var time = stopTimer();
+            if (mainWindow != null)
+                mainWindow.updateStatusLabel("MODs extracted. Process total time: " + Misc.getTimerFormat(time));
 
             return errors;
         }

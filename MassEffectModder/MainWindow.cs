@@ -206,7 +206,6 @@ namespace MassEffectModder
                 return;
             }
             ME3DLC.unpackAllDLC(this, null);
-            updateStatusLabel("Done");
             updateStatusLabel2("");
             enableGameDataMenu(true);
         }
@@ -243,6 +242,8 @@ namespace MassEffectModder
                 MessageBox.Show("No DLCs need to be compressed.");
                 return;
             }
+
+            Misc.startTimer();
 
             TOCBinFile.UpdateAllTOCBinFiles();
 
@@ -285,7 +286,9 @@ namespace MassEffectModder
 
                 Directory.Delete(GameData.DLCData, true);
                 Directory.Move(tmpDlcDir, GameData.DLCData);
-                updateStatusLabel("Done");
+                var time = Misc.stopTimer();
+                updateStatusLabel("DLCs repacked. Process total time: " + Misc.getTimerFormat(time));
+                updateStatusLabel2("");
             }
             else
             {

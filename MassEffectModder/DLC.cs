@@ -511,6 +511,8 @@ namespace MassEffectModder
                 return;
             }
 
+            Misc.startTimer();
+
             string tmpDlcDir = Path.Combine(GameData.GamePath, "BIOGame", "DLCTemp");
             if (Directory.Exists(tmpDlcDir))
                 Directory.Delete(tmpDlcDir, true);
@@ -547,6 +549,10 @@ namespace MassEffectModder
 
             Directory.Delete(GameData.DLCData, true);
             Directory.Move(tmpDlcDir, GameData.DLCData);
+
+            var time = Misc.stopTimer();
+            if (mainWindow != null)
+                mainWindow.updateStatusLabel("DLCs extracted. Process total time: " + Misc.getTimerFormat(time));
         }
     }
 }
