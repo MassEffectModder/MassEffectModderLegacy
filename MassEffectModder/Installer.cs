@@ -699,6 +699,8 @@ namespace MassEffectModder
             {
                 if (Directory.Exists(GameData.DLCData))
                 {
+                    TOCBinFile.UpdateAllTOCBinFiles();
+
                     log += "Repack started..." + Environment.NewLine;
                     updateStatusPackDLC("In progress...");
                     List<string> DLCs = Directory.GetDirectories(GameData.DLCData).ToList();

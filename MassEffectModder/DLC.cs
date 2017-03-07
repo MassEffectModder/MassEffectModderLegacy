@@ -45,7 +45,6 @@ namespace MassEffectModder
         FileStream sfarFile;
         int filenamesIndex;
         int TOCFileIndex;
-        TOCBinFile tocFile;
         uint filesCount;
         List<FileEntry> filesList;
         uint maxBlockSize;
@@ -168,7 +167,6 @@ namespace MassEffectModder
             {
                 if (filesList[i].filenamePath != null && filesList[i].filenamePath.EndsWith("PCConsoleTOC.bin", StringComparison.OrdinalIgnoreCase))
                 {
-                    tocFile = new TOCBinFile(unpackFileEntry(filesList[i].filenamePath));
                     TOCFileIndex = i;
                     break;
                 }
@@ -349,15 +347,6 @@ namespace MassEffectModder
                     outputFile.WriteStringASCII(filename + Environment.NewLine);
                 }
             }
-
-            TOCBinFile tocFile = new TOCBinFile(srcFilesList[indexTOC]);
-            for (int i = 0; i < srcFilesList.Count(); i++)
-            {
-                int pos = srcFilesList[i].IndexOf("\\DLC\\" + DLCName + "\\", StringComparison.CurrentCultureIgnoreCase);
-                string filename = srcFilesList[i].Substring(pos + ("\\DLC\\" + DLCName + "\\").Length);
-                tocFile.updateFile(filename, srcFilesList[i]);
-            }
-            tocFile.saveToFile(srcFilesList[indexTOC]);
 
             hashList.Add(FileListHash);
             srcFilesList.Add(inPath + @"\TOC");

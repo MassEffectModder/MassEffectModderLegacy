@@ -265,10 +265,9 @@ skip:
                     package.DisposeCache();
                 }
             }
-            if (cachePackageMgr == null && GameData.gameType == MeType.ME3_TYPE)
+            if (GameData.gameType == MeType.ME3_TYPE)
             {
-                CachePackageMgr.updateMainTOC();
-                CachePackageMgr.updateDLCsTOC();
+                TOCBinFile.UpdateAllTOCBinFiles();
             }
             return errors;
         }

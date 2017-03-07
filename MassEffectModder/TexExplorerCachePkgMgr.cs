@@ -84,66 +84,11 @@ namespace MassEffectModder
             }
 
             if (GameData.gameType == MeType.ME3_TYPE)
-            {
-                updateMainTOC();
-                updateDLCsTOC();
-            }
+                TOCBinFile.UpdateAllTOCBinFiles();
 
             if (mainWindow != null)
                 mainWindow.updateStatusLabel2("");
             packages.Clear();
-        }
-
-        static public void updateMainTOC()
-        {
-            List<string> mainFiles = Directory.GetFiles(GameData.MainData, "*.pcc", SearchOption.AllDirectories).Where(item => item.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase)).ToList();
-            mainFiles.AddRange(Directory.GetFiles(GameData.MainData, "*.tfc", SearchOption.AllDirectories).Where(item => item.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase)).ToList());
-            string tocFilename = Path.Combine(GameData.bioGamePath, "PCConsoleTOC.bin");
-            if (!File.Exists(tocFilename))
-            {
-                if (_installer == null)
-                    MessageBox.Show("ERROR: File at " + tocFilename + " is missing!");
-                return;
-            }
-            TOCBinFile tocFile = new TOCBinFile(tocFilename);
-            for (int i = 0; i < mainFiles.Count; i++)
-            {
-                int pos = mainFiles[i].IndexOf("BIOGame", StringComparison.OrdinalIgnoreCase);
-                string filename = mainFiles[i].Substring(pos);
-                tocFile.updateFile(filename, mainFiles[i]);
-            }
-            tocFile.saveToFile(Path.Combine(GameData.bioGamePath, @"PCConsoleTOC.bin"));
-        }
-
-        static public void updateDLCsTOC()
-        {
-            if (!Directory.Exists(GameData.DLCData))
-                return;
-
-            List<string> DLCs = Directory.GetDirectories(GameData.DLCData).ToList();
-            for (int i = 0; i < DLCs.Count; i++)
-            {
-                List<string> dlcFiles = Directory.GetFiles(DLCs[i], "*.pcc", SearchOption.AllDirectories).Where(item => item.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase)).ToList();
-                if (dlcFiles.Count == 0)
-                    continue;
-                dlcFiles.AddRange(Directory.GetFiles(DLCs[i], "*.tfc", SearchOption.AllDirectories).Where(item => item.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase)).ToList());
-                string DLCname = Path.GetFileName(DLCs[i]);
-                string tocFilename = Path.Combine(GameData.DLCData, DLCname, "PCConsoleTOC.bin");
-                if (!File.Exists(tocFilename))
-                {
-                    if (_installer == null)
-                        MessageBox.Show("ERROR: File at " + tocFilename + " is missing!");
-                    continue;
-                }
-                TOCBinFile tocDLC = new TOCBinFile(Path.Combine(tocFilename));
-                for (int f = 0; f < dlcFiles.Count; f++)
-                {
-                    int pos = dlcFiles[f].IndexOf(DLCname + "\\", StringComparison.OrdinalIgnoreCase);
-                    string filename = dlcFiles[f].Substring(pos + DLCname.Length + 1);
-                    tocDLC.updateFile(filename, dlcFiles[f]);
-                }
-                tocDLC.saveToFile(Path.Combine(GameData.DLCData, DLCname, "PCConsoleTOC.bin"));
-            }
         }
     }
 }

@@ -30,168 +30,122 @@ namespace MassEffectModder
     public class TOCBinFile
     {
         const uint TOCTag = 0x3AB70C13; // TOC tag
-        const int TOCHeaderSize = 12;
 
         struct FileEntry
         {
-            public ushort type;
             public uint size;
-            public byte[] sha1;
             public string path;
         }
 
-        struct Block
+        static public void UpdateAllTOCBinFiles()
         {
-            public uint filesOffset;
-            public uint numFiles;
-            public List<FileEntry> filesList;
+            GenerateMainTocBinFile();
+            GenerateDLCsTocBinFiles();
         }
 
-        List<Block> blockList;
-
-        public TOCBinFile(string filename)
+        static private void GenerateMainTocBinFile()
         {
-            using (FileStream tocFile = new FileStream(filename, FileMode.Open, FileAccess.Read))
+            List<string> files = Directory.GetFiles(GameData.MainData, "*.*",
+            SearchOption.AllDirectories).Where(s => s.EndsWith(".pcc",
+                StringComparison.OrdinalIgnoreCase) ||
+                s.EndsWith(".upk", StringComparison.OrdinalIgnoreCase) ||
+                s.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase) ||
+                s.EndsWith(".tlk", StringComparison.OrdinalIgnoreCase) ||
+                s.EndsWith(".afc", StringComparison.OrdinalIgnoreCase) ||
+                s.EndsWith(".cnd", StringComparison.OrdinalIgnoreCase) ||
+                s.EndsWith(".txt", StringComparison.OrdinalIgnoreCase) ||
+                s.EndsWith(".bin", StringComparison.OrdinalIgnoreCase)).ToList();
+            files.AddRange(Directory.GetFiles(Path.Combine(GameData.bioGamePath, "Movies"), "*.*",
+            SearchOption.AllDirectories).Where(s => s.EndsWith(".bik",
+                StringComparison.OrdinalIgnoreCase)));
+
+            string tocFile = Path.Combine(GameData.bioGamePath, "PCConsoleTOC.bin");
+
+            List<FileEntry> filesList = new List<FileEntry>();
+            for (int f = 0; f < files.Count; f++)
             {
-                upload(tocFile);
-            }
-        }
-
-        public TOCBinFile(byte[] content)
-        {
-            upload(new MemoryStream(content));
-        }
-
-        private void upload(Stream tocFile)
-        {
-            uint tag = tocFile.ReadUInt32();
-            if (tag != TOCTag)
-                throw new Exception("Wrong TOCTag tag");
-            tocFile.SkipInt32();
-
-            blockList = new List<Block>();
-            uint numBlocks = tocFile.ReadUInt32();
-            for (int b = 0; b < numBlocks; b++)
-            {
-                Block block = new Block();
-                block.filesOffset = tocFile.ReadUInt32();
-                block.numFiles = tocFile.ReadUInt32();
-                block.filesList = new List<FileEntry>();
-                blockList.Add(block);
-            }
-
-            tocFile.JumpTo(TOCHeaderSize + (numBlocks * 8));
-            for (int b = 0; b < numBlocks; b++)
-            {
-                Block block = blockList[b];
                 FileEntry file = new FileEntry();
-                for (int f = 0; f < block.numFiles; f++)
-                {
-                    long curPos = tocFile.Position;
-                    ushort blockSize = tocFile.ReadUInt16();
-                    file.type = tocFile.ReadUInt16();
-                    if (file.type != 9 && file.type != 1 && file.type != 0)
-                        throw new Exception();
-                    file.size = tocFile.ReadUInt32();
-                    file.sha1 = tocFile.ReadToBuffer(20);
-                    file.path = tocFile.ReadStringASCIINull();
-                    block.filesList.Add(file);
-                    tocFile.JumpTo(curPos + blockSize);
-                }
-                blockList[b] = block;
+                if (files[f].ToLower() != "pcconsoletoc.bin")
+                    file.size = (uint)new FileInfo(files[f]).Length;
+                file.path = files[f].Substring(GameData.GamePath.Length + 1);
+                filesList.Add(file);
             }
+            CreateTocBinFile(tocFile, filesList);
         }
 
-        public void updateFile(string filename, string filePath, bool updateSHA1 = false)
+        static private void GenerateDLCsTocBinFiles()
         {
-            string searchFile = filename.ToLower();
-            for (int b = 0; b < blockList.Count; b++)
+            if (Directory.Exists(GameData.DLCData))
             {
-                for (int f = 0; f < blockList[b].numFiles; f++)
+                List<string> DLCs = Directory.GetDirectories(GameData.DLCData).ToList();
+                for (int i = 0; i < DLCs.Count; i++)
                 {
-                    FileEntry file = blockList[b].filesList[f];
-                    if (file.path.ToLower() == searchFile)
+                    List<string> dlcs = Directory.GetFiles(DLCs[i], "Mount.dlc", SearchOption.AllDirectories).ToList();
+                    if (dlcs.Count == 0)
+                        DLCs.RemoveAt(i--);
+                }
+
+                for (int i = 0; i < DLCs.Count; i++)
+                {
+                    List<string> files = Directory.GetFiles(DLCs[i], "*.*",
+                        SearchOption.AllDirectories).Where(s => s.EndsWith(".pcc",
+                    StringComparison.OrdinalIgnoreCase) ||
+                    s.EndsWith(".upk", StringComparison.OrdinalIgnoreCase) ||
+                    s.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase) ||
+                    s.EndsWith(".tlk", StringComparison.OrdinalIgnoreCase) ||
+                    s.EndsWith(".afc", StringComparison.OrdinalIgnoreCase) ||
+                    s.EndsWith(".cnd", StringComparison.OrdinalIgnoreCase) ||
+                    s.EndsWith(".bik", StringComparison.OrdinalIgnoreCase) ||
+                    s.EndsWith(".txt", StringComparison.OrdinalIgnoreCase) ||
+                    s.EndsWith(".bin", StringComparison.OrdinalIgnoreCase)).ToList();
+
+                    string DLCname = Path.GetFileName(DLCs[i]);
+                    string tocFile = Path.Combine(GameData.DLCData, DLCname, "PCConsoleTOC.bin");
+
+                    List<FileEntry> filesList = new List<FileEntry>();
+                    for (int f = 0; f < files.Count; f++)
                     {
-                        file.size = (uint)new FileInfo(filePath).Length;
-                        if (updateSHA1)
-                            file.sha1 = Misc.calculateSHA1(filePath);
-                        blockList[b].filesList[f] = file;
-                        return;
+                        FileEntry file = new FileEntry();
+                        if (files[f].ToLower() != "pcconsoletoc.bin")
+                            file.size = (uint)new FileInfo(files[f]).Length;
+                        file.path = files[f].Substring((GameData.DLCData + "\\" + DLCname).Length + 1);
+                        filesList.Add(file);
                     }
+                    CreateTocBinFile(tocFile, filesList);
                 }
             }
-            Block block = blockList[blockList.Count - 1];
-            FileEntry e = new FileEntry();
-            e.path = filename;
-            e.size = (uint)new FileInfo(filePath).Length;
-            e.type = 1;
-            if (updateSHA1)
-                e.sha1 = Misc.calculateSHA1(filePath);
-            else
-                e.sha1 = new byte[20];
-            block.filesList.Add(e);
-            block.numFiles++;
-            blockList[blockList.Count - 1] = block;
         }
 
-        public byte[] saveToBuffer()
+        static private void CreateTocBinFile(string path, List<FileEntry> filesList)
         {
-            using (MemoryStream stream = new MemoryStream())
+            if (File.Exists(path))
+                File.Delete(path);
+            using (FileStream tocFile = new FileStream(path, FileMode.CreateNew, FileAccess.Write))
             {
-                saveToStream(stream);
-                return stream.ToArray();
-            }
-        }
+                tocFile.WriteUInt32(TOCTag);
+                tocFile.WriteUInt32(0);
+                tocFile.WriteUInt32(1);
+                tocFile.WriteUInt32(8);
+                tocFile.WriteInt32(filesList.Count);
 
-        public void saveToFile(string outPath)
-        {
-            if (File.Exists(outPath))
-                File.Delete(outPath);
-            using (FileStream stream = new FileStream(outPath, FileMode.Create, FileAccess.Write))
-            {
-                saveToStream(stream);
-            }
-        }
-
-        public void saveToStream(Stream tocFile, bool updateOffsets = false)
-        {
-            tocFile.WriteUInt32(TOCTag);
-            tocFile.WriteUInt32(0);
-            tocFile.WriteUInt32((uint)blockList.Count);
-            tocFile.Skip(8 * blockList.Count); // filled later
-
-            long lastOffset = 0;
-            for (int b = 0; b < blockList.Count; b++)
-            {
-                Block block = blockList[b];
-                if (updateOffsets)
-                    block.filesOffset = (uint)(tocFile.Position - TOCHeaderSize - (8 * b));
-                for (int f = 0; f < blockList[b].numFiles; f++)
+                long lastOffset = 0;
+                for (int f = 0; f < filesList.Count; f++)
                 {
                     long fileOffset = lastOffset = tocFile.Position;
-                    FileEntry file = blockList[b].filesList[f];
-                    int blockSize = ((28 + (file.path.Length + 1) + 3) / 4) * 4; // align to 4
+                    int blockSize = ((28 + (filesList[f].path.Length + 1) + 3) / 4) * 4; // align to 4
                     tocFile.WriteUInt16((ushort)blockSize);
-                    tocFile.WriteUInt16(file.type);
-                    tocFile.WriteUInt32(file.size);
-                    tocFile.WriteFromBuffer(file.sha1);
-                    tocFile.WriteStringASCIINull(file.path);
+                    tocFile.WriteUInt16(0);
+                    tocFile.WriteUInt32(filesList[f].size);
+                    tocFile.WriteZeros(20);
+                    tocFile.WriteStringASCIINull(filesList[f].path);
                     tocFile.JumpTo(fileOffset + blockSize - 1);
                     tocFile.WriteByte(0); // make sure all bytes are written after seek
                 }
-                blockList[b] = block;
-            }
-            if (lastOffset != 0)
-            {
-                tocFile.JumpTo(lastOffset);
-                tocFile.WriteUInt16(0);
-            }
-
-            tocFile.JumpTo(TOCHeaderSize);
-            for (int b = 0; b < blockList.Count; b++)
-            {
-                tocFile.WriteUInt32(blockList[b].filesOffset);
-                tocFile.WriteUInt32(blockList[b].numFiles);
+                if (lastOffset != 0)
+                {
+                    tocFile.JumpTo(lastOffset);
+                    tocFile.WriteUInt16(0);
+                }
             }
         }
     }

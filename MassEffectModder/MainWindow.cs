@@ -283,6 +283,9 @@ namespace MassEffectModder
                 MessageBox.Show("No DLCs need to be compressed.");
                 return;
             }
+
+            TOCBinFile.UpdateAllTOCBinFiles();
+
             List<string> DLCs = Directory.GetDirectories(GameData.DLCData).ToList();
             for (int i = 0; i < DLCs.Count; i++)
             {
@@ -447,8 +450,7 @@ namespace MassEffectModder
             GameData gameData = new GameData(MeType.ME3_TYPE, _configIni);
             if (Directory.Exists(GameData.GamePath))
             {
-                CachePackageMgr.updateMainTOC();
-                CachePackageMgr.updateDLCsTOC();
+                TOCBinFile.UpdateAllTOCBinFiles();
                 MessageBox.Show("TOC files updated.");
             }
             else
