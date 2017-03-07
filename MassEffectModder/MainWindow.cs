@@ -98,27 +98,7 @@ namespace MassEffectModder
 
         private void updateME1ConfigToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            enableGameDataMenu(false);
-            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    Assembly.GetExecutingAssembly().GetName().Name);
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-            string filename = Path.Combine(path, "me1map.bin");
-            if (!File.Exists(filename))
-            {
-                MessageBox.Show("Unable to update LOD settings.\nYou must scan your game using Texture Manager first always!");
-                enableGameDataMenu(true);
-                return;
-            }
-            GameData gameData = new GameData(MeType.ME1_TYPE, _configIni);
-            path = gameData.EngineConfigIniPath;
-            bool exist = File.Exists(path);
-            if (!exist)
-                Directory.CreateDirectory(Path.GetDirectoryName(path));
-            ConfIni engineConf = new ConfIni(path);
-            LODSettings.updateLOD(MeType.ME1_TYPE, engineConf);
-            MessageBox.Show("Game configuration file at " + path + " updated.");
-            enableGameDataMenu(true);
+            updateMEConfig(MeType.ME1_TYPE);
         }
 
         public bool GetPackages(GameData gameData)
@@ -206,27 +186,7 @@ namespace MassEffectModder
 
         private void updateME2ConfigToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            enableGameDataMenu(false);
-            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    Assembly.GetExecutingAssembly().GetName().Name);
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-            string filename = Path.Combine(path, "me2map.bin");
-            if (!File.Exists(filename))
-            {
-                MessageBox.Show("Unable to update LOD settings.\nYou must scan your game using Texture Manager first always!");
-                enableGameDataMenu(true);
-                return;
-            }
-            GameData gameData = new GameData(MeType.ME2_TYPE, _configIni);
-            path = gameData.EngineConfigIniPath;
-            bool exist = File.Exists(path);
-            if (!exist)
-                Directory.CreateDirectory(Path.GetDirectoryName(path));
-            ConfIni engineConf = new ConfIni(path);
-            LODSettings.updateLOD(MeType.ME2_TYPE, engineConf);
-            MessageBox.Show("Game configuration file at " + path + " updated.");
-            enableGameDataMenu(true);
+            updateMEConfig(MeType.ME2_TYPE);
         }
 
         private void extractME3DLCPackagesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -341,29 +301,34 @@ namespace MassEffectModder
             enableGameDataMenu(true);
         }
 
-        private void updateME3ConfigToolStripMenuItem_Click(object sender, EventArgs e)
+        void updateMEConfig(MeType gameId)
         {
             enableGameDataMenu(false);
             string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                     Assembly.GetExecutingAssembly().GetName().Name);
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
-            string filename = Path.Combine(path, "me3map.bin");
+            string filename = Path.Combine(path, "me" + (int)gameId + "map.bin");
             if (!File.Exists(filename))
             {
                 MessageBox.Show("Unable to update LOD settings.\nYou must scan your game using Texture Manager first always!");
                 enableGameDataMenu(true);
                 return;
             }
-            GameData gameData = new GameData(MeType.ME3_TYPE, _configIni);
+            GameData gameData = new GameData(gameId, _configIni);
             path = gameData.EngineConfigIniPath;
             bool exist = File.Exists(path);
             if (!exist)
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
             ConfIni engineConf = new ConfIni(path);
-            LODSettings.updateLOD(MeType.ME3_TYPE, engineConf);
+            LODSettings.updateLOD(gameId, engineConf);
             MessageBox.Show("Game configuration file at " + path + " updated.");
             enableGameDataMenu(true);
+        }
+
+        private void updateME3ConfigToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            updateMEConfig(MeType.ME3_TYPE);
         }
 
         private void changeGamePathME1ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -387,16 +352,16 @@ namespace MassEffectModder
             enableGameDataMenu(true);
         }
 
-        private void removeLODSetME1MenuItem_Click(object sender, EventArgs e)
+        private void removeLODSettings(MeType gameId)
         {
             enableGameDataMenu(false);
-            GameData gameData = new GameData(MeType.ME1_TYPE, _configIni);
+            GameData gameData = new GameData(gameId, _configIni);
             string path = gameData.EngineConfigIniPath;
             bool exist = File.Exists(path);
             if (exist)
             {
                 ConfIni engineConf = new ConfIni(path);
-                LODSettings.removeLOD(MeType.ME1_TYPE, engineConf);
+                LODSettings.removeLOD(gameId, engineConf);
                 MessageBox.Show("INFO: Game configuration file at " + path + " updated.");
             }
             else
@@ -404,44 +369,21 @@ namespace MassEffectModder
                 MessageBox.Show("INFO: Game configuration file at " + path + " not exist, nothing done.");
             }
             enableGameDataMenu(true);
+        }
+
+        private void removeLODSetME1MenuItem_Click(object sender, EventArgs e)
+        {
+            removeLODSettings(MeType.ME1_TYPE);
         }
 
         private void removeLODSetME2MenuItem_Click(object sender, EventArgs e)
         {
-            enableGameDataMenu(false);
-            GameData gameData = new GameData(MeType.ME2_TYPE, _configIni);
-            string path = gameData.EngineConfigIniPath;
-            bool exist = File.Exists(path);
-            if (exist)
-            {
-                ConfIni engineConf = new ConfIni(path);
-                LODSettings.removeLOD(MeType.ME2_TYPE, engineConf);
-                MessageBox.Show("INFO: Game configuration file at " + path + " updated.");
-            }
-            else
-            {
-                MessageBox.Show("INFO: Game configuration file at " + path + " not exist, nothing done.");
-            }
-            enableGameDataMenu(true);
+            removeLODSettings(MeType.ME2_TYPE);
         }
 
         private void removeLODSetME3MenuItem_Click(object sender, EventArgs e)
         {
-            enableGameDataMenu(false);
-            GameData gameData = new GameData(MeType.ME3_TYPE, _configIni);
-            string path = gameData.EngineConfigIniPath;
-            bool exist = File.Exists(path);
-            if (exist)
-            {
-                ConfIni engineConf = new ConfIni(path);
-                LODSettings.removeLOD(MeType.ME3_TYPE, engineConf);
-                MessageBox.Show("INFO: Game configuration file at " + path + " updated.");
-            }
-            else
-            {
-                MessageBox.Show("INFO: Game configuration: " + path + " not exist, nothing done.");
-            }
-            enableGameDataMenu(true);
+            removeLODSettings(MeType.ME3_TYPE);
         }
 
         private void toolStripMenuItemUpdateTOCs_Click(object sender, EventArgs e)
@@ -571,7 +513,7 @@ namespace MassEffectModder
             checkGameFiles(MeType.ME3_TYPE);
         }
 
-        private void toolStripUpdateGfxME1MenuItem_Click(object sender, EventArgs e)
+        private void updateGfxME(MeType gameId)
         {
             enableGameDataMenu(false);
             GameData gameData = new GameData(MeType.ME1_TYPE, _configIni);
@@ -585,32 +527,19 @@ namespace MassEffectModder
             enableGameDataMenu(true);
         }
 
+        private void toolStripUpdateGfxME1MenuItem_Click(object sender, EventArgs e)
+        {
+            updateGfxME(MeType.ME1_TYPE);
+        }
+
         private void toolStripUpdateGfxME2MenuItem_Click(object sender, EventArgs e)
         {
-            enableGameDataMenu(false);
-            GameData gameData = new GameData(MeType.ME2_TYPE, _configIni);
-            string path = gameData.EngineConfigIniPath;
-            bool exist = File.Exists(path);
-            if (!exist)
-                Directory.CreateDirectory(Path.GetDirectoryName(path));
-            ConfIni engineConf = new ConfIni(path);
-            LODSettings.updateGFXSettings(MeType.ME2_TYPE, engineConf);
-            MessageBox.Show("Game configuration file at " + path + " updated.");
-            enableGameDataMenu(true);
+            updateGfxME(MeType.ME2_TYPE);
         }
 
         private void toolStripUpdateGfxME3MenuItem_Click(object sender, EventArgs e)
         {
-            enableGameDataMenu(false);
-            GameData gameData = new GameData(MeType.ME3_TYPE, _configIni);
-            string path = gameData.EngineConfigIniPath;
-            bool exist = File.Exists(path);
-            if (!exist)
-                Directory.CreateDirectory(Path.GetDirectoryName(path));
-            ConfIni engineConf = new ConfIni(path);
-            LODSettings.updateGFXSettings(MeType.ME3_TYPE, engineConf);
-            MessageBox.Show("Game configuration file at " + path + " updated.");
-            enableGameDataMenu(true);
+            updateGfxME(MeType.ME3_TYPE);
         }
 
         private void toolStripExtractMEMMenuItem()
