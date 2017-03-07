@@ -845,6 +845,7 @@ namespace MassEffectModder
         {
             buttonsEnable(false);
             ME3DLC.unpackAllDLC(null, this);
+            updateStatusPackDLC("");
             buttonsEnable(true);
         }
     }
