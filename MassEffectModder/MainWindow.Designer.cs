@@ -84,7 +84,6 @@ namespace MassEffectModder
             this.toolStripMenuItemUpdateTOCs = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
             this.extractME3DLCPackagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.packME3DLCPackagesLZMAToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.updateME3ConfigToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeLODSetME3MenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -101,6 +100,7 @@ namespace MassEffectModder
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.statusStrip2 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.menuGame.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.statusStrip2.SuspendLayout();
@@ -318,10 +318,10 @@ namespace MassEffectModder
             this.massEffect3ToolStripMenuItem,
             this.toolStripME3RemoveTreeMenuItem,
             this.toolStripExtractME3MEMMenuItem,
+            this.toolStripSeparator4,
             this.toolStripMenuItemUpdateTOCs,
             this.toolStripSeparator9,
             this.extractME3DLCPackagesToolStripMenuItem,
-            this.packME3DLCPackagesLZMAToolStripMenuItem,
             this.toolStripSeparator10,
             this.updateME3ConfigToolStripMenuItem,
             this.removeLODSetME3MenuItem,
@@ -372,13 +372,6 @@ namespace MassEffectModder
             this.extractME3DLCPackagesToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
             this.extractME3DLCPackagesToolStripMenuItem.Text = "Extract DLCs";
             this.extractME3DLCPackagesToolStripMenuItem.Click += new System.EventHandler(this.extractME3DLCPackagesToolStripMenuItem_Click);
-            // 
-            // packME3DLCPackagesLZMAToolStripMenuItem
-            // 
-            this.packME3DLCPackagesLZMAToolStripMenuItem.Name = "packME3DLCPackagesLZMAToolStripMenuItem";
-            this.packME3DLCPackagesLZMAToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
-            this.packME3DLCPackagesLZMAToolStripMenuItem.Text = "Repack DLCs";
-            this.packME3DLCPackagesLZMAToolStripMenuItem.Click += new System.EventHandler(this.packME3DLCPackagesLZMAToolStripMenuItem_Click);
             // 
             // toolStripSeparator10
             // 
@@ -493,6 +486,11 @@ namespace MassEffectModder
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
             this.toolStripStatusLabel2.Size = new System.Drawing.Size(0, 17);
             // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(224, 6);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -531,7 +529,6 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripMenuItem repackME1ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem repackME2ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem extractME3DLCPackagesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem packME3DLCPackagesLZMAToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem updateME2ConfigToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem updateME3ConfigToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel;
@@ -571,6 +568,7 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripMenuItem toolStripExtractME1MEMMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripExtractME2MEMMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripExtractME3MEMMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
     }
 }
 
