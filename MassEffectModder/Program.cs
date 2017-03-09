@@ -98,26 +98,56 @@ namespace MassEffectModder
         static void Main()
         {
             loadEmbeddedDlls();
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            bool runAsAdmin = false;
 
-            if (Misc.isRunAsAdministrator())
+            string[] args = Environment.GetCommandLineArgs();
+            if (args.Length == 5)
             {
-                runAsAdmin = true;
-            }
-
-            string iniPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "installer.ini");
-            if (File.Exists(iniPath))
-            {
-                Installer installer = new Installer();
-                if (installer.Run(runAsAdmin))
-                    Application.Run(installer);
-                if (installer.exitToModder)
-                    Application.Run(new MainWindow(runAsAdmin));
+                string option = args[1];
+                string game = args[2];
+                string inputDir = args[3];
+                string outMem = args[4];
+                int gameId;
+                try
+                {
+                    gameId = int.Parse(game);
+                }
+                catch
+                {
+                    gameId = 0;
+                }
+                if (gameId != 0)
+                {
+                    if (option.Equals("-convert-to-mem", StringComparison.OrdinalIgnoreCase))
+                    {
+                        Console.WriteLine("MEM v" + Application.ProductVersion + Environment.NewLine);
+                        if (!CmdLineConverter.ConvertToMEM(gameId, inputDir, outMem))
+                            Environment.Exit(1);
+                    }
+                }
             }
             else
-                Application.Run(new MainWindow(runAsAdmin));
+            {
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                bool runAsAdmin = false;
+
+                if (Misc.isRunAsAdministrator())
+                {
+                    runAsAdmin = true;
+                }
+
+                string iniPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "installer.ini");
+                if (File.Exists(iniPath))
+                {
+                    Installer installer = new Installer();
+                    if (installer.Run(runAsAdmin))
+                        Application.Run(installer);
+                    if (installer.exitToModder)
+                        Application.Run(new MainWindow(runAsAdmin));
+                }
+                else
+                    Application.Run(new MainWindow(runAsAdmin));
+            }
 
             unloadEmbeddedDlls();
         }
