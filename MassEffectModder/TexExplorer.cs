@@ -79,7 +79,7 @@ namespace MassEffectModder
         TreeScan treeScan;
         MipMaps mipMaps;
 
-        struct BinaryMod
+        public struct BinaryMod
         {
             public string packagePath;
             public int exportId;
