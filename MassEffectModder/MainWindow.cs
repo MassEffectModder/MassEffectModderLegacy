@@ -523,13 +523,13 @@ namespace MassEffectModder
         private void updateGfxME(MeType gameId)
         {
             enableGameDataMenu(false);
-            GameData gameData = new GameData(MeType.ME1_TYPE, _configIni);
+            GameData gameData = new GameData(gameId, _configIni);
             string path = gameData.EngineConfigIniPath;
             bool exist = File.Exists(path);
             if (!exist)
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
             ConfIni engineConf = new ConfIni(path);
-            LODSettings.updateGFXSettings(MeType.ME1_TYPE, engineConf);
+            LODSettings.updateGFXSettings(gameId, engineConf);
             MessageBox.Show("Game configuration file at " + path + " updated.");
             enableGameDataMenu(true);
         }
