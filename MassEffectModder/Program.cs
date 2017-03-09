@@ -95,11 +95,10 @@ namespace MassEffectModder
 
         [STAThread]
 
-        static void Main()
+        static void Main(string[] args)
         {
             loadEmbeddedDlls();
 
-            string[] args = Environment.GetCommandLineArgs();
             if (args.Length == 5)
             {
                 string option = args[1];
