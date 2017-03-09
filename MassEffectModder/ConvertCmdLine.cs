@@ -473,6 +473,11 @@ namespace MassEffectModder
             textures = new List<FoundTexture>();
             ConfIni configIni = new ConfIni();
             GameData gameData = new GameData((MeType)gameId, configIni);
+            if (GameData.GamePath == null || !Directory.Exists(GameData.GamePath))
+            {
+                Console.WriteLine("Error: Could not found the game!");
+                return false;
+            }
 
             string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                     Assembly.GetExecutingAssembly().GetName().Name);
