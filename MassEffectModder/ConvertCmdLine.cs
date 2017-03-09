@@ -394,7 +394,7 @@ namespace MassEffectModder
                             continue;
                         }
 
-                        mod.textureName = filename.Substring(0, filename.IndexOf(crcStr) - "_0x".Length);
+                        mod.textureName = Path.GetFileName(file).Substring(0, filename.IndexOf(crcStr) - "_0x".Length);
                         mod.binaryMod = false;
                         mod.textureCrc = crc;
                         mods.Add(mod);

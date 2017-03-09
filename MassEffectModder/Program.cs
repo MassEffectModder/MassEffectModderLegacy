@@ -38,6 +38,9 @@ namespace MassEffectModder
         [DllImport("kernel32", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
         private static extern int FreeLibrary(IntPtr hModule);
 
+        [DllImport("kernel32", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
+        private static extern bool AttachConsole(int dwProcessId);
+
         private static List<string> dlls = new List<string>();
         private static string dllPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
@@ -95,17 +98,17 @@ namespace MassEffectModder
 
         [STAThread]
 
-        static void Main()
+        static void Main(string[] args)
         {
             loadEmbeddedDlls();
 
-            string[] args = Environment.GetCommandLineArgs();
-            if (args.Length == 5)
+            if (args.Length == 4)
             {
-                string option = args[1];
-                string game = args[2];
-                string inputDir = args[3];
-                string outMem = args[4];
+                AttachConsole(-1);
+                string option = args[0];
+                string game = args[1];
+                string inputDir = args[2];
+                string outMem = args[3];
                 int gameId;
                 try
                 {
@@ -115,13 +118,27 @@ namespace MassEffectModder
                 {
                     gameId = 0;
                 }
-                if (gameId != 0)
+                if (gameId != 1 && gameId != 2 && gameId != 3)
+                {
+                    Console.WriteLine("Error: wrong game id!");
+                    Environment.Exit(1);
+                }
+                else
                 {
                     if (option.Equals("-convert-to-mem", StringComparison.OrdinalIgnoreCase))
                     {
-                        Console.WriteLine("MEM v" + Application.ProductVersion + Environment.NewLine);
-                        if (!CmdLineConverter.ConvertToMEM(gameId, inputDir, outMem))
+                        if (!Directory.Exists(inputDir))
+                        {
+                            Console.WriteLine("Error: intput path not exists: " + inputDir);
                             Environment.Exit(1);
+                        }
+                        else
+                        {
+                            Console.WriteLine(Environment.NewLine + Environment.NewLine +
+                                "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
+                            if (!CmdLineConverter.ConvertToMEM(gameId, inputDir, outMem))
+                                Environment.Exit(1);
+                        }
                     }
                 }
             }
