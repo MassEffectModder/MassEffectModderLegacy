@@ -300,7 +300,7 @@ namespace MassEffectModder
                     if (GameData.gameType != MeType.ME1_TYPE)
                         slave = true;
                     else
-                        if (texture.packageName.ToUpper() != Path.GetFileNameWithoutExtension(package.packageFile.Name).ToUpper())
+                        if (texture.packageName.ToLowerInvariant() != Path.GetFileNameWithoutExtension(package.packageFile.Name).ToLowerInvariant())
                             slave = true;
 
                     uint crc = texture.getCrcTopMipmap();
@@ -355,7 +355,7 @@ namespace MassEffectModder
                 bool found = false;
                 for (int i = 0; i < nodeList.Count; i++)
                 {
-                    if (nodeList[i].Name.ToLower() == _textures[l].packageName.ToLower())
+                    if (nodeList[i].Name.ToLowerInvariant() == _textures[l].packageName.ToLowerInvariant())
                     {
                         nodeList[i].textures.Add(_textures[l]);
                         found = true;

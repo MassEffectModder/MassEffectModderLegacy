@@ -42,7 +42,7 @@ namespace MassEffectModder
 
         public Package OpenPackage(string path, bool memMode = false, bool headerOnly = false)
         {
-            if (!packages.Exists(p => p.packagePath.ToLower() == path.ToLower()))
+            if (!packages.Exists(p => p.packagePath.ToLowerInvariant() == path.ToLowerInvariant()))
             {
                 Package pkg = new Package(path, memMode, headerOnly);
                 packages.Add(pkg);
@@ -50,7 +50,7 @@ namespace MassEffectModder
             }
             else
             {
-                return packages.Find(p => p.packagePath.ToLower() == path.ToLower());
+                return packages.Find(p => p.packagePath.ToLowerInvariant() == path.ToLowerInvariant());
             }
         }
 

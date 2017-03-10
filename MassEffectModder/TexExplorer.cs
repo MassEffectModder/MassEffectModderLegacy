@@ -366,7 +366,7 @@ namespace MassEffectModder
                             found = true;
                         }
                     }
-                    else if (foundTexture.name.ToLower() == name.ToLower())
+                    else if (foundTexture.name.ToLowerInvariant() == name.ToLowerInvariant())
                     {
                         found = true;
                     }
@@ -461,12 +461,12 @@ namespace MassEffectModder
         {
             int pos1 = item.Text.IndexOf('(');
             int pos2 = item.Text.IndexOf(')');
-            string packageName = item.Text.Substring(pos1 + 1, pos2 - pos1 - 1).ToLower();
+            string packageName = item.Text.Substring(pos1 + 1, pos2 - pos1 - 1).ToLowerInvariant();
             listViewResults.Hide();
             for (int l = 0; l < treeViewPackages.Nodes[0].Nodes.Count; l++)
             {
                 PackageTreeNode node = (PackageTreeNode)treeViewPackages.Nodes[0].Nodes[l];
-                if (node.Name.ToLower() == packageName)
+                if (node.Name.ToLowerInvariant() == packageName)
                 {
                     treeViewPackages.SelectedNode = node;
                     updateListViewTextures(node);
@@ -837,7 +837,7 @@ namespace MassEffectModder
                 return;
 
             uint crc = 0;
-            string crcStr = name.ToLower();
+            string crcStr = name.ToLowerInvariant();
             try
             {
                 crcStr = crcStr.Substring(crcStr.IndexOf("0x") + 2, 8);
@@ -1164,7 +1164,7 @@ namespace MassEffectModder
                                 foreach (string dds in ddsList)
                                 {
                                     string ddsFile = dds.Split('|')[1];
-                                    if (ddsFile.ToLower() != filename.ToLower())
+                                    if (ddsFile.ToLowerInvariant() != filename.ToLowerInvariant())
                                         continue;
                                     crc = uint.Parse(dds.Split('|')[0].Substring(2), System.Globalization.NumberStyles.HexNumber);
                                     break;

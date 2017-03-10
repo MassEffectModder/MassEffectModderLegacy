@@ -320,7 +320,7 @@ namespace MassEffectModder
 
             List<byte[]> hashList = new List<byte[]>();
             List<string> srcFilesList = Directory.GetFiles(inPath, "*.*", SearchOption.AllDirectories).ToList();
-            srcFilesList.RemoveAll(s => s.ToLower().Contains("default.sfar"));
+            srcFilesList.RemoveAll(s => s.ToLowerInvariant().Contains("default.sfar"));
             using (FileStream outputFile = new FileStream(inPath + @"\TOC", FileMode.Create, FileAccess.Write))
             {
                 for (int i = 0; i < srcFilesList.Count(); i++)

@@ -89,10 +89,10 @@ namespace MassEffectModder
                 bool master = true;
                 if (GameData.gameType == MeType.ME1_TYPE)
                 {
-                    if (texture.packageName.ToUpper() != Path.GetFileNameWithoutExtension(package.packageFile.Name).ToUpper())
+                    if (texture.packageName.ToLowerInvariant() != Path.GetFileNameWithoutExtension(package.packageFile.Name).ToLowerInvariant())
                     {
                         master = false;
-                        if (!masterTextures.Exists(s => s.packageName.ToLower() == texture.packageName.ToLower()))
+                        if (!masterTextures.Exists(s => s.packageName.ToLowerInvariant() == texture.packageName.ToLowerInvariant()))
                         {
                             errors += "Error in texture: " + textureName + " Broken game file: " + nodeTexture.path + ", skipping texture..." + Environment.NewLine;
                             continue;
@@ -169,7 +169,7 @@ namespace MassEffectModder
                     Array.Copy(texture.properties.getProperty("TFCFileGuid").valueStruct, origGuid, 16);
                     string archive = texture.properties.getProperty("TextureFileCacheName").valueName;
                     archiveFile = Path.Combine(GameData.MainData, archive + ".tfc");
-                    if (nodeTexture.path.ToLower().Contains("\\dlc"))
+                    if (nodeTexture.path.ToLowerInvariant().Contains("\\dlc"))
                     {
                         string DLCArchiveFile = Path.Combine(Path.GetDirectoryName(GameData.GamePath + nodeTexture.path), archive + ".tfc");
                         if (File.Exists(DLCArchiveFile))
@@ -284,7 +284,7 @@ namespace MassEffectModder
                             if (master)
                                 mipmap.newData = texture.compressTexture(image.mipMaps[m].data, mipmap.storageType);
                             else
-                                mipmap.newData = masterTextures.Find(s => s.packageName.ToLower() == texture.packageName.ToLower()).mipMapsList[m].newData;
+                                mipmap.newData = masterTextures.Find(s => s.packageName.ToLowerInvariant() == texture.packageName.ToLowerInvariant()).mipMapsList[m].newData;
                             mipmap.compressedSize = mipmap.newData.Length;
                         }
                         if (mipmap.storageType == Texture.StorageTypes.pccUnc)
@@ -295,8 +295,8 @@ namespace MassEffectModder
                         if ((mipmap.storageType == Texture.StorageTypes.extLZO ||
                             mipmap.storageType == Texture.StorageTypes.extZlib) && master == false)
                         {
-                            mipmap.compressedSize = masterTextures.Find(s => s.packageName.ToLower() == texture.packageName.ToLower()).mipMapsList[m].compressedSize;
-                            mipmap.dataOffset = masterTextures.Find(s => s.packageName.ToLower() == texture.packageName.ToLower()).mipMapsList[m].dataOffset;
+                            mipmap.compressedSize = masterTextures.Find(s => s.packageName.ToLowerInvariant() == texture.packageName.ToLowerInvariant()).mipMapsList[m].compressedSize;
+                            mipmap.dataOffset = masterTextures.Find(s => s.packageName.ToLowerInvariant() == texture.packageName.ToLowerInvariant()).mipMapsList[m].dataOffset;
                         }
                     }
                     else

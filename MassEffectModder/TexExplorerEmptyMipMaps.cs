@@ -95,18 +95,18 @@ namespace MassEffectModder
                             texture.properties.setIntValue("SizeY", texture.mipMapsList.First().height);
                             texture.properties.setIntValue("MipTailBaseIdx", texture.mipMapsList.Count() - 1);
 
-                            if (texture.packageName.ToUpper() != Path.GetFileNameWithoutExtension(package.packageFile.Name).ToUpper())
+                            if (texture.packageName.ToLowerInvariant() != Path.GetFileNameWithoutExtension(package.packageFile.Name).ToLowerInvariant())
                             {
                                 if (phase == 1)
                                     continue;
                                 FoundTexture foundTexName = new FoundTexture();
-                                string pkgName = Path.GetFileNameWithoutExtension(GameData.packageFiles[i]).ToLower();
+                                string pkgName = Path.GetFileNameWithoutExtension(GameData.packageFiles[i]).ToLowerInvariant();
                                 for (int k = 0; k < textures.Count; k++)
                                 {
                                     for (int t = 0; t < textures[k].list.Count; t++)
                                     {
                                         if (textures[k].list[t].exportID == l &&
-                                            Path.GetFileNameWithoutExtension(textures[k].list[t].path).ToLower() == pkgName)
+                                            Path.GetFileNameWithoutExtension(textures[k].list[t].path).ToLowerInvariant() == pkgName)
                                         {
                                             foundTexName = textures[k];
                                             break;
@@ -119,8 +119,8 @@ namespace MassEffectModder
                                     goto skip;
                                 }
 
-                                pkgName = texture.packageName.ToLower();
-                                MatchedTexture foundTex = foundTexName.list.Find(s => Path.GetFileNameWithoutExtension(s.path).ToLower() == pkgName);
+                                pkgName = texture.packageName.ToLowerInvariant();
+                                MatchedTexture foundTex = foundTexName.list.Find(s => Path.GetFileNameWithoutExtension(s.path).ToLowerInvariant() == pkgName);
                                 if (foundTex.path == null)
                                     throw new Exception();
                                 Package refPkg = null;

@@ -233,7 +233,7 @@ namespace MassEffectModder
                                 foreach (string dds in ddsList)
                                 {
                                     string ddsFile = dds.Split('|')[1];
-                                    if (ddsFile.ToLower() != filename.ToLower())
+                                    if (ddsFile.ToLowerInvariant() != filename.ToLowerInvariant())
                                         continue;
                                     crc = uint.Parse(dds.Split('|')[0].Substring(2), System.Globalization.NumberStyles.HexNumber);
                                     break;
@@ -329,7 +329,7 @@ namespace MassEffectModder
                 else if (file.EndsWith(".dds", StringComparison.OrdinalIgnoreCase))
                 {
                     TexExplorer.BinaryMod mod = new TexExplorer.BinaryMod();
-                    string filename = Path.GetFileNameWithoutExtension(file).ToLower();
+                    string filename = Path.GetFileNameWithoutExtension(file).ToLowerInvariant();
                     if (!filename.Contains("_0x"))
                     {
                         errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (_0xhhhhhhhh). Skipping texture..." + Environment.NewLine;

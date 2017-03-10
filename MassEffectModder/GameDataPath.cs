@@ -168,7 +168,7 @@ namespace MassEffectModder
 
         static public string RelativeGameData(string path)
         {
-            if (_path == null || !path.ToLower().Contains(_path.ToLower()))
+            if (_path == null || !path.ToLowerInvariant().Contains(_path.ToLowerInvariant()))
                 return null;
             else
                 return path.Substring(_path.Length);
@@ -338,8 +338,8 @@ namespace MassEffectModder
                         s.EndsWith(".u", StringComparison.OrdinalIgnoreCase) ||
                         s.EndsWith(".sfm", StringComparison.OrdinalIgnoreCase)));
                 }
-                packageFiles.RemoveAll(s => s.ToLower().Contains("localshadercache-pc-d3d-sm3.upk"));
-                packageFiles.RemoveAll(s => s.ToLower().Contains("refshadercache-pc-d3d-sm3.upk"));
+                packageFiles.RemoveAll(s => s.ToLowerInvariant().Contains("localshadercache-pc-d3d-sm3.upk"));
+                packageFiles.RemoveAll(s => s.ToLowerInvariant().Contains("refshadercache-pc-d3d-sm3.upk"));
             }
             else if (gameType == MeType.ME2_TYPE)
             {
@@ -383,7 +383,7 @@ namespace MassEffectModder
                 packageFiles = Directory.GetFiles(MainData, "*.pcc", SearchOption.AllDirectories).Where(item => item.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase)).ToList();
                 if (pccs != null)
                     packageFiles.AddRange(pccs);
-                packageFiles.RemoveAll(s => s.ToLower().Contains("guidcache"));
+                packageFiles.RemoveAll(s => s.ToLowerInvariant().Contains("guidcache"));
             }
             return true;
         }

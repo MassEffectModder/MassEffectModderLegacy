@@ -413,7 +413,7 @@ namespace MassEffectModder
                         {
                             string archive = properties.getProperty("TextureFileCacheName").valueName;
                             filename = Path.Combine(GameData.MainData, archive + ".tfc");
-                            if (packagePath.ToLower().Contains("\\dlc"))
+                            if (packagePath.ToLowerInvariant().Contains("\\dlc"))
                             {
                                 string DLCArchiveFile = Path.Combine(Path.GetDirectoryName(packagePath), archive + ".tfc");
                                 if (File.Exists(DLCArchiveFile))

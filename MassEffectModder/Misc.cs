@@ -525,7 +525,7 @@ namespace MassEffectModder
             Match match = parts.Match(script);
             if (match.Success)
             {
-                string packageName = match.ToString().Replace('/', '\\').Split('\"')[1].Split('\\').Last().Split('.')[0].ToLower();
+                string packageName = match.ToString().Replace('/', '\\').Split('\"')[1].Split('\\').Last().Split('.')[0].ToLowerInvariant();
                 parts = new Regex("IDs.Add[(][0-9]*[)];");
                 match = parts.Match(script);
                 if (match.Success)
@@ -533,16 +533,16 @@ namespace MassEffectModder
                     int exportId = int.Parse(match.ToString().Split('(')[1].Split(')')[0]);
                     if (exportId != 0)
                     {
-                        textureName = textureName.ToLower();
+                        textureName = textureName.ToLowerInvariant();
                         for (int i = 0; i < textures.Count; i++)
                         {
-                            if (textures[i].name.ToLower() == textureName)
+                            if (textures[i].name.ToLowerInvariant() == textureName)
                             {
                                 for (int l = 0; l < textures[i].list.Count; l++)
                                 {
                                     if (textures[i].list[l].exportID == exportId)
                                     {
-                                        string pkg = textures[i].list[l].path.Split('\\').Last().Split('.')[0].ToLower();
+                                        string pkg = textures[i].list[l].path.Split('\\').Last().Split('.')[0].ToLowerInvariant();
                                         if (pkg == packageName)
                                         {
                                             return textures[i];
@@ -664,8 +664,8 @@ namespace MassEffectModder
                         s.EndsWith(".u", StringComparison.OrdinalIgnoreCase) ||
                         s.EndsWith(".sfm", StringComparison.OrdinalIgnoreCase)).ToList();
                 }
-                packageMainFiles.RemoveAll(s => s.ToLower().Contains("localshadercache-pc-d3d-sm3.upk"));
-                packageMainFiles.RemoveAll(s => s.ToLower().Contains("refshadercache-pc-d3d-sm3.upk"));
+                packageMainFiles.RemoveAll(s => s.ToLowerInvariant().Contains("localshadercache-pc-d3d-sm3.upk"));
+                packageMainFiles.RemoveAll(s => s.ToLowerInvariant().Contains("refshadercache-pc-d3d-sm3.upk"));
                 entries = entriesME1;
             }
             else if (gameType == MeType.ME2_TYPE)
@@ -687,9 +687,9 @@ namespace MassEffectModder
                         if (File.Exists(Path.Combine(Path.GetDirectoryName(sfarFiles[i]), "Mount.dlc")))
                             sfarFiles.RemoveAt(i--);
                     }
-                    packageDLCFiles.RemoveAll(s => s.ToLower().Contains("guidcache"));
+                    packageDLCFiles.RemoveAll(s => s.ToLowerInvariant().Contains("guidcache"));
                 }
-                packageMainFiles.RemoveAll(s => s.ToLower().Contains("guidcache"));
+                packageMainFiles.RemoveAll(s => s.ToLowerInvariant().Contains("guidcache"));
                 entries = entriesME3;
             }
 
@@ -756,8 +756,8 @@ namespace MassEffectModder
                         s.EndsWith(".u", StringComparison.OrdinalIgnoreCase) ||
                         s.EndsWith(".sfm", StringComparison.OrdinalIgnoreCase)).ToList();
                 }
-                packageMainFiles.RemoveAll(s => s.ToLower().Contains("localshadercache-pc-d3d-sm3.upk"));
-                packageMainFiles.RemoveAll(s => s.ToLower().Contains("refshadercache-pc-d3d-sm3.upk"));
+                packageMainFiles.RemoveAll(s => s.ToLowerInvariant().Contains("localshadercache-pc-d3d-sm3.upk"));
+                packageMainFiles.RemoveAll(s => s.ToLowerInvariant().Contains("refshadercache-pc-d3d-sm3.upk"));
                 entries = entriesME1;
             }
             else if (gameType == MeType.ME2_TYPE)
@@ -784,10 +784,10 @@ namespace MassEffectModder
                         if (File.Exists(Path.Combine(Path.GetDirectoryName(sfarFiles[i]), "Mount.dlc")))
                             sfarFiles.RemoveAt(i--);
                     }
-                    packageDLCFiles.RemoveAll(s => s.ToLower().Contains("guidcache"));
+                    packageDLCFiles.RemoveAll(s => s.ToLowerInvariant().Contains("guidcache"));
                     tfcFiles.AddRange(Directory.GetFiles(GameData.DLCData, "*.tfc", SearchOption.AllDirectories).Where(item => item.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase)).ToList());
                 }
-                packageMainFiles.RemoveAll(s => s.ToLower().Contains("guidcache"));
+                packageMainFiles.RemoveAll(s => s.ToLowerInvariant().Contains("guidcache"));
                 entries = entriesME3;
             }
 
@@ -832,7 +832,7 @@ namespace MassEffectModder
                     int index = -1;
                     for (int p = 0; p < entries.Count(); p++)
                     {
-                        if (GameData.RelativeGameData(packageMainFiles[l]).ToLower() == entries[p].path.ToLower())
+                        if (GameData.RelativeGameData(packageMainFiles[l]).ToLowerInvariant() == entries[p].path.ToLowerInvariant())
                         {
                             index = p;
                             break;
@@ -882,7 +882,7 @@ namespace MassEffectModder
                         int index = -1;
                         for (int p = 0; p < entries.Count(); p++)
                         {
-                            if (GameData.RelativeGameData(packageDLCFiles[l]).ToLower() == entries[p].path.ToLower())
+                            if (GameData.RelativeGameData(packageDLCFiles[l]).ToLowerInvariant() == entries[p].path.ToLowerInvariant())
                             {
                                 index = p;
                                 break;
@@ -933,7 +933,7 @@ namespace MassEffectModder
                         int index = -1;
                         for (int p = 0; p < entries.Count(); p++)
                         {
-                            if (GameData.RelativeGameData(sfarFiles[l]).ToLower() == entries[p].path.ToLower())
+                            if (GameData.RelativeGameData(sfarFiles[l]).ToLowerInvariant() == entries[p].path.ToLowerInvariant())
                             {
                                 index = p;
                                 break;
@@ -985,7 +985,7 @@ namespace MassEffectModder
                         int index = -1;
                         for (int p = 0; p < entries.Count(); p++)
                         {
-                            if (GameData.RelativeGameData(tfcFiles[l]).ToLower() == entries[p].path.ToLower())
+                            if (GameData.RelativeGameData(tfcFiles[l]).ToLowerInvariant() == entries[p].path.ToLowerInvariant())
                             {
                                 index = p;
                                 break;

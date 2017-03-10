@@ -301,7 +301,7 @@ namespace MassEffectModder
                         mainWindow.updateStatusLabel("Creating MOD: " + Path.GetFileName(outFile));
                         mainWindow.updateStatusLabel2("Texture " + (n + 1) + " of " + files.Count() + ", File: " + Path.GetFileName(file));
                     }
-                    string filename = Path.GetFileNameWithoutExtension(file).ToLower();
+                    string filename = Path.GetFileNameWithoutExtension(file).ToLowerInvariant();
                     if (!filename.Contains("_0x"))
                     {
                         errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (_0xhhhhhhhh). Skipping texture..." + Environment.NewLine;

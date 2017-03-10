@@ -65,7 +65,7 @@ namespace MassEffectModder
             for (int f = 0; f < files.Count; f++)
             {
                 FileEntry file = new FileEntry();
-                if (files[f].ToLower() != "pcconsoletoc.bin")
+                if (files[f].ToLowerInvariant() != "pcconsoletoc.bin")
                     file.size = (uint)new FileInfo(files[f]).Length;
                 file.path = files[f].Substring(GameData.GamePath.Length + 1);
                 filesList.Add(file);
@@ -106,7 +106,7 @@ namespace MassEffectModder
                     for (int f = 0; f < files.Count; f++)
                     {
                         FileEntry file = new FileEntry();
-                        if (files[f].ToLower() != "pcconsoletoc.bin")
+                        if (files[f].ToLowerInvariant() != "pcconsoletoc.bin")
                             file.size = (uint)new FileInfo(files[f]).Length;
                         file.path = files[f].Substring((GameData.DLCData + "\\" + DLCname).Length + 1);
                         filesList.Add(file);
