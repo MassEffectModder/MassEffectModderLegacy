@@ -330,26 +330,26 @@ namespace MassEffectModder
                 {
                     TexExplorer.BinaryMod mod = new TexExplorer.BinaryMod();
                     string filename = Path.GetFileNameWithoutExtension(file).ToLowerInvariant();
-                    if (!filename.Contains("_0x"))
+                    if (!filename.Contains("0x"))
                     {
-                        errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (_0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
+                        errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
                         continue;
                     }
-                    int idx = filename.IndexOf("_0x");
-                    if (filename.Length - idx < 11)
+                    int idx = filename.IndexOf("0x");
+                    if (filename.Length - idx < 10)
                     {
-                        errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (_0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
+                        errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
                         continue;
                     }
                     uint crc;
-                    string crcStr = filename.Substring(idx + 3, 8);
+                    string crcStr = filename.Substring(idx + 2, 8);
                     try
                     {
                         crc = uint.Parse(crcStr, System.Globalization.NumberStyles.HexNumber);
                     }
                     catch
                     {
-                        errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (_0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
+                        errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
                         continue;
                     }
 
@@ -394,7 +394,7 @@ namespace MassEffectModder
                             continue;
                         }
 
-                        mod.textureName = Path.GetFileName(file).Substring(0, filename.IndexOf(crcStr) - "_0x".Length);
+                        mod.textureName = foundCrcList[0].name;
                         mod.binaryMod = false;
                         mod.textureCrc = crc;
                         mods.Add(mod);
