@@ -240,7 +240,7 @@ namespace MassEffectModder
                                 mipmap.storageType = Texture.StorageTypes.extLZO;
                             }
                         }
-                        else if (GameData.gameType == MeType.ME2_TYPE)
+                        else if (GameData.gameType == MeType.ME2_TYPE || GameData.gameType == MeType.ME3_TYPE)
                         {
                             if (texture.properties.exists("TextureFileCacheName") && texture.mipMapsList.Count > 1)
                             {
@@ -257,15 +257,11 @@ namespace MassEffectModder
                                 }
                                 else
                                 {
-                                    mipmap.storageType = Texture.StorageTypes.extLZO;
+                                    if (GameData.gameType == MeType.ME2_TYPE)
+                                        mipmap.storageType = Texture.StorageTypes.extLZO;
+                                    else
+                                        mipmap.storageType = Texture.StorageTypes.extZlib;
                                 }
-                            }
-                        }
-                        else if (GameData.gameType == MeType.ME3_TYPE)
-                        {
-                            if (texture.properties.exists("TextureFileCacheName") && texture.mipMapsList.Count > 1)
-                            {
-                                mipmap.storageType = Texture.StorageTypes.extZlib;
                             }
                         }
                     }
