@@ -328,9 +328,6 @@ namespace MassEffectModder
                         continue;
                     }
 
-                    idx = filename.IndexOf(crcStr);
-                    string name = filename.Substring(0, idx - "0x".Length - 1);
-
                     List<FoundTexture> foundCrcList = textures.FindAll(s => s.crc == crc);
                     if (foundCrcList.Count == 0)
                     {
