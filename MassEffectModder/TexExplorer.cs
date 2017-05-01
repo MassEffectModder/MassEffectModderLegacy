@@ -1089,27 +1089,24 @@ namespace MassEffectModder
                                     mod.binaryMod = false;
                                     len = fs.ReadInt32();
                                     mod.data = fs.ReadToBuffer(len);
+                                    Package pkg = new Package(GameData.GamePath + f.list[0].path);
+                                    Texture texture = new Texture(pkg, f.list[0].exportID, pkg.getExportData(f.list[0].exportID));
+                                    string fmt = texture.properties.getProperty("Format").valueName;
+                                    DDSFormat ddsFormat = DDSImage.convertFormat(fmt);
                                     DDSImage image = new DDSImage(new MemoryStream(mod.data));
                                     if (!image.checkExistAllMipmaps())
                                     {
-                                        errors += "Error in texture: " + textureName + string.Format("_0x{0:X8}", f.crc) + " This texture has not all the required mipmaps, skipping texture, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
-                                        continue;
+                                        image = new DDSImage(new MemoryStream(MipMaps.convertDDS(ddsFormat, mod.data)));
                                     }
-                                    Package pkg = new Package(GameData.GamePath + f.list[0].path);
-                                    Texture texture = new Texture(pkg, f.list[0].exportID, pkg.getExportData(f.list[0].exportID));
 
                                     if (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1)
                                     {
-                                        errors += "Error in texture: " + textureName + string.Format("_0x{0:X8}", f.crc) + " This texture must have mipmaps, skipping texture, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
-                                        continue;
+                                        image = new DDSImage(new MemoryStream(MipMaps.convertDDS(ddsFormat, mod.data)));
                                     }
 
-                                    string fmt = texture.properties.getProperty("Format").valueName;
-                                    DDSFormat ddsFormat = DDSImage.convertFormat(fmt);
                                     if (image.ddsFormat != ddsFormat)
                                     {
-                                        errors += "Error in texture: " + textureName + string.Format("_0x{0:X8}", f.crc) + " This texture has wrong texture format, should be: " + ddsFormat + ", skipping texture, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
-                                        continue;
+                                        image = new DDSImage(new MemoryStream(MipMaps.convertDDS(ddsFormat, mod.data)));
                                     }
 
                                     if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
@@ -1172,7 +1169,7 @@ namespace MassEffectModder
                                 if (crc == 0)
                                 {
                                     if (filename != "texmod.def")
-                                        errors += "Skipping file: " + filename +" not founded in texmod.def, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
+                                        errors += "Skipping file: " + filename +" not found in texmod.def, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                     ZlibHelper.Zip.GoToNextFile(handle);
                                     continue;
                                 }
@@ -1199,37 +1196,30 @@ namespace MassEffectModder
                                     ZlibHelper.Zip.GoToNextFile(handle);
                                     continue;
                                 }
+                                Package pkg = new Package(GameData.GamePath + foundCrcList[0].list[0].path);
+                                Texture texture = new Texture(pkg, foundCrcList[0].list[0].exportID, pkg.getExportData(foundCrcList[0].list[0].exportID));
+                                string fmt = texture.properties.getProperty("Format").valueName;
+                                DDSFormat ddsFormat = DDSImage.convertFormat(fmt);
                                 uint tag = BitConverter.ToUInt32(mod.data, 0);
                                 if (tag != 0x20534444) // DDS
                                 {
-                                    errors += "Error in texture: " + textureName + string.Format("_0x{0:X8}", crc) + " This texture is not in DDS format, skipping texture, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
-                                    ZlibHelper.Zip.GoToNextFile(handle);
-                                    continue;
+                                    mod.data = MipMaps.convertDDS(ddsFormat, mod.data);
                                 }
+
                                 DDSImage image = new DDSImage(new MemoryStream(mod.data));
                                 if (!image.checkExistAllMipmaps())
                                 {
-                                    errors += "Error in texture: " + textureName + string.Format("_0x{0:X8}", crc) + " This texture has not all the required mipmaps, skipping texture, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
-                                    ZlibHelper.Zip.GoToNextFile(handle);
-                                    continue;
+                                    image = new DDSImage(new MemoryStream(MipMaps.convertDDS(ddsFormat, mod.data)));
                                 }
-                                Package pkg = new Package(GameData.GamePath + foundCrcList[0].list[0].path);
-                                Texture texture = new Texture(pkg, foundCrcList[0].list[0].exportID, pkg.getExportData(foundCrcList[0].list[0].exportID));
 
                                 if (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1)
                                 {
-                                    errors += "Error in texture: " + textureName + string.Format("_0x{0:X8}", crc) + " This texture must have mipmaps, skipping texture, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
-                                    ZlibHelper.Zip.GoToNextFile(handle);
-                                    continue;
+                                    image = new DDSImage(new MemoryStream(MipMaps.convertDDS(ddsFormat, mod.data)));
                                 }
 
-                                string fmt = texture.properties.getProperty("Format").valueName;
-                                DDSFormat ddsFormat = DDSImage.convertFormat(fmt);
                                 if (image.ddsFormat != ddsFormat)
                                 {
-                                    errors += "Error in texture: " + textureName + string.Format("_0x{0:X8}", crc) + " This texture has wrong texture format, should be: " + ddsFormat + ", skipping texture, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
-                                    ZlibHelper.Zip.GoToNextFile(handle);
-                                    continue;
+                                    image = new DDSImage(new MemoryStream(MipMaps.convertDDS(ddsFormat, mod.data)));
                                 }
 
                                 if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=

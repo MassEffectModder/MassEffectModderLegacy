@@ -42,7 +42,7 @@ namespace MassEffectModder
         private static extern bool AttachConsole(int dwProcessId);
 
         private static List<string> dlls = new List<string>();
-        private static string dllPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        public static string dllPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
         static void loadEmbeddedDlls()
         {
@@ -50,9 +50,10 @@ namespace MassEffectModder
             string[] resources = assembly.GetManifestResourceNames();
             for (int l = 0; l < resources.Length; l++)
             {
-                if (resources[l].EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
+                if (resources[l].EndsWith(".dll", StringComparison.OrdinalIgnoreCase) ||
+                    resources[l].EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
                 {
-                    string dllName = resources[l].Split('.')[2] + ".dll";
+                    string dllName = resources[l].Substring(resources[l].IndexOf("Dlls.") + "Dlls.".Length);
                     string dllFilePath = Path.Combine(dllPath, dllName);
                     if (!Directory.Exists(dllPath))
                         Directory.CreateDirectory(dllPath);
@@ -64,6 +65,13 @@ namespace MassEffectModder
                             File.Delete(dllFilePath);
                         File.WriteAllBytes(dllFilePath, buf);
                     }
+
+                    if (dllName.Contains("ConvertDDS.exe") ||
+                        dllName.Contains("CSharpImageLibrary.dll") ||
+                        dllName.Contains("System.Threading.Tasks.Dataflow.dll") ||
+                        dllName.Contains("System.Windows.Interactivity.dll") ||
+                        dllName.Contains("UsefulThings.dll"))
+                        continue;
 
                     IntPtr handle = LoadLibrary(dllFilePath);
                     if (handle == IntPtr.Zero)

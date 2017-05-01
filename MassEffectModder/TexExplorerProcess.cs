@@ -20,6 +20,7 @@
  */
 
 using AmaroK86.ImageFormat;
+using Microsoft.VisualBasic;
 using StreamHelpers;
 using System;
 using System.Collections.Generic;
@@ -340,31 +341,24 @@ namespace MassEffectModder
                     using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
                     {
                         byte[] src = fs.ReadToBuffer((int)fs.Length);
+                        Package pkg = new Package(GameData.GamePath + foundCrcList[0].list[0].path);
+                        Texture texture = new Texture(pkg, foundCrcList[0].list[0].exportID, pkg.getExportData(foundCrcList[0].list[0].exportID));
+                        string fmt = texture.properties.getProperty("Format").valueName;
+                        DDSFormat ddsFormat = DDSImage.convertFormat(fmt);
                         DDSImage image = new DDSImage(new MemoryStream(src));
                         if (!image.checkExistAllMipmaps())
                         {
-                            errors += "Error in texture: " + Path.GetFileName(file) + " This texture has not all the required mipmaps, skipping texture..." + Environment.NewLine;
-                            log += "Error in texture: " + Path.GetFileName(file) + " This texture has not all the required mipmaps, skipping texture..." + Environment.NewLine;
-                            continue;
+                            image = new DDSImage(new MemoryStream(convertDDS(ddsFormat, src)));
                         }
-
-                        Package pkg = new Package(GameData.GamePath + foundCrcList[0].list[0].path);
-                        Texture texture = new Texture(pkg, foundCrcList[0].list[0].exportID, pkg.getExportData(foundCrcList[0].list[0].exportID));
 
                         if (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1)
                         {
-                            errors += "Error in texture: " + Path.GetFileName(file) + " This texture must have mipmaps, skipping texture..." + Environment.NewLine;
-                            log += "Error in texture: " + Path.GetFileName(file) + " This texture must have mipmaps, skipping texture..." + Environment.NewLine;
-                            continue;
+                            image = new DDSImage(new MemoryStream(convertDDS(ddsFormat, src)));
                         }
 
-                        string fmt = texture.properties.getProperty("Format").valueName;
-                        DDSFormat ddsFormat = DDSImage.convertFormat(fmt);
                         if (image.ddsFormat != ddsFormat)
                         {
-                            errors += "Error in texture: " + Path.GetFileName(file) + " This texture has wrong texture format, should be: " + ddsFormat + ", skipping texture..." + Environment.NewLine;
-                            log += "Error in texture: " + Path.GetFileName(file) + " This texture has wrong texture format, should be: " + ddsFormat + ", skipping texture..." + Environment.NewLine;
-                            continue;
+                            image = new DDSImage(new MemoryStream(convertDDS(ddsFormat, src)));
                         }
 
                         if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
@@ -563,6 +557,65 @@ namespace MassEffectModder
             using (FileStream fs = new FileStream(outputFile, FileMode.CreateNew, FileAccess.Write))
             {
                 image.Save(fs);
+            }
+        }
+
+        static public byte[] convertDDS(DDSFormat format, byte[] src)
+        {
+            string fmtParam = "";
+            string ext;
+
+            switch (format)
+            {
+                case DDSFormat.DXT1:
+                    fmtParam = "dxt1";
+                    break;
+                case DDSFormat.DXT3:
+                    fmtParam = "dxt3";
+                    break;
+                case DDSFormat.DXT5:
+                    fmtParam = "dxt5";
+                    break;
+                case DDSFormat.ATI2:
+                    fmtParam = "ati2";
+                    break;
+                case DDSFormat.V8U8:
+                    fmtParam = "v8u8";
+                    break;
+                case DDSFormat.G8:
+                    fmtParam = "g8";
+                    break;
+                case DDSFormat.ARGB:
+                    fmtParam = "argb";
+                    break;
+                case DDSFormat.RGB:
+                    fmtParam = "rgb";
+                    break;
+                default:
+                    throw new Exception("invalid texture format " + format);
+            }
+
+            uint tag = BitConverter.ToUInt32(src, 0);
+            if (tag == 0x20534444) // DDS
+                ext = ".dds";
+            else
+                ext = ".tga";
+
+            string inputFile = Path.Combine(Program.dllPath, "input" + ext);
+            string outputFile = Path.Combine(Program.dllPath, "output.dds");
+            if (File.Exists(inputFile))
+                File.Delete(inputFile);
+            if (File.Exists(outputFile))
+                File.Delete(outputFile);
+            using (FileStream fs = new FileStream(inputFile, FileMode.CreateNew))
+            {
+                fs.WriteFromBuffer(src);
+            }
+            Interaction.Shell(Path.Combine(Program.dllPath, "ConvertDDS.exe") + " " +
+                fmtParam + " " + inputFile + " " + outputFile, AppWinStyle.Hide, true);
+            using (FileStream fs = new FileStream(outputFile, FileMode.Open))
+            {
+                return fs.ReadToBuffer(new FileInfo(outputFile).Length);
             }
         }
     }
