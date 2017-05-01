@@ -529,8 +529,44 @@ namespace MassEffectModder
                 }
             }
 
-            Directory.Delete(GameData.DLCData, true);
-            Directory.Move(tmpDlcDir, GameData.DLCData);
+            bool success = true;
+            do
+            {
+                try
+                {
+                    Directory.Delete(GameData.DLCData, true);
+                    success = true;
+                }
+                catch
+                {
+                    if (mainWindow != null)
+                    {
+                        MessageBox.Show("Unable old DLC directory: " + GameData.DLCData + " !");
+                        success = false;
+                    }
+                }
+            }
+            while (success == false);
+
+            success = true;
+            do
+            {
+                try
+                {
+                    Directory.Move(tmpDlcDir, GameData.DLCData);
+                    success = true;
+                }
+                catch
+                {
+                    if (mainWindow != null)
+                    {
+                        MessageBox.Show("Unable move temporary DLC directory: " + tmpDlcDir + " !");
+                        success = false;
+                    }
+                }
+            }
+            while (success == false);
+
         }
     }
 }
