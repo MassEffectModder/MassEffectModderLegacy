@@ -67,6 +67,7 @@ namespace MassEffectModder
                     }
 
                     if (dllName.Contains("ConvertDDS.exe") ||
+                        dllName.Contains("nvcompress.exe") ||
                         dllName.Contains("CSharpImageLibrary.dll") ||
                         dllName.Contains("System.Threading.Tasks.Dataflow.dll") ||
                         dllName.Contains("System.Windows.Interactivity.dll") ||
