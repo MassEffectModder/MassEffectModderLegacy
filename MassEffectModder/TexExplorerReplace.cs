@@ -387,13 +387,6 @@ namespace MassEffectModder
                 texture.properties.setIntValue("SizeY", texture.mipMapsList.First().height);
                 if (texture.properties.exists("MipTailBaseIdx"))
                     texture.properties.setIntValue("MipTailBaseIdx", texture.mipMapsList.Count() - 1);
-                if (GameData.gameType == MeType.ME1_TYPE && crc == 0x39A26907)
-                {
-                    if (!texture.properties.exists("LODGroup"))
-                        texture.properties.addByteValue("LODGroup", "TEXTUREGROUP_Character", 1025);
-                    else
-                        texture.properties.setByteValue("LODGroup", "TEXTUREGROUP_Character", 1025);
-                }
 
                 using (MemoryStream newData = new MemoryStream())
                 {
