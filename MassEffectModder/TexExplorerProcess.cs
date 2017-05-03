@@ -346,20 +346,6 @@ namespace MassEffectModder
                         string fmt = texture.properties.getProperty("Format").valueName;
                         DDSFormat ddsFormat = DDSImage.convertFormat(fmt);
                         DDSImage image = new DDSImage(new MemoryStream(src));
-                        if (!image.checkExistAllMipmaps())
-                        {
-                            image = new DDSImage(new MemoryStream(convertDDS(ddsFormat, src)));
-                        }
-
-                        if (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1)
-                        {
-                            image = new DDSImage(new MemoryStream(convertDDS(ddsFormat, src)));
-                        }
-
-                        if (image.ddsFormat != ddsFormat)
-                        {
-                            image = new DDSImage(new MemoryStream(convertDDS(ddsFormat, src)));
-                        }
 
                         if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
                             texture.mipMapsList[0].width / texture.mipMapsList[0].height)
@@ -367,6 +353,13 @@ namespace MassEffectModder
                             errors += "Error in texture: " + Path.GetFileName(file) + " This texture has wrong aspect ratio, skipping texture..." + Environment.NewLine;
                             log += "Error in texture: " + Path.GetFileName(file) + " This texture has wrong aspect ratio, skipping texture..." + Environment.NewLine;
                             continue;
+                        }
+
+                        if (!image.checkExistAllMipmaps() ||
+                            (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1) ||
+                            image.ddsFormat != ddsFormat)
+                        {
+                            src = convertDDS(ddsFormat, src);
                         }
 
                         Stream dst = compressData(src);
@@ -560,10 +553,9 @@ namespace MassEffectModder
             }
         }
 
-        static public byte[] convertDDS(DDSFormat format, byte[] src)
+        static public byte[] convertDDS(DDSFormat format, byte[] src, string extension = ".dds")
         {
             string fmtParam = "";
-            string ext;
 
             switch (format)
             {
@@ -595,13 +587,7 @@ namespace MassEffectModder
                     throw new Exception("invalid texture format " + format);
             }
 
-            uint tag = BitConverter.ToUInt32(src, 0);
-            if (tag == 0x20534444) // DDS
-                ext = ".dds";
-            else
-                ext = ".tga";
-
-            string inputFile = Path.Combine(Program.dllPath, "input" + ext);
+            string inputFile = Path.Combine(Program.dllPath, "input" + extension);
             string outputFile = Path.Combine(Program.dllPath, "output.dds");
             if (File.Exists(inputFile))
                 File.Delete(inputFile);

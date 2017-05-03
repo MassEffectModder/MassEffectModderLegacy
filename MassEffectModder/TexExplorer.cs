@@ -1096,26 +1096,19 @@ namespace MassEffectModder
                                     string fmt = texture.properties.getProperty("Format").valueName;
                                     DDSFormat ddsFormat = DDSImage.convertFormat(fmt);
                                     DDSImage image = new DDSImage(new MemoryStream(mod.data));
-                                    if (!image.checkExistAllMipmaps())
-                                    {
-                                        image = new DDSImage(new MemoryStream(MipMaps.convertDDS(ddsFormat, mod.data)));
-                                    }
-
-                                    if (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1)
-                                    {
-                                        image = new DDSImage(new MemoryStream(MipMaps.convertDDS(ddsFormat, mod.data)));
-                                    }
-
-                                    if (image.ddsFormat != ddsFormat)
-                                    {
-                                        image = new DDSImage(new MemoryStream(MipMaps.convertDDS(ddsFormat, mod.data)));
-                                    }
 
                                     if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
                                         texture.mipMapsList[0].width / texture.mipMapsList[0].height)
                                     {
                                         errors += "Error in texture: " + textureName + string.Format("_0x{0:X8}", f.crc) + " This texture has wrong aspect ratio, skipping texture, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                         continue;
+                                    }
+
+                                    if (!image.checkExistAllMipmaps() ||
+                                        (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1) ||
+                                        image.ddsFormat != ddsFormat)
+                                    {
+                                        mod.data = MipMaps.convertDDS(ddsFormat, mod.data);
                                     }
                                 }
                                 mods.Add(mod);
@@ -1184,7 +1177,7 @@ namespace MassEffectModder
                                     continue;
                                 }
 
-                                _mainWindow.updateStatusLabel2("Processing texture: " + (i + 1) + " of " + numEntries + " - " + foundCrcList[0].name + string.Format("_0x{0:X8}", crc));
+                                _mainWindow.updateStatusLabel2("Processing texture: " + (i + 1) + " of " + (numEntries - 1) + " - " + foundCrcList[0].name + string.Format("_0x{0:X8}", crc));
 
                                 string textureName = foundCrcList[0].name;
                                 mod.textureName = textureName;
@@ -1203,26 +1196,11 @@ namespace MassEffectModder
                                 string fmt = texture.properties.getProperty("Format").valueName;
                                 DDSFormat ddsFormat = DDSImage.convertFormat(fmt);
                                 uint tag = BitConverter.ToUInt32(mod.data, 0);
-                                if (tag != 0x20534444) // DDS
+                                if (tag != 0x20534444) // not DDS
                                 {
-                                    mod.data = MipMaps.convertDDS(ddsFormat, mod.data);
+                                    mod.data = MipMaps.convertDDS(ddsFormat, mod.data, Path.GetExtension(filename).ToLowerInvariant());
                                 }
-
                                 DDSImage image = new DDSImage(new MemoryStream(mod.data));
-                                if (!image.checkExistAllMipmaps())
-                                {
-                                    image = new DDSImage(new MemoryStream(MipMaps.convertDDS(ddsFormat, mod.data)));
-                                }
-
-                                if (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1)
-                                {
-                                    image = new DDSImage(new MemoryStream(MipMaps.convertDDS(ddsFormat, mod.data)));
-                                }
-
-                                if (image.ddsFormat != ddsFormat)
-                                {
-                                    image = new DDSImage(new MemoryStream(MipMaps.convertDDS(ddsFormat, mod.data)));
-                                }
 
                                 if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
                                     texture.mipMapsList[0].width / texture.mipMapsList[0].height)
@@ -1231,6 +1209,14 @@ namespace MassEffectModder
                                     ZlibHelper.Zip.GoToNextFile(handle);
                                     continue;
                                 }
+
+                                if (!image.checkExistAllMipmaps() ||
+                                    (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1) ||
+                                    image.ddsFormat != ddsFormat)
+                                {
+                                    mod.data = MipMaps.convertDDS(ddsFormat, mod.data);
+                                }
+
                                 mods.Add(mod);
                             }
                             catch
