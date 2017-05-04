@@ -39,7 +39,10 @@ namespace MassEffectModder
         private static extern int FreeLibrary(IntPtr hModule);
 
         [DllImport("kernel32", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
-        private static extern bool AttachConsole(int dwProcessId);
+        private static extern IntPtr GetConsoleWindow();
+
+        [DllImport("user32.dll")]
+        private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
         private static List<string> dlls = new List<string>();
         public static string dllPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
@@ -113,7 +116,6 @@ namespace MassEffectModder
 
             if (args.Length == 4)
             {
-                AttachConsole(-1);
                 string option = args[0];
                 string game = args[1];
                 string inputDir = args[2];
@@ -158,6 +160,7 @@ namespace MassEffectModder
             }
             else
             {
+                ShowWindow(GetConsoleWindow(), 0);
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
                 bool runAsAdmin = false;
