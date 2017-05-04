@@ -130,6 +130,7 @@ namespace MassEffectModder
                 if (gameId != 1 && gameId != 2 && gameId != 3)
                 {
                     Console.WriteLine("Error: wrong game id!");
+                    unloadEmbeddedDlls();
                     Environment.Exit(1);
                 }
                 else
@@ -138,7 +139,8 @@ namespace MassEffectModder
                     {
                         if (!Directory.Exists(inputDir))
                         {
-                            Console.WriteLine("Error: intput path not exists: " + inputDir);
+                            Console.WriteLine("Error: input path not exists: " + inputDir);
+                            unloadEmbeddedDlls();
                             Environment.Exit(1);
                         }
                         else
@@ -146,7 +148,10 @@ namespace MassEffectModder
                             Console.WriteLine(Environment.NewLine + Environment.NewLine +
                                 "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
                             if (!CmdLineConverter.ConvertToMEM(gameId, inputDir, outMem))
+                            {
+                                unloadEmbeddedDlls();
                                 Environment.Exit(1);
+                            }
                         }
                     }
                 }
