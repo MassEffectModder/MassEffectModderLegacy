@@ -158,6 +158,31 @@ namespace MassEffectModder
                     }
                 }
             }
+            else if (args.Length == 3)
+            {
+                string option = args[0];
+                string inputDir = args[1];
+                string outputDir = args[2];
+                if (option.Equals("-extract-tpf", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (!Directory.Exists(inputDir))
+                    {
+                        Console.WriteLine("Error: input dir not exists: " + inputDir);
+                        unloadEmbeddedDlls();
+                        Environment.Exit(1);
+                    }
+                    else
+                    {
+                        Console.WriteLine(Environment.NewLine + Environment.NewLine +
+                            "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
+                        if (!CmdLineConverter.extractTPF(inputDir, outputDir))
+                        {
+                            unloadEmbeddedDlls();
+                            Environment.Exit(1);
+                        }
+                    }
+                }
+            }
             else
             {
                 ShowWindow(GetConsoleWindow(), 0);

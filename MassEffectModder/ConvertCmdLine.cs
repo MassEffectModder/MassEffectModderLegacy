@@ -465,5 +465,97 @@ namespace MassEffectModder
 
             return true;
         }
+
+        static public bool extractTPF(string inputDir, string outputDir)
+        {
+            Console.WriteLine("Extract TPF files started...");
+
+            string errors = "";
+            string[] files = null;
+            int result;
+            string fileName = "";
+            uint dstLen = 0;
+            string[] ddsList = null;
+            ulong numEntries = 0;
+            List<string> list = Directory.GetFiles(inputDir, "*.tpf").Where(item => item.EndsWith(".tpf", StringComparison.OrdinalIgnoreCase)).ToList();
+            list.Sort();
+            files = list.ToArray();
+
+            if (!Directory.Exists(outputDir))
+                Directory.CreateDirectory(outputDir);
+
+            foreach (string file in files)
+            {
+                string outputTPFdir = outputDir + "\\" + Path.GetFileNameWithoutExtension(file);
+                if (!Directory.Exists(outputTPFdir))
+                    Directory.CreateDirectory(outputTPFdir);
+
+                IntPtr handle = IntPtr.Zero;
+                try
+                {
+                    byte[] buffer = File.ReadAllBytes(file);
+                    handle = ZlibHelper.Zip.Open(buffer, ref numEntries, 1);
+                    if (ZlibHelper.Zip.LocateFile(handle, "texmod.def") != 0)
+                        throw new Exception();
+                    result = ZlibHelper.Zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
+                    if (result != 0)
+                        throw new Exception();
+                    byte[] listText = new byte[dstLen];
+                    result = ZlibHelper.Zip.ReadCurrentFile(handle, listText, dstLen);
+                    if (result != 0)
+                        throw new Exception();
+                    ddsList = Encoding.ASCII.GetString(listText).Trim('\0').Replace("\r", "").TrimEnd('\n').Split('\n');
+
+                    result = ZlibHelper.Zip.GoToFirstFile(handle);
+                    if (result != 0)
+                        throw new Exception();
+
+                    for (uint i = 0; i < numEntries; i++)
+                    {
+                        try
+                        {
+                            result = ZlibHelper.Zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
+                            if (result != 0)
+                                throw new Exception();
+                            string filename = Path.GetFileName(fileName);
+                            if (filename == "texmod.def")
+                            {
+                                ZlibHelper.Zip.GoToNextFile(handle);
+                                continue;
+                            }
+
+                            byte[] data = new byte[dstLen];
+                            result = ZlibHelper.Zip.ReadCurrentFile(handle, data, dstLen);
+                            if (result != 0)
+                            {
+                                throw new Exception();
+                            }
+                            using (FileStream fs = new FileStream(Path.Combine(outputTPFdir, filename), FileMode.CreateNew))
+                            {
+                                fs.WriteFromBuffer(data);
+                            }
+                        }
+                        catch
+                        {
+                            errors += "Skipping damaged content, entry: " + (i + 1) + " file: " + fileName + " - mod: " + file + Environment.NewLine;
+                        }
+                        ZlibHelper.Zip.GoToNextFile(handle);
+                    }
+                    ZlibHelper.Zip.Close(handle);
+                    handle = IntPtr.Zero;
+                }
+                catch
+                {
+                    errors += "TPF file is damaged: " + file + Environment.NewLine;
+                    if (handle != IntPtr.Zero)
+                        ZlibHelper.Zip.Close(handle);
+                    handle = IntPtr.Zero;
+                    continue;
+                }
+            }
+
+            Console.WriteLine("Extract TPF files completed.");
+            return true;
+        }
     }
 }
