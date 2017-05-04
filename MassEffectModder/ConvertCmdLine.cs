@@ -92,7 +92,18 @@ namespace MassEffectModder
             uint dstLen = 0;
             string[] ddsList = null;
             ulong numEntries = 0;
+            FileStream outFs;
+
             List<TexExplorer.BinaryMod> mods = new List<TexExplorer.BinaryMod>();
+            List<MipMaps.FileMod> modFiles = new List<MipMaps.FileMod>();
+
+            if (File.Exists(memFilePath))
+                File.Delete(memFilePath);
+            outFs = new FileStream(memFilePath, FileMode.Create, FileAccess.Write);
+            outFs.WriteUInt32(TexExplorer.TextureModTag);
+            outFs.WriteUInt32(TexExplorer.TextureModVersion);
+            outFs.WriteInt64(0); // filled later
+
             foreach (string file in files)
             {
                 if (file.EndsWith(".mod", StringComparison.OrdinalIgnoreCase))
@@ -364,25 +375,6 @@ namespace MassEffectModder
                         mods.Add(mod);
                     }
                 }
-            }
-
-            if (mods.Count == 0)
-            {
-                Console.WriteLine("Mods conversion failed");
-                return errors;
-            }
-
-            Console.WriteLine("Saving to MEM file... " + memFilePath);
-            List<MipMaps.FileMod> modFiles = new List<MipMaps.FileMod>();
-            FileStream outFs;
-            if (File.Exists(memFilePath))
-                File.Delete(memFilePath);
-
-            using (outFs = new FileStream(memFilePath, FileMode.Create, FileAccess.Write))
-            {
-                outFs.WriteUInt32(TexExplorer.TextureModTag);
-                outFs.WriteUInt32(TexExplorer.TextureModVersion);
-                outFs.WriteInt64(0); // filled later
 
                 for (int l = 0; l < mods.Count; l++)
                 {
@@ -410,24 +402,35 @@ namespace MassEffectModder
                     outFs.WriteFromStream(dst, dst.Length);
                     modFiles.Add(fileMod);
                 }
-
-                long pos = outFs.Position;
-                outFs.SeekBegin();
-                outFs.WriteUInt32(TexExplorer.TextureModTag);
-                outFs.WriteUInt32(TexExplorer.TextureModVersion);
-                outFs.WriteInt64(pos);
-                outFs.JumpTo(pos);
-                outFs.WriteUInt32((uint)GameData.gameType);
-                outFs.WriteInt32(modFiles.Count);
-                for (int i = 0; i < modFiles.Count; i++)
-                {
-                    outFs.WriteUInt32(modFiles[i].tag);
-                    outFs.WriteStringASCIINull(modFiles[i].name);
-                    outFs.WriteInt64(modFiles[i].offset);
-                    outFs.WriteInt64(modFiles[i].size);
-                }
+                mods.Clear();
             }
 
+            if (modFiles.Count == 0)
+            {
+                outFs.Close();
+                if (File.Exists(memFilePath))
+                    File.Delete(memFilePath);
+                Console.WriteLine("Mods conversion failed - nothing converted!");
+                return errors;
+            }
+
+            long pos = outFs.Position;
+            outFs.SeekBegin();
+            outFs.WriteUInt32(TexExplorer.TextureModTag);
+            outFs.WriteUInt32(TexExplorer.TextureModVersion);
+            outFs.WriteInt64(pos);
+            outFs.JumpTo(pos);
+            outFs.WriteUInt32((uint)GameData.gameType);
+            outFs.WriteInt32(modFiles.Count);
+            for (int i = 0; i < modFiles.Count; i++)
+            {
+                outFs.WriteUInt32(modFiles[i].tag);
+                outFs.WriteStringASCIINull(modFiles[i].name);
+                outFs.WriteInt64(modFiles[i].offset);
+                outFs.WriteInt64(modFiles[i].size);
+            }
+
+            outFs.Close();
             Console.WriteLine("Mods conversion process completed");
             return errors;
         }
