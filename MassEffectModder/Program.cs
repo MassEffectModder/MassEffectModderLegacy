@@ -156,6 +156,26 @@ namespace MassEffectModder
                             }
                         }
                     }
+                    else if (option.Equals("-extract-mod", StringComparison.OrdinalIgnoreCase))
+                    {
+                        string outputDir = args[3];
+                        if (!Directory.Exists(inputDir))
+                        {
+                            Console.WriteLine("Error: input dir not exists: " + inputDir);
+                            unloadEmbeddedDlls();
+                            Environment.Exit(1);
+                        }
+                        else
+                        {
+                            Console.WriteLine(Environment.NewLine + Environment.NewLine +
+                                "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
+                            if (!CmdLineConverter.extractMOD(gameId, inputDir, outputDir))
+                            {
+                                unloadEmbeddedDlls();
+                                Environment.Exit(1);
+                            }
+                        }
+                    }
                 }
             }
             else if (args.Length == 3)

@@ -560,5 +560,100 @@ namespace MassEffectModder
             Console.WriteLine("Extract TPF files completed.");
             return true;
         }
+
+        static public bool extractMOD(int gameId, string inputDir, string outputDir)
+        {
+            textures = new List<FoundTexture>();
+            ConfIni configIni = new ConfIni();
+            GameData gameData = new GameData((MeType)gameId, configIni);
+            if (GameData.GamePath == null || !Directory.Exists(GameData.GamePath))
+            {
+                Console.WriteLine("Error: Could not found the game!");
+                return false;
+            }
+
+            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    Assembly.GetExecutingAssembly().GetName().Name);
+            string mapFile = Path.Combine(path, "me" + gameId + "map.bin");
+            if (!loadTexturesMap(mapFile, textures))
+                return false;
+
+            Console.WriteLine("Extract MOD files started...");
+
+            string errors = "";
+            string[] files = null;
+            ulong numEntries = 0;
+            List<string> list = Directory.GetFiles(inputDir, "*.mod").Where(item => item.EndsWith(".mod", StringComparison.OrdinalIgnoreCase)).ToList();
+            list.Sort();
+            files = list.ToArray();
+
+            if (!Directory.Exists(outputDir))
+                Directory.CreateDirectory(outputDir);
+
+            foreach (string file in files)
+            {
+                string outputMODdir = outputDir + "\\" + Path.GetFileNameWithoutExtension(file);
+                if (!Directory.Exists(outputMODdir))
+                    Directory.CreateDirectory(outputMODdir);
+
+                try
+                {
+                    using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
+                    {
+                        uint textureCrc;
+                        int len = fs.ReadInt32();
+                        string version = fs.ReadStringASCII(len); // version
+                        if (version.Length < 5) // legacy .mod
+                            fs.SeekBegin();
+                        numEntries = fs.ReadUInt32();
+                        for (uint i = 0; i < numEntries; i++)
+                        {
+                            len = fs.ReadInt32();
+                            string desc = fs.ReadStringASCII(len); // description
+                            len = fs.ReadInt32();
+                            string scriptLegacy = fs.ReadStringASCII(len);
+                            if (desc.Contains("Binary Replacement"))
+                            {
+                                len = fs.ReadInt32();
+                                fs.Skip(len);
+                                errors += "Skipping non texture entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
+                            }
+                            else
+                            {
+                                string textureName = desc.Split(' ').Last();
+                                FoundTexture f;
+                                try
+                                {
+                                    f = Misc.ParseLegacyMe3xScriptMod(textures, scriptLegacy, textureName);
+                                    textureCrc = f.crc;
+                                    if (textureCrc == 0)
+                                        throw new Exception();
+                                }
+                                catch
+                                {
+                                    len = fs.ReadInt32();
+                                    fs.Skip(len);
+                                    errors += "Skipping not compatible content, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
+                                    continue;
+                                }
+                                len = fs.ReadInt32();
+                                using (FileStream fs2 = new FileStream(Path.Combine(outputMODdir, textureName) + ".dds", FileMode.CreateNew))
+                                {
+                                    fs2.WriteFromStream(fs, len);
+                                }
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                    errors += "Mod is not compatible: " + file + Environment.NewLine;
+                    continue;
+                }
+            }
+
+            Console.WriteLine("Extract MOD files completed.");
+            return true;
+        }
     }
 }
