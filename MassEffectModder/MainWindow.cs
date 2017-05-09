@@ -605,7 +605,7 @@ namespace MassEffectModder
                     }
                 }
             }
-            enableGameDataMenu(false);
+            enableGameDataMenu(true);
         }
 
         private void toolStripExtractME1MEMMenuItem_Click(object sender, EventArgs e)
