@@ -90,33 +90,33 @@ static long ZCALLBACK iomem_seek_func(voidpf opaque, voidpf stream, ZPOS64_T off
 
 	if (ioMemHandle == Z_NULL)
 		return -1;
-	
-    switch (origin)
-    {
-    case ZLIB_FILEFUNC_SEEK_CUR:
+
+	switch (origin)
+	{
+	case ZLIB_FILEFUNC_SEEK_CUR:
 		if (ioMemHandle->bufferPos + offset > ioMemHandle->bufferLen)
 		{
 			return -1;
 		}
 		ioMemHandle->bufferPos += offset;
-        break;
-    case ZLIB_FILEFUNC_SEEK_END:
+		break;
+	case ZLIB_FILEFUNC_SEEK_END:
 		if (ioMemHandle->bufferLen - offset > ioMemHandle->bufferLen)
 		{
 			return -1;
 		}
 		ioMemHandle->bufferPos = ioMemHandle->bufferLen - offset;
-        break;
-    case ZLIB_FILEFUNC_SEEK_SET:
+		break;
+	case ZLIB_FILEFUNC_SEEK_SET:
 		if (offset > ioMemHandle->bufferLen)
 		{
 			return -1;
 		}
 		ioMemHandle->bufferPos = offset;
 		break;
-    default:
+	default:
 		return -1;
-    }
+	}
 
 	return 0;
 }
@@ -135,7 +135,7 @@ static int ZCALLBACK iomem_close_func(voidpf opaque, voidpf stream)
 
 static int ZCALLBACK iomem_error_func(voidpf opaque, voidpf stream)
 {
-    return 0;
+	return 0;
 }
 
 ZEXTERN voidpf create_iomem_from_buffer(zlib_filefunc64_def* ioMemApi, voidpf buffer, size_t bufferLen)
