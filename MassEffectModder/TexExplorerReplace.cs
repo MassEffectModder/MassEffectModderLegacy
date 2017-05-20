@@ -233,9 +233,9 @@ namespace MassEffectModder
                         mipmap.storageType = texture.getTopMipmap().storageType;
                         if (GameData.gameType == MeType.ME1_TYPE && master == false)
                         {
-                            if (mipmap.storageType == Texture.StorageTypes.pccUnc ||
+                            if ((mipmap.storageType == Texture.StorageTypes.pccUnc ||
                                 mipmap.storageType == Texture.StorageTypes.pccLZO ||
-                                mipmap.storageType == Texture.StorageTypes.pccZlib)
+                                mipmap.storageType == Texture.StorageTypes.pccZlib) && texture.mipMapsList.Count() > 1)
                             {
                                 mipmap.storageType = Texture.StorageTypes.extLZO;
                             }
