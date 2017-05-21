@@ -70,7 +70,11 @@ namespace MassEffectModder
                 MessageBox.Show("Game ID not recognized in installer.ini, exiting...", "Installer");
                 return false;
             }
-            Text += " ME" + gameId;
+            string baseModNameStr = installerIni.Read("BaseModName", "Main");
+            if (baseModNameStr != "")
+                Text = "MEM Installer v" + Application.ProductVersion + " for " + baseModNameStr;
+            else
+                Text += " ME" + gameId;
             if (runAsAdmin)
                 Text += " (run as Administrator)";
             configIni = new ConfIni();
