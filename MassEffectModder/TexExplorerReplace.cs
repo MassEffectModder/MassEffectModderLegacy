@@ -231,36 +231,39 @@ namespace MassEffectModder
                     else
                     {
                         mipmap.storageType = texture.getTopMipmap().storageType;
-                        if (GameData.gameType == MeType.ME1_TYPE && master == false)
+                        if (texture.mipMapsList.Count() > 1)
                         {
-                            if ((mipmap.storageType == Texture.StorageTypes.pccUnc ||
-                                mipmap.storageType == Texture.StorageTypes.pccLZO ||
-                                mipmap.storageType == Texture.StorageTypes.pccZlib) && texture.mipMapsList.Count() > 1)
+                            if (GameData.gameType == MeType.ME1_TYPE && master == false)
                             {
-                                mipmap.storageType = Texture.StorageTypes.extLZO;
-                            }
-                        }
-                        else if (GameData.gameType == MeType.ME2_TYPE || GameData.gameType == MeType.ME3_TYPE)
-                        {
-                            if (texture.properties.exists("TextureFileCacheName") && texture.mipMapsList.Count > 1)
-                            {
-                                if (texture.mipMapsList.Count < 6)
+                                if (mipmap.storageType == Texture.StorageTypes.pccUnc ||
+                                    mipmap.storageType == Texture.StorageTypes.pccLZO ||
+                                    mipmap.storageType == Texture.StorageTypes.pccZlib)
                                 {
-                                    mipmap.storageType = Texture.StorageTypes.pccUnc;
-                                    if (!texture.properties.exists("NeverStream"))
-                                    {
-                                        if (package.existsNameId("NeverStream"))
-                                            texture.properties.addBoolValue("NeverStream", true);
-                                        else
-                                            goto skip;
-                                    }
+                                    mipmap.storageType = Texture.StorageTypes.extLZO;
                                 }
-                                else
+                            }
+                            else if (GameData.gameType == MeType.ME2_TYPE || GameData.gameType == MeType.ME3_TYPE)
+                            {
+                                if (texture.properties.exists("TextureFileCacheName"))
                                 {
-                                    if (GameData.gameType == MeType.ME2_TYPE)
-                                        mipmap.storageType = Texture.StorageTypes.extLZO;
+                                    if (texture.mipMapsList.Count < 6)
+                                    {
+                                        mipmap.storageType = Texture.StorageTypes.pccUnc;
+                                        if (!texture.properties.exists("NeverStream"))
+                                        {
+                                            if (package.existsNameId("NeverStream"))
+                                                texture.properties.addBoolValue("NeverStream", true);
+                                            else
+                                                goto skip;
+                                        }
+                                    }
                                     else
-                                        mipmap.storageType = Texture.StorageTypes.extZlib;
+                                    {
+                                        if (GameData.gameType == MeType.ME2_TYPE)
+                                            mipmap.storageType = Texture.StorageTypes.extLZO;
+                                        else
+                                            mipmap.storageType = Texture.StorageTypes.extZlib;
+                                    }
                                 }
                             }
                         }
