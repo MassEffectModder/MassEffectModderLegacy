@@ -144,6 +144,7 @@ namespace AmaroK86.ImageFormat
         public int dwMagic;
         private DDS_HEADER header = new DDS_HEADER();
         public DDSFormat ddsFormat { get; private set; }
+        public bool hasAlpha { get; private set; }
 
         public List<MipMap> mipMaps;
 
@@ -256,9 +257,14 @@ namespace AmaroK86.ImageFormat
         {
             switch (header.ddspf.dwFourCC)
             {
-                case FOURCC_DXT1: return DDSFormat.DXT1;
-                case FOURCC_DXT3: return DDSFormat.DXT3;
-                case FOURCC_DXT5: return DDSFormat.DXT5;
+                case FOURCC_DXT1:
+                    {
+                        if ((header.ddspf.dwFlags & DDPF_ALPHAPIXELS) != 0)
+                            hasAlpha = true;
+                        return DDSFormat.DXT1;
+                    }
+                case FOURCC_DXT3: hasAlpha = true; return DDSFormat.DXT3;
+                case FOURCC_DXT5: hasAlpha = true; return DDSFormat.DXT5;
                 case FOURCC_ATI2: return DDSFormat.ATI2;
                 case 0:
                     if (header.ddspf.dwRGBBitCount == 0x10 &&
@@ -278,7 +284,10 @@ namespace AmaroK86.ImageFormat
                            header.ddspf.dwGBitMask == 0xFF00 &&
                            header.ddspf.dwBBitMask == 0xFF &&
                            header.ddspf.dwABitMask == 0xFF000000)
+                    {
+                        hasAlpha = true;
                         return DDSFormat.ARGB;
+                    }
                     if (header.ddspf.dwRGBBitCount == 0x18 &&
                            header.ddspf.dwRBitMask == 0xFF0000 &&
                            header.ddspf.dwGBitMask == 0xFF00 &&
@@ -291,7 +300,10 @@ namespace AmaroK86.ImageFormat
                 case 50:
                         return DDSFormat.G8;
                 case 21:
+                    {
+                        hasAlpha = true;
                         return DDSFormat.ARGB;
+                    }
                 case 20:
                         return DDSFormat.RGB;
                 default: break;
@@ -306,14 +318,17 @@ namespace AmaroK86.ImageFormat
             {
                 case DDSFormat.DXT1:
                     pixelFormat.dwFlags = DDPF_FOURCC;
-                    pixelFormat.dwFourCC = FOURCC_DXT1;
+                    if (hasAlpha)
+                        pixelFormat.dwFourCC = FOURCC_DXT1 | DDPF_ALPHAPIXELS;
+                    else
+                        pixelFormat.dwFourCC = FOURCC_DXT1;
                     break;
                 case DDSFormat.DXT3:
-                    pixelFormat.dwFlags = DDPF_FOURCC;
+                    pixelFormat.dwFlags = DDPF_FOURCC | DDPF_ALPHAPIXELS;
                     pixelFormat.dwFourCC = FOURCC_DXT3;
                     break;
                 case DDSFormat.DXT5:
-                    pixelFormat.dwFlags = DDPF_FOURCC;
+                    pixelFormat.dwFlags = DDPF_FOURCC | DDPF_ALPHAPIXELS;
                     pixelFormat.dwFourCC = FOURCC_DXT5;
                     break;
                 case DDSFormat.ATI2:
@@ -400,17 +415,35 @@ namespace AmaroK86.ImageFormat
             }
         }
 
+        public static byte[] ToARGB(byte[] imgData, DDSFormat ddsFormat, int w, int h)
+        {
+            switch (ddsFormat)
+            {
+                case DDSFormat.DXT1: return DXT1ToARGB(imgData, w, h);
+                case DDSFormat.DXT3: return DXT3ToARGB(imgData, w, h);
+                case DDSFormat.DXT5: return DXT5ToARGB(imgData, w, h);
+                case DDSFormat.ATI2: return ATI2ToARGB(imgData, w, h);
+                case DDSFormat.V8U8: return V8U8ToARGB(imgData, w, h);
+                case DDSFormat.G8: return G8ToARGB(imgData, w, h);
+                case DDSFormat.ARGB: return imgData;
+                case DDSFormat.RGB: return RGBToARGB(imgData, w, h);
+                default:
+                    throw new Exception("invalid texture format " + ddsFormat);
+            }
+        }
+
         public static Bitmap ToBitmap(byte[] imgData, DDSFormat ddsFormat, int w, int h)
         {
             switch (ddsFormat)
             {
                 case DDSFormat.DXT1: return DXT1ToBitmap(imgData, w, h);
+                case DDSFormat.DXT3: return DXT3ToBitmap(imgData, w, h);
                 case DDSFormat.DXT5: return DXT5ToBitmap(imgData, w, h);
                 case DDSFormat.ATI2: return ATI2ToBitmap(imgData, w, h);
                 case DDSFormat.V8U8: return V8U8ToBitmap(imgData, w, h);
-                case DDSFormat.G8: return ViewG8(imgData, w, h);
-                case DDSFormat.ARGB: return View32Bit(imgData, w, h);
-                case DDSFormat.RGB: return View24Bit(imgData, w, h);
+                case DDSFormat.G8: return G8ToBitmap(imgData, w, h);
+                case DDSFormat.ARGB: return ARGBToBitmap(imgData, w, h);
+                case DDSFormat.RGB: return RGBToBitmap(imgData, w, h);
                 default:
                     throw new Exception("invalid texture format " + ddsFormat);
             }
@@ -421,6 +454,7 @@ namespace AmaroK86.ImageFormat
             switch (ddsFormat)
             {
                 case DDSFormat.DXT1: return DXT1ToPng(imgData, w, h);
+                case DDSFormat.DXT3: return DXT3ToPng(imgData, w, h);
                 case DDSFormat.DXT5: return DXT5ToPng(imgData, w, h);
                 case DDSFormat.ATI2: return ATI2ToPng(imgData, w, h);
                 case DDSFormat.V8U8: return V8U8ToPng(imgData, w, h);
@@ -433,9 +467,14 @@ namespace AmaroK86.ImageFormat
         }
 
         #region DXT1
+        private static byte[] DXT1ToARGB(byte[] imgData, int w, int h)
+        {
+            return UncompressDXT1(imgData, w, h);
+        }
+
         private static Bitmap DXT1ToBitmap(byte[] imgData, int w, int h)
         {
-            byte[] imageData = UncompressDXT1(imgData, w, h);
+            byte[] imageData = UncompressDXT1(imgData, w, h, true);
             var bmp = new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             {
                 BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0,
@@ -454,12 +493,12 @@ namespace AmaroK86.ImageFormat
         {
             byte[] imageData = UncompressDXT1(imgData, w, h);
             PngBitmapEncoder png = new PngBitmapEncoder();
-            BitmapSource image = BitmapSource.Create(w, h, 96, 96, PixelFormats.Bgr32, null, imageData, w * 4);
+            BitmapSource image = BitmapSource.Create(w, h, 96, 96, PixelFormats.Bgra32, null, imageData, w * 4);
             png.Frames.Add(BitmapFrame.Create(image));
             return png;
         }
 
-        private static byte[] UncompressDXT1(byte[] imgData, int w, int h)
+        private static byte[] UncompressDXT1(byte[] imgData, int w, int h, bool stripAlpha = false)
         {
             const int bufferSize = 8;
             byte[] blockStorage = new byte[bufferSize];
@@ -467,7 +506,6 @@ namespace AmaroK86.ImageFormat
             {
                 using (BinaryWriter bitmapBW = new BinaryWriter(bitmapStream))
                 {
-
                     int readPtr = 0;
                     for (int s = 0; s < h; s += 4)
                     {
@@ -537,7 +575,7 @@ namespace AmaroK86.ImageFormat
                                                     fCol = ((b0 + b1) / 2) | ((g0 + g1) / 2) << 8 | ((r0 + r1) / 2) << 16 | 0xFF << 24;
                                                     break;
                                                 case 3:
-                                                    fCol = 0xFF << 24;
+                                                    fCol = (stripAlpha ? 0xFF : 0x00) << 24;
                                                     break;
                                             }
                                         }
@@ -554,10 +592,15 @@ namespace AmaroK86.ImageFormat
             }
         }
         #endregion
-        #region DXT5
-        private static Bitmap DXT5ToBitmap(byte[] imgData, int w, int h)
+        #region DXT3
+        private static byte[] DXT3ToARGB(byte[] imgData, int w, int h)
         {
-            byte[] imageData = UncompressDXT5(imgData, w, h);
+            return UncompressDXT3(imgData, w, h);
+        }
+
+        private static Bitmap DXT3ToBitmap(byte[] imgData, int w, int h)
+        {
+            byte[] imageData = UncompressDXT3(imgData, w, h, true);
             var bmp = new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             {
                 BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0,
@@ -572,16 +615,16 @@ namespace AmaroK86.ImageFormat
             return bmp;
         }
 
-        private static PngBitmapEncoder DXT5ToPng(byte[] imgData, int w, int h)
+        private static PngBitmapEncoder DXT3ToPng(byte[] imgData, int w, int h)
         {
-            byte[] imageData = UncompressDXT5(imgData, w, h);
+            byte[] imageData = UncompressDXT3(imgData, w, h);
             PngBitmapEncoder png = new PngBitmapEncoder();
-            BitmapSource image = BitmapSource.Create(w, h, 96, 96, PixelFormats.Bgr32, null, imageData, w * 4);
+            BitmapSource image = BitmapSource.Create(w, h, 96, 96, PixelFormats.Bgra32, null, imageData, w * 4);
             png.Frames.Add(BitmapFrame.Create(image));
             return png;
         }
 
-        private static byte[] UncompressDXT5(byte[] imgData, int w, int h)
+        private static byte[] UncompressDXT3(byte[] imgData, int w, int h, bool stripAlpha = false)
         {
             const int bufferSize = 16;
             byte[] blockStorage = new byte[bufferSize];
@@ -589,7 +632,6 @@ namespace AmaroK86.ImageFormat
             {
                 using (BinaryWriter bitmapBW = new BinaryWriter(bitmapStream))
                 {
-
                     int ptr = 0;
                     for (int s = 0; s < h; s += 4)
                     {
@@ -624,22 +666,183 @@ namespace AmaroK86.ImageFormat
                                     bitmapStream.Seek(((s + j) * w * 4) + (t * 4), SeekOrigin.Begin);
                                     for (int i = 0; i < 4; i++)
                                     {
+                                        byte alpha = (byte)((blockStorage[(j * i) < 8 ? 0 : 1] >> (((i * j) % 8) * 4)) & 0xFF);
+                                        alpha = (byte)((alpha << 4) | alpha);
+                                        if (stripAlpha)
+                                            alpha = 0xFF;
+
                                         int fCol = 0;
                                         int colorCode = (code >> 2 * (4 * j + i)) & 0x03;
 
                                         switch (colorCode)
                                         {
                                             case 0:
-                                                fCol = b0 | g0 << 8 | r0 << 16 | 0xFF << 24;
+                                                fCol = b0 | g0 << 8 | r0 << 16 | 0xFF << alpha;
                                                 break;
                                             case 1:
-                                                fCol = b1 | g1 << 8 | r1 << 16 | 0xFF << 24;
+                                                fCol = b1 | g1 << 8 | r1 << 16 | 0xFF << alpha;
                                                 break;
                                             case 2:
-                                                fCol = (2 * b0 + b1) / 3 | (2 * g0 + g1) / 3 << 8 | (2 * r0 + r1) / 3 << 16 | 0xFF << 24;
+                                                fCol = (2 * b0 + b1) / 3 | (2 * g0 + g1) / 3 << 8 | (2 * r0 + r1) / 3 << 16 | 0xFF << alpha;
                                                 break;
                                             case 3:
-                                                fCol = (b0 + 2 * b1) / 3 | (g0 + 2 * g1) / 3 << 8 | (r0 + 2 * r1) / 3 << 16 | 0xFF << 24;
+                                                fCol = (b0 + 2 * b1) / 3 | (g0 + 2 * g1) / 3 << 8 | (r0 + 2 * r1) / 3 << 16 | 0xFF << alpha;
+                                                break;
+                                        }
+
+                                        bitmapBW.Write(fCol);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    return bitmapStream.ToArray();
+                }
+            }
+        }
+        #endregion
+        #region DXT5
+        private static byte[] DXT5ToARGB(byte[] imgData, int w, int h)
+        {
+            return UncompressDXT5(imgData, w, h);
+        }
+
+        private static Bitmap DXT5ToBitmap(byte[] imgData, int w, int h)
+        {
+            byte[] imageData = UncompressDXT5(imgData, w, h, true);
+            var bmp = new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            {
+                BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0,
+                                                    bmp.Width,
+                                                    bmp.Height),
+                                      ImageLockMode.WriteOnly,
+                                      bmp.PixelFormat);
+
+                Marshal.Copy(imageData, 0, bmpData.Scan0, imageData.Length);
+                bmp.UnlockBits(bmpData);
+            }
+            return bmp;
+        }
+
+        private static PngBitmapEncoder DXT5ToPng(byte[] imgData, int w, int h)
+        {
+            byte[] imageData = UncompressDXT5(imgData, w, h);
+            PngBitmapEncoder png = new PngBitmapEncoder();
+            BitmapSource image = BitmapSource.Create(w, h, 96, 96, PixelFormats.Bgra32, null, imageData, w * 4);
+            png.Frames.Add(BitmapFrame.Create(image));
+            return png;
+        }
+
+        private static byte[] UncompressDXT5(byte[] imgData, int w, int h, bool stripAlpha = false)
+        {
+            const int bufferSize = 16;
+            byte[] blockStorage = new byte[bufferSize];
+            using (MemoryStream bitmapStream = new MemoryStream(w * h * 2))
+            {
+                using (BinaryWriter bitmapBW = new BinaryWriter(bitmapStream))
+                {
+                    int ptr = 0;
+                    for (int s = 0; s < h; s += 4)
+                    {
+                        for (int t = 0; t < w; t += 4)
+                        {
+                            Buffer.BlockCopy(imgData, ptr, blockStorage, 0, bufferSize);
+                            ptr += bufferSize;
+                            {
+                                byte alpha0 = blockStorage[0];
+                                byte alpha1 = blockStorage[1];
+
+                                uint alphaCode1 = (uint)(blockStorage[4] | (blockStorage[5] << 8) | (blockStorage[6] << 16) | (blockStorage[7] << 24));
+                                ushort alphaCode2 = (ushort)(blockStorage[2] | (blockStorage[3] << 8));
+
+                                int color0 = blockStorage[8] | blockStorage[9] << 8;
+                                int color1 = blockStorage[10] | blockStorage[11] << 8;
+
+                                int temp;
+
+                                temp = (color0 >> 11) * 255 + 16;
+                                int r0 = ((temp >> 5) + temp) >> 5;
+                                temp = ((color0 & 0x07E0) >> 5) * 255 + 32;
+                                int g0 = ((temp >> 6) + temp) >> 6;
+                                temp = (color0 & 0x001F) * 255 + 16;
+                                int b0 = ((temp >> 5) + temp) >> 5;
+
+                                temp = (color1 >> 11) * 255 + 16;
+                                int r1 = ((temp >> 5) + temp) >> 5;
+                                temp = ((color1 & 0x07E0) >> 5) * 255 + 32;
+                                int g1 = ((temp >> 6) + temp) >> 6;
+                                temp = (color1 & 0x001F) * 255 + 16;
+                                int b1 = ((temp >> 5) + temp) >> 5;
+
+                                int code = blockStorage[12] | blockStorage[13] << 8 | blockStorage[14] << 16 | blockStorage[15] << 24;
+
+                                for (int j = 0; j < 4; j++)
+                                {
+                                    bitmapStream.Seek(((s + j) * w * 4) + (t * 4), SeekOrigin.Begin);
+                                    for (int i = 0; i < 4; i++)
+                                    {
+                                        int alphaCodeIndex = 3 * (4 * j + i);
+                                        int alphaCode;
+
+                                        if (alphaCodeIndex <= 12)
+                                        {
+                                            alphaCode = (alphaCode2 >> alphaCodeIndex) & 0x07;
+                                        }
+                                        else if (alphaCodeIndex == 15)
+                                        {
+                                            alphaCode = (int)((uint)(alphaCode2 >> 15) | ((alphaCode1 << 1) & 0x06));
+                                        }
+                                        else
+                                        {
+                                            alphaCode = (int)((alphaCode1 >> (alphaCodeIndex - 16)) & 0x07);
+                                        }
+
+                                        byte alpha;
+                                        if (alphaCode == 0)
+                                        {
+                                            alpha = alpha0;
+                                        }
+                                        else if (alphaCode == 1)
+                                        {
+                                            alpha = alpha1;
+                                        }
+                                        else
+                                        {
+                                            if (alpha0 > alpha1)
+                                            {
+                                                alpha = (byte)(((8 - alphaCode) * alpha0 + (alphaCode - 1) * alpha1) / 7);
+                                            }
+                                            else
+                                            {
+                                                if (alphaCode == 6)
+                                                    alpha = 0;
+                                                else if (alphaCode == 7)
+                                                    alpha = 255;
+                                                else
+                                                    alpha = (byte)(((6 - alphaCode) * alpha0 + (alphaCode - 1) * alpha1) / 5);
+                                            }
+                                        }
+
+                                        if (stripAlpha)
+                                            alpha = 0xFF;
+
+                                        int fCol = 0;
+                                        int colorCode = (code >> 2 * (4 * j + i)) & 0x03;
+
+                                        switch (colorCode)
+                                        {
+                                            case 0:
+                                                fCol = b0 | g0 << 8 | r0 << 16 | alpha << 24;
+                                                break;
+                                            case 1:
+                                                fCol = b1 | g1 << 8 | r1 << 16 | alpha << 24;
+                                                break;
+                                            case 2:
+                                                fCol = (2 * b0 + b1) / 3 | (2 * g0 + g1) / 3 << 8 | (2 * r0 + r1) / 3 << 16 | alpha << 24;
+                                                break;
+                                            case 3:
+                                                fCol = (b0 + 2 * b1) / 3 | (g0 + 2 * g1) / 3 << 8 | (r0 + 2 * r1) / 3 << 16 | alpha << 24;
                                                 break;
                                         }
 
@@ -656,6 +859,11 @@ namespace AmaroK86.ImageFormat
         }
         #endregion
         #region V8U8
+        private static byte[] V8U8ToARGB(byte[] imgData, int w, int h)
+        {
+            return UncompressV8U8(imgData, w, h);
+        }
+
         private static Bitmap V8U8ToBitmap(byte[] imgData, int w, int h)
         {
             byte[] imageData = UncompressV8U8(imgData, w, h);
@@ -688,7 +896,6 @@ namespace AmaroK86.ImageFormat
             {
                 using (BinaryWriter bitmapBW = new BinaryWriter(bitmapStream))
                 {
-
                     int ptr = 0;
                     for (int y = 0; y < h; y++)
                     {
@@ -698,7 +905,7 @@ namespace AmaroK86.ImageFormat
                             sbyte green = (sbyte)Buffer.GetByte(imgData, ptr++);
                             byte blue = 0xFF;
 
-                            int fCol = blue | (128 + green) << 8 | (128 + red) << 16 | 0xFF << 24;
+                            int fCol = blue | (128 + green) << 8 | (128 + red) << 16 | 255 << 24;
                             bitmapBW.Write(fCol);
                         }
                     }
@@ -709,13 +916,22 @@ namespace AmaroK86.ImageFormat
         }
         #endregion
         #region ATI2
-        private static Bitmap ATI2ToBitmap(byte[] imgData, int w, int h)
+        private static byte[] ATI2ToARGB(byte[] imgData, int w, int h)
         {
-            const int bytesPerPixel = 3;
+            const int bytesPerPixel = 4;
             byte[] imageData = UncompressATI2(imgData, w, h);
             if (imageData.Length != (w * h * bytesPerPixel))
                 throw new FormatException("Incorect length of generated data array");
-            var bmp = new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+            return imageData;
+        }
+
+        private static Bitmap ATI2ToBitmap(byte[] imgData, int w, int h)
+        {
+            const int bytesPerPixel = 4;
+            byte[] imageData = UncompressATI2(imgData, w, h);
+            if (imageData.Length != (w * h * bytesPerPixel))
+                throw new FormatException("Incorect length of generated data array");
+            var bmp = new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format32bppRgb);
             BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.WriteOnly, bmp.PixelFormat);
             Marshal.Copy(imageData, 0, bmpData.Scan0, imageData.Length);
             bmp.UnlockBits(bmpData);
@@ -726,7 +942,7 @@ namespace AmaroK86.ImageFormat
         {
             byte[] imageData = UncompressATI2(imgData, w, h);
             PngBitmapEncoder png = new PngBitmapEncoder();
-            BitmapSource image = BitmapSource.Create(w, h, 96, 96, PixelFormats.Bgr24, null, imageData, w * 3);
+            BitmapSource image = BitmapSource.Create(w, h, 96, 96, PixelFormats.Bgr32, null, imageData, w * 4);
             png.Frames.Add(BitmapFrame.Create(image));
             return png;
         }
@@ -734,7 +950,7 @@ namespace AmaroK86.ImageFormat
         private static byte[] UncompressATI2(byte[] imgData, int w, int h)
         {
             const int bufferSize = 16;
-            const int bytesPerPixel = 3;
+            const int bytesPerPixel = 4;
             byte[] blockStorage = new byte[bufferSize];
             using (MemoryStream bitmapStream = new MemoryStream(w * h * 2))
             {
@@ -836,6 +1052,7 @@ namespace AmaroK86.ImageFormat
                                 bitmapStream.WriteByte(rgbVals[2][(i * 4) + j]);
                                 bitmapStream.WriteByte(rgbVals[0][(i * 4) + j]);
                                 bitmapStream.WriteByte(rgbVals[1][(i * 4) + j]);
+                                bitmapStream.WriteByte(255);
                             }
                         }
                     }
@@ -846,7 +1063,7 @@ namespace AmaroK86.ImageFormat
         }
         #endregion
         #region A8R8G8B8
-        public static Bitmap View32Bit(byte[] imgData, int w, int h)
+        public static Bitmap ARGBToBitmap(byte[] imgData, int w, int h)
         {
             if (imgData.Length != (w * h * 4))
                 throw new ArgumentException("Input array is not correct size");
@@ -862,14 +1079,29 @@ namespace AmaroK86.ImageFormat
             if (imgData.Length != (w * h * 4))
                 throw new ArgumentException("Input array is not correct size");
             PngBitmapEncoder png = new PngBitmapEncoder();
-            BitmapSource image = BitmapSource.Create(w, h, 96, 96, PixelFormats.Bgr32, null, imgData, w * 4);
+            BitmapSource image = BitmapSource.Create(w, h, 96, 96, PixelFormats.Bgra32, null, imgData, w * 4);
             png.Frames.Add(BitmapFrame.Create(image));
             return png;
         }
 
         #endregion
         #region R8G8B8
-        public static Bitmap View24Bit(byte[] imgData, int w, int h)
+        public static byte[] RGBToARGB(byte[] imgData, int w, int h)
+        {
+            if (imgData.Length != (w * h * 3))
+                throw new ArgumentException("Input array is not correct size");
+            byte[] buff = new byte[w * h * 4];
+            for (int i = 0; i < (w * h); i++)
+            {
+                buff[(4 * i) + 0] = imgData[(3 * i) + 0];
+                buff[(4 * i) + 1] = imgData[(3 * i) + 1];
+                buff[(4 * i) + 2] = imgData[(3 * i) + 2];
+                buff[(4 * i) + 3] = 255;
+            }
+            return buff;
+        }
+
+        public static Bitmap RGBToBitmap(byte[] imgData, int w, int h)
         {
             if (imgData.Length != (w * h * 3))
                 throw new ArgumentException("Input array is not correct size");
@@ -891,7 +1123,24 @@ namespace AmaroK86.ImageFormat
         }
         #endregion
         #region G8
-        public static Bitmap ViewG8(byte[] imgData, int w, int h)
+        public static byte[] G8ToARGB(byte[] imgData, int w, int h)
+        {
+            if (imgData.Length != (w * h))
+                throw new ArgumentException("Input array is not correct size");
+            byte[] buff = new byte[w * h * 4];
+            for (int i = 0; i < (w * h); i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    buff[(4 * i) + j] = imgData[i];
+                }
+                buff[(4 * i) + 3] = 0;
+            }
+
+            return buff;
+        }
+
+        public static Bitmap G8ToBitmap(byte[] imgData, int w, int h)
         {
             if (imgData.Length != (w * h))
                 throw new ArgumentException("Input array is not correct size");
