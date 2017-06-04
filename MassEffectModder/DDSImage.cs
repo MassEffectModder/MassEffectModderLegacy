@@ -415,6 +415,23 @@ namespace AmaroK86.ImageFormat
             }
         }
 
+        public static byte[] ToARGB(MipMap mipmap)
+        {
+            switch (mipmap.ddsFormat)
+            {
+                case DDSFormat.DXT1: return DXT1ToARGB(mipmap.data, mipmap.width, mipmap.height);
+                case DDSFormat.DXT3: return DXT3ToARGB(mipmap.data, mipmap.width, mipmap.height);
+                case DDSFormat.DXT5: return DXT5ToARGB(mipmap.data, mipmap.width, mipmap.height);
+                case DDSFormat.ATI2: return ATI2ToARGB(mipmap.data, mipmap.width, mipmap.height);
+                case DDSFormat.V8U8: return V8U8ToARGB(mipmap.data, mipmap.width, mipmap.height);
+                case DDSFormat.G8: return G8ToARGB(mipmap.data, mipmap.width, mipmap.height);
+                case DDSFormat.ARGB: return mipmap.data;
+                case DDSFormat.RGB: return RGBToARGB(mipmap.data, mipmap.width, mipmap.height);
+                default:
+                    throw new Exception("invalid texture format " + mipmap.ddsFormat);
+            }
+        }
+
         public static byte[] ToARGB(byte[] imgData, DDSFormat ddsFormat, int w, int h)
         {
             switch (ddsFormat)
@@ -1063,7 +1080,7 @@ namespace AmaroK86.ImageFormat
         }
         #endregion
         #region A8R8G8B8
-        public static Bitmap ARGBToBitmap(byte[] imgData, int w, int h)
+        private static Bitmap ARGBToBitmap(byte[] imgData, int w, int h)
         {
             if (imgData.Length != (w * h * 4))
                 throw new ArgumentException("Input array is not correct size");
@@ -1086,7 +1103,7 @@ namespace AmaroK86.ImageFormat
 
         #endregion
         #region R8G8B8
-        public static byte[] RGBToARGB(byte[] imgData, int w, int h)
+        private static byte[] RGBToARGB(byte[] imgData, int w, int h)
         {
             if (imgData.Length != (w * h * 3))
                 throw new ArgumentException("Input array is not correct size");
@@ -1101,7 +1118,7 @@ namespace AmaroK86.ImageFormat
             return buff;
         }
 
-        public static Bitmap RGBToBitmap(byte[] imgData, int w, int h)
+        private static Bitmap RGBToBitmap(byte[] imgData, int w, int h)
         {
             if (imgData.Length != (w * h * 3))
                 throw new ArgumentException("Input array is not correct size");
@@ -1123,7 +1140,7 @@ namespace AmaroK86.ImageFormat
         }
         #endregion
         #region G8
-        public static byte[] G8ToARGB(byte[] imgData, int w, int h)
+        private static byte[] G8ToARGB(byte[] imgData, int w, int h)
         {
             if (imgData.Length != (w * h))
                 throw new ArgumentException("Input array is not correct size");
@@ -1140,7 +1157,7 @@ namespace AmaroK86.ImageFormat
             return buff;
         }
 
-        public static Bitmap G8ToBitmap(byte[] imgData, int w, int h)
+        private static Bitmap G8ToBitmap(byte[] imgData, int w, int h)
         {
             if (imgData.Length != (w * h))
                 throw new ArgumentException("Input array is not correct size");
