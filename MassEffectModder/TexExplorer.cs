@@ -1128,11 +1128,23 @@ namespace MassEffectModder
                     {
                         byte[] buffer = File.ReadAllBytes(file);
                         handle = ZlibHelper.Zip.Open(buffer, ref numEntries, 1);
-                        if (ZlibHelper.Zip.LocateFile(handle, "texmod.def") != 0)
+                        for (ulong i = 0; i < numEntries; i++)
+                        {
+                            result = ZlibHelper.Zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
+                            if (result != 0)
+                                throw new Exception();
+                            if (Path.GetExtension(fileName).ToLowerInvariant() == ".def" ||
+                                Path.GetExtension(fileName).ToLowerInvariant() == ".log")
+                            {
+                                break;
+                            }
+                            ZlibHelper.Zip.GoToNextFile(handle);
+                        }
+                        if (Path.GetExtension(fileName).ToLowerInvariant() != ".def" &&
+                            Path.GetExtension(fileName).ToLowerInvariant() != ".log")
+                        {
                             throw new Exception();
-                        result = ZlibHelper.Zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
-                        if (result != 0)
-                            throw new Exception();
+                        }
                         byte[] listText = new byte[dstLen];
                         result = ZlibHelper.Zip.ReadCurrentFile(handle, listText, dstLen);
                         if (result != 0)
@@ -1163,8 +1175,9 @@ namespace MassEffectModder
                                 }
                                 if (crc == 0)
                                 {
-                                    if (filename != "texmod.def")
-                                        errors += "Skipping file: " + filename +" not found in texmod.def, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
+                                    if (Path.GetExtension(filename).ToLowerInvariant() != ".def" &&
+                                        Path.GetExtension(filename).ToLowerInvariant() != ".log")
+                                        errors += "Skipping file: " + filename +" not found in definition file, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                     ZlibHelper.Zip.GoToNextFile(handle);
                                     continue;
                                 }
