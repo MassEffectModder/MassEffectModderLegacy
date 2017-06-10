@@ -417,6 +417,30 @@ namespace MassEffectModder
             },
         };
 
+        static MD5FileEntry[] ME1BadSkipMenuAndMoviesMOD = new MD5FileEntry[]
+        {
+            new MD5FileEntry
+            {
+                path = @"\BioGame\CookedPC\Maps\EntryMenu.SFM",
+                md5 = new byte[] { 0x02, 0xd0, 0x08, 0x84, 0x40, 0xfd, 0x70, 0xe5, 0x7f, 0x78, 0xce, 0x21, 0xb7, 0x8e, 0x7f, 0x03, },
+            },
+            new MD5FileEntry
+            {
+                path = @"\BioGame\CookedPC\Maps\EntryMenu.SFM",
+                md5 = new byte[] { 0x05, 0x9e, 0xe2, 0xec, 0x35, 0x51, 0xbe, 0x0f, 0xff, 0x6c, 0x2b, 0x84, 0xe3, 0xd6, 0xd3, 0x92, },
+            },
+            new MD5FileEntry
+            {
+                path = @"\BioGame\CookedPC\Maps\EntryMenu.SFM",
+                md5 = new byte[] { 0x4b, 0xf8, 0x58, 0x08, 0x93, 0xf3, 0x15, 0x3f, 0x2a, 0x42, 0x76, 0xd4, 0xf9, 0x97, 0xba, 0xda, },
+            },
+            new MD5FileEntry
+            {
+                path = @"\BioGame\CookedPC\Maps\EntryMenu.SFM",
+                md5 = new byte[] { 0xb1, 0x79, 0x34, 0x0d, 0xc5, 0x81, 0xaa, 0x30, 0x4b, 0x40, 0x0e, 0x8a, 0x7e, 0xe5, 0x13, 0x1a, },
+            },
+        };
+
         static public void VerifyME1Exe(GameData gameData, bool gui = true)
         {
             if (File.Exists(GameData.GameExePath))
@@ -734,6 +758,14 @@ namespace MassEffectModder
                             return true;
                         }
                     }
+                    for (int l = 0; l < ME1BadSkipMenuAndMoviesMOD.Count(); l++)
+                    {
+                        byte[] md5 = calculateMD5(GameData.GamePath + ME1BadSkipMenuAndMoviesMOD[l].path);
+                        if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, ME1BadSkipMenuAndMoviesMOD[l].md5))
+                        {
+                            return true;
+                        }
+                    }
                 }
             }
             return false;
@@ -810,7 +842,7 @@ namespace MassEffectModder
 
             if (mainWindow != null && detectBrokenMod(gameType))
             {
-                errors += Environment.NewLine + "------- Detected ME1 Controller or/and Faster Elevators mod! MEM will not work properly due broken content in mod --------" + Environment.NewLine + Environment.NewLine;
+                errors += Environment.NewLine + "------- Detected one or more of ME1 not compatible mods: Controller, Faster Elevators, Skip Menu/Movies mods! MEM will not work properly due broken content in mod --------" + Environment.NewLine + Environment.NewLine;
             }
 
             //using (FileStream fs = new FileStream("MD5EntriesME" + (int)gameType + ".cs", FileMode.Create, FileAccess.Write))
