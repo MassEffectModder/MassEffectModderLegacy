@@ -1374,6 +1374,7 @@ namespace MassEffectModder
                     mods.Clear();
                 else
                     break;
+                _mainWindow.updateStatusLabel("");
             }
             _mainWindow.updateStatusLabel("Mods conversion process completed");
             _mainWindow.updateStatusLabel2("");

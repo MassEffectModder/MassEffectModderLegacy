@@ -352,7 +352,7 @@ namespace MassEffectModder
             Application.DoEvents();
             if (Misc.detectBrokenMod((MeType)gameId))
             {
-                labelPreVanilla.Text = "Detected broken mod!";
+                labelPreVanilla.Text = "Detected not compatible mod!";
                 labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.Red);
                 labelFinalStatus.Text = "Preliminary check detected issue...";
                 buttonPreInstallCheck.Enabled = true;
