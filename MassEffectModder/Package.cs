@@ -996,7 +996,7 @@ namespace MassEffectModder
             }
         }
 
-        public bool SaveToFile(bool forceZlib = false, string filename = null)
+        public bool SaveToFile(bool forceZlib = false, bool forceDecompressed = false, string filename = null)
         {
             if (forceZlib && compressionType != CompressionType.Zlib)
                 modified = true;
@@ -1087,9 +1087,13 @@ namespace MassEffectModder
                 saveImports(tempOutput);
             }
 
+            if (forceDecompressed)
+                compressed = false;
+
             if (namesOffset > sortedExports[0].dataOffset ||
                 importsOffset > sortedExports[0].dataOffset ||
-                exportsOffset > sortedExports[0].dataOffset)
+                exportsOffset > sortedExports[0].dataOffset ||
+                forceDecompressed)
             {
                 tempOutput.SeekBegin();
                 tempOutput.Write(packageHeader, 0, packageHeader.Length);
