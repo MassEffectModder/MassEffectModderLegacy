@@ -996,13 +996,16 @@ namespace MassEffectModder
             }
         }
 
-        public bool SaveToFile(bool forceZlib = false, bool forceDecompressed = false, string filename = null)
+        public bool SaveToFile(bool forceZlib = false, bool forceCompressed = false, bool forceDecompressed = false, string filename = null)
         {
             if (forceZlib && compressionType != CompressionType.Zlib)
                 modified = true;
 
-            if (packageFile.Length == 0 || !modified && !forceDecompressed)
+            if (packageFile.Length == 0 || !modified && !forceDecompressed && !forceCompressed)
                 return false;
+
+            if (forceCompressed && forceDecompressed)
+                throw new Exception("force de/compression can be both enabled!");
 
             MemoryStream tempOutput = new MemoryStream();
 
@@ -1087,13 +1090,35 @@ namespace MassEffectModder
                 saveImports(tempOutput);
             }
 
-            if (forceDecompressed)
+            if (forceDecompressed && compressed)
                 compressed = false;
+            else
+                forceDecompressed = false;
+
+            if (forceCompressed && !compressed)
+            {
+                if (namesOffset < sortedExports[0].dataOffset &&
+                    importsOffset < sortedExports[0].dataOffset &&
+                    exportsOffset < sortedExports[0].dataOffset &&
+                    endOfTablesOffset <= sortedExports[0].dataOffset)
+                {
+                    if (compressionType == CompressionType.None)
+                    {
+                        if (packageFileVersion == packageFileVersionME3)
+                            compressionType = CompressionType.Zlib;
+                        else
+                            compressionType = CompressionType.LZO;
+                    }
+                    compressed = true;
+                }
+                else
+                    forceCompressed = false;
+            }
 
             if (namesOffset > sortedExports[0].dataOffset ||
                 importsOffset > sortedExports[0].dataOffset ||
                 exportsOffset > sortedExports[0].dataOffset ||
-                forceDecompressed)
+                forceDecompressed || forceCompressed)
             {
                 tempOutput.SeekBegin();
                 tempOutput.Write(packageHeader, 0, packageHeader.Length);
