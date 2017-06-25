@@ -378,7 +378,7 @@ namespace MassEffectModder
             return id >= 0 && id < namesTable.Count;
         }
 
-        private string getClassName(int id)
+        public string getClassName(int id)
         {
             if (id > 0 && id < exportsTable.Count)
                 return exportsTable[id - 1].objectName;
@@ -421,28 +421,35 @@ namespace MassEffectModder
             packagePath = filename;
             memoryMode = memMode;
 
-            if (GameData.gameType == MeType.ME1_TYPE)
-            {
-                packageHeaderSize = packageHeaderSizeME1;
-                packageFileVersion = packageFileVersionME1;
-            }
-            else if (GameData.gameType == MeType.ME2_TYPE)
-            {
-                packageHeaderSize = packageHeaderSizeME2;
-                packageFileVersion = packageFileVersionME2;
-            }
-            else if (GameData.gameType == MeType.ME3_TYPE)
-            {
-                packageHeaderSize = packageHeaderSizeME3;
-                packageFileVersion = packageFileVersionME3;
-            }
-
             if (!File.Exists(filename))
                 throw new Exception("File not found: " + filename);
 
             packageFile = new FileStream(filename, FileMode.Open, FileAccess.Read);
             try
             {
+                if (packageFile.ReadUInt32() != packageTag)
+                    throw new Exception("Wrong PCC tag: " + filename);
+
+                ushort ver = packageFile.ReadUInt16();
+                if (ver == packageFileVersionME1)
+                {
+                    packageHeaderSize = packageHeaderSizeME1;
+                    packageFileVersion = packageFileVersionME1;
+                }
+                else if (ver == packageFileVersionME2)
+                {
+                    packageHeaderSize = packageHeaderSizeME2;
+                    packageFileVersion = packageFileVersionME2;
+                }
+                else if (ver == packageFileVersionME3)
+                {
+                    packageHeaderSize = packageHeaderSizeME3;
+                    packageFileVersion = packageFileVersionME3;
+                }
+                else
+                    throw new Exception("Wrong PCC version: " + filename);
+
+                packageFile.SeekBegin();
                 packageHeader = packageFile.ReadToBuffer(packageHeaderSize);
             }
             catch
@@ -451,11 +458,6 @@ namespace MassEffectModder
                     throw new Exception("PCC file has 0 length: " + filename);
                 throw new Exception("Problem with PCC file header: " + filename);
             }
-            if (tag != packageTag)
-                throw new Exception("Wrong PCC tag: " + filename);
-
-            if (version != packageFileVersion)
-                throw new Exception("Wrong PCC version: " + filename);
 
             compressionType = (CompressionType)packageFile.ReadUInt32();
 
