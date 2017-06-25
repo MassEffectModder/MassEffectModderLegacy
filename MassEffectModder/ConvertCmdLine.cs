@@ -81,9 +81,16 @@ namespace MassEffectModder
 
             Console.WriteLine("Mods conversion started...");
 
-            List<string> list = Directory.GetFiles(inputDir, "*.tpf").Where(item => item.EndsWith(".tpf", StringComparison.OrdinalIgnoreCase)).ToList();
+            List<string> list = Directory.GetFiles(inputDir, "*.mem").Where(item => item.EndsWith(".mem", StringComparison.OrdinalIgnoreCase)).ToList();
+            list.AddRange(Directory.GetFiles(inputDir, "*.tpf").Where(item => item.EndsWith(".tpf", StringComparison.OrdinalIgnoreCase)));
             list.AddRange(Directory.GetFiles(inputDir, "*.mod").Where(item => item.EndsWith(".mod", StringComparison.OrdinalIgnoreCase)));
+            list.AddRange(Directory.GetFiles(inputDir, "*.tpf").Where(item => item.EndsWith(".tpf", StringComparison.OrdinalIgnoreCase)));
             list.AddRange(Directory.GetFiles(inputDir, "*.dds").Where(item => item.EndsWith(".dds", StringComparison.OrdinalIgnoreCase)));
+            list.AddRange(Directory.GetFiles(inputDir, "*.png").Where(item => item.EndsWith(".png", StringComparison.OrdinalIgnoreCase)));
+            list.AddRange(Directory.GetFiles(inputDir, "*.bmp").Where(item => item.EndsWith(".bmp", StringComparison.OrdinalIgnoreCase)));
+            list.AddRange(Directory.GetFiles(inputDir, "*.tga").Where(item => item.EndsWith(".tga", StringComparison.OrdinalIgnoreCase)));
+            list.AddRange(Directory.GetFiles(inputDir, "*.jpg").Where(item => item.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)));
+            list.AddRange(Directory.GetFiles(inputDir, "*.jpeg").Where(item => item.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)));
             list.Sort();
             files = list.ToArray();
 
@@ -106,7 +113,59 @@ namespace MassEffectModder
 
             foreach (string file in files)
             {
-                if (file.EndsWith(".mod", StringComparison.OrdinalIgnoreCase))
+                if (file.EndsWith(".mem", StringComparison.OrdinalIgnoreCase))
+                {
+                    using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
+                    {
+                        uint tag = fs.ReadUInt32();
+                        uint version = fs.ReadUInt32();
+                        if (tag != TexExplorer.TextureModTag || version != TexExplorer.TextureModVersion)
+                        {
+                            if (version != TexExplorer.TextureModVersion)
+                                errors += "File " + file + " was made with an older version of MEM, skipping..." + Environment.NewLine;
+                            else
+                                errors += "File " + file + " is not a valid MEM mod, skipping..." + Environment.NewLine;
+                            return errors;
+                        }
+                        else
+                        {
+                            uint gameType = 0;
+                            fs.JumpTo(fs.ReadInt64());
+                            gameType = fs.ReadUInt32();
+                            if ((MeType)gameType != GameData.gameType)
+                            {
+                                errors += "File " + file + " is not a MEM mod valid for this game" + Environment.NewLine;
+                                return errors;
+                            }
+                        }
+                        int numFiles = fs.ReadInt32();
+                        for (int l = 0; l < numFiles; l++)
+                        {
+                            MipMaps.FileMod fileMod = new MipMaps.FileMod();
+                            fileMod.tag = fs.ReadUInt32();
+                            fileMod.name = fs.ReadStringASCIINull();
+                            fileMod.offset = fs.ReadInt64();
+                            fileMod.size = fs.ReadInt64();
+                            long prevPos = fs.Position;
+                            fs.JumpTo(fileMod.offset);
+                            fileMod.offset = outFs.Position;
+                            if (fileMod.tag == MipMaps.FileTextureTag)
+                            {
+                                outFs.WriteStringASCIINull(fs.ReadStringASCIINull());
+                                outFs.WriteUInt32(fs.ReadUInt32());
+                            }
+                            else if (fileMod.tag == MipMaps.FileBinaryTag)
+                            {
+                                outFs.WriteInt32(fs.ReadInt32());
+                                outFs.WriteStringASCIINull(fs.ReadStringASCIINull());
+                            }
+                            outFs.WriteFromStream(fs, fileMod.size);
+                            fs.JumpTo(prevPos);
+                            modFiles.Add(fileMod);
+                        }
+                    }
+                }
+                else if (file.EndsWith(".mod", StringComparison.OrdinalIgnoreCase))
                 {
                     try
                     {
@@ -185,7 +244,7 @@ namespace MassEffectModder
                                         (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1) ||
                                         image.ddsFormat != ddsFormat)
                                     {
-                                        mod.data = MipMaps.convertDDS(ddsFormat, mod.data);
+                                        mod.data = MipMaps.convertDDS(ddsFormat, new Image(mod.data, Image.ImageFormat.DDS).StoreARGBImageToDDS());
                                     }
                                 }
                                 mods.Add(mod);
@@ -285,9 +344,9 @@ namespace MassEffectModder
                                 string fmt = texture.properties.getProperty("Format").valueName;
                                 DDSFormat ddsFormat = DDSImage.convertFormat(fmt);
                                 uint tag = BitConverter.ToUInt32(mod.data, 0);
-                                if (tag != 0x20534444) // not DDS
+                                if (tag != Image.DDS_TAG) // not DDS
                                 {
-                                    mod.data = MipMaps.convertDDS(ddsFormat, mod.data, Path.GetExtension(filename).ToLowerInvariant());
+                                    mod.data = MipMaps.convertDDS(ddsFormat, new Image(mod.data, Path.GetExtension(filename)).StoreARGBImageToDDS());
                                 }
                                 DDSImage image = new DDSImage(new MemoryStream(mod.data));
 
@@ -303,7 +362,7 @@ namespace MassEffectModder
                                     (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1) ||
                                     image.ddsFormat != ddsFormat)
                                 {
-                                    mod.data = MipMaps.convertDDS(ddsFormat, mod.data);
+                                    mod.data = MipMaps.convertDDS(ddsFormat, new Image(mod.data, Image.ImageFormat.DDS).StoreARGBImageToDDS());
                                 }
                                 mods.Add(mod);
                             }
@@ -379,7 +438,7 @@ namespace MassEffectModder
                             (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1) ||
                             image.ddsFormat != ddsFormat)
                         {
-                            mod.data = MipMaps.convertDDS(ddsFormat, mod.data);
+                            mod.data = MipMaps.convertDDS(ddsFormat, new Image(mod.data, Image.ImageFormat.DDS).StoreARGBImageToDDS());
                         }
 
                         mod.textureName = foundCrcList[0].name;
@@ -387,6 +446,64 @@ namespace MassEffectModder
                         mod.textureCrc = crc;
                         mods.Add(mod);
                     }
+                }
+                else if (
+                    file.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ||
+                    file.EndsWith(".bmp", StringComparison.OrdinalIgnoreCase) ||
+                    file.EndsWith(".tga", StringComparison.OrdinalIgnoreCase) ||
+                    file.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
+                    file.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase))
+                {
+                    TexExplorer.BinaryMod mod = new TexExplorer.BinaryMod();
+                    string filename = Path.GetFileNameWithoutExtension(file).ToLowerInvariant();
+                    if (!filename.Contains("0x"))
+                    {
+                        errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
+                        continue;
+                    }
+                    int idx = filename.IndexOf("0x");
+                    if (filename.Length - idx < 10)
+                    {
+                        errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
+                        continue;
+                    }
+                    uint crc;
+                    string crcStr = filename.Substring(idx + 2, 8);
+                    try
+                    {
+                        crc = uint.Parse(crcStr, System.Globalization.NumberStyles.HexNumber);
+                    }
+                    catch
+                    {
+                        errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
+                        continue;
+                    }
+
+                    List<FoundTexture> foundCrcList = textures.FindAll(s => s.crc == crc);
+                    if (foundCrcList.Count == 0)
+                    {
+                        errors += "Texture skipped. Texture " + Path.GetFileName(file) + " is not present in your game setup." + Environment.NewLine;
+                        continue;
+                    }
+
+                    Package pkg = new Package(GameData.GamePath + foundCrcList[0].list[0].path);
+                    Texture texture = new Texture(pkg, foundCrcList[0].list[0].exportID, pkg.getExportData(foundCrcList[0].list[0].exportID));
+                    string fmt = texture.properties.getProperty("Format").valueName;
+                    DDSFormat ddsFormat = DDSImage.convertFormat(fmt);
+
+                    Image image = new Image(file);
+                    if (image.mipMaps[0].width / image.mipMaps[0].height !=
+                        texture.mipMapsList[0].width / texture.mipMapsList[0].height)
+                    {
+                        errors += "Error in texture: " + Path.GetFileName(file) + " This texture has wrong aspect ratio, skipping texture..." + Environment.NewLine;
+                        continue;
+                    }
+
+                    mod.data = MipMaps.convertDDS(ddsFormat, image.StoreARGBImageToDDS());
+                    mod.textureName = foundCrcList[0].name;
+                    mod.binaryMod = false;
+                    mod.textureCrc = crc;
+                    mods.Add(mod);
                 }
 
                 for (int l = 0; l < mods.Count; l++)

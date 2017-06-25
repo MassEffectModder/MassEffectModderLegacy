@@ -553,7 +553,7 @@ namespace MassEffectModder
                         if (tag != TextureModTag || version != TextureModVersion)
                         {
                             if (version != TextureModVersion)
-                                MessageBox.Show("File " + file + "  was made with an older version of MEM, skipping...");
+                                MessageBox.Show("File " + file + " was made with an older version of MEM, skipping...");
                             else
                                 MessageBox.Show("File " + file + " is not a valid MEM mod, skipping...");
                             continue;
@@ -1108,7 +1108,7 @@ namespace MassEffectModder
                                         (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1) ||
                                         image.ddsFormat != ddsFormat)
                                     {
-                                        mod.data = MipMaps.convertDDS(ddsFormat, mod.data);
+                                        mod.data = MipMaps.convertDDS(ddsFormat, new Image(mod.data, Image.ImageFormat.DDS).StoreARGBImageToDDS());
                                     }
                                 }
                                 mods.Add(mod);
@@ -1209,9 +1209,9 @@ namespace MassEffectModder
                                 string fmt = texture.properties.getProperty("Format").valueName;
                                 DDSFormat ddsFormat = DDSImage.convertFormat(fmt);
                                 uint tag = BitConverter.ToUInt32(mod.data, 0);
-                                if (tag != 0x20534444) // not DDS
+                                if (tag != Image.DDS_TAG) // not DDS
                                 {
-                                    mod.data = MipMaps.convertDDS(ddsFormat, mod.data, Path.GetExtension(filename).ToLowerInvariant());
+                                    mod.data = MipMaps.convertDDS(ddsFormat, new Image(mod.data, Path.GetExtension(filename)).StoreARGBImageToDDS());
                                 }
                                 DDSImage image = new DDSImage(new MemoryStream(mod.data));
 
@@ -1227,7 +1227,7 @@ namespace MassEffectModder
                                     (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1) ||
                                     image.ddsFormat != ddsFormat)
                                 {
-                                    mod.data = MipMaps.convertDDS(ddsFormat, mod.data);
+                                    mod.data = MipMaps.convertDDS(ddsFormat, new Image(mod.data, Image.ImageFormat.DDS).StoreARGBImageToDDS());
                                 }
 
                                 mods.Add(mod);
