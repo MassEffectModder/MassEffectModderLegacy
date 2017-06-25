@@ -996,7 +996,7 @@ namespace MassEffectModder
             }
         }
 
-        public bool SaveToFile(bool forceZlib = false)
+        public bool SaveToFile(bool forceZlib = false, string filename = null)
         {
             if (forceZlib && compressionType != CompressionType.Zlib)
                 modified = true;
@@ -1098,7 +1098,8 @@ namespace MassEffectModder
             if (!memoryMode && Directory.Exists(packagePath + "-exports"))
                 Directory.Delete(packagePath + "-exports", true);
 
-            string filename = packageFile.Name;
+            if (filename == null)
+                filename = packageFile.Name;
             using (FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
             {
                 if (fs == null)
