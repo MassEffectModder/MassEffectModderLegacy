@@ -1001,7 +1001,7 @@ namespace MassEffectModder
             if (forceZlib && compressionType != CompressionType.Zlib)
                 modified = true;
 
-            if (packageFile.Length == 0 || !modified)
+            if (packageFile.Length == 0 || !modified && !forceDecompressed)
                 return false;
 
             MemoryStream tempOutput = new MemoryStream();
