@@ -166,7 +166,7 @@ namespace MassEffectModder
                         if (colorMapType != 0)
                             throw new Exception("indexed TGA not supported!");
                         int imageType = stream.ReadByte();
-                        if (imageType != 2 & imageType != 10)
+                        if (imageType != 2 && imageType != 10)
                             throw new Exception("only RGB TGA supported!");
                         bool compressed = false;
                         if (imageType == 10)
