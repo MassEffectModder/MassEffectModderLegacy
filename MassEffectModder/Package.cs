@@ -1005,7 +1005,7 @@ namespace MassEffectModder
                 return false;
 
             if (forceCompressed && forceDecompressed)
-                throw new Exception("force de/compression can be both enabled!");
+                throw new Exception("force de/compression can't be both enabled!");
 
             MemoryStream tempOutput = new MemoryStream();
 
