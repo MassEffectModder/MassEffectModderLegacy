@@ -1035,9 +1035,15 @@ namespace MassEffectModder
                         {
                             string package = "";
                             int len = fs.ReadInt32();
-                            string version = fs.ReadStringASCII(len); // version
+                            string version = fs.ReadStringASCIINull();
                             if (version.Length < 5) // legacy .mod
                                 fs.SeekBegin();
+                            else
+                            {
+                                fs.SeekBegin();
+                                len = fs.ReadInt32();
+                                version = fs.ReadStringASCII(len); // version
+                            }
                             numEntries = fs.ReadUInt32();
                             for (uint i = 0; i < numEntries; i++)
                             {

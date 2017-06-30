@@ -591,11 +591,29 @@ namespace MassEffectModder
                             {
                                 if (textures[i].list[l].exportID == exportId)
                                 {
-                                    string pkg = textures[i].list[l].path.Split('\\').Last().Split('.')[0];
+                                    string pkg = textures[i].list[l].path.Split('\\').Last().Split('.')[0].ToLowerInvariant();
                                     if (pkg == packageName)
                                     {
                                         return textures[i];
                                     }
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    textureName = textureName.ToLowerInvariant();
+                    for (int i = 0; i < textures.Count; i++)
+                    {
+                        if (textures[i].name.ToLowerInvariant() == textureName)
+                        {
+                            for (int l = 0; l < textures[i].list.Count; l++)
+                            {
+                                string pkg = textures[i].list[l].path.Split('\\').Last().Split('.')[0].ToLowerInvariant();
+                                if (pkg == packageName)
+                                {
+                                    return textures[i];
                                 }
                             }
                         }
