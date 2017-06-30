@@ -152,6 +152,9 @@ namespace MassEffectModder
                     {
                         DDSImage image = new DDSImage(stream);
                         hasAlpha = image.hasAlpha;
+                        if (!checkPowerOfTwo(image.mipMaps[0].width) ||
+                            !checkPowerOfTwo(image.mipMaps[0].height))
+                            throw new Exception("dimensions not power of two");
                         foreach (DDSImage.MipMap ddsMipmap in image.mipMaps)
                         {
                             MipMap mipmap = new MipMap(DDSImage.ToARGB(ddsMipmap), ddsMipmap.width, ddsMipmap.height);
@@ -178,6 +181,9 @@ namespace MassEffectModder
                         stream.SkipInt16(); // y origin
                         int imageWidth = stream.ReadInt16();
                         int imageHeight = stream.ReadInt16();
+                        if (!checkPowerOfTwo(imageWidth) ||
+                            !checkPowerOfTwo(imageHeight))
+                            throw new Exception("dimensions not power of two");
                         int imageDepth = stream.ReadByte();
                         if (imageDepth != 32 && imageDepth != 24)
                             throw new Exception("only 24 and 32 bits TGA supported!");
@@ -282,6 +288,9 @@ namespace MassEffectModder
                         int imageHeight = stream.ReadInt32();
                         if (imageHeight < 0)
                             throw new Exception("down to top not supported in BMP!");
+                        if (!checkPowerOfTwo(imageWidth) ||
+                            !checkPowerOfTwo(imageHeight))
+                            throw new Exception("dimensions not power of two");
                         stream.Skip(2);
                         int bits = stream.ReadUInt16();
                         if (bits != 32 && bits != 24)
@@ -342,6 +351,9 @@ namespace MassEffectModder
                     {
                         PngBitmapDecoder bmp = new PngBitmapDecoder(stream, BitmapCreateOptions.None, BitmapCacheOption.Default);
                         BitmapSource frame = bmp.Frames[0];
+                        if (!checkPowerOfTwo((int)frame.Width) ||
+                            !checkPowerOfTwo((int)frame.Height))
+                            throw new Exception("dimensions not power of two");
                         FormatConvertedBitmap srcBitmap = new FormatConvertedBitmap();
                         srcBitmap.BeginInit();
                         srcBitmap.Source = bmp.Frames[0];
@@ -357,6 +369,9 @@ namespace MassEffectModder
                     {
                         JpegBitmapDecoder bmp = new JpegBitmapDecoder(stream, BitmapCreateOptions.None, BitmapCacheOption.Default);
                         BitmapSource frame = bmp.Frames[0];
+                        if (!checkPowerOfTwo((int)frame.Width) ||
+                            !checkPowerOfTwo((int)frame.Height))
+                            throw new Exception("dimensions not power of two");
                         FormatConvertedBitmap srcBitmap = new FormatConvertedBitmap();
                         srcBitmap.BeginInit();
                         srcBitmap.Source = bmp.Frames[0];
@@ -441,5 +456,12 @@ namespace MassEffectModder
             return true;
         }
 
+        public bool checkPowerOfTwo(int n)
+        {
+            if ((n & (n - 1)) == 0)
+                return true;
+            else
+                return false;
+        }
     }
 }
