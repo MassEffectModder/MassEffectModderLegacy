@@ -82,16 +82,17 @@ namespace MassEffectModder
             Console.WriteLine("Mods conversion started...");
 
             List<string> list = Directory.GetFiles(inputDir, "*.mem").Where(item => item.EndsWith(".mem", StringComparison.OrdinalIgnoreCase)).ToList();
-            list.AddRange(Directory.GetFiles(inputDir, "*.tpf").Where(item => item.EndsWith(".tpf", StringComparison.OrdinalIgnoreCase)));
-            list.AddRange(Directory.GetFiles(inputDir, "*.mod").Where(item => item.EndsWith(".mod", StringComparison.OrdinalIgnoreCase)));
-            list.AddRange(Directory.GetFiles(inputDir, "*.tpf").Where(item => item.EndsWith(".tpf", StringComparison.OrdinalIgnoreCase)));
-            list.AddRange(Directory.GetFiles(inputDir, "*.dds").Where(item => item.EndsWith(".dds", StringComparison.OrdinalIgnoreCase)));
-            list.AddRange(Directory.GetFiles(inputDir, "*.png").Where(item => item.EndsWith(".png", StringComparison.OrdinalIgnoreCase)));
-            list.AddRange(Directory.GetFiles(inputDir, "*.bmp").Where(item => item.EndsWith(".bmp", StringComparison.OrdinalIgnoreCase)));
-            list.AddRange(Directory.GetFiles(inputDir, "*.tga").Where(item => item.EndsWith(".tga", StringComparison.OrdinalIgnoreCase)));
-            list.AddRange(Directory.GetFiles(inputDir, "*.jpg").Where(item => item.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)));
-            list.AddRange(Directory.GetFiles(inputDir, "*.jpeg").Where(item => item.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)));
             list.Sort();
+            List<string> list2 = Directory.GetFiles(inputDir, "*.tpf").Where(item => item.EndsWith(".tpf", StringComparison.OrdinalIgnoreCase)).ToList();
+            list2.AddRange(Directory.GetFiles(inputDir, "*.mod").Where(item => item.EndsWith(".mod", StringComparison.OrdinalIgnoreCase)));
+            list2.AddRange(Directory.GetFiles(inputDir, "*.dds").Where(item => item.EndsWith(".dds", StringComparison.OrdinalIgnoreCase)));
+            list2.AddRange(Directory.GetFiles(inputDir, "*.png").Where(item => item.EndsWith(".png", StringComparison.OrdinalIgnoreCase)));
+            list2.AddRange(Directory.GetFiles(inputDir, "*.bmp").Where(item => item.EndsWith(".bmp", StringComparison.OrdinalIgnoreCase)));
+            list2.AddRange(Directory.GetFiles(inputDir, "*.tga").Where(item => item.EndsWith(".tga", StringComparison.OrdinalIgnoreCase)));
+            list2.AddRange(Directory.GetFiles(inputDir, "*.jpg").Where(item => item.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)));
+            list2.AddRange(Directory.GetFiles(inputDir, "*.jpeg").Where(item => item.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)));
+            list2.Sort();
+            list.AddRange(list2);
             files = list.ToArray();
 
             int result;
@@ -173,9 +174,15 @@ namespace MassEffectModder
                         {
                             string package = "";
                             int len = fs.ReadInt32();
-                            string version = fs.ReadStringASCII(len); // version
+                            string version = fs.ReadStringASCIINull();
                             if (version.Length < 5) // legacy .mod
                                 fs.SeekBegin();
+                            else
+                            {
+                                fs.SeekBegin();
+                                len = fs.ReadInt32();
+                                version = fs.ReadStringASCII(len); // version
+                            }
                             numEntries = fs.ReadUInt32();
                             for (uint i = 0; i < numEntries; i++)
                             {
@@ -731,9 +738,15 @@ namespace MassEffectModder
                     {
                         uint textureCrc;
                         int len = fs.ReadInt32();
-                        string version = fs.ReadStringASCII(len); // version
+                        string version = fs.ReadStringASCIINull();
                         if (version.Length < 5) // legacy .mod
                             fs.SeekBegin();
+                        else
+                        {
+                            fs.SeekBegin();
+                            len = fs.ReadInt32();
+                            version = fs.ReadStringASCII(len); // version
+                        }
                         numEntries = fs.ReadUInt32();
                         for (uint i = 0; i < numEntries; i++)
                         {
