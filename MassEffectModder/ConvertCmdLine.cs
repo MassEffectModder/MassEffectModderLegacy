@@ -235,7 +235,16 @@ namespace MassEffectModder
                                     mod.binaryMod = false;
                                     len = fs.ReadInt32();
                                     mod.data = fs.ReadToBuffer(len);
-                                    Package pkg = new Package(GameData.GamePath + f.list[0].path);
+                                    Package pkg = null;
+                                    try
+                                    {
+                                        pkg = new Package(GameData.GamePath + f.list[0].path);
+                                    }
+                                    catch
+                                    {
+                                        errors += "Missing package file: " + f.list[0].path + " - Skipping, entry: " + (i + 1) + " file: " + fileName + " - mod: " + file + Environment.NewLine;
+                                        continue;
+                                    }
                                     Texture texture = new Texture(pkg, f.list[0].exportID, pkg.getExportData(f.list[0].exportID));
                                     string fmt = texture.properties.getProperty("Format").valueName;
                                     DDSFormat ddsFormat = DDSImage.convertFormat(fmt);
@@ -346,7 +355,16 @@ namespace MassEffectModder
                                     continue;
                                 }
 
-                                Package pkg = new Package(GameData.GamePath + foundCrcList[0].list[0].path);
+                                Package pkg = null;
+                                try
+                                {
+                                    pkg = new Package(GameData.GamePath + foundCrcList[0].list[0].path);
+                                }
+                                catch
+                                {
+                                    errors += "Missing package file: " + foundCrcList[0].list[0].path + " - Skipping, entry: " + (i + 1) + " file: " + fileName + " - mod: " + file + Environment.NewLine;
+                                    continue;
+                                }
                                 Texture texture = new Texture(pkg, foundCrcList[0].list[0].exportID, pkg.getExportData(foundCrcList[0].list[0].exportID));
                                 string fmt = texture.properties.getProperty("Format").valueName;
                                 DDSFormat ddsFormat = DDSImage.convertFormat(fmt);
@@ -427,7 +445,16 @@ namespace MassEffectModder
 
                     using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
                     {
-                        Package pkg = new Package(GameData.GamePath + foundCrcList[0].list[0].path);
+                        Package pkg = null;
+                        try
+                        {
+                            pkg = new Package(GameData.GamePath + foundCrcList[0].list[0].path);
+                        }
+                        catch
+                        {
+                            errors += "Missing package file: " + foundCrcList[0].list[0].path + " - Skipping, file: " + Path.GetFileName(file) + Environment.NewLine;
+                            continue;
+                        }
                         Texture texture = new Texture(pkg, foundCrcList[0].list[0].exportID, pkg.getExportData(foundCrcList[0].list[0].exportID));
                         string fmt = texture.properties.getProperty("Format").valueName;
                         DDSFormat ddsFormat = DDSImage.convertFormat(fmt);
@@ -493,7 +520,16 @@ namespace MassEffectModder
                         continue;
                     }
 
-                    Package pkg = new Package(GameData.GamePath + foundCrcList[0].list[0].path);
+                    Package pkg = null;
+                    try
+                    {
+                        pkg = new Package(GameData.GamePath + foundCrcList[0].list[0].path);
+                    }
+                    catch
+                    {
+                        errors += "Missing package file: " + foundCrcList[0].list[0].path + " - Skipping, file: " + Path.GetFileName(file) + Environment.NewLine;
+                        continue;
+                    }
                     Texture texture = new Texture(pkg, foundCrcList[0].list[0].exportID, pkg.getExportData(foundCrcList[0].list[0].exportID));
                     string fmt = texture.properties.getProperty("Format").valueName;
                     DDSFormat ddsFormat = DDSImage.convertFormat(fmt);
