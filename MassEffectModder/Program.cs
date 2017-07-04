@@ -112,8 +112,6 @@ namespace MassEffectModder
 
         static void Main(string[] args)
         {
-            loadEmbeddedDlls();
-
             if (args.Length == 4)
             {
                 string option = args[0];
@@ -132,7 +130,6 @@ namespace MassEffectModder
                 if (gameId != 1 && gameId != 2 && gameId != 3)
                 {
                     Console.WriteLine("Error: wrong game id!");
-                    unloadEmbeddedDlls();
                     Environment.Exit(1);
                 }
                 else
@@ -142,11 +139,11 @@ namespace MassEffectModder
                         if (!Directory.Exists(inputDir))
                         {
                             Console.WriteLine("Error: input path not exists: " + inputDir);
-                            unloadEmbeddedDlls();
                             Environment.Exit(1);
                         }
                         else
                         {
+                            loadEmbeddedDlls();
                             Console.WriteLine(Environment.NewLine + Environment.NewLine +
                                 "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
                             if (!CmdLineConverter.ConvertToMEM(gameId, inputDir, outMem))
@@ -162,11 +159,11 @@ namespace MassEffectModder
                         if (!Directory.Exists(inputDir))
                         {
                             Console.WriteLine("Error: input dir not exists: " + inputDir);
-                            unloadEmbeddedDlls();
                             Environment.Exit(1);
                         }
                         else
                         {
+                            loadEmbeddedDlls();
                             Console.WriteLine(Environment.NewLine + Environment.NewLine +
                                 "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
                             if (!CmdLineConverter.extractMOD(gameId, inputDir, outputDir))
@@ -188,11 +185,11 @@ namespace MassEffectModder
                     if (!Directory.Exists(inputDir))
                     {
                         Console.WriteLine("Error: input dir not exists: " + inputDir);
-                        unloadEmbeddedDlls();
                         Environment.Exit(1);
                     }
                     else
                     {
+                        loadEmbeddedDlls();
                         Console.WriteLine(Environment.NewLine + Environment.NewLine +
                             "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
                         if (!CmdLineConverter.extractTPF(inputDir, outputDir))
@@ -214,6 +211,8 @@ namespace MassEffectModder
                 {
                     runAsAdmin = true;
                 }
+
+                loadEmbeddedDlls();
 
                 string iniPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "installer.ini");
                 if (File.Exists(iniPath))
