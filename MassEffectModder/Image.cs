@@ -235,15 +235,7 @@ namespace MassEffectModder
 
         public static byte[] convertRawToRGB(byte[] src, int w, int h, PixelFormat format, bool stripAlpha = false)
         {
-            byte[] tmpData = convertRawToARGB(src, w, h, format, stripAlpha);
-            byte[] tmpDataNew = new byte[w * h * 3];
-            for (int i = 0; i < w * h; i++)
-            {
-                tmpDataNew[3 * i + 0] = tmpData[4 * i + 0];
-                tmpDataNew[3 * i + 1] = tmpData[4 * i + 1];
-                tmpDataNew[3 * i + 2] = tmpData[4 * i + 2];
-            }
-            return tmpDataNew;
+            return ARGBtoRGB(convertRawToARGB(src, w, h, format, stripAlpha), w, h);
         }
 
         public static Bitmap convertRawToBitmapARGB(byte[] src, int w, int h, PixelFormat format)
@@ -274,15 +266,38 @@ namespace MassEffectModder
             return tmpData;
         }
 
+        private static byte[] ARGBtoRGB(byte[] src, int w, int h)
+        {
+            byte[] tmpData = new byte[w * h * 3];
+            for (int i = 0; i < w * h; i++)
+            {
+                tmpData[3 * i + 0] = src[4 * i + 0];
+                tmpData[3 * i + 1] = src[4 * i + 1];
+                tmpData[3 * i + 2] = src[4 * i + 2];
+            }
+            return tmpData;
+        }
+
         private static byte[] V8U8ToARGB(byte[] src, int w, int h)
         {
             byte[] tmpData = new byte[w * h * 4];
             for (int i = 0; i < w * h; i++)
             {
-                tmpData[4 * i + 0] = 255;;
+                tmpData[4 * i + 0] = 255;
                 tmpData[4 * i + 1] = (byte)(((sbyte)src[2 * i + 1]) + 128);
                 tmpData[4 * i + 2] = (byte)(((sbyte)src[2 * i + 0]) + 128);
                 tmpData[4 * i + 3] = 255;
+            }
+            return tmpData;
+        }
+
+        private static byte[] ARGBtoV8U8(byte[] src, int w, int h)
+        {
+            byte[] tmpData = new byte[w * h * 2];
+            for (int i = 0; i < w * h; i++)
+            {
+                tmpData[2 * i + 0] = (byte)((sbyte)(src[4 * i + 2]) - 128);
+                tmpData[2 * i + 1] = (byte)((sbyte)(src[4 * i + 1]) - 128);
             }
             return tmpData;
         }
@@ -296,6 +311,18 @@ namespace MassEffectModder
                 tmpData[4 * i + 1] = src[i];
                 tmpData[4 * i + 2] = src[i];
                 tmpData[4 * i + 3] = 255;
+            }
+
+            return tmpData;
+        }
+
+        private static byte[] ARGBtoG8(byte[] src, int w, int h)
+        {
+            byte[] tmpData = new byte[w * h];
+            for (int i = 0; i < w * h; i++)
+            {
+                int c = src[i * 4 + 0] + src[i * 4 + 1] + src[i * 4 + 2];
+                tmpData[i] = (byte)(c / 3);
             }
 
             return tmpData;
