@@ -471,8 +471,8 @@ namespace MassEffectModder
                             foundTexture = textures.Find(s => s.crc == crc);
                             if (foundTexture.crc != 0)
                             {
-                                DDSImage image = new DDSImage(new MemoryStream(dst, 0, (int)dstLen));
-                                if (!image.checkExistAllMipmaps())
+                                Image image = new Image(dst, Image.ImageFormat.DDS);
+                                if (!image.checkDDSHaveAllMipmaps())
                                 {
                                     errors += "Error in texture: " + name + string.Format("_0x{0:X8}", crc) + " Texture skipped. This texture has not all the required mipmaps" + Environment.NewLine;
                                     log += "Error in texture: " + name + string.Format("_0x{0:X8}", crc) + " Texture skipped. This texture has not all the required mipmaps" + Environment.NewLine;

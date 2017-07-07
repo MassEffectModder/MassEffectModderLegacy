@@ -222,8 +222,8 @@ namespace MassEffectModder
                     {
                         if (modFiles[i].tag == FileTextureTag)
                         {
-                            DDSImage image = new DDSImage(new MemoryStream(dst, 0, (int)dstLen));
-                            texExplorer.pictureBoxPreview.Image = image.mipMaps[0].bitmap;
+                            Image image = new Image(dst, Image.ImageFormat.DDS);
+                            texExplorer.pictureBoxPreview.Image = image.getBitmapARGB();
                         }
                         else
                         {
@@ -239,8 +239,8 @@ namespace MassEffectModder
                             foundTexture = textures.Find(s => s.crc == crc);
                             if (foundTexture.crc != 0)
                             {
-                                DDSImage image = new DDSImage(new MemoryStream(dst, 0, (int)dstLen));
-                                if (!image.checkExistAllMipmaps())
+                                Image image = new Image(dst, Image.ImageFormat.DDS);
+                                if (!image.checkDDSHaveAllMipmaps())
                                 {
                                     errors += "Error in texture: " + name + string.Format("_0x{0:X8}", crc) + " Texture skipped. This texture has not all the required mipmaps." + Environment.NewLine;
                                     log += "Error in texture: " + name + string.Format("_0x{0:X8}", crc) + " Texture skipped. This texture has not all the required mipmaps." + Environment.NewLine;
@@ -344,8 +344,8 @@ namespace MassEffectModder
                         Package pkg = new Package(GameData.GamePath + foundCrcList[0].list[0].path);
                         Texture texture = new Texture(pkg, foundCrcList[0].list[0].exportID, pkg.getExportData(foundCrcList[0].list[0].exportID));
                         string fmt = texture.properties.getProperty("Format").valueName;
-                        DDSFormat ddsFormat = DDSImage.convertFormat(fmt);
-                        DDSImage image = new DDSImage(new MemoryStream(src));
+                        PixelFormat pixelFormat = Image.convertFormat(fmt);
+                        Image image = new Image(src, Image.ImageFormat.DDS);
 
                         if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
                             texture.mipMapsList[0].width / texture.mipMapsList[0].height)
@@ -355,11 +355,11 @@ namespace MassEffectModder
                             continue;
                         }
 
-                        if (!image.checkExistAllMipmaps() ||
+                        if (!image.checkDDSHaveAllMipmaps() ||
                             (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1) ||
-                            image.ddsFormat != ddsFormat)
+                            image.pixelFormat != pixelFormat)
                         {
-                            src = convertDDS(ddsFormat, src);
+                            src = convertDDS(pixelFormat, new Image(src, Image.ImageFormat.DDS).convertToARGB().StoreImageToDDS());
                         }
 
                         Stream dst = compressData(src);
@@ -511,8 +511,8 @@ namespace MassEffectModder
             {
                 texture.mipMapsList.Remove(texture.mipMapsList.First(s => s.storageType == Texture.StorageTypes.empty));
             }
-            List<DDSImage.MipMap> mipmaps = new List<DDSImage.MipMap>();
-            DDSFormat format = DDSImage.convertFormat(texture.properties.getProperty("Format").valueName);
+            List<MipMap> mipmaps = new List<MipMap>();
+            PixelFormat pixelFormat = Image.convertFormat(texture.properties.getProperty("Format").valueName);
             for (int i = 0; i < texture.mipMapsList.Count; i++)
             {
                 byte[] data = texture.getMipMapDataByIndex(i);
@@ -521,14 +521,14 @@ namespace MassEffectModder
                     MessageBox.Show("Failed to extract to DDS file. Broken game files!");
                     return;
                 }
-                mipmaps.Add(new DDSImage.MipMap(data, format, texture.mipMapsList[i].width, texture.mipMapsList[i].height));
+                mipmaps.Add(new MipMap(data, texture.mipMapsList[i].width, texture.mipMapsList[i].height, pixelFormat));
             }
-            DDSImage dds = new DDSImage(mipmaps);
+            Image image = new Image(mipmaps, pixelFormat);
             if (File.Exists(outputFile))
                 File.Delete(outputFile);
             using (FileStream fs = new FileStream(outputFile, FileMode.CreateNew, FileAccess.Write))
             {
-                dds.SaveDDSImage(fs);
+                image.StoreImageToDDS(fs);
             }
         }
 
@@ -536,7 +536,7 @@ namespace MassEffectModder
         {
             Package package = new Package(packagePath);
             Texture texture = new Texture(package, exportID, package.getExportData(exportID));
-            DDSFormat format = DDSImage.convertFormat(texture.properties.getProperty("Format").valueName);
+            PixelFormat format = Image.convertFormat(texture.properties.getProperty("Format").valueName);
             Texture.MipMap mipmap = texture.getTopMipmap();
             byte[] data = texture.getTopImageData();
             if (data == null)
@@ -544,7 +544,7 @@ namespace MassEffectModder
                 MessageBox.Show("Failed to extract to PNG file. Broken game files!");
                 return;
             }
-            PngBitmapEncoder image = DDSImage.ToPng(data, format, mipmap.width, mipmap.height);
+            PngBitmapEncoder image = Image.convertToPng(data, mipmap.width, mipmap.height, format);
             if (File.Exists(outputFile))
                 File.Delete(outputFile);
             using (FileStream fs = new FileStream(outputFile, FileMode.CreateNew, FileAccess.Write))
@@ -553,41 +553,41 @@ namespace MassEffectModder
             }
         }
 
-        static public byte[] convertDDS(DDSFormat format, byte[] src, string extension = ".dds")
+        static public byte[] convertDDS(PixelFormat format, byte[] src)
         {
             string fmtParam = "";
 
             switch (format)
             {
-                case DDSFormat.DXT1:
+                case PixelFormat.DXT1:
                     fmtParam = "dxt1";
                     break;
-                case DDSFormat.DXT3:
+                case PixelFormat.DXT3:
                     fmtParam = "dxt3";
                     break;
-                case DDSFormat.DXT5:
+                case PixelFormat.DXT5:
                     fmtParam = "dxt5";
                     break;
-                case DDSFormat.ATI2:
+                case PixelFormat.ATI2:
                     fmtParam = "ati2";
                     break;
-                case DDSFormat.V8U8:
+                case PixelFormat.V8U8:
                     fmtParam = "v8u8";
                     break;
-                case DDSFormat.G8:
+                case PixelFormat.G8:
                     fmtParam = "g8";
                     break;
-                case DDSFormat.ARGB:
+                case PixelFormat.ARGB:
                     fmtParam = "argb";
                     break;
-                case DDSFormat.RGB:
+                case PixelFormat.RGB:
                     fmtParam = "rgb";
                     break;
                 default:
                     throw new Exception("invalid texture format " + format);
             }
 
-            string inputFile = Path.Combine(Program.dllPath, "input" + extension);
+            string inputFile = Path.Combine(Program.dllPath, "input.dds");
             string outputFile = Path.Combine(Program.dllPath, "output.dds");
             if (File.Exists(inputFile))
                 File.Delete(inputFile);

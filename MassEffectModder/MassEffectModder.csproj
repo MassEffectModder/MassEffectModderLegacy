@@ -84,6 +84,9 @@
     <Compile Include="Helpers\7Zip\SevenZipHelper.cs" />
     <Compile Include="Helpers\StreamIO.cs" />
     <Compile Include="Image.cs" />
+    <Compile Include="ImageBMP.cs" />
+    <Compile Include="ImageDDS.cs" />
+    <Compile Include="ImageTGA.cs" />
     <Compile Include="IniConf.cs" />
     <Compile Include="Installer.cs">
       <SubType>Form</SubType>

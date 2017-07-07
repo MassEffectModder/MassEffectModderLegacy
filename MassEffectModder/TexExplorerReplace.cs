@@ -71,7 +71,7 @@ namespace MassEffectModder
             }
         };
 
-        public string replaceTexture(DDSImage image, List<MatchedTexture> list, CachePackageMgr cachePackageMgr, string textureName, uint crc)
+        public string replaceTexture(Image image, List<MatchedTexture> list, CachePackageMgr cachePackageMgr, string textureName, uint crc)
         {
             List<Texture> masterTextures = new List<Texture>();
             Texture arcTexture = null, cprTexture = null;
@@ -107,10 +107,10 @@ namespace MassEffectModder
                 }
 
                 string fmt = texture.properties.getProperty("Format").valueName;
-                DDSFormat ddsFormat = DDSImage.convertFormat(fmt);
-                if (image.ddsFormat != ddsFormat)
+                PixelFormat pixelFormat = Image.convertFormat(fmt);
+                if (image.pixelFormat != pixelFormat)
                 {
-                    errors += "Error in texture: " + textureName + " This texture has wrong texture format, should be: " + ddsFormat + ", skipping texture..." + Environment.NewLine;
+                    errors += "Error in texture: " + textureName + " This texture has wrong texture format, should be: " + pixelFormat + ", skipping texture..." + Environment.NewLine;
                     break;
                 }
 
@@ -151,7 +151,7 @@ namespace MassEffectModder
                                 skip = true;
                                 break;
                             }
-                            DDSImage.MipMap mipmap = new DDSImage.MipMap(data, ddsFormat, texture.mipMapsList[t].width, texture.mipMapsList[t].height);
+                            MipMap mipmap = new MipMap(data, texture.mipMapsList[t].width, texture.mipMapsList[t].height, pixelFormat);
                             image.mipMaps.Add(mipmap);
                         }
                     }
@@ -441,8 +441,8 @@ namespace MassEffectModder
                 if (selectDDS.ShowDialog() != DialogResult.OK)
                     return;
 
-                DDSImage image = new DDSImage(selectDDS.FileName);
-                if (!image.checkExistAllMipmaps())
+                Image image = new Image(selectDDS.FileName);
+                if (!image.checkDDSHaveAllMipmaps())
                 {
                     MessageBox.Show("This texture has not all the required mipmaps, canceling...");
                     return;

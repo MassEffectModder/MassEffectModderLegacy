@@ -306,8 +306,8 @@ namespace MassEffectModder
                     {
                         int width = texture.getTopMipmap().width;
                         int height = texture.getTopMipmap().height;
-                        DDSFormat format = DDSImage.convertFormat(texture.properties.getProperty("Format").valueName);
-                        pictureBoxPreview.Image = DDSImage.ToBitmap(textureData, format, width, height);
+                        PixelFormat pixelFormat = Image.convertFormat(texture.properties.getProperty("Format").valueName);
+                        pictureBoxPreview.Image = Image.convertRawToBitmapARGB(textureData, width, height, pixelFormat);
                         pictureBoxPreview.Show();
                         richTextBoxInfo.Hide();
                     }
@@ -1100,8 +1100,8 @@ namespace MassEffectModder
                                     Package pkg = new Package(GameData.GamePath + f.list[0].path);
                                     Texture texture = new Texture(pkg, f.list[0].exportID, pkg.getExportData(f.list[0].exportID));
                                     string fmt = texture.properties.getProperty("Format").valueName;
-                                    DDSFormat ddsFormat = DDSImage.convertFormat(fmt);
-                                    DDSImage image = new DDSImage(new MemoryStream(mod.data));
+                                    PixelFormat pixelFormat = Image.convertFormat(fmt);
+                                    Image image = new Image(mod.data, Image.ImageFormat.DDS);
 
                                     if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
                                         texture.mipMapsList[0].width / texture.mipMapsList[0].height)
@@ -1110,11 +1110,11 @@ namespace MassEffectModder
                                         continue;
                                     }
 
-                                    if (!image.checkExistAllMipmaps() ||
+                                    if (!image.checkDDSHaveAllMipmaps() ||
                                         (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1) ||
-                                        image.ddsFormat != ddsFormat)
+                                        image.pixelFormat != pixelFormat)
                                     {
-                                        mod.data = MipMaps.convertDDS(ddsFormat, new Image(mod.data, Image.ImageFormat.DDS).StoreARGBImageToDDS());
+                                        mod.data = MipMaps.convertDDS(pixelFormat, new Image(mod.data, Image.ImageFormat.DDS).convertToARGB().StoreImageToDDS());
                                     }
                                 }
                                 mods.Add(mod);
@@ -1213,13 +1213,13 @@ namespace MassEffectModder
                                 Package pkg = new Package(GameData.GamePath + foundCrcList[0].list[0].path);
                                 Texture texture = new Texture(pkg, foundCrcList[0].list[0].exportID, pkg.getExportData(foundCrcList[0].list[0].exportID));
                                 string fmt = texture.properties.getProperty("Format").valueName;
-                                DDSFormat ddsFormat = DDSImage.convertFormat(fmt);
+                                PixelFormat pixelFormat = Image.convertFormat(fmt);
                                 uint tag = BitConverter.ToUInt32(mod.data, 0);
                                 if (tag != Image.DDS_TAG) // not DDS
                                 {
-                                    mod.data = MipMaps.convertDDS(ddsFormat, new Image(mod.data, Path.GetExtension(filename)).StoreARGBImageToDDS());
+                                    mod.data = MipMaps.convertDDS(pixelFormat, new Image(mod.data, Path.GetExtension(filename)).convertToARGB().StoreImageToDDS());
                                 }
-                                DDSImage image = new DDSImage(new MemoryStream(mod.data));
+                                Image image = new Image(mod.data, Image.ImageFormat.DDS);
 
                                 if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
                                     texture.mipMapsList[0].width / texture.mipMapsList[0].height)
@@ -1229,11 +1229,11 @@ namespace MassEffectModder
                                     continue;
                                 }
 
-                                if (!image.checkExistAllMipmaps() ||
+                                if (!image.checkDDSHaveAllMipmaps() ||
                                     (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1) ||
-                                    image.ddsFormat != ddsFormat)
+                                    image.pixelFormat != pixelFormat)
                                 {
-                                    mod.data = MipMaps.convertDDS(ddsFormat, new Image(mod.data, Image.ImageFormat.DDS).StoreARGBImageToDDS());
+                                    mod.data = MipMaps.convertDDS(pixelFormat, new Image(mod.data, Image.ImageFormat.DDS).StoreImageToDDS());
                                 }
 
                                 mods.Add(mod);

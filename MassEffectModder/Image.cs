@@ -26,66 +26,78 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using StreamHelpers;
 using AmaroK86.ImageFormat;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 
 namespace MassEffectModder
 {
+    public enum PixelFormat
+    {
+        Unknown, DXT1, DXT3, DXT5, ATI2, V8U8, ARGB, RGB, G8
+    }
+
     public class MipMap
     {
-        private byte[] data;
-        public int width;
-        public int height;
+        public byte[] data { get; private set; }
+        public int width { get; private set; }
+        public int height { get; private set; }
+        public int origWidth { get; private set; }
+        public int origHeight { get; private set; }
 
-        public MipMap(byte[] data, int w, int h)
+        public MipMap(byte[] src, int w, int h, PixelFormat format)
         {
-            width = w;
-            height = h;
-            if (data.Length != w * h * 4)
-                throw new InvalidDataException("Data size is not valid.");
-            this.data = data;
+            width = origWidth = w;
+            height = origHeight = h;
+
+            if (format == PixelFormat.DXT1 ||
+                format == PixelFormat.DXT3 ||
+                format == PixelFormat.DXT5)
+            {
+                if (width < 4)
+                    width = 4;
+                if (height < 4)
+                    height = 4;
+            }
+
+            if (src.Length != getBufferSize(width, height, format))
+                throw new Exception("data size is not valid");
+            data = src;
         }
 
-        public byte[] getData()
+        static public int getBufferSize(int w, int h, PixelFormat format)
         {
-            return data;
+            switch (format)
+            {
+                case PixelFormat.ARGB:
+                    return 4 * w * h;
+                case PixelFormat.RGB:
+                    return 3 * w * h;
+                case PixelFormat.V8U8:
+                    return 2 * w * h;
+                case PixelFormat.DXT3:
+                case PixelFormat.DXT5:
+                case PixelFormat.ATI2:
+                case PixelFormat.G8:
+                    return w * h;
+                case PixelFormat.DXT1:
+                    return (w * h) / 2;
+                default:
+                    throw new Exception("unknown format");
+            }
         }
     }
 
-    public class Image
+    public partial class Image
     {
         public enum ImageFormat
         {
             Unknown, DDS, PNG, BMP, TGA, JPEG
         }
 
-        public enum DDSFormat
-        {
-            DXT1, DXT3, DXT5, ATI2, V8U8, ARGB, RGB, G8
-        }
-
-        private const int BMP_TAG = 0x4D42;
-
-        public const int DDS_TAG = 0x20534444;
-        private const int DDS_HEADER_dwSize = 124;
-        private const int DDS_PIXELFORMAT_dwSize = 32;
-
-        private const int DDPF_ALPHAPIXELS = 0x1;
-        private const int DDPF_FOURCC = 0x4;
-        private const int DDPF_RGB = 0x40;
-        private const int DDPF_LUMINANCE = 0x20000;
-
-        private const int DDSD_CAPS = 0x1;
-        private const int DDSD_HEIGHT = 0x2;
-        private const int DDSD_WIDTH = 0x4;
-        private const int DDSD_PIXELFORMAT = 0x1000;
-        private const int DDSD_MIPMAPCOUNT = 0x20000;
-        private const int DDSD_LINEARSIZE = 0x80000;
-
-        private const int DDSCAPS_COMPLEX = 0x8;
-        private const int DDSCAPS_TEXTURE = 0x1000;
-        private const int DDSCAPS_MIPMAP = 0x400000;
-
-        public List<MipMap> mipMaps;
-        private bool hasAlpha;
+        public List<MipMap> mipMaps { get; private set; }
+        public bool hasAlpha { get; private set; }
+        public PixelFormat pixelFormat { get; private set; } = PixelFormat.Unknown;
 
         public Image(string fileName, ImageFormat format = ImageFormat.Unknown)
         {
@@ -116,6 +128,14 @@ namespace MassEffectModder
         public Image(byte[] image, string extension)
         {
             LoadImage(new MemoryStream(image), DetectImageByExtension(extension));
+        }
+
+        public Image(List<MipMap> mipmaps, PixelFormat pixelFmt)
+        {
+            mipMaps = mipmaps;
+            pixelFormat = pixelFmt;
+            if (pixelFormat == PixelFormat.DXT1)
+                hasAlpha = true;
         }
 
         private ImageFormat DetectImageByFilename(string fileName)
@@ -150,236 +170,42 @@ namespace MassEffectModder
             {
                 case ImageFormat.DDS:
                     {
-                        DDSImage image = new DDSImage(stream);
-                        hasAlpha = image.hasAlpha;
-                        if (!checkPowerOfTwo(image.mipMaps[0].width) ||
-                            !checkPowerOfTwo(image.mipMaps[0].height))
-                            throw new Exception("dimensions not power of two");
-                        foreach (DDSImage.MipMap ddsMipmap in image.mipMaps)
-                        {
-                            MipMap mipmap = new MipMap(DDSImage.ToARGB(ddsMipmap), ddsMipmap.width, ddsMipmap.height);
-                            mipMaps.Add(mipmap);
-                        }
+                        LoadImageDDS(stream, format);
                         break;
                     }
                 case ImageFormat.TGA:
                     {
-                        int idLength = stream.ReadByte();
-                        int colorMapType = stream.ReadByte();
-                        if (colorMapType != 0)
-                            throw new Exception("indexed TGA not supported!");
-                        int imageType = stream.ReadByte();
-                        if (imageType != 2 && imageType != 10)
-                            throw new Exception("only RGB TGA supported!");
-                        bool compressed = false;
-                        if (imageType == 10)
-                            compressed = true;
-                        stream.SkipInt16(); // color map first entry index
-                        stream.SkipInt16(); // color map length
-                        stream.Skip(1); // color map entry size
-                        stream.SkipInt16(); // x origin
-                        stream.SkipInt16(); // y origin
-                        int imageWidth = stream.ReadInt16();
-                        int imageHeight = stream.ReadInt16();
-                        if (!checkPowerOfTwo(imageWidth) ||
-                            !checkPowerOfTwo(imageHeight))
-                            throw new Exception("dimensions not power of two");
-                        int imageDepth = stream.ReadByte();
-                        if (imageDepth != 32 && imageDepth != 24)
-                            throw new Exception("only 24 and 32 bits TGA supported!");
-                        int imageDesc = stream.ReadByte();
-                        if ((imageDesc & 0x10) != 0)
-                            throw new Exception("origin right not supported in TGA!");
-                        bool downToTop = true;
-                        if ((imageDesc & 0x20) != 0)
-                            downToTop = false;
-                        stream.Skip(idLength);
-
-                        byte[] buffer = new byte[imageWidth * imageHeight * 4];
-                        int pos = downToTop ? imageWidth * (imageHeight - 1) * 4 : 0;
-                        int delta = downToTop ? -imageWidth * 4 * 2 : 0;
-                        if (compressed)
-                        {
-                            int count = 0, repeat = 0, w = 0, h = 0;
-                            for (;;)
-                            {
-                                if (count == 0 && repeat == 0)
-                                {
-                                    byte code = (byte)stream.ReadByte();
-                                    if ((code & 0x80) != 0)
-                                        repeat = (code & 0x7F) + 1;
-                                    else
-                                        count = code + 1;
-                                }
-                                else
-                                {
-                                    byte pixelR, pixelG, pixelB, pixelA;
-                                    if (repeat != 0)
-                                    {
-                                        pixelR = (byte)stream.ReadByte();
-                                        pixelG = (byte)stream.ReadByte();
-                                        pixelB = (byte)stream.ReadByte();
-                                        if (imageDepth == 32)
-                                            pixelA = (byte)stream.ReadByte();
-                                        else
-                                            pixelA = 0xFF;
-                                        for (; w < imageWidth && repeat > 0; w++, repeat--)
-                                        {
-                                            buffer[pos++] = pixelR;
-                                            buffer[pos++] = pixelG;
-                                            buffer[pos++] = pixelB;
-                                            buffer[pos++] = pixelA;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        for (; w < imageWidth && count > 0; w++, count--)
-                                        {
-                                            buffer[pos++] = (byte)stream.ReadByte();
-                                            buffer[pos++] = (byte)stream.ReadByte();
-                                            buffer[pos++] = (byte)stream.ReadByte();
-                                            if (imageDepth == 32)
-                                                buffer[pos++] = (byte)stream.ReadByte();
-                                            else
-                                                buffer[pos++] = 0xFF;
-                                        }
-                                    }
-                                }
-
-                                if (w == imageWidth)
-                                {
-                                    w = 0;
-                                    pos += delta;
-                                    if (++h == imageHeight)
-                                        break;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            for (int h = 0; h < imageHeight; h++, pos += delta)
-                            {
-                                for (int w = 0; w < imageWidth; w++)
-                                {
-                                    buffer[pos++] = (byte)stream.ReadByte();
-                                    buffer[pos++] = (byte)stream.ReadByte();
-                                    buffer[pos++] = (byte)stream.ReadByte();
-                                    if (imageDepth == 32)
-                                        buffer[pos++] = (byte)stream.ReadByte();
-                                    else
-                                        buffer[pos++] = 0xFF;
-                                }
-                            }
-                        }
-
-                        MipMap mipmap = new MipMap(buffer, imageWidth, imageHeight);
-                        mipMaps.Add(mipmap);
+                        LoadImageTGA(stream, format);
                         break;
                     }
                 case ImageFormat.BMP:
                     {
-                        ushort tag = stream.ReadUInt16();
-                        if (tag != BMP_TAG)
-                            throw new Exception("not BMP header");
-                        stream.Skip(8);
-                        uint offsetData = stream.ReadUInt32();
-                        int headerSize = stream.ReadInt32();
-                        int imageWidth = stream.ReadInt32();
-                        int imageHeight = stream.ReadInt32();
-                        if (imageHeight < 0)
-                            throw new Exception("down to top not supported in BMP!");
-                        if (!checkPowerOfTwo(imageWidth) ||
-                            !checkPowerOfTwo(imageHeight))
-                            throw new Exception("dimensions not power of two");
-                        stream.Skip(2);
-                        int bits = stream.ReadUInt16();
-                        if (bits != 32 && bits != 24)
-                            throw new Exception("only 24 and 32 bits BMP supported!");
-                        uint Rmask = 0, Gmask = 0, Bmask = 0, Amask = 0;
-                        if (headerSize >= 40)
-                        {
-                            int compression = stream.ReadInt32();
-                            if (compression == 1 || compression == 2)
-                                throw new Exception("compression not supported in BMP!");
-                            if (compression == 3)
-                            {
-                                stream.Skip(20);
-                                Rmask = stream.ReadUInt32();
-                                Gmask = stream.ReadUInt32();
-                                Bmask = stream.ReadUInt32();
-                                if (headerSize >= 56)
-                                    Amask = stream.ReadUInt32();
-                            }
-                            stream.JumpTo(headerSize + 14);
-                        }
-
-                        byte[] buffer = new byte[imageWidth * imageHeight * 4];
-                        int pos = 0;
-                        for (int h = 0; h < imageHeight; h++)
-                        {
-                            for (int i = 0; i < imageWidth; i++)
-                            {
-                                if (bits == 24)
-                                {
-                                    buffer[pos++] = (byte)stream.ReadByte();
-                                    buffer[pos++] = (byte)stream.ReadByte();
-                                    buffer[pos++] = (byte)stream.ReadByte();
-                                    buffer[pos++] = 0xff;
-                                }
-                                else if (bits == 32)
-                                {
-                                    uint p1 = (uint)stream.ReadByte();
-                                    uint p2 = (uint)stream.ReadByte();
-                                    uint p3 = (uint)stream.ReadByte();
-                                    uint p4 = (uint)stream.ReadByte();
-                                    uint pixel = p4 << 24 | p3 << 16 | p2 << 8 | p1;
-                                    buffer[pos++] = (byte)((pixel & Gmask) >> 16);
-                                    buffer[pos++] = (byte)((pixel & Bmask) >> 8);
-                                    buffer[pos++] = (byte)((pixel & Rmask) >> 24);
-                                    buffer[pos++] = (byte)((pixel & Amask) >> 0);
-                                }
-                            }
-                            if (imageWidth % 4 != 0)
-                                stream.Skip(4 - (imageWidth % 4));
-                        }
-
-                        MipMap mipmap = new MipMap(buffer, imageWidth, imageHeight);
-                        mipMaps.Add(mipmap);
+                        LoadImageBMP(stream, format);
                         break;
                     }
                 case ImageFormat.PNG:
-                    {
-                        PngBitmapDecoder bmp = new PngBitmapDecoder(stream, BitmapCreateOptions.None, BitmapCacheOption.Default);
-                        BitmapSource frame = bmp.Frames[0];
-                        if (!checkPowerOfTwo((int)frame.Width) ||
-                            !checkPowerOfTwo((int)frame.Height))
-                            throw new Exception("dimensions not power of two");
-                        FormatConvertedBitmap srcBitmap = new FormatConvertedBitmap();
-                        srcBitmap.BeginInit();
-                        srcBitmap.Source = bmp.Frames[0];
-                        srcBitmap.DestinationFormat = PixelFormats.Bgra32;
-                        srcBitmap.EndInit();
-                        byte[] pixels = new byte[srcBitmap.PixelWidth * srcBitmap.PixelHeight * 4];
-                        frame.CopyPixels(pixels, srcBitmap.PixelWidth * 4, 0);
-                        MipMap mipmap = new MipMap(pixels, srcBitmap.PixelWidth, srcBitmap.PixelHeight);
-                        mipMaps.Add(mipmap);
-                        break;
-                    }
                 case ImageFormat.JPEG:
                     {
-                        JpegBitmapDecoder bmp = new JpegBitmapDecoder(stream, BitmapCreateOptions.None, BitmapCacheOption.Default);
-                        BitmapSource frame = bmp.Frames[0];
+                        BitmapSource frame = null;
+                        if (format == ImageFormat.PNG)
+                            frame = new PngBitmapDecoder(stream, BitmapCreateOptions.None, BitmapCacheOption.Default).Frames[0];
+                        else if (format == ImageFormat.JPEG)
+                            frame = new JpegBitmapDecoder(stream, BitmapCreateOptions.None, BitmapCacheOption.Default).Frames[0];
+
                         if (!checkPowerOfTwo((int)frame.Width) ||
                             !checkPowerOfTwo((int)frame.Height))
                             throw new Exception("dimensions not power of two");
+
                         FormatConvertedBitmap srcBitmap = new FormatConvertedBitmap();
                         srcBitmap.BeginInit();
-                        srcBitmap.Source = bmp.Frames[0];
+                        srcBitmap.Source = frame;
                         srcBitmap.DestinationFormat = PixelFormats.Bgra32;
                         srcBitmap.EndInit();
+
                         byte[] pixels = new byte[srcBitmap.PixelWidth * srcBitmap.PixelHeight * 4];
                         frame.CopyPixels(pixels, srcBitmap.PixelWidth * 4, 0);
-                        MipMap mipmap = new MipMap(pixels, srcBitmap.PixelWidth, srcBitmap.PixelHeight);
+
+                        MipMap mipmap = new MipMap(pixels, srcBitmap.PixelWidth, srcBitmap.PixelHeight, PixelFormat.ARGB);
                         mipMaps.Add(mipmap);
                         break;
                     }
@@ -388,72 +214,125 @@ namespace MassEffectModder
             }
         }
 
-        public void StoreARGBImageToDDS(Stream stream)
+        public static byte[] convertRawToARGB(byte[] src, int w, int h, PixelFormat format, bool stripAlpha = false)
         {
-            stream.WriteUInt32(DDS_TAG);
-            stream.WriteInt32(DDS_HEADER_dwSize);
-            stream.WriteUInt32(DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_MIPMAPCOUNT | DDSD_PIXELFORMAT | DDSD_LINEARSIZE);
-            stream.WriteInt32(mipMaps[0].height);
-            stream.WriteInt32(mipMaps[0].width);
-
-            int dataSize = 0;
-            for (int i = 0; i < mipMaps.Count; i++)
-                dataSize += 4 * mipMaps[i].width * mipMaps[i].height;
-            stream.WriteInt32(dataSize);
-
-            stream.WriteUInt32(0); // dwDepth
-            stream.WriteInt32(mipMaps.Count);
-            stream.WriteZeros(44); // dwReserved1
-
-            stream.WriteInt32(DDS_PIXELFORMAT_dwSize);
-            stream.WriteUInt32(DDPF_ALPHAPIXELS | DDPF_RGB); // dwFlags
-            stream.WriteUInt32(0); // dwFourCC
-            stream.WriteUInt32(32); // dwRGBBitCount
-            stream.WriteUInt32(0xFF0000); // dwRBitMask
-            stream.WriteUInt32(0xFF00); // dwGBitMask
-            stream.WriteUInt32(0xFF); // dwBBitMask
-            stream.WriteUInt32(0xFF000000); // dwABitMask
-
-            stream.WriteInt32(DDSCAPS_COMPLEX | DDSCAPS_MIPMAP | DDSCAPS_TEXTURE);
-            stream.WriteUInt32(0); // dwCaps2
-            stream.WriteUInt32(0); // dwCaps3
-            stream.WriteUInt32(0); // dwCaps4
-            stream.WriteUInt32(0); // dwReserved2
-            for (int i = 0; i < mipMaps.Count; i++)
+            byte[] tmpData;
+            switch (format)
             {
-                stream.WriteFromBuffer(mipMaps[i].getData());
+                case PixelFormat.DXT1: tmpData = DDSImage.UncompressDXT1(src, w, h, stripAlpha); break;
+                case PixelFormat.DXT3: tmpData = DDSImage.UncompressDXT3(src, w, h, stripAlpha); break;
+                case PixelFormat.DXT5: tmpData = DDSImage.UncompressDXT5(src, w, h, stripAlpha); break;
+                case PixelFormat.ATI2: tmpData = DDSImage.UncompressATI2(src, w, h); break;
+                case PixelFormat.ARGB: tmpData = src; break;
+                case PixelFormat.RGB: tmpData = RGBToARGB(src, w, h); break;
+                case PixelFormat.V8U8: tmpData = V8U8ToARGB(src, w, h); break;
+                case PixelFormat.G8: tmpData = G8ToARGB(src, w, h); break;
+                default:
+                    throw new Exception("invalid texture format " + format);
             }
+            return tmpData;
         }
 
-        public void SaveARGBImageToDDS(string filename)
+        public static byte[] convertRawToRGB(byte[] src, int w, int h, PixelFormat format, bool stripAlpha = false)
         {
-            using (FileStream fs = new FileStream(filename, FileMode.CreateNew, FileAccess.Write))
+            byte[] tmpData = convertRawToARGB(src, w, h, format, stripAlpha);
+            byte[] tmpDataNew = new byte[w * h * 3];
+            for (int i = 0; i < w * h; i++)
             {
-                StoreARGBImageToDDS(fs);
+                tmpDataNew[3 * i + 0] = tmpData[4 * i + 0];
+                tmpDataNew[3 * i + 1] = tmpData[4 * i + 1];
+                tmpDataNew[3 * i + 2] = tmpData[4 * i + 2];
             }
+            return tmpDataNew;
         }
 
-        public byte[] StoreARGBImageToDDS()
+        public static Bitmap convertRawToBitmapARGB(byte[] src, int w, int h, PixelFormat format)
         {
-            MemoryStream stream = new MemoryStream();
-            StoreARGBImageToDDS(stream);
-            return stream.ToArray();
+            byte[] tmpData = convertRawToARGB(src, w, h, format, true);
+            Bitmap bitmap = new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            BitmapData bitmapData = bitmap.LockBits(new Rectangle(0, 0, w, h), ImageLockMode.ReadWrite, bitmap.PixelFormat);
+            Marshal.Copy(tmpData, 0, bitmapData.Scan0, tmpData.Length);
+            bitmap.UnlockBits(bitmapData);
+            return bitmap;
         }
 
-        public bool checkMipmaps()
+        public Bitmap getBitmapARGB()
         {
-            int width = mipMaps[0].width;
-            int height = mipMaps[0].height;
-            for (int i = 0; i < mipMaps.Count; i++)
+            return convertRawToBitmapARGB(mipMaps[0].data, mipMaps[0].width, mipMaps[0].height, pixelFormat);
+        }
+
+        private static byte[] RGBToARGB(byte[] src, int w, int h)
+        {
+            byte[] tmpData = new byte[w * h * 4];
+            for (int i = 0; i < w * h; i++)
             {
-                if (mipMaps[i].width < 4 || mipMaps[i].height < 4)
-                    return true;
-                if (mipMaps[i].width != width && mipMaps[i].height != height)
-                    return false;
-                width /= 2;
-                height /= 2;
+                tmpData[4 * i + 0] = src[3 * i + 0];
+                tmpData[4 * i + 1] = src[3 * i + 1];
+                tmpData[4 * i + 2] = src[3 * i + 2];
+                tmpData[4 * i + 3] = 255;
             }
-            return true;
+            return tmpData;
+        }
+
+        private static byte[] V8U8ToARGB(byte[] src, int w, int h)
+        {
+            byte[] tmpData = new byte[w * h * 4];
+            for (int i = 0; i < w * h; i++)
+            {
+                tmpData[4 * i + 0] = 255;;
+                tmpData[4 * i + 1] = (byte)(((sbyte)src[2 * i + 1]) + 128);
+                tmpData[4 * i + 2] = (byte)(((sbyte)src[2 * i + 0]) + 128);
+                tmpData[4 * i + 3] = 255;
+            }
+            return tmpData;
+        }
+
+        private static byte[] G8ToARGB(byte[] src, int w, int h)
+        {
+            byte[] tmpData = new byte[w * h * 4];
+            for (int i = 0; i < w * h; i++)
+            {
+                tmpData[4 * i + 0] = src[i];
+                tmpData[4 * i + 1] = src[i];
+                tmpData[4 * i + 2] = src[i];
+                tmpData[4 * i + 3] = 255;
+            }
+
+            return tmpData;
+        }
+
+        public static PngBitmapEncoder convertToPng(byte[] src, int w, int h, PixelFormat format, bool stripAlpha = false)
+        {
+            byte[] tmpData = convertRawToARGB(src, w, h, format, stripAlpha);
+            PngBitmapEncoder png = new PngBitmapEncoder();
+            BitmapSource image = BitmapSource.Create(w, h, 96, 96, PixelFormats.Bgra32, null, tmpData, w * 4);
+            png.Frames.Add(BitmapFrame.Create(image));
+            return png;
+        }
+
+        public static PixelFormat convertFormat(string format)
+        {
+            switch (format)
+            {
+                case "PF_DXT1":
+                    return PixelFormat.DXT1;
+                case "PF_DXT3":
+                    return PixelFormat.DXT3;
+                case "PF_DXT5":
+                    return PixelFormat.DXT5;
+                case "PF_NormalMap_HQ":
+                    return PixelFormat.ATI2;
+                case "PF_V8U8":
+                    return PixelFormat.V8U8;
+                case "PF_A8R8G8B8":
+                    return PixelFormat.ARGB;
+                case "PF_R8G8B8":
+                    return PixelFormat.RGB;
+                case "PF_G8":
+                    return PixelFormat.G8;
+                default:
+                    throw new Exception("invalid texture format");
+            }
         }
 
         public bool checkPowerOfTwo(int n)
