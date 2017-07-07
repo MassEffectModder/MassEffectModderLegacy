@@ -85,9 +85,7 @@ namespace MassEffectModder
 
             stream.Skip(8); // dwPitchOrLinearSize, dwDepth
 
-            int dwMipMapCount = 1;
-            if ((DDSflags & DDSD_MIPMAPCOUNT) != 0)
-                dwMipMapCount = stream.ReadInt32();
+            int dwMipMapCount = stream.ReadInt32();
             if (dwMipMapCount == 0)
                 dwMipMapCount = 1;
 
@@ -178,6 +176,10 @@ namespace MassEffectModder
                     pixelFormat = PixelFormat.DXT5;
                     break;
 
+                case FOURCC_ATI2_TAG:
+                    pixelFormat = PixelFormat.ATI2;
+                    break;
+
                 default:
                     throw new Exception("Not supported DDS format");
             }
@@ -209,14 +211,14 @@ namespace MassEffectModder
 
                 try
                 {
-                    tempData = stream.ReadToBuffer(MipMap.getBufferSize(origW, origH, pixelFormat));
+                    tempData = stream.ReadToBuffer(MipMap.getBufferSize(w, h, pixelFormat));
                 }
                 catch
                 {
                     throw new Exception("not enough data in stream");
                 }
 
-                mipMaps.Add(new MipMap(tempData, w, h, pixelFormat));
+                mipMaps.Add(new MipMap(tempData, origW, origH, pixelFormat));
             }
         }
 
