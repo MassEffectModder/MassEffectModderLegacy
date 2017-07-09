@@ -65,7 +65,9 @@ namespace Md5SumGen
             using (FileStream fs = new FileStream("MD5EntriesME" + gameId + ".bin", FileMode.Create, FileAccess.Write))
             {
                 fs.WriteUInt32(md5Tag);
-                fs.WriteFromBuffer(Zlib.Compress(stream.ToArray()));
+                byte[] tmp = stream.ToArray();
+                fs.WriteInt32(tmp.Length);
+                fs.WriteFromBuffer(Zlib.Compress(tmp));
             }
         }
     }
