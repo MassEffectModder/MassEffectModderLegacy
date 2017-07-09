@@ -306,7 +306,7 @@ namespace MassEffectModder
                     {
                         int width = texture.getTopMipmap().width;
                         int height = texture.getTopMipmap().height;
-                        PixelFormat pixelFormat = Image.convertFormat(texture.properties.getProperty("Format").valueName);
+                        PixelFormat pixelFormat = Image.getEngineFormatType(texture.properties.getProperty("Format").valueName);
                         pictureBoxPreview.Image = Image.convertRawToBitmapARGB(textureData, width, height, pixelFormat);
                         pictureBoxPreview.Show();
                         richTextBoxInfo.Hide();
@@ -1100,7 +1100,7 @@ namespace MassEffectModder
                                     Package pkg = new Package(GameData.GamePath + f.list[0].path);
                                     Texture texture = new Texture(pkg, f.list[0].exportID, pkg.getExportData(f.list[0].exportID));
                                     string fmt = texture.properties.getProperty("Format").valueName;
-                                    PixelFormat pixelFormat = Image.convertFormat(fmt);
+                                    PixelFormat pixelFormat = Image.getEngineFormatType(fmt);
                                     Image image = new Image(mod.data, Image.ImageFormat.DDS);
 
                                     if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
@@ -1114,7 +1114,8 @@ namespace MassEffectModder
                                         (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1) ||
                                         image.pixelFormat != pixelFormat)
                                     {
-                                        mod.data = MipMaps.convertDDS(pixelFormat, new Image(mod.data, Image.ImageFormat.DDS).convertToARGB().StoreImageToDDS());
+                                        image.correctMips(pixelFormat);
+                                        mod.data = image.StoreImageToDDS();
                                     }
                                 }
                                 mods.Add(mod);
@@ -1213,14 +1214,10 @@ namespace MassEffectModder
                                 Package pkg = new Package(GameData.GamePath + foundCrcList[0].list[0].path);
                                 Texture texture = new Texture(pkg, foundCrcList[0].list[0].exportID, pkg.getExportData(foundCrcList[0].list[0].exportID));
                                 string fmt = texture.properties.getProperty("Format").valueName;
-                                PixelFormat pixelFormat = Image.convertFormat(fmt);
+                                PixelFormat pixelFormat = Image.getEngineFormatType(fmt);
                                 uint tag = BitConverter.ToUInt32(mod.data, 0);
-                                if (tag != Image.DDS_TAG) // not DDS
-                                {
-                                    mod.data = MipMaps.convertDDS(pixelFormat, new Image(mod.data, Path.GetExtension(filename)).convertToARGB().StoreImageToDDS());
-                                }
-                                Image image = new Image(mod.data, Image.ImageFormat.DDS);
 
+                                Image image = new Image(mod.data, Path.GetExtension(filename));
                                 if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
                                     texture.mipMapsList[0].width / texture.mipMapsList[0].height)
                                 {
@@ -1233,7 +1230,8 @@ namespace MassEffectModder
                                     (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1) ||
                                     image.pixelFormat != pixelFormat)
                                 {
-                                    mod.data = MipMaps.convertDDS(pixelFormat, new Image(mod.data, Image.ImageFormat.DDS).StoreImageToDDS());
+                                    image.correctMips(pixelFormat);
+                                    mod.data = image.StoreImageToDDS();
                                 }
 
                                 mods.Add(mod);

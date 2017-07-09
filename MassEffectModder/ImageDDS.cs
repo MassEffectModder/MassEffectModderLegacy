@@ -22,6 +22,7 @@
 using System;
 using System.IO;
 using StreamHelpers;
+using Microsoft.VisualBasic;
 
 namespace MassEffectModder
 {
@@ -271,14 +272,14 @@ namespace MassEffectModder
             return this;
         }
 
-        private DDS_PF getDDSPixelFormat(PixelFormat format)
+        static private DDS_PF getDDSPixelFormat(PixelFormat format, bool dxt1HasAlpha)
         {
             DDS_PF pixelFormat = new DDS_PF();
             switch (format)
             {
                 case PixelFormat.DXT1:
                     pixelFormat.flags = DDPF_FOURCC;
-                    if (hasAlpha)
+                    if (dxt1HasAlpha)
                         pixelFormat.flags |= DDPF_ALPHAPIXELS;
                     pixelFormat.fourCC = FOURCC_DXT1_TAG;
                     break;
@@ -332,9 +333,44 @@ namespace MassEffectModder
                     break;
 
                 default:
-                    throw new Exception("invalid texture format " + this.pixelFormat);
+                    throw new Exception("invalid texture format " + pixelFormat);
             }
             return pixelFormat;
+        }
+
+        static public byte[] StoreMipToDDS(byte[] src, PixelFormat format, int w, int h, bool dxt1HasAlpha = false)
+        {
+            MemoryStream stream = new MemoryStream();
+            stream.WriteUInt32(DDS_TAG);
+            stream.WriteInt32(DDS_HEADER_dwSize);
+            stream.WriteUInt32(DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_MIPMAPCOUNT | DDSD_PIXELFORMAT | DDSD_LINEARSIZE);
+            stream.WriteInt32(h);
+            stream.WriteInt32(w);
+            stream.WriteInt32(src.Length);
+
+            stream.WriteUInt32(0); // dwDepth
+            stream.WriteInt32(1);
+            stream.WriteZeros(44); // dwReserved1
+
+            stream.WriteInt32(DDS_PIXELFORMAT_dwSize);
+            DDS_PF pixfmt = getDDSPixelFormat(format, dxt1HasAlpha);
+            stream.WriteUInt32(pixfmt.flags);
+            stream.WriteUInt32(pixfmt.fourCC);
+            stream.WriteUInt32(pixfmt.bits);
+            stream.WriteUInt32(pixfmt.Rmask);
+            stream.WriteUInt32(pixfmt.Gmask);
+            stream.WriteUInt32(pixfmt.Bmask);
+            stream.WriteUInt32(pixfmt.Amask);
+
+            stream.WriteInt32(DDSCAPS_COMPLEX | DDSCAPS_MIPMAP | DDSCAPS_TEXTURE);
+            stream.WriteUInt32(0); // dwCaps2
+            stream.WriteUInt32(0); // dwCaps3
+            stream.WriteUInt32(0); // dwCaps4
+            stream.WriteUInt32(0); // dwReserved2
+
+            stream.WriteFromBuffer(src);
+
+            return stream.ToArray();
         }
 
         public void StoreImageToDDS(Stream stream, PixelFormat format = PixelFormat.Unknown)
@@ -355,7 +391,7 @@ namespace MassEffectModder
             stream.WriteZeros(44); // dwReserved1
 
             stream.WriteInt32(DDS_PIXELFORMAT_dwSize);
-            DDS_PF pixfmt = getDDSPixelFormat(format == PixelFormat.Unknown ? pixelFormat: format);
+            DDS_PF pixfmt = getDDSPixelFormat(format == PixelFormat.Unknown ? pixelFormat: format, hasAlpha);
             stream.WriteUInt32(pixfmt.flags);
             stream.WriteUInt32(pixfmt.fourCC);
             stream.WriteUInt32(pixfmt.bits);
@@ -380,6 +416,50 @@ namespace MassEffectModder
             MemoryStream stream = new MemoryStream();
             StoreImageToDDS(stream);
             return stream.ToArray();
+        }
+
+        static public byte[] convertDDS(PixelFormat dstFormat, byte[] src, PixelFormat srcFormat, bool dxt1alpha = false)
+        {
+            string inputFile = Path.Combine(Program.dllPath, "input.dds");
+            string outputFile = Path.Combine(Program.dllPath, "output.dds");
+            if (File.Exists(inputFile))
+                File.Delete(inputFile);
+            if (File.Exists(outputFile))
+                File.Delete(outputFile);
+            using (FileStream fs = new FileStream(inputFile, FileMode.CreateNew))
+            {
+                fs.WriteFromBuffer(src);
+            }
+
+            string nvFmt;
+            switch (dstFormat)
+            {
+                case PixelFormat.DXT1:
+                    if (dxt1alpha)
+                        nvFmt = "-bc1a";
+                    else
+                        nvFmt = "-bc1";
+                    break;
+                case PixelFormat.DXT3:
+                    nvFmt = "-bc2";
+                    break;
+                case PixelFormat.DXT5:
+                    nvFmt = "-bc3";
+                    break;
+                case PixelFormat.ATI2:
+                    nvFmt = "-bc5";
+                    break;
+                default:
+                    throw new Exception("invalid texture format " + dstFormat);
+            }
+
+            Interaction.Shell(Path.Combine(Path.GetDirectoryName(inputFile), "nvcompress.exe") + " -silent -nocuda -nomips " +
+                nvFmt + " " + inputFile + " " + outputFile, AppWinStyle.Hide, true);
+
+            using (FileStream fs = new FileStream(outputFile, FileMode.Open))
+            {
+                return fs.ReadToBuffer(new FileInfo(outputFile).Length);
+            }
         }
 
     }

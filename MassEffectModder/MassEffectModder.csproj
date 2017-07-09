@@ -180,11 +180,6 @@
     <EmbeddedResource Include="Dlls\zlibwrapper.dll" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Dlls\ConvertDDS.exe" />
-    <EmbeddedResource Include="Dlls\CSharpImageLibrary.dll" />
-    <EmbeddedResource Include="Dlls\System.Threading.Tasks.Dataflow.dll" />
-    <EmbeddedResource Include="Dlls\System.Windows.Interactivity.dll" />
-    <EmbeddedResource Include="Dlls\UsefulThings.dll" />
     <EmbeddedResource Include="Dlls\nvcompress.exe" />
     <Content Include="MEM.ico" />
   </ItemGroup>

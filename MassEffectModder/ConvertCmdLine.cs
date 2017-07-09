@@ -247,7 +247,7 @@ namespace MassEffectModder
                                     }
                                     Texture texture = new Texture(pkg, f.list[0].exportID, pkg.getExportData(f.list[0].exportID));
                                     string fmt = texture.properties.getProperty("Format").valueName;
-                                    PixelFormat pixelFormat = Image.convertFormat(fmt);
+                                    PixelFormat pixelFormat = Image.getEngineFormatType(fmt);
                                     Image image = new Image(mod.data, Image.ImageFormat.DDS);
                                     if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
                                         texture.mipMapsList[0].width / texture.mipMapsList[0].height)
@@ -260,7 +260,8 @@ namespace MassEffectModder
                                         (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1) ||
                                         image.pixelFormat != pixelFormat)
                                     {
-                                        mod.data = MipMaps.convertDDS(pixelFormat, new Image(mod.data, Image.ImageFormat.DDS).convertToARGB().StoreImageToDDS());
+                                        image.correctMips(pixelFormat);
+                                        mod.data = image.StoreImageToDDS();
                                     }
                                 }
                                 mods.Add(mod);
@@ -367,14 +368,9 @@ namespace MassEffectModder
                                 }
                                 Texture texture = new Texture(pkg, foundCrcList[0].list[0].exportID, pkg.getExportData(foundCrcList[0].list[0].exportID));
                                 string fmt = texture.properties.getProperty("Format").valueName;
-                                PixelFormat pixelFormat = Image.convertFormat(fmt);
-                                uint tag = BitConverter.ToUInt32(mod.data, 0);
-                                if (tag != Image.DDS_TAG) // not DDS
-                                {
-                                    mod.data = MipMaps.convertDDS(pixelFormat, new Image(mod.data, Path.GetExtension(filename)).convertToARGB().StoreImageToDDS());
-                                }
-                                Image image = new Image(mod.data, Image.ImageFormat.DDS);
+                                PixelFormat pixelFormat = Image.getEngineFormatType(fmt);
 
+                                Image image = new Image(mod.data, Path.GetExtension(filename));
                                 if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
                                     texture.mipMapsList[0].width / texture.mipMapsList[0].height)
                                 {
@@ -387,7 +383,8 @@ namespace MassEffectModder
                                     (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1) ||
                                     image.pixelFormat != pixelFormat)
                                 {
-                                    mod.data = MipMaps.convertDDS(pixelFormat, new Image(mod.data, Image.ImageFormat.DDS).convertToARGB().StoreImageToDDS());
+                                    image.correctMips(pixelFormat);
+                                    mod.data = image.StoreImageToDDS();
                                 }
                                 mods.Add(mod);
                             }
@@ -457,7 +454,7 @@ namespace MassEffectModder
                         }
                         Texture texture = new Texture(pkg, foundCrcList[0].list[0].exportID, pkg.getExportData(foundCrcList[0].list[0].exportID));
                         string fmt = texture.properties.getProperty("Format").valueName;
-                        PixelFormat pixelFormat = Image.convertFormat(fmt);
+                        PixelFormat pixelFormat = Image.getEngineFormatType(fmt);
                         mod.data = fs.ReadToBuffer((int)fs.Length);
                         Image image = new Image(mod.data, Image.ImageFormat.DDS);
 
@@ -472,7 +469,8 @@ namespace MassEffectModder
                             (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1) ||
                             image.pixelFormat != pixelFormat)
                         {
-                            mod.data = MipMaps.convertDDS(pixelFormat, new Image(mod.data, Image.ImageFormat.DDS).convertToARGB().StoreImageToDDS());
+                            image.correctMips(pixelFormat);
+                            mod.data = image.StoreImageToDDS();
                         }
 
                         mod.textureName = foundCrcList[0].name;
@@ -532,7 +530,7 @@ namespace MassEffectModder
                     }
                     Texture texture = new Texture(pkg, foundCrcList[0].list[0].exportID, pkg.getExportData(foundCrcList[0].list[0].exportID));
                     string fmt = texture.properties.getProperty("Format").valueName;
-                    PixelFormat pixelFormat = Image.convertFormat(fmt);
+                    PixelFormat pixelFormat = Image.getEngineFormatType(fmt);
 
                     Image image = new Image(file, Image.ImageFormat.Unknown).convertToARGB();
                     if (image.mipMaps[0].width / image.mipMaps[0].height !=
@@ -542,7 +540,8 @@ namespace MassEffectModder
                         continue;
                     }
 
-                    mod.data = MipMaps.convertDDS(pixelFormat, image.StoreImageToDDS());
+                    image.correctMips(pixelFormat);
+                    mod.data = image.StoreImageToDDS();
                     mod.textureName = foundCrcList[0].name;
                     mod.binaryMod = false;
                     mod.textureCrc = crc;

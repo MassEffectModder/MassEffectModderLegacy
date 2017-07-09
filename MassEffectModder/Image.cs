@@ -328,6 +328,72 @@ namespace MassEffectModder
             return tmpData;
         }
 
+        private static byte[] downscaleARGB(byte[] src, int w, int h)
+        {
+            if (w == 1 && h == 1)
+                throw new Exception("1x1 can not be downscaled");
+
+            byte[] tmpData;
+            if (w == 1 || h == 1)
+            {
+                tmpData = new byte[w * h * 2];
+                for (int srcPos = 0, dstPos = 0; dstPos < w * h * 2; srcPos += 8)
+                {
+                    tmpData[dstPos++] = (byte)((uint)(src[srcPos + 0] + src[srcPos + 4 + 0]) >> 1);
+                    tmpData[dstPos++] = (byte)((uint)(src[srcPos + 1] + src[srcPos + 4 + 1]) >> 1);
+                    tmpData[dstPos++] = (byte)((uint)(src[srcPos + 2] + src[srcPos + 4 + 2]) >> 1);
+                    tmpData[dstPos++] = (byte)((uint)(src[srcPos + 3] + src[srcPos + 4 + 3]) >> 1);
+                }
+            }
+            else
+            {
+                tmpData = new byte[w * h];
+                int pitch = w * 4;
+                for (int srcPos = 0, dstPos = 0; dstPos < w * h; srcPos += pitch)
+                    for (int x = 0; x < (w / 2); x++, srcPos += 8)
+                    {
+                        tmpData[dstPos++] = (byte)((uint)(src[srcPos + 0] + src[srcPos + 4 + 0] + src[srcPos + pitch + 0] + src[srcPos + pitch + 4 + 0]) >> 2);
+                        tmpData[dstPos++] = (byte)((uint)(src[srcPos + 1] + src[srcPos + 4 + 1] + src[srcPos + pitch + 1] + src[srcPos + pitch + 4 + 1]) >> 2);
+                        tmpData[dstPos++] = (byte)((uint)(src[srcPos + 2] + src[srcPos + 4 + 2] + src[srcPos + pitch + 2] + src[srcPos + pitch + 4 + 2]) >> 2);
+                        tmpData[dstPos++] = (byte)((uint)(src[srcPos + 3] + src[srcPos + 4 + 3] + src[srcPos + pitch + 3] + src[srcPos + pitch + 4 + 3]) >> 2);
+                    }
+            }
+        
+            return tmpData;
+        }
+
+        private static byte[] downscaleRGB(byte[] src, int w, int h)
+        {
+            if (w == 1 && h == 1)
+                throw new Exception("1x1 can not be downscaled");
+
+            byte[] tmpData;
+            if (w == 1 || h == 1)
+            {
+                tmpData = new byte[(w * h * 3) / 2];
+                for (int srcPos = 0, dstPos = 0; dstPos < (w * h * 3) / 2; srcPos += 6)
+                {
+                    tmpData[dstPos++] = (byte)((uint)(src[srcPos + 0] + src[srcPos + 3 + 0]) >> 1);
+                    tmpData[dstPos++] = (byte)((uint)(src[srcPos + 1] + src[srcPos + 3 + 1]) >> 1);
+                    tmpData[dstPos++] = (byte)((uint)(src[srcPos + 2] + src[srcPos + 3 + 2]) >> 1);
+                }
+            }
+            else
+            {
+                tmpData = new byte[(w * h * 3) / 4];
+                int pitch = w * 3;
+                for (int srcPos = 0, dstPos = 0; dstPos < (w * h * 3) / 4; srcPos += pitch)
+                    for (int x = 0; x < (w / 2); x++, srcPos += 6)
+                    {
+                        tmpData[dstPos++] = (byte)((uint)(src[srcPos + 0] + src[srcPos + 3 + 0] + src[srcPos + pitch + 0] + src[srcPos + pitch + 3 + 0]) >> 2);
+                        tmpData[dstPos++] = (byte)((uint)(src[srcPos + 1] + src[srcPos + 3 + 1] + src[srcPos + pitch + 1] + src[srcPos + pitch + 3 + 1]) >> 2);
+                        tmpData[dstPos++] = (byte)((uint)(src[srcPos + 2] + src[srcPos + 3 + 2] + src[srcPos + pitch + 2] + src[srcPos + pitch + 3 + 2]) >> 2);
+                    }
+            }
+
+            return tmpData;
+        }
+
         public static PngBitmapEncoder convertToPng(byte[] src, int w, int h, PixelFormat format, bool stripAlpha = false)
         {
             byte[] tmpData = convertRawToARGB(src, w, h, format, stripAlpha);
@@ -337,7 +403,136 @@ namespace MassEffectModder
             return png;
         }
 
-        public static PixelFormat convertFormat(string format)
+        static private byte[] convertToFormat(PixelFormat srcFormat, byte[] src, int w, int h, PixelFormat dstFormat, bool dxt1HasAlpha = false)
+        {
+            byte[] tempData;
+
+            switch (dstFormat)
+            {
+                case PixelFormat.DXT1:
+                    if (dxt1HasAlpha)
+                    {
+                        tempData = convertRawToARGB(src, w, h, srcFormat);
+                        tempData = convertDDS(dstFormat, StoreMipToDDS(src, PixelFormat.ARGB, w, h, dxt1HasAlpha), PixelFormat.ARGB);
+                    }
+                    else
+                    {
+                        tempData = convertRawToRGB(src, w, h, srcFormat);
+                        tempData = convertDDS(dstFormat, StoreMipToDDS(tempData, PixelFormat.RGB, w, h), PixelFormat.RGB);
+                    }
+                    Image tempImage1 = new Image(tempData, ImageFormat.DDS);
+                    tempData = tempImage1.mipMaps[0].data;
+                    break;
+                case PixelFormat.DXT3:
+                case PixelFormat.DXT5:
+                case PixelFormat.ATI2:
+                    tempData = convertRawToARGB(src, w, h, srcFormat);
+                    tempData = convertDDS(dstFormat, StoreMipToDDS(src, PixelFormat.ARGB, w, h), PixelFormat.ARGB);
+                    Image tempImage2 = new Image(tempData, ImageFormat.DDS);
+                    tempData = tempImage2.mipMaps[0].data;
+                    break;
+                case PixelFormat.ARGB:
+                    tempData = convertRawToARGB(src, w, h, srcFormat);
+                    break;
+                case PixelFormat.RGB:
+                    tempData = convertRawToRGB(src, w, h, srcFormat);
+                    break;
+                case PixelFormat.V8U8:
+                    tempData = convertRawToARGB(src, w, h, srcFormat);
+                    tempData = ARGBtoV8U8(tempData, w, h);
+                    break;
+                case PixelFormat.G8:
+                    tempData = convertRawToARGB(src, w, h, srcFormat);
+                    tempData = ARGBtoG8(tempData, w, h);
+                    break;
+                default:
+                    throw new Exception("not supported format");
+            }
+
+            return tempData;
+        }
+
+        public void correctMips(PixelFormat dstFormat)
+        {
+            byte[] tempData;
+
+            if (dstFormat != PixelFormat.ARGB)
+                tempData = convertRawToARGB(mipMaps[0].data, mipMaps[0].width, mipMaps[0].height, pixelFormat);
+            else
+                tempData = mipMaps[0].data;
+
+            int width = mipMaps[0].origWidth;
+            int height = mipMaps[0].origHeight;
+
+            if (mipMaps.Count > 1)
+                mipMaps.RemoveRange(1, mipMaps.Count - 1);
+
+            if (dstFormat != pixelFormat)
+            {
+                byte[] top = convertToFormat(pixelFormat, mipMaps[0].data, width, height, dstFormat);
+                mipMaps.RemoveAt(0);
+                mipMaps.Add(new MipMap(top, width, height, dstFormat));
+                pixelFormat = dstFormat;
+                if (dstFormat == PixelFormat.DXT1 ||
+                    dstFormat == PixelFormat.ATI2 ||
+                    dstFormat == PixelFormat.RGB ||
+                    dstFormat == PixelFormat.G8 ||
+                    dstFormat == PixelFormat.V8U8)
+                {
+                    hasAlpha = false;
+                }
+            }
+
+            int prevW, prevH;
+            int origW = width;
+            int origH = height;
+            for (;;)
+            {
+                prevW = width;
+                prevH = height;
+                origW >>= 1;
+                origH >>= 1;
+                if (origW == 0 && origH == 0)
+                    break;
+                if (origW == 0)
+                    origW = 1;
+                if (origH == 0)
+                    origH = 1;
+                width = origW;
+                height = origH;
+
+                if (pixelFormat == PixelFormat.DXT1 ||
+                    pixelFormat == PixelFormat.DXT3 ||
+                    pixelFormat == PixelFormat.DXT5)
+                {
+                    if (width < 4 && height < 4)
+                    {
+                        mipMaps.Add(new MipMap(mipMaps[mipMaps.Count - 1].data, origW, origH, pixelFormat));
+                        continue;
+                    }
+                    else if (width < 4 || height < 4)
+                    {
+                        if (width < 4)
+                            width = 4;
+                        if (height < 4)
+                            height = 4;
+                    }
+                }
+
+                tempData = downscaleARGB(tempData, prevW, prevH);
+                if (pixelFormat != PixelFormat.ARGB)
+                {
+                    byte[] converted = convertToFormat(PixelFormat.ARGB, tempData, width, height, pixelFormat);
+                    mipMaps.Add(new MipMap(converted, origW, origH, pixelFormat));
+                }
+                else
+                {
+                    mipMaps.Add(new MipMap(tempData, origW, origH, pixelFormat));
+                }
+            }
+        }
+
+        public static PixelFormat getEngineFormatType(string format)
         {
             switch (format)
             {
@@ -362,7 +557,7 @@ namespace MassEffectModder
             }
         }
 
-        public bool checkPowerOfTwo(int n)
+        public static bool checkPowerOfTwo(int n)
         {
             if ((n & (n - 1)) == 0)
                 return true;

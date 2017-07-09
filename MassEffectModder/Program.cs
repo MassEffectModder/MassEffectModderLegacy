@@ -69,12 +69,7 @@ namespace MassEffectModder
                         File.WriteAllBytes(dllFilePath, buf);
                     }
 
-                    if (dllName.Contains("ConvertDDS.exe") ||
-                        dllName.Contains("nvcompress.exe") ||
-                        dllName.Contains("CSharpImageLibrary.dll") ||
-                        dllName.Contains("System.Threading.Tasks.Dataflow.dll") ||
-                        dllName.Contains("System.Windows.Interactivity.dll") ||
-                        dllName.Contains("UsefulThings.dll"))
+                    if (dllName.Contains("nvcompress.exe"))
                         continue;
 
                     IntPtr handle = LoadLibrary(dllFilePath);

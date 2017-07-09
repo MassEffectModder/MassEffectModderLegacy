@@ -19,8 +19,6 @@
  *
  */
 
-using AmaroK86.ImageFormat;
-using Microsoft.VisualBasic;
 using StreamHelpers;
 using System;
 using System.Collections.Generic;
@@ -344,7 +342,7 @@ namespace MassEffectModder
                         Package pkg = new Package(GameData.GamePath + foundCrcList[0].list[0].path);
                         Texture texture = new Texture(pkg, foundCrcList[0].list[0].exportID, pkg.getExportData(foundCrcList[0].list[0].exportID));
                         string fmt = texture.properties.getProperty("Format").valueName;
-                        PixelFormat pixelFormat = Image.convertFormat(fmt);
+                        PixelFormat pixelFormat = Image.getEngineFormatType(fmt);
                         Image image = new Image(src, Image.ImageFormat.DDS);
 
                         if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
@@ -359,7 +357,8 @@ namespace MassEffectModder
                             (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1) ||
                             image.pixelFormat != pixelFormat)
                         {
-                            src = convertDDS(pixelFormat, new Image(src, Image.ImageFormat.DDS).convertToARGB().StoreImageToDDS());
+                            image.correctMips(pixelFormat);
+                            src = image.StoreImageToDDS();
                         }
 
                         Stream dst = compressData(src);
@@ -512,7 +511,7 @@ namespace MassEffectModder
                 texture.mipMapsList.Remove(texture.mipMapsList.First(s => s.storageType == Texture.StorageTypes.empty));
             }
             List<MipMap> mipmaps = new List<MipMap>();
-            PixelFormat pixelFormat = Image.convertFormat(texture.properties.getProperty("Format").valueName);
+            PixelFormat pixelFormat = Image.getEngineFormatType(texture.properties.getProperty("Format").valueName);
             for (int i = 0; i < texture.mipMapsList.Count; i++)
             {
                 byte[] data = texture.getMipMapDataByIndex(i);
@@ -536,7 +535,7 @@ namespace MassEffectModder
         {
             Package package = new Package(packagePath);
             Texture texture = new Texture(package, exportID, package.getExportData(exportID));
-            PixelFormat format = Image.convertFormat(texture.properties.getProperty("Format").valueName);
+            PixelFormat format = Image.getEngineFormatType(texture.properties.getProperty("Format").valueName);
             Texture.MipMap mipmap = texture.getTopMipmap();
             byte[] data = texture.getTopImageData();
             if (data == null)
@@ -553,56 +552,5 @@ namespace MassEffectModder
             }
         }
 
-        static public byte[] convertDDS(PixelFormat format, byte[] src)
-        {
-            string fmtParam = "";
-
-            switch (format)
-            {
-                case PixelFormat.DXT1:
-                    fmtParam = "dxt1";
-                    break;
-                case PixelFormat.DXT3:
-                    fmtParam = "dxt3";
-                    break;
-                case PixelFormat.DXT5:
-                    fmtParam = "dxt5";
-                    break;
-                case PixelFormat.ATI2:
-                    fmtParam = "ati2";
-                    break;
-                case PixelFormat.V8U8:
-                    fmtParam = "v8u8";
-                    break;
-                case PixelFormat.G8:
-                    fmtParam = "g8";
-                    break;
-                case PixelFormat.ARGB:
-                    fmtParam = "argb";
-                    break;
-                case PixelFormat.RGB:
-                    fmtParam = "rgb";
-                    break;
-                default:
-                    throw new Exception("invalid texture format " + format);
-            }
-
-            string inputFile = Path.Combine(Program.dllPath, "input.dds");
-            string outputFile = Path.Combine(Program.dllPath, "output.dds");
-            if (File.Exists(inputFile))
-                File.Delete(inputFile);
-            if (File.Exists(outputFile))
-                File.Delete(outputFile);
-            using (FileStream fs = new FileStream(inputFile, FileMode.CreateNew))
-            {
-                fs.WriteFromBuffer(src);
-            }
-            Interaction.Shell(Path.Combine(Program.dllPath, "ConvertDDS.exe") + " " +
-                fmtParam + " " + inputFile + " " + outputFile, AppWinStyle.Hide, true);
-            using (FileStream fs = new FileStream(outputFile, FileMode.Open))
-            {
-                return fs.ReadToBuffer(new FileInfo(outputFile).Length);
-            }
-        }
     }
 }

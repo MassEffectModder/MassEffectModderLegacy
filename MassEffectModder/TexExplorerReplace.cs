@@ -107,7 +107,7 @@ namespace MassEffectModder
                 }
 
                 string fmt = texture.properties.getProperty("Format").valueName;
-                PixelFormat pixelFormat = Image.convertFormat(fmt);
+                PixelFormat pixelFormat = Image.getEngineFormatType(fmt);
                 if (image.pixelFormat != pixelFormat)
                 {
                     errors += "Error in texture: " + textureName + " This texture has wrong texture format, should be: " + pixelFormat + ", skipping texture..." + Environment.NewLine;
