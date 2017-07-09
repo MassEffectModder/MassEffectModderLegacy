@@ -47,6 +47,13 @@ namespace MassEffectModder
         private static List<string> dlls = new List<string>();
         public static string dllPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
+        public static Misc.MD5FileEntry[] entriesME1 = null;
+        public static Misc.MD5FileEntry[] entriesME2 = null;
+        public static Misc.MD5FileEntry[] entriesME3 = null;
+        public static byte[] tableME1 = null;
+        public static byte[] tableME2 = null;
+        public static byte[] tableME3 = null;
+
         static void loadEmbeddedDlls()
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
@@ -77,6 +84,30 @@ namespace MassEffectModder
                         throw new Exception();
                     dlls.Add(dllName);
                 }
+                else if (resources[l].EndsWith(".bin", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (resources[l].Contains("MD5EntriesME1.bin"))
+                    {
+                        using (Stream s = Assembly.GetEntryAssembly().GetManifestResourceStream(resources[l]))
+                        {
+                            tableME1 = s.ReadToBuffer(s.Length);
+                        }
+                    }
+                    else if (resources[l].Contains("MD5EntriesME2.bin"))
+                    {
+                        using (Stream s = Assembly.GetEntryAssembly().GetManifestResourceStream(resources[l]))
+                        {
+                            tableME2 = s.ReadToBuffer(s.Length);
+                        }
+                    }
+                    else if (resources[l].Contains("MD5EntriesME3.bin"))
+                    {
+                        using (Stream s = Assembly.GetEntryAssembly().GetManifestResourceStream(resources[l]))
+                        {
+                            tableME3 = s.ReadToBuffer(s.Length);
+                        }
+                    }
+                }
             }
         }
 
@@ -100,6 +131,54 @@ namespace MassEffectModder
             }
             catch
             {
+            }
+        }
+
+        static void loadMD5Tables()
+        {
+            MemoryStream tmp = new MemoryStream(tableME1);
+            tmp.SkipInt32();
+            byte[] decompressed = new byte[tmp.ReadInt32()];
+            byte[] compressed = tmp.ReadToBuffer((uint)tableME1.Length - 8);
+            if (ZlibHelper.Zlib.Decompress(compressed, (uint)compressed.Length, decompressed) == 0)
+                throw new Exception();
+            tmp = new MemoryStream(decompressed);
+            int count = tmp.ReadInt32();
+            entriesME1 = new Misc.MD5FileEntry[count];
+            for (int l = 0; l < count; l++)
+            {
+                entriesME1[l].md5 = tmp.ReadToBuffer(16);
+                entriesME1[l].path = tmp.ReadStringASCIINull();
+            }
+
+            tmp = new MemoryStream(tableME2);
+            tmp.SkipInt32();
+            decompressed = new byte[tmp.ReadInt32()];
+            compressed = tmp.ReadToBuffer((uint)tableME2.Length - 8);
+            if (ZlibHelper.Zlib.Decompress(compressed, (uint)compressed.Length, decompressed) == 0)
+                throw new Exception();
+            tmp = new MemoryStream(decompressed);
+            count = tmp.ReadInt32();
+            entriesME2 = new Misc.MD5FileEntry[count];
+            for (int l = 0; l < count; l++)
+            {
+                entriesME2[l].md5 = tmp.ReadToBuffer(16);
+                entriesME2[l].path = tmp.ReadStringASCIINull();
+            }
+
+            tmp = new MemoryStream(tableME3);
+            tmp.SkipInt32();
+            decompressed = new byte[tmp.ReadInt32()];
+            compressed = tmp.ReadToBuffer((uint)tableME3.Length - 8);
+            if (ZlibHelper.Zlib.Decompress(compressed, (uint)compressed.Length, decompressed) == 0)
+                throw new Exception();
+            tmp = new MemoryStream(decompressed);
+            count = tmp.ReadInt32();
+            entriesME3 = new Misc.MD5FileEntry[count];
+            for (int l = 0; l < count; l++)
+            {
+                entriesME3[l].md5 = tmp.ReadToBuffer(16);
+                entriesME3[l].path = tmp.ReadStringASCIINull();
             }
         }
 
@@ -208,6 +287,8 @@ namespace MassEffectModder
                 }
 
                 loadEmbeddedDlls();
+
+                loadMD5Tables();
 
                 string iniPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "installer.ini");
                 if (File.Exists(iniPath))

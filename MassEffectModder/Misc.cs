@@ -348,7 +348,7 @@ namespace MassEffectModder
 
     static partial class Misc
     {
-        struct MD5FileEntry
+        public struct MD5FileEntry
         {
             public string path;
             public byte[] md5;
@@ -454,7 +454,7 @@ namespace MassEffectModder
                     if ((flag & 0x20) != 0x20) // check for LAA flag
                     {
                         if (gui)
-                            MessageBox.Show("Large Aware Address flag is not enabled on Mass Effect executable file.Correcting...");
+                            MessageBox.Show("Large Aware Address flag is not enabled on Mass Effect executable file. Correcting...");
                         flag |= 0x20;
                         fs.Skip(-2);
                         fs.WriteUInt16(flag); // write LAA flag
@@ -698,7 +698,6 @@ namespace MassEffectModder
             List<string> packageMainFiles = null;
             List<string> packageDLCFiles = null;
             List<string> sfarFiles = null;
-            MD5FileEntry[] entries = null;
 
             if (gameType == MeType.ME1_TYPE)
             {
@@ -717,14 +716,12 @@ namespace MassEffectModder
                 }
                 packageMainFiles.RemoveAll(s => s.ToLowerInvariant().Contains("localshadercache-pc-d3d-sm3.upk"));
                 packageMainFiles.RemoveAll(s => s.ToLowerInvariant().Contains("refshadercache-pc-d3d-sm3.upk"));
-                entries = entriesME1;
             }
             else if (gameType == MeType.ME2_TYPE)
             {
                 packageMainFiles = Directory.GetFiles(GameData.MainData, "*.pcc", SearchOption.AllDirectories).Where(item => item.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase)).ToList();
                 if (Directory.Exists(GameData.DLCData))
                     packageDLCFiles = Directory.GetFiles(GameData.DLCData, "*.pcc", SearchOption.AllDirectories).Where(item => item.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase)).ToList();
-                entries = entriesME2;
             }
             else if (gameType == MeType.ME3_TYPE)
             {
@@ -741,7 +738,6 @@ namespace MassEffectModder
                     packageDLCFiles.RemoveAll(s => s.ToLowerInvariant().Contains("guidcache"));
                 }
                 packageMainFiles.RemoveAll(s => s.ToLowerInvariant().Contains("guidcache"));
-                entries = entriesME3;
             }
 
             packageMainFiles.Sort();
@@ -817,7 +813,7 @@ namespace MassEffectModder
                 }
                 packageMainFiles.RemoveAll(s => s.ToLowerInvariant().Contains("localshadercache-pc-d3d-sm3.upk"));
                 packageMainFiles.RemoveAll(s => s.ToLowerInvariant().Contains("refshadercache-pc-d3d-sm3.upk"));
-                entries = entriesME1;
+                entries = Program.entriesME1;
             }
             else if (gameType == MeType.ME2_TYPE)
             {
@@ -828,7 +824,7 @@ namespace MassEffectModder
                     packageDLCFiles = Directory.GetFiles(GameData.DLCData, "*.pcc", SearchOption.AllDirectories).Where(item => item.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase)).ToList();
                     tfcFiles.AddRange(Directory.GetFiles(GameData.DLCData, "*.tfc", SearchOption.AllDirectories).Where(item => item.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase)).ToList());
                 }
-                entries = entriesME2;
+                entries = Program.entriesME2;
             }
             else if (gameType == MeType.ME3_TYPE)
             {
@@ -847,7 +843,7 @@ namespace MassEffectModder
                     tfcFiles.AddRange(Directory.GetFiles(GameData.DLCData, "*.tfc", SearchOption.AllDirectories).Where(item => item.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase)).ToList());
                 }
                 packageMainFiles.RemoveAll(s => s.ToLowerInvariant().Contains("guidcache"));
-                entries = entriesME3;
+                entries = Program.entriesME3;
             }
 
             packageMainFiles.Sort();
@@ -863,20 +859,60 @@ namespace MassEffectModder
                 errors += Environment.NewLine + "------- Detected one or more of ME1 not compatible mods: Controller, Faster Elevators, Skip Menu/Movies mods! MEM will not work properly due broken content in mod --------" + Environment.NewLine + Environment.NewLine;
             }
 
-            //using (FileStream fs = new FileStream("MD5EntriesME" + (int)gameType + ".cs", FileMode.Create, FileAccess.Write))
+            for (int l = 0; l < packageMainFiles.Count; l++)
             {
-                //fs.WriteStringASCII("MD5FileEntry[] entries = new MD5FileEntry[]\n{\n");
-                for (int l = 0; l < packageMainFiles.Count; l++)
+                if (mainWindow != null)
+                {
+                    mainWindow.updateStatusLabel("Checking main PCC files - " + (l + 1) + " of " + packageMainFiles.Count);
+                }
+                if (installer != null)
+                {
+                    installer.updateLabelPreVanilla("Progress (PCC) ... " + (l * 100 / packageMainFiles.Count) + "%");
+                }
+                byte[] md5 = calculateMD5(packageMainFiles[l]);
+                bool found = false;
+                for (int p = 0; p < entries.Count(); p++)
+                {
+                    if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, entries[p].md5))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found)
+                    continue;
+                int index = -1;
+                for (int p = 0; p < entries.Count(); p++)
+                {
+                    if (GameData.RelativeGameData(packageMainFiles[l]).ToLowerInvariant() == entries[p].path.ToLowerInvariant())
+                    {
+                        index = p;
+                        break;
+                    }
+                }
+                if (index == -1)
+                    continue;
+                errors += "File " + packageMainFiles[l] + " has wrong MD5 checksum, expected: ";
+                for (int i = 0; i < entries[index].md5.Count(); i++)
+                {
+                    errors += string.Format("{0:x2}", entries[index].md5[i]);
+                }
+                errors += Environment.NewLine;
+            }
+
+            if (packageDLCFiles != null)
+            {
+                for (int l = 0; l < packageDLCFiles.Count; l++)
                 {
                     if (mainWindow != null)
                     {
-                        mainWindow.updateStatusLabel("Checking main PCC files - " + (l + 1) + " of " + packageMainFiles.Count);
+                        mainWindow.updateStatusLabel("Checking DLC PCC files - " + (l + 1) + " of " + packageDLCFiles.Count);
                     }
                     if (installer != null)
                     {
-                        installer.updateLabelPreVanilla("Progress (PCC) ... " + (l * 100 / packageMainFiles.Count) + "%");
+                        installer.updateLabelPreVanilla("Progress (DLC PCC) ... " + (l * 100 / packageDLCFiles.Count) + "%");
                     }
-                    byte[] md5 = calculateMD5(packageMainFiles[l]);
+                    byte[] md5 = calculateMD5(packageDLCFiles[l]);
                     bool found = false;
                     for (int p = 0; p < entries.Count(); p++)
                     {
@@ -891,7 +927,7 @@ namespace MassEffectModder
                     int index = -1;
                     for (int p = 0; p < entries.Count(); p++)
                     {
-                        if (GameData.RelativeGameData(packageMainFiles[l]).ToLowerInvariant() == entries[p].path.ToLowerInvariant())
+                        if (GameData.RelativeGameData(packageDLCFiles[l]).ToLowerInvariant() == entries[p].path.ToLowerInvariant())
                         {
                             index = p;
                             break;
@@ -899,175 +935,101 @@ namespace MassEffectModder
                     }
                     if (index == -1)
                         continue;
-                    errors += "File " + packageMainFiles[l] + " has wrong MD5 checksum, expected: ";
+                    errors += "File " + packageDLCFiles[l] + " has wrong MD5 checksum, expected: ";
                     for (int i = 0; i < entries[index].md5.Count(); i++)
                     {
                         errors += string.Format("{0:x2}", entries[index].md5[i]);
                     }
                     errors += Environment.NewLine;
-
-                    /*fs.WriteStringASCII("new MD5FileEntry\n{\npath = @\"" + GameData.RelativeGameData(packageMainFiles[l]) + "\",\nmd5 = new byte[] { ");
-                    for (int i = 0; i < md5.Length; i++)
-                    {
-                        fs.WriteStringASCII(string.Format("0x{0:X2}, ", md5[i]));
-                    }
-                    fs.WriteStringASCII("},\n},\n");*/
                 }
+            }
 
-                if (packageDLCFiles != null)
+            if (sfarFiles != null)
+            {
+                for (int l = 0; l < sfarFiles.Count; l++)
                 {
-                    for (int l = 0; l < packageDLCFiles.Count; l++)
+                    if (mainWindow != null)
                     {
-                        if (mainWindow != null)
-                        {
-                            mainWindow.updateStatusLabel("Checking DLC PCC files - " + (l + 1) + " of " + packageDLCFiles.Count);
-                        }
-                        if (installer != null)
-                        {
-                            installer.updateLabelPreVanilla("Progress (DLC PCC) ... " + (l * 100 / packageDLCFiles.Count) + "%");
-                        }
-                        byte[] md5 = calculateMD5(packageDLCFiles[l]);
-                        bool found = false;
-                        for (int p = 0; p < entries.Count(); p++)
-                        {
-                            if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, entries[p].md5))
-                            {
-                                found = true;
-                                break;
-                            }
-                        }
-                        if (found)
-                            continue;
-                        int index = -1;
-                        for (int p = 0; p < entries.Count(); p++)
-                        {
-                            if (GameData.RelativeGameData(packageDLCFiles[l]).ToLowerInvariant() == entries[p].path.ToLowerInvariant())
-                            {
-                                index = p;
-                                break;
-                            }
-                        }
-                        if (index == -1)
-                            continue;
-                        errors += "File " + packageDLCFiles[l] + " has wrong MD5 checksum, expected: ";
-                        for (int i = 0; i < entries[index].md5.Count(); i++)
-                        {
-                            errors += string.Format("{0:x2}", entries[index].md5[i]);
-                        }
-                        errors += Environment.NewLine;
-
-                        /*fs.WriteStringASCII("new MD5FileEntry\n{\npath = @\"" + GameData.RelativeGameData(packageDLCFiles[l]) + "\",\nmd5 = new byte[] { ");
-                        for (int i = 0; i < md5.Length; i++)
-                        {
-                            fs.WriteStringASCII(string.Format("0x{0:X2}, ", md5[i]));
-                        }
-                        fs.WriteStringASCII("},\n},\n");*/
+                        mainWindow.updateStatusLabel("Checking DLC archive files - " + (l + 1) + " of " + sfarFiles.Count);
                     }
+                    if (installer != null)
+                    {
+                        installer.updateLabelPreVanilla("Progress (DLC Archives) ... " + (l * 100 / sfarFiles.Count) + "%");
+                    }
+                    byte[] md5 = calculateMD5(sfarFiles[l]);
+                    bool found = false;
+                    for (int p = 0; p < entries.Count(); p++)
+                    {
+                        if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, entries[p].md5))
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (found)
+                        continue;
+                    int index = -1;
+                    for (int p = 0; p < entries.Count(); p++)
+                    {
+                        if (GameData.RelativeGameData(sfarFiles[l]).ToLowerInvariant() == entries[p].path.ToLowerInvariant())
+                        {
+                            index = p;
+                            break;
+                        }
+                    }
+                    if (index == -1)
+                        continue;
+                    errors += "File " + sfarFiles[l] + " has wrong MD5 checksum, expected: ";
+                    for (int i = 0; i < entries[index].md5.Count(); i++)
+                    {
+                        errors += string.Format("{0:x2}", entries[index].md5[i]);
+                    }
+                    errors += Environment.NewLine;
                 }
+            }
 
-                if (sfarFiles != null)
+            if (tfcFiles != null)
+            {
+                for (int l = 0; l < tfcFiles.Count; l++)
                 {
-                    for (int l = 0; l < sfarFiles.Count; l++)
+                    if (mainWindow != null)
                     {
-                        if (mainWindow != null)
-                        {
-                            mainWindow.updateStatusLabel("Checking DLC archive files - " + (l + 1) + " of " + sfarFiles.Count);
-                        }
-                        if (installer != null)
-                        {
-                            installer.updateLabelPreVanilla("Progress (DLC Archives) ... " + (l * 100 / sfarFiles.Count) + "%");
-                        }
-                        byte[] md5 = calculateMD5(sfarFiles[l]);
-                        bool found = false;
-                        for (int p = 0; p < entries.Count(); p++)
-                        {
-                            if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, entries[p].md5))
-                            {
-                                found = true;
-                                break;
-                            }
-                        }
-                        if (found)
-                            continue;
-                        int index = -1;
-                        for (int p = 0; p < entries.Count(); p++)
-                        {
-                            if (GameData.RelativeGameData(sfarFiles[l]).ToLowerInvariant() == entries[p].path.ToLowerInvariant())
-                            {
-                                index = p;
-                                break;
-                            }
-                        }
-                        if (index == -1)
-                            continue;
-                        errors += "File " + sfarFiles[l] + " has wrong MD5 checksum, expected: ";
-                        for (int i = 0; i < entries[index].md5.Count(); i++)
-                        {
-                            errors += string.Format("{0:x2}", entries[index].md5[i]);
-                        }
-                        errors += Environment.NewLine;
-
-                        /*fs.WriteStringASCII("new MD5FileEntry\n{\npath = @\"" + GameData.RelativeGameData(sfarFiles[l]) + "\",\nmd5 = new byte[] { ");
-                        for (int i = 0; i < md5.Length; i++)
-                        {
-                            fs.WriteStringASCII(string.Format("0x{0:X2}, ", md5[i]));
-                        }
-                        fs.WriteStringASCII("},\n},\n");*/
+                        mainWindow.updateStatusLabel("Checking TFC archive files - " + (l + 1) + " of " + tfcFiles.Count);
                     }
-                }
-                //fs.WriteStringASCII("};\n");
-
-                if (tfcFiles != null)
-                {
-                    for (int l = 0; l < tfcFiles.Count; l++)
+                    if (installer != null)
                     {
-                        if (mainWindow != null)
-                        {
-                            mainWindow.updateStatusLabel("Checking TFC archive files - " + (l + 1) + " of " + tfcFiles.Count);
-                        }
-                        if (installer != null)
-                        {
-                            installer.updateLabelPreVanilla("Progress (TFC Archives) ... " + (l * 100 / tfcFiles.Count) + "%");
-                        }
-                        byte[] md5 = calculateMD5(tfcFiles[l]);
-                        bool found = false;
-                        for (int p = 0; p < entries.Count(); p++)
-                        {
-                            if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, entries[p].md5))
-                            {
-                                found = true;
-                                break;
-                            }
-                        }
-                        if (found)
-                            continue;
-                        int index = -1;
-                        for (int p = 0; p < entries.Count(); p++)
-                        {
-                            if (GameData.RelativeGameData(tfcFiles[l]).ToLowerInvariant() == entries[p].path.ToLowerInvariant())
-                            {
-                                index = p;
-                                break;
-                            }
-                        }
-                        if (index == -1)
-                            continue;
-                        errors += "File " + tfcFiles[l] + " has wrong MD5 checksum, expected: ";
-                        for (int i = 0; i < entries[index].md5.Count(); i++)
-                        {
-                            errors += string.Format("{0:x2}", entries[index].md5[i]);
-                        }
-                        errors += Environment.NewLine;
-
-                        /*fs.WriteStringASCII("new MD5FileEntry\n{\npath = @\"" + GameData.RelativeGameData(tfcFiles[l]) + "\",\nmd5 = new byte[] { ");
-                        for (int i = 0; i < md5.Length; i++)
-                        {
-                            fs.WriteStringASCII(string.Format("0x{0:X2}, ", md5[i]));
-                        }
-                        fs.WriteStringASCII("},\n},\n");*/
+                        installer.updateLabelPreVanilla("Progress (TFC Archives) ... " + (l * 100 / tfcFiles.Count) + "%");
                     }
+                    byte[] md5 = calculateMD5(tfcFiles[l]);
+                    bool found = false;
+                    for (int p = 0; p < entries.Count(); p++)
+                    {
+                        if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, entries[p].md5))
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (found)
+                        continue;
+                    int index = -1;
+                    for (int p = 0; p < entries.Count(); p++)
+                    {
+                        if (GameData.RelativeGameData(tfcFiles[l]).ToLowerInvariant() == entries[p].path.ToLowerInvariant())
+                        {
+                            index = p;
+                            break;
+                        }
+                    }
+                    if (index == -1)
+                        continue;
+                    errors += "File " + tfcFiles[l] + " has wrong MD5 checksum, expected: ";
+                    for (int i = 0; i < entries[index].md5.Count(); i++)
+                    {
+                        errors += string.Format("{0:x2}", entries[index].md5[i]);
+                    }
+                    errors += Environment.NewLine;
                 }
-                //fs.WriteStringASCII("};\n");
             }
 
             var time = stopTimer();
