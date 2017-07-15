@@ -78,10 +78,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConvertCmdLine.cs" />
-    <Compile Include="DDSImage.cs" />
     <Compile Include="DLC.cs" />
     <Compile Include="GameDataPath.cs" />
     <Compile Include="Helpers\7Zip\SevenZipHelper.cs" />
+    <Compile Include="Helpers\Codecs\CompressonatorCodecs.cs" />
     <Compile Include="Helpers\StreamIO.cs" />
     <Compile Include="Image.cs" />
     <Compile Include="ImageBMP.cs" />
@@ -180,7 +180,7 @@
     <EmbeddedResource Include="Dlls\zlibwrapper.dll" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Dlls\nvcompress.exe" />
+    <EmbeddedResource Include="Dlls\CompressonatorCodecs.dll" />
     <Content Include="MEM.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

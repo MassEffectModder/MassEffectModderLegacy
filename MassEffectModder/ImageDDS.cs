@@ -22,7 +22,6 @@
 using System;
 using System.IO;
 using StreamHelpers;
-using Microsoft.VisualBasic;
 
 namespace MassEffectModder
 {
@@ -418,48 +417,229 @@ namespace MassEffectModder
             return stream.ToArray();
         }
 
-        static public byte[] convertDDS(PixelFormat dstFormat, byte[] src, PixelFormat srcFormat, bool dxt1alpha = false)
+        static private uint[] readBlock4X4BPP4(byte[] src, int srcW, int blockX, int blockY)
         {
-            string inputFile = Path.Combine(Program.dllPath, "input.dds");
-            string outputFile = Path.Combine(Program.dllPath, "output.dds");
-            if (File.Exists(inputFile))
-                File.Delete(inputFile);
-            if (File.Exists(outputFile))
-                File.Delete(outputFile);
-            using (FileStream fs = new FileStream(inputFile, FileMode.CreateNew))
+            uint[] block = new uint[2];
+            int srcPtr = blockY * srcW * 2 + blockX * 2 * sizeof(uint);
+            block[0] = BitConverter.ToUInt32(src, srcPtr + 0);
+            block[1] = BitConverter.ToUInt32(src, srcPtr + 4);
+            return block;
+        }
+
+        static private uint[] readBlock4X4BPP8(byte[] src, int srcW, int blockX, int blockY)
+        {
+            uint[] block = new uint[4];
+            int srcPtr = blockY * srcW * 4 + blockX * 4 * sizeof(uint);
+            block[0] = BitConverter.ToUInt32(src, srcPtr + 0);
+            block[1] = BitConverter.ToUInt32(src, srcPtr + 4);
+            block[2] = BitConverter.ToUInt32(src, srcPtr + 8);
+            block[3] = BitConverter.ToUInt32(src, srcPtr + 12);
+            return block;
+        }
+
+        static private void writeBlock4X4BPP4(uint[] block, byte[] dst, int dstW, int blockX, int blockY)
+        {
+            int dstPtr = blockY * dstW * 2 + blockX * 2 * sizeof(uint);
+            Buffer.BlockCopy(BitConverter.GetBytes(block[0]), 0, dst, dstPtr + 0, 4);
+            Buffer.BlockCopy(BitConverter.GetBytes(block[1]), 0, dst, dstPtr + 4, 4);
+        }
+
+        static private void writeBlock4X4BPP8(uint[] block, byte[] dst, int dstW, int blockX, int blockY)
+        {
+            int dstPtr = blockY * dstW * 4 + blockX * 4 * sizeof(uint);
+            Buffer.BlockCopy(BitConverter.GetBytes(block[0]), 0, dst, dstPtr + 0, 4);
+            Buffer.BlockCopy(BitConverter.GetBytes(block[1]), 0, dst, dstPtr + 4, 4);
+            Buffer.BlockCopy(BitConverter.GetBytes(block[2]), 0, dst, dstPtr + 8, 4);
+            Buffer.BlockCopy(BitConverter.GetBytes(block[3]), 0, dst, dstPtr + 12, 4);
+        }
+
+        static private void writeBlock4X4ATI2(uint[] blockSrcX, uint[] blockSrcY, byte[] dst, int dstW, int blockX, int blockY)
+        {
+            int dstPtr = blockY * dstW * 4 + blockX * 4 * sizeof(uint);
+            Array.Copy(BitConverter.GetBytes(blockSrcY[0]), 0, dst, dstPtr + (0 * sizeof(uint)), sizeof(uint));
+            Array.Copy(BitConverter.GetBytes(blockSrcY[1]), 0, dst, dstPtr + (1 * sizeof(uint)), sizeof(uint));
+            Array.Copy(BitConverter.GetBytes(blockSrcX[0]), 0, dst, dstPtr + (2 * sizeof(uint)), sizeof(uint));
+            Array.Copy(BitConverter.GetBytes(blockSrcX[1]), 0, dst, dstPtr + (3 * sizeof(uint)), sizeof(uint));
+        }
+
+        static private byte[] readBlock4X4ARGB(byte[] srcARGB, int srcW, int blockX, int blockY)
+        {
+            int srcPitch = srcW * 4;
+            int blockPitch = 4 * 4;
+            byte[] blockARGB = new byte[4 * blockPitch];
+            int srcARGBPtr = (blockY * 4) * srcPitch + blockX * 4 * 4;
+
+            for (int y = 0; y < 4; y++)
             {
-                fs.WriteFromBuffer(src);
+                int blockPtr = y * blockPitch;
+                int srcARGBPtrY = srcARGBPtr + (y * srcPitch);
+                for (int x = 0; x < 4 * 4; x += 4)
+                {
+                    int srcPtr = srcARGBPtrY + x;
+                    blockARGB[blockPtr + 0] = srcARGB[srcPtr + 0];
+                    blockARGB[blockPtr + 1] = srcARGB[srcPtr + 1];
+                    blockARGB[blockPtr + 2] = srcARGB[srcPtr + 2];
+                    blockARGB[blockPtr + 3] = srcARGB[srcPtr + 3];
+                    blockPtr += x;
+                }
             }
 
-            string nvFmt;
-            switch (dstFormat)
+            return blockARGB;
+        }
+
+        static private void writeBlock4X4ARGB(byte[] blockARGB, byte[] dstARGB, int dstW, int blockX, int blockY)
+        {
+            int dstPitch = dstW * 4;
+            int blockPitch = 4 * 4;
+            int dstARGBPtr = (blockY * 4) * dstPitch + blockX * 4 * 4;
+
+            for (int y = 0; y < 4; y++)
             {
-                case PixelFormat.DXT1:
-                    if (dxt1alpha)
-                        nvFmt = "-bc1a";
+                int blockPtr = y * blockPitch;
+                int dstARGBPtrY = dstARGBPtr + (y * dstPitch);
+                for (int x = 0; x < 4 * 4; x += 4)
+                {
+                    int dstPtr = dstARGBPtrY + x;
+                    dstARGB[dstPtr + 0] = blockARGB[blockPtr + 0];
+                    dstARGB[dstPtr + 1] = blockARGB[blockPtr + 1];
+                    dstARGB[dstPtr + 2] = blockARGB[blockPtr + 2];
+                    dstARGB[dstPtr + 3] = blockARGB[blockPtr + 3];
+                    blockPtr += x;
+                }
+            }
+        }
+
+        static private void readBlock4X4ATI2(byte[] src, int srcW, byte[] blockDstX, byte[] blockDstY, int blockX, int blockY)
+        {
+            int srcPitch = srcW * 4;
+            int srcPtr = (blockY * 4) * srcPitch + blockX * 4 * 4;
+
+            for (int y = 0; y < 4; y++)
+            {
+                int srcPtrY = srcPtr + (y * srcPitch);
+                for (int x = 0; x < 4; x++)
+                {
+                    blockDstX[y * 4 + x] = src[srcPtrY + (x * 4) + 2];
+                    blockDstY[y * 4 + x] = src[srcPtrY + (x * 4) + 1];
+                }
+            }
+        }
+
+        static private void writeBlock4X4ARGBATI2(byte[] blockR, byte[] blockG, byte[] dstARGB, int srcW, int blockX, int blockY)
+        {
+            int dstPitch = srcW * 4;
+            int blockPitch = 4;
+            int dstARGBPtr = (blockY * 4) * dstPitch + blockX * 4 * 4;
+
+            for (int y = 0; y < 4; y++)
+            {
+                int dstARGBPtrY = dstARGBPtr + (y * dstPitch);
+                for (int x = 0; x < 4 * 4; x += 4)
+                {
+                    int blockPtr = y * blockPitch + (x / 4);
+                    int dstPtr = dstARGBPtrY + x;
+                    dstARGB[dstPtr + 0] = 255;
+                    dstARGB[dstPtr + 1] = blockG[blockPtr];
+                    dstARGB[dstPtr + 2] = blockR[blockPtr];
+                    dstARGB[dstPtr + 3] = 255;
+                }
+            }
+        }
+
+        static private byte[] compressMipmap(PixelFormat dstFormat, byte[] src, int w, int h, bool useDXT1Alpha = false, byte DXT1Threshold = 128)
+        {
+            if (src.Length != w * h * 4)
+                throw new Exception("not ARGB buffer input");
+            byte[] srcBlock;
+            int blockSize = CompressonatorCodecs.Codecs.BLOCK_SIZE_4X4BPP8;
+            if (dstFormat == PixelFormat.DXT1)
+                blockSize = CompressonatorCodecs.Codecs.BLOCK_SIZE_4X4BPP4;
+
+            byte[] dst = new byte[blockSize * (w / 4) * (h / 4)];
+            for (int y = 0; y < h / 4; y++)
+            {
+                for (int x = 0; x < w / 4; x++)
+                {
+                    if (dstFormat == PixelFormat.DXT1)
+                    {
+                        srcBlock = readBlock4X4ARGB(src, w, x, y);
+                        uint[] block = CompressonatorCodecs.Codecs.CompressRGBBlock(srcBlock, true, useDXT1Alpha, DXT1Threshold);
+                        writeBlock4X4BPP4(block, dst, w, x, y);
+                    }
+                    else if (dstFormat == PixelFormat.DXT3)
+                    {
+                        srcBlock = readBlock4X4ARGB(src, w, x, y);
+                        uint[] block = CompressonatorCodecs.Codecs.CompressRGBABlock_ExplicitAlpha(srcBlock);
+                        writeBlock4X4BPP8(block, dst, w, x, y);
+                    }
+                    else if (dstFormat == PixelFormat.DXT5)
+                    {
+                        srcBlock = readBlock4X4ARGB(src, w, x, y);
+                        uint[] block = CompressonatorCodecs.Codecs.CompressRGBABlock(srcBlock);
+                        writeBlock4X4BPP8(block, dst, w, x, y);
+                    }
+                    else if (dstFormat == PixelFormat.ATI2)
+                    {
+                        byte[] srcBlockX = new byte[CompressonatorCodecs.Codecs.BLOCK_SIZE_4X4BPP8];
+                        byte[] srcBlockY = new byte[CompressonatorCodecs.Codecs.BLOCK_SIZE_4X4BPP8];
+                        readBlock4X4ATI2(src, w, srcBlockX, srcBlockY, x, y);
+                        uint[] blockX = CompressonatorCodecs.Codecs.CompressAlphaBlock(srcBlockX);
+                        uint[] blockY = CompressonatorCodecs.Codecs.CompressAlphaBlock(srcBlockY);
+                        writeBlock4X4ATI2(blockX, blockY, dst, w, x, y);
+                    }
                     else
-                        nvFmt = "-bc1";
-                    break;
-                case PixelFormat.DXT3:
-                    nvFmt = "-bc2";
-                    break;
-                case PixelFormat.DXT5:
-                    nvFmt = "-bc3";
-                    break;
-                case PixelFormat.ATI2:
-                    nvFmt = "-bc5";
-                    break;
-                default:
-                    throw new Exception("invalid texture format " + dstFormat);
+                        throw new Exception("not supported codec");
+                }
             }
 
-            Interaction.Shell(Path.Combine(Path.GetDirectoryName(inputFile), "nvcompress.exe") + " -silent -nocuda -nomips " +
-                nvFmt + " " + inputFile + " " + outputFile, AppWinStyle.Hide, true);
+            return dst;
+        }
 
-            using (FileStream fs = new FileStream(outputFile, FileMode.Open))
+        static private byte[] decompressMipmap(PixelFormat srcFormat, byte[] src, int w, int h)
+        {
+            byte[] dst = new byte[w * h * 4];
+            byte[] blockDst;
+            uint[] block;
+
+            for (int y = 0; y < h / 4; y++)
             {
-                return fs.ReadToBuffer(new FileInfo(outputFile).Length);
+                for (int x = 0; x < w / 4; x++)
+                {
+                    if (srcFormat == PixelFormat.DXT1)
+                    {
+                        block = readBlock4X4BPP4(src, w, x, y);
+                        blockDst = CompressonatorCodecs.Codecs.DecompressRGBBlock(block, true);
+                        writeBlock4X4ARGB(blockDst, dst, w, x, y);
+                    }
+                    else if (srcFormat == PixelFormat.DXT3)
+                    {
+                        block = readBlock4X4BPP8(src, w, x, y);
+                        blockDst = CompressonatorCodecs.Codecs.DecompressRGBABlock_ExplicitAlpha(block);
+                        writeBlock4X4ARGB(blockDst, dst, w, x, y);
+                    }
+                    else if (srcFormat == PixelFormat.DXT5)
+                    {
+                        block = readBlock4X4BPP8(src, w, x, y);
+                        blockDst = CompressonatorCodecs.Codecs.DecompressRGBABlock(block);
+                        writeBlock4X4ARGB(blockDst, dst, w, x, y);
+                    }
+                    else if (srcFormat == PixelFormat.ATI2)
+                    {
+                        block = readBlock4X4BPP8(src, w, x, y);
+                        uint[] blockX = new uint[2];
+                        uint[] blockY = new uint[2];
+                        Array.Copy(block, 2, blockX, 0, 2);
+                        Array.Copy(block, 0, blockY, 0, 2);
+                        byte[] blockDstR = CompressonatorCodecs.Codecs.DecompressAlphaBlock(blockX);
+                        byte[] blockDstG = CompressonatorCodecs.Codecs.DecompressAlphaBlock(blockY);
+                        writeBlock4X4ARGBATI2(blockDstR, blockDstG, dst, w, x, y);
+                    }
+                    else
+                        throw new Exception("not supported codec");
+                }
             }
+
+            return dst;
         }
 
     }

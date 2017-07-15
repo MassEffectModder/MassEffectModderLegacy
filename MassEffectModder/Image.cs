@@ -25,7 +25,6 @@ using System.Collections.Generic;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using StreamHelpers;
-using AmaroK86.ImageFormat;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
@@ -217,12 +216,18 @@ namespace MassEffectModder
         public static byte[] convertRawToARGB(byte[] src, int w, int h, PixelFormat format, bool stripAlpha = false)
         {
             byte[] tmpData;
+
             switch (format)
             {
-                case PixelFormat.DXT1: tmpData = DDSImage.UncompressDXT1(src, w, h, stripAlpha); break;
-                case PixelFormat.DXT3: tmpData = DDSImage.UncompressDXT3(src, w, h, stripAlpha); break;
-                case PixelFormat.DXT5: tmpData = DDSImage.UncompressDXT5(src, w, h, stripAlpha); break;
-                case PixelFormat.ATI2: tmpData = DDSImage.UncompressATI2(src, w, h); break;
+                case PixelFormat.DXT1:
+                case PixelFormat.DXT3:
+                case PixelFormat.DXT5:
+                case PixelFormat.ATI2:
+                    {
+                        if (w < 4 || h < 4)
+                            return new byte[w * h * 4];
+                        tmpData = decompressMipmap(format, src, w, h); break;
+                    }
                 case PixelFormat.ARGB: tmpData = src; break;
                 case PixelFormat.RGB: tmpData = RGBToARGB(src, w, h); break;
                 case PixelFormat.V8U8: tmpData = V8U8ToARGB(src, w, h); break;
@@ -230,6 +235,10 @@ namespace MassEffectModder
                 default:
                     throw new Exception("invalid texture format " + format);
             }
+
+            if (stripAlpha)
+                clearAlphaFromARGB(tmpData, w, h);
+
             return tmpData;
         }
 
@@ -251,6 +260,14 @@ namespace MassEffectModder
         public Bitmap getBitmapARGB()
         {
             return convertRawToBitmapARGB(mipMaps[0].data, mipMaps[0].width, mipMaps[0].height, pixelFormat);
+        }
+
+        private static void clearAlphaFromARGB(byte[] src, int w, int h)
+        {
+            for (int i = 0; i < w * h; i++)
+            {
+                src[4 * i + 3] = 255;
+            }
         }
 
         private static byte[] RGBToARGB(byte[] src, int w, int h)
@@ -350,6 +367,7 @@ namespace MassEffectModder
                 tmpData = new byte[w * h];
                 int pitch = w * 4;
                 for (int srcPos = 0, dstPos = 0; dstPos < w * h; srcPos += pitch)
+                {
                     for (int x = 0; x < (w / 2); x++, srcPos += 8)
                     {
                         tmpData[dstPos++] = (byte)((uint)(src[srcPos + 0] + src[srcPos + 4 + 0] + src[srcPos + pitch + 0] + src[srcPos + pitch + 4 + 0]) >> 2);
@@ -357,6 +375,7 @@ namespace MassEffectModder
                         tmpData[dstPos++] = (byte)((uint)(src[srcPos + 2] + src[srcPos + 4 + 2] + src[srcPos + pitch + 2] + src[srcPos + pitch + 4 + 2]) >> 2);
                         tmpData[dstPos++] = (byte)((uint)(src[srcPos + 3] + src[srcPos + 4 + 3] + src[srcPos + pitch + 3] + src[srcPos + pitch + 4 + 3]) >> 2);
                     }
+                }
             }
         
             return tmpData;
@@ -383,12 +402,14 @@ namespace MassEffectModder
                 tmpData = new byte[(w * h * 3) / 4];
                 int pitch = w * 3;
                 for (int srcPos = 0, dstPos = 0; dstPos < (w * h * 3) / 4; srcPos += pitch)
+                {
                     for (int x = 0; x < (w / 2); x++, srcPos += 6)
                     {
                         tmpData[dstPos++] = (byte)((uint)(src[srcPos + 0] + src[srcPos + 3 + 0] + src[srcPos + pitch + 0] + src[srcPos + pitch + 3 + 0]) >> 2);
                         tmpData[dstPos++] = (byte)((uint)(src[srcPos + 1] + src[srcPos + 3 + 1] + src[srcPos + pitch + 1] + src[srcPos + pitch + 3 + 1]) >> 2);
                         tmpData[dstPos++] = (byte)((uint)(src[srcPos + 2] + src[srcPos + 3 + 2] + src[srcPos + pitch + 2] + src[srcPos + pitch + 3 + 2]) >> 2);
                     }
+                }
             }
 
             return tmpData;
@@ -410,26 +431,14 @@ namespace MassEffectModder
             switch (dstFormat)
             {
                 case PixelFormat.DXT1:
-                    if (dxt1HasAlpha)
-                    {
-                        tempData = convertRawToARGB(src, w, h, srcFormat);
-                        tempData = convertDDS(dstFormat, StoreMipToDDS(src, PixelFormat.ARGB, w, h, dxt1HasAlpha), PixelFormat.ARGB);
-                    }
-                    else
-                    {
-                        tempData = convertRawToRGB(src, w, h, srcFormat);
-                        tempData = convertDDS(dstFormat, StoreMipToDDS(tempData, PixelFormat.RGB, w, h), PixelFormat.RGB);
-                    }
-                    Image tempImage1 = new Image(tempData, ImageFormat.DDS);
-                    tempData = tempImage1.mipMaps[0].data;
-                    break;
                 case PixelFormat.DXT3:
                 case PixelFormat.DXT5:
                 case PixelFormat.ATI2:
                     tempData = convertRawToARGB(src, w, h, srcFormat);
-                    tempData = convertDDS(dstFormat, StoreMipToDDS(src, PixelFormat.ARGB, w, h), PixelFormat.ARGB);
-                    Image tempImage2 = new Image(tempData, ImageFormat.DDS);
-                    tempData = tempImage2.mipMaps[0].data;
+                    if (w < 4 || h < 4)
+                        tempData = new byte[MipMap.getBufferSize(w, h, dstFormat)];
+                    else
+                        tempData = compressMipmap(dstFormat, tempData, w, h, dxt1HasAlpha);
                     break;
                 case PixelFormat.ARGB:
                     tempData = convertRawToARGB(src, w, h, srcFormat);

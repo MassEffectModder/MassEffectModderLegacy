@@ -24,7 +24,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using StreamHelpers;
-using AmaroK86.ImageFormat;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Diagnostics;

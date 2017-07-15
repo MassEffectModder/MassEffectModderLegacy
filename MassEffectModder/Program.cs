@@ -60,8 +60,7 @@ namespace MassEffectModder
             string[] resources = assembly.GetManifestResourceNames();
             for (int l = 0; l < resources.Length; l++)
             {
-                if (resources[l].EndsWith(".dll", StringComparison.OrdinalIgnoreCase) ||
-                    resources[l].EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
+                if (resources[l].EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
                 {
                     string dllName = resources[l].Substring(resources[l].IndexOf("Dlls.") + "Dlls.".Length);
                     string dllFilePath = Path.Combine(dllPath, dllName);
@@ -75,9 +74,6 @@ namespace MassEffectModder
                             File.Delete(dllFilePath);
                         File.WriteAllBytes(dllFilePath, buf);
                     }
-
-                    if (dllName.Contains("nvcompress.exe"))
-                        continue;
 
                     IntPtr handle = LoadLibrary(dllFilePath);
                     if (handle == IntPtr.Zero)

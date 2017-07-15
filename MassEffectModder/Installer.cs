@@ -19,7 +19,6 @@
  *
  */
 
-using AmaroK86.ImageFormat;
 using StreamHelpers;
 using System;
 using System.Collections.Generic;
