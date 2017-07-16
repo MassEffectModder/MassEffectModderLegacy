@@ -182,13 +182,32 @@ namespace MassEffectModder
 
         static void Main(string[] args)
         {
-            if (args.Length == 4)
+            string cmd = "";
+            string game;
+            string inputDir;
+            string outputDir;
+            string inputFile;
+            string outputFile;
+            int gameId = 0;
+
+            if (args.Length > 0)
             {
-                string option = args[0];
-                string game = args[1];
-                string inputDir = args[2];
-                string outMem = args[3];
-                int gameId;
+                cmd = args[0];
+                loadEmbeddedDlls();
+            }
+
+            if (cmd.Equals("-convert-to-mem", StringComparison.OrdinalIgnoreCase) ||
+                cmd.Equals("-convert-game-image", StringComparison.OrdinalIgnoreCase) ||
+                cmd.Equals("-convert-game-images", StringComparison.OrdinalIgnoreCase) ||
+                cmd.Equals("-extract-mod", StringComparison.OrdinalIgnoreCase))
+            {
+                if (args.Length != 4)
+                {
+                    Console.WriteLine("Error: wrong arguments!");
+                    goto fail;
+                }
+
+                game = args[1];
                 try
                 {
                     gameId = int.Parse(game);
@@ -200,73 +219,158 @@ namespace MassEffectModder
                 if (gameId != 1 && gameId != 2 && gameId != 3)
                 {
                     Console.WriteLine("Error: wrong game id!");
-                    Environment.Exit(1);
+                    goto fail;
+                }
+            }
+
+            if (cmd.Equals("-convert-to-mem", StringComparison.OrdinalIgnoreCase))
+            {
+                if (args.Length != 3)
+                {
+                    Console.WriteLine("Error: wrong arguments!");
+                    goto fail;
+                }
+
+                inputDir = args[2];
+                outputFile = args[3];
+                if (!Directory.Exists(inputDir))
+                {
+                    Console.WriteLine("Error: input path not exists: " + inputDir);
+                    goto fail;
                 }
                 else
                 {
-                    if (option.Equals("-convert-to-mem", StringComparison.OrdinalIgnoreCase))
+                    Console.WriteLine(Environment.NewLine + Environment.NewLine +
+                        "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
+                    if (!CmdLineConverter.ConvertToMEM(gameId, inputDir, outputFile))
                     {
-                        if (!Directory.Exists(inputDir))
-                        {
-                            Console.WriteLine("Error: input path not exists: " + inputDir);
-                            Environment.Exit(1);
-                        }
-                        else
-                        {
-                            loadEmbeddedDlls();
-                            Console.WriteLine(Environment.NewLine + Environment.NewLine +
-                                "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
-                            if (!CmdLineConverter.ConvertToMEM(gameId, inputDir, outMem))
-                            {
-                                unloadEmbeddedDlls();
-                                Environment.Exit(1);
-                            }
-                        }
-                    }
-                    else if (option.Equals("-extract-mod", StringComparison.OrdinalIgnoreCase))
-                    {
-                        string outputDir = args[3];
-                        if (!Directory.Exists(inputDir))
-                        {
-                            Console.WriteLine("Error: input dir not exists: " + inputDir);
-                            Environment.Exit(1);
-                        }
-                        else
-                        {
-                            loadEmbeddedDlls();
-                            Console.WriteLine(Environment.NewLine + Environment.NewLine +
-                                "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
-                            if (!CmdLineConverter.extractMOD(gameId, inputDir, outputDir))
-                            {
-                                unloadEmbeddedDlls();
-                                Environment.Exit(1);
-                            }
-                        }
+                        goto fail;
                     }
                 }
             }
-            else if (args.Length == 3)
+            else if (cmd.Equals("-extract-mod", StringComparison.OrdinalIgnoreCase))
             {
-                string option = args[0];
-                string inputDir = args[1];
-                string outputDir = args[2];
-                if (option.Equals("-extract-tpf", StringComparison.OrdinalIgnoreCase))
+                if (args.Length != 3)
                 {
-                    if (!Directory.Exists(inputDir))
+                    Console.WriteLine("Error: wrong arguments!");
+                    goto fail;
+                }
+
+                inputDir = args[2];
+                outputDir = args[3];
+                if (!Directory.Exists(inputDir))
+                {
+                    Console.WriteLine("Error: input dir not exists: " + inputDir);
+                    goto fail;
+                }
+                else
+                {
+                    Console.WriteLine(Environment.NewLine + Environment.NewLine +
+                        "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
+                    if (!CmdLineConverter.extractMOD(gameId, inputDir, outputDir))
                     {
-                        Console.WriteLine("Error: input dir not exists: " + inputDir);
-                        Environment.Exit(1);
+                        goto fail;
                     }
-                    else
+                }
+            }
+            else if (cmd.Equals("-convert-game-image", StringComparison.OrdinalIgnoreCase))
+            {
+                if (args.Length != 3)
+                {
+                    Console.WriteLine("Error: wrong arguments!");
+                    goto fail;
+                }
+
+                inputFile = args[2];
+                outputFile = args[3];
+                if (!Directory.Exists(inputFile))
+                {
+                    Console.WriteLine("Error: input file not exists: " + inputFile);
+                    goto fail;
+                }
+                else
+                {
+                    Console.WriteLine(Environment.NewLine + Environment.NewLine +
+                        "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
+                    if (!CmdLineConverter.convertGameImage(gameId, inputFile, outputFile))
                     {
-                        loadEmbeddedDlls();
-                        Console.WriteLine(Environment.NewLine + Environment.NewLine +
-                            "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
-                        if (!CmdLineConverter.extractTPF(inputDir, outputDir))
-                        {
-                            unloadEmbeddedDlls();
-                            Environment.Exit(1);
-                        }
+                        goto fail;
+                    }
+                }
+            }
+            else if (cmd.Equals("-convert-game-images", StringComparison.OrdinalIgnoreCase))
+            {
+                if (args.Length != 3)
+                {
+                    Console.WriteLine("Error: wrong arguments!");
+                    goto fail;
+                }
+
+                inputDir = args[2];
+                outputDir = args[3];
+                if (!Directory.Exists(inputDir))
+                {
+                    Console.WriteLine("Error: input dir not exists: " + inputDir);
+                    goto fail;
+                }
+                else
+                {
+                    Console.WriteLine(Environment.NewLine + Environment.NewLine +
+                        "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
+                    if (!CmdLineConverter.convertGameImages(gameId, inputDir, outputDir))
+                    {
+                        goto fail;
+                    }
+                }
+            }
+            else if (cmd.Equals("-extract-tpf", StringComparison.OrdinalIgnoreCase))
+            {
+                if (args.Length != 3)
+                {
+                    Console.WriteLine("Error: wrong arguments!");
+                    goto fail;
+                }
+
+                inputDir = args[1];
+                outputDir = args[2];
+                if (!Directory.Exists(inputDir))
+                {
+                    Console.WriteLine("Error: input dir not exists: " + inputDir);
+                    goto fail;
+                }
+                else
+                {
+                    Console.WriteLine(Environment.NewLine + Environment.NewLine +
+                        "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
+                    if (!CmdLineConverter.extractTPF(inputDir, outputDir))
+                    {
+                        goto fail;
+                    }
+                }
+            }
+            else if (cmd.Equals("-convert-image", StringComparison.OrdinalIgnoreCase))
+            {
+                if (args.Length != 4)
+                {
+                    Console.WriteLine("Error: wrong arguments!");
+                    goto fail;
+                }
+
+                string format = args[1];
+                inputFile = args[2];
+                outputFile = args[3];
+                if (!Directory.Exists(inputFile))
+                {
+                    Console.WriteLine("Error: input file not exists: " + inputFile);
+                    goto fail;
+                }
+                else
+                {
+                    Console.WriteLine(Environment.NewLine + Environment.NewLine +
+                        "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
+                    if (!CmdLineConverter.convertImage(inputFile, outputFile, format))
+                    {
+                        goto fail;
                     }
                 }
             }
@@ -300,6 +404,10 @@ namespace MassEffectModder
             }
 
             unloadEmbeddedDlls();
+            Environment.Exit(0);
+fail:
+            unloadEmbeddedDlls();
+            Environment.Exit(0);
         }
     }
 }

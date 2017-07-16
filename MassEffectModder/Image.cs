@@ -461,7 +461,7 @@ namespace MassEffectModder
             return tempData;
         }
 
-        public void correctMips(PixelFormat dstFormat)
+        public void correctMips(PixelFormat dstFormat, bool dxt1HasAlpha = false)
         {
             byte[] tempData;
 
@@ -478,7 +478,7 @@ namespace MassEffectModder
 
             if (dstFormat != pixelFormat)
             {
-                byte[] top = convertToFormat(pixelFormat, mipMaps[0].data, width, height, dstFormat);
+                byte[] top = convertToFormat(pixelFormat, mipMaps[0].data, width, height, dstFormat, dxt1HasAlpha);
                 mipMaps.RemoveAt(0);
                 mipMaps.Add(new MipMap(top, width, height, dstFormat));
                 pixelFormat = dstFormat;

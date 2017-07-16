@@ -640,6 +640,147 @@ namespace MassEffectModder
             return true;
         }
 
+        static public string convertGameTexture(string inputFile, string outputFile)
+        {
+            return "";
+        }
+
+        static public bool convertGameImage(int gameId, string inputFile, string outputFile)
+        {
+            textures = new List<FoundTexture>();
+            ConfIni configIni = new ConfIni();
+            GameData gameData = new GameData((MeType)gameId, configIni);
+            if (GameData.GamePath == null || !Directory.Exists(GameData.GamePath))
+            {
+                Console.WriteLine("Error: Could not found the game!");
+                return false;
+            }
+
+            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    Assembly.GetExecutingAssembly().GetName().Name);
+            string mapFile = Path.Combine(path, "me" + gameId + "map.bin");
+            if (!loadTexturesMap(mapFile, textures))
+                return false;
+
+            string errors = convertGameTexture(inputFile, outputFile);
+
+            string filename = "convert-errors.txt";
+            if (File.Exists(filename))
+                File.Delete(filename);
+            if (errors != "")
+            {
+                using (FileStream fs = new FileStream(filename, FileMode.CreateNew))
+                {
+                    fs.WriteStringASCII(errors);
+                }
+                Console.WriteLine("Error: Some errors have occured, check log file: " + filename);
+                return false;
+            }
+
+            return true;
+        }
+
+        static public bool convertGameImages(int gameId, string inputDir, string outputDir)
+        {
+            textures = new List<FoundTexture>();
+            ConfIni configIni = new ConfIni();
+            GameData gameData = new GameData((MeType)gameId, configIni);
+            if (GameData.GamePath == null || !Directory.Exists(GameData.GamePath))
+            {
+                Console.WriteLine("Error: Could not found the game!");
+                return false;
+            }
+
+            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    Assembly.GetExecutingAssembly().GetName().Name);
+            string mapFile = Path.Combine(path, "me" + gameId + "map.bin");
+            if (!loadTexturesMap(mapFile, textures))
+                return false;
+
+            List<string> list = Directory.GetFiles(inputDir, "*.dds").Where(item => item.EndsWith(".dds", StringComparison.OrdinalIgnoreCase)).ToList();
+            list.AddRange(Directory.GetFiles(inputDir, "*.png").Where(item => item.EndsWith(".png", StringComparison.OrdinalIgnoreCase)));
+            list.AddRange(Directory.GetFiles(inputDir, "*.bmp").Where(item => item.EndsWith(".bmp", StringComparison.OrdinalIgnoreCase)));
+            list.AddRange(Directory.GetFiles(inputDir, "*.tga").Where(item => item.EndsWith(".tga", StringComparison.OrdinalIgnoreCase)));
+            list.AddRange(Directory.GetFiles(inputDir, "*.jpg").Where(item => item.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)));
+            list.AddRange(Directory.GetFiles(inputDir, "*.jpeg").Where(item => item.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)));
+            list.Sort();
+
+            string errors = "";
+
+            foreach (string file in list)
+            {
+                errors += convertGameTexture(file, Path.Combine(inputDir, file));
+            }
+
+            string filename = "convert-errors.txt";
+            if (File.Exists(filename))
+                File.Delete(filename);
+            if (errors != "")
+            {
+                using (FileStream fs = new FileStream(filename, FileMode.CreateNew))
+                {
+                    fs.WriteStringASCII(errors);
+                }
+                Console.WriteLine("Error: Some errors have occured, check log file: " + filename);
+                return false;
+            }
+
+            return true;
+        }
+
+        static public bool convertImage(string inputFile, string outputFile, string format)
+        {
+            format = format.ToLowerInvariant();
+            PixelFormat pixFmt;
+            bool dxt1HasAlpha = false;
+
+            switch (format)
+            {
+                case "dxt1":
+                    pixFmt = PixelFormat.DXT1;
+                    break;
+                case "dxt1a":
+                    pixFmt = PixelFormat.DXT1;
+                    dxt1HasAlpha = true;
+                    break;
+                case "dxt3":
+                    pixFmt = PixelFormat.DXT3;
+                    break;
+                case "dxt5":
+                    pixFmt = PixelFormat.DXT5;
+                    break;
+                case "ati2":
+                    pixFmt = PixelFormat.ATI2;
+                    break;
+                case "v8u8":
+                    pixFmt = PixelFormat.V8U8;
+                    break;
+                case "argb":
+                    pixFmt = PixelFormat.ARGB;
+                    break;
+                case "rgb":
+                    pixFmt = PixelFormat.RGB;
+                    break;
+                case "g8":
+                    pixFmt = PixelFormat.G8;
+                    break;
+                default:
+                    Console.WriteLine("Error: not supported format: " + format);
+                    return false;
+
+            }
+            Image image = new Image(inputFile);
+            if (File.Exists(outputFile))
+                File.Delete(outputFile);
+            image.correctMips(pixFmt, dxt1HasAlpha);
+            using (FileStream fs = new FileStream(outputFile + ".dds", FileMode.CreateNew, FileAccess.Write))
+            {
+                fs.WriteFromBuffer(image.StoreImageToDDS());
+            }
+
+            return true;
+        }
+
         static public bool extractTPF(string inputDir, string outputDir)
         {
             Console.WriteLine("Extract TPF files started...");
