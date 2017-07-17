@@ -225,12 +225,6 @@ namespace MassEffectModder
 
             if (cmd.Equals("-convert-to-mem", StringComparison.OrdinalIgnoreCase))
             {
-                if (args.Length != 4)
-                {
-                    Console.WriteLine("Error: wrong arguments!");
-                    goto fail;
-                }
-
                 inputDir = args[2];
                 outputFile = args[3];
                 if (!Directory.Exists(inputDir))
@@ -250,12 +244,6 @@ namespace MassEffectModder
             }
             else if (cmd.Equals("-extract-mod", StringComparison.OrdinalIgnoreCase))
             {
-                if (args.Length != 4)
-                {
-                    Console.WriteLine("Error: wrong arguments!");
-                    goto fail;
-                }
-
                 inputDir = args[2];
                 outputDir = args[3];
                 if (!Directory.Exists(inputDir))
@@ -275,12 +263,6 @@ namespace MassEffectModder
             }
             else if (cmd.Equals("-convert-game-image", StringComparison.OrdinalIgnoreCase))
             {
-                if (args.Length != 4)
-                {
-                    Console.WriteLine("Error: wrong arguments!");
-                    goto fail;
-                }
-
                 inputFile = args[2];
                 outputFile = args[3];
                 if (!Directory.Exists(inputFile))
@@ -300,12 +282,6 @@ namespace MassEffectModder
             }
             else if (cmd.Equals("-convert-game-images", StringComparison.OrdinalIgnoreCase))
             {
-                if (args.Length != 4)
-                {
-                    Console.WriteLine("Error: wrong arguments!");
-                    goto fail;
-                }
-
                 inputDir = args[2];
                 outputDir = args[3];
                 if (!Directory.Exists(inputDir))
