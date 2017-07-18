@@ -353,7 +353,8 @@ namespace MassEffectModder
                         {
                             bool dxt1HasAlpha = false;
                             byte dxt1Threshold = 128;
-                            if (texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
+                            if (texture.properties.exists("CompressionSettings") &&
+                                texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
                             {
                                 dxt1HasAlpha = true;
                                 if (image.pixelFormat == PixelFormat.ARGB ||
