@@ -46,6 +46,7 @@ namespace MassEffectModder
         private const int DDPF_FOURCC = 0x4;
         private const int DDPF_RGB = 0x40;
         private const int DDPF_LUMINANCE = 0x20000;
+        private const int DDPF_SIGNED = 0x80000;
 
         private const int FOURCC_DX10_TAG = 0x30315844;
         private const int FOURCC_DXT1_TAG = 0x31545844;
@@ -113,7 +114,6 @@ namespace MassEffectModder
                            ddsPixelFormat.Bmask == 0xFF &&
                            ddsPixelFormat.Amask == 0xFF000000)
                     {
-                        hasAlpha = true;
                         pixelFormat = PixelFormat.ARGB;
                         break;
                     }
@@ -133,7 +133,7 @@ namespace MassEffectModder
                         pixelFormat = PixelFormat.V8U8;
                         break;
                     }
-                    if (ddsPixelFormat.bits == 0x8 &&
+                    if (ddsPixelFormat.bits == 8 &&
                            ddsPixelFormat.Rmask == 0xFF &&
                            ddsPixelFormat.Gmask == 0x00 &&
                            ddsPixelFormat.Bmask == 0x00)
@@ -144,7 +144,6 @@ namespace MassEffectModder
                     throw new Exception("Not supported DDS format");
 
                 case 21:
-                    hasAlpha = true;
                     pixelFormat = PixelFormat.ARGB;
                     break;
 
@@ -161,18 +160,14 @@ namespace MassEffectModder
                     break;
 
                 case FOURCC_DXT1_TAG:
-                    if ((ddsPixelFormat.flags & DDPF_ALPHAPIXELS) != 0)
-                        hasAlpha = true;
                     pixelFormat = PixelFormat.DXT1;
                     break;
 
                 case FOURCC_DXT3_TAG:
-                    hasAlpha = true;
                     pixelFormat = PixelFormat.DXT3;
                     break;
 
                 case FOURCC_DXT5_TAG:
-                    hasAlpha = true;
                     pixelFormat = PixelFormat.DXT5;
                     break;
 
@@ -253,7 +248,6 @@ namespace MassEffectModder
                     mipMaps[i].width, mipMaps[i].height, PixelFormat.ARGB);
             }
             pixelFormat = PixelFormat.ARGB;
-            hasAlpha = true;
 
             return this;
         }
@@ -266,20 +260,17 @@ namespace MassEffectModder
                     mipMaps[i].width, mipMaps[i].height, PixelFormat.RGB);
             }
             pixelFormat = PixelFormat.RGB;
-            hasAlpha = false;
 
             return this;
         }
 
-        static private DDS_PF getDDSPixelFormat(PixelFormat format, bool dxt1HasAlpha)
+        static private DDS_PF getDDSPixelFormat(PixelFormat format)
         {
             DDS_PF pixelFormat = new DDS_PF();
             switch (format)
             {
                 case PixelFormat.DXT1:
                     pixelFormat.flags = DDPF_FOURCC;
-                    if (dxt1HasAlpha)
-                        pixelFormat.flags |= DDPF_ALPHAPIXELS;
                     pixelFormat.fourCC = FOURCC_DXT1_TAG;
                     break;
 
@@ -300,7 +291,7 @@ namespace MassEffectModder
 
                 case PixelFormat.ARGB:
                     pixelFormat.flags = DDPF_ALPHAPIXELS | DDPF_RGB;
-                    pixelFormat.bits = 0x20;
+                    pixelFormat.bits = 32;
                     pixelFormat.Rmask = 0xFF0000;
                     pixelFormat.Gmask = 0xFF00;
                     pixelFormat.Bmask = 0xFF;
@@ -309,26 +300,23 @@ namespace MassEffectModder
 
                 case PixelFormat.RGB:
                     pixelFormat.flags = DDPF_RGB;
-                    pixelFormat.bits = 0x18;
+                    pixelFormat.bits = 24;
                     pixelFormat.Rmask = 0xFF0000;
                     pixelFormat.Gmask = 0xFF00;
                     pixelFormat.Bmask = 0xFF;
                     break;
 
                 case PixelFormat.V8U8:
-                    pixelFormat.flags = 0x80000;
-                    pixelFormat.bits = 0x10;
+                    pixelFormat.flags = DDPF_SIGNED;
+                    pixelFormat.bits = 16;
                     pixelFormat.Rmask = 0xFF;
                     pixelFormat.Gmask = 0xFF00;
-                    pixelFormat.Bmask = 0x00;
                     break;
 
                 case PixelFormat.G8:
                     pixelFormat.flags = DDPF_LUMINANCE;
-                    pixelFormat.bits = 0x08;
+                    pixelFormat.bits = 8;
                     pixelFormat.Rmask = 0xFF;
-                    pixelFormat.Gmask = 0x00;
-                    pixelFormat.Bmask = 0x00;
                     break;
 
                 default:
@@ -337,7 +325,7 @@ namespace MassEffectModder
             return pixelFormat;
         }
 
-        static public byte[] StoreMipToDDS(byte[] src, PixelFormat format, int w, int h, bool dxt1HasAlpha = false)
+        static public byte[] StoreMipToDDS(byte[] src, PixelFormat format, int w, int h)
         {
             MemoryStream stream = new MemoryStream();
             stream.WriteUInt32(DDS_TAG);
@@ -352,7 +340,7 @@ namespace MassEffectModder
             stream.WriteZeros(44); // dwReserved1
 
             stream.WriteInt32(DDS_PIXELFORMAT_dwSize);
-            DDS_PF pixfmt = getDDSPixelFormat(format, dxt1HasAlpha);
+            DDS_PF pixfmt = getDDSPixelFormat(format);
             stream.WriteUInt32(pixfmt.flags);
             stream.WriteUInt32(pixfmt.fourCC);
             stream.WriteUInt32(pixfmt.bits);
@@ -390,7 +378,7 @@ namespace MassEffectModder
             stream.WriteZeros(44); // dwReserved1
 
             stream.WriteInt32(DDS_PIXELFORMAT_dwSize);
-            DDS_PF pixfmt = getDDSPixelFormat(format == PixelFormat.Unknown ? pixelFormat: format, hasAlpha);
+            DDS_PF pixfmt = getDDSPixelFormat(format == PixelFormat.Unknown ? pixelFormat: format);
             stream.WriteUInt32(pixfmt.flags);
             stream.WriteUInt32(pixfmt.fourCC);
             stream.WriteUInt32(pixfmt.bits);
@@ -480,7 +468,7 @@ namespace MassEffectModder
                     blockARGB[blockPtr + 1] = srcARGB[srcPtr + 1];
                     blockARGB[blockPtr + 2] = srcARGB[srcPtr + 2];
                     blockARGB[blockPtr + 3] = srcARGB[srcPtr + 3];
-                    blockPtr += x;
+                    blockPtr += 4;
                 }
             }
 
@@ -504,7 +492,7 @@ namespace MassEffectModder
                     dstARGB[dstPtr + 1] = blockARGB[blockPtr + 1];
                     dstARGB[dstPtr + 2] = blockARGB[blockPtr + 2];
                     dstARGB[dstPtr + 3] = blockARGB[blockPtr + 3];
-                    blockPtr += x;
+                    blockPtr += 4;
                 }
             }
         }

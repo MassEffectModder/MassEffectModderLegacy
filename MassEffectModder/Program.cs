@@ -265,7 +265,7 @@ namespace MassEffectModder
             {
                 inputFile = args[2];
                 outputFile = args[3];
-                if (!Directory.Exists(inputFile))
+                if (!File.Exists(inputFile))
                 {
                     Console.WriteLine("Error: input file not exists: " + inputFile);
                     goto fail;
@@ -326,25 +326,49 @@ namespace MassEffectModder
             }
             else if (cmd.Equals("-convert-image", StringComparison.OrdinalIgnoreCase))
             {
-                if (args.Length != 4)
+                if (args.Length < 4)
                 {
                     Console.WriteLine("Error: wrong arguments!");
                     goto fail;
                 }
 
                 string format = args[1];
-                inputFile = args[2];
-                outputFile = args[3];
-                if (!Directory.Exists(inputFile))
+                string threshold = "128";
+                if (format == "dxt1a")
+                {
+                    if (args.Length == 5)
+                    {
+                        threshold = args[2];
+                        inputFile = args[3];
+                        outputFile = args[4];
+                    }
+                    else
+                    {
+                        inputFile = args[2];
+                        outputFile = args[3];
+                    }
+                }
+                else
+                {
+                    inputFile = args[2];
+                    outputFile = args[3];
+                }
+
+                if (!File.Exists(inputFile))
                 {
                     Console.WriteLine("Error: input file not exists: " + inputFile);
                     goto fail;
                 }
                 else
                 {
+                    if (Path.GetExtension(outputFile).ToLowerInvariant() != ".dds")
+                    {
+                        Console.WriteLine("Error: output file is not dds: " + outputFile);
+                        goto fail;
+                    }
                     Console.WriteLine(Environment.NewLine + Environment.NewLine +
                         "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
-                    if (!CmdLineConverter.convertImage(inputFile, outputFile, format))
+                    if (!CmdLineConverter.convertImage(inputFile, outputFile, format, threshold))
                     {
                         goto fail;
                     }

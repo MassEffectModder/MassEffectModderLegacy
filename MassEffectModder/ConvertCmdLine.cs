@@ -728,11 +728,21 @@ namespace MassEffectModder
             return true;
         }
 
-        static public bool convertImage(string inputFile, string outputFile, string format)
+        static public bool convertImage(string inputFile, string outputFile, string format, string threshold)
         {
             format = format.ToLowerInvariant();
             PixelFormat pixFmt;
             bool dxt1HasAlpha = false;
+            byte dxt1Threshold = 128;
+            try
+            {
+                dxt1Threshold = byte.Parse(threshold);
+            }
+            catch
+            {
+                Console.WriteLine("Error: wrong threshold for dxt1: " + threshold);
+                return false;
+            }
 
             switch (format)
             {
@@ -772,8 +782,8 @@ namespace MassEffectModder
             Image image = new Image(inputFile);
             if (File.Exists(outputFile))
                 File.Delete(outputFile);
-            image.correctMips(pixFmt, dxt1HasAlpha);
-            using (FileStream fs = new FileStream(outputFile + ".dds", FileMode.CreateNew, FileAccess.Write))
+            image.correctMips(pixFmt, dxt1HasAlpha, dxt1Threshold);
+            using (FileStream fs = new FileStream(outputFile, FileMode.CreateNew, FileAccess.Write))
             {
                 fs.WriteFromBuffer(image.StoreImageToDDS());
             }

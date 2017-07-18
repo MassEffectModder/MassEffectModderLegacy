@@ -95,7 +95,6 @@ namespace MassEffectModder
         }
 
         public List<MipMap> mipMaps { get; private set; }
-        public bool hasAlpha { get; private set; }
         public PixelFormat pixelFormat { get; private set; } = PixelFormat.Unknown;
 
         public Image(string fileName, ImageFormat format = ImageFormat.Unknown)
@@ -133,8 +132,6 @@ namespace MassEffectModder
         {
             mipMaps = mipmaps;
             pixelFormat = pixelFmt;
-            if (pixelFormat == PixelFormat.DXT1)
-                hasAlpha = true;
         }
 
         private ImageFormat DetectImageByFilename(string fileName)
@@ -213,7 +210,7 @@ namespace MassEffectModder
             }
         }
 
-        public static byte[] convertRawToARGB(byte[] src, int w, int h, PixelFormat format, bool stripAlpha = false)
+        public static byte[] convertRawToARGB(byte[] src, int w, int h, PixelFormat format, bool clearAlpha = false)
         {
             byte[] tmpData;
 
@@ -226,7 +223,8 @@ namespace MassEffectModder
                     {
                         if (w < 4 || h < 4)
                             return new byte[w * h * 4];
-                        tmpData = decompressMipmap(format, src, w, h); break;
+                        tmpData = decompressMipmap(format, src, w, h);
+                        break;
                     }
                 case PixelFormat.ARGB: tmpData = src; break;
                 case PixelFormat.RGB: tmpData = RGBToARGB(src, w, h); break;
@@ -236,15 +234,15 @@ namespace MassEffectModder
                     throw new Exception("invalid texture format " + format);
             }
 
-            if (stripAlpha)
+            if (clearAlpha)
                 clearAlphaFromARGB(tmpData, w, h);
 
             return tmpData;
         }
 
-        public static byte[] convertRawToRGB(byte[] src, int w, int h, PixelFormat format, bool stripAlpha = false)
+        public static byte[] convertRawToRGB(byte[] src, int w, int h, PixelFormat format)
         {
-            return ARGBtoRGB(convertRawToARGB(src, w, h, format, stripAlpha), w, h);
+            return ARGBtoRGB(convertRawToARGB(src, w, h, format), w, h);
         }
 
         public static Bitmap convertRawToBitmapARGB(byte[] src, int w, int h, PixelFormat format)
@@ -415,16 +413,16 @@ namespace MassEffectModder
             return tmpData;
         }
 
-        public static PngBitmapEncoder convertToPng(byte[] src, int w, int h, PixelFormat format, bool stripAlpha = false)
+        public static PngBitmapEncoder convertToPng(byte[] src, int w, int h, PixelFormat format)
         {
-            byte[] tmpData = convertRawToARGB(src, w, h, format, stripAlpha);
+            byte[] tmpData = convertRawToARGB(src, w, h, format);
             PngBitmapEncoder png = new PngBitmapEncoder();
             BitmapSource image = BitmapSource.Create(w, h, 96, 96, PixelFormats.Bgra32, null, tmpData, w * 4);
             png.Frames.Add(BitmapFrame.Create(image));
             return png;
         }
 
-        static private byte[] convertToFormat(PixelFormat srcFormat, byte[] src, int w, int h, PixelFormat dstFormat, bool dxt1HasAlpha = false)
+        static private byte[] convertToFormat(PixelFormat srcFormat, byte[] src, int w, int h, PixelFormat dstFormat, bool dxt1HasAlpha = false, byte dxt1Threshold = 128)
         {
             byte[] tempData;
 
@@ -438,7 +436,7 @@ namespace MassEffectModder
                     if (w < 4 || h < 4)
                         tempData = new byte[MipMap.getBufferSize(w, h, dstFormat)];
                     else
-                        tempData = compressMipmap(dstFormat, tempData, w, h, dxt1HasAlpha);
+                        tempData = compressMipmap(dstFormat, tempData, w, h, dxt1HasAlpha, dxt1Threshold);
                     break;
                 case PixelFormat.ARGB:
                     tempData = convertRawToARGB(src, w, h, srcFormat);
@@ -461,11 +459,11 @@ namespace MassEffectModder
             return tempData;
         }
 
-        public void correctMips(PixelFormat dstFormat, bool dxt1HasAlpha = false)
+        public void correctMips(PixelFormat dstFormat, bool dxt1HasAlpha = false, byte dxt1Threshold = 128)
         {
             byte[] tempData;
 
-            if (dstFormat != PixelFormat.ARGB)
+            if (pixelFormat != PixelFormat.ARGB)
                 tempData = convertRawToARGB(mipMaps[0].data, mipMaps[0].width, mipMaps[0].height, pixelFormat);
             else
                 tempData = mipMaps[0].data;
@@ -476,20 +474,12 @@ namespace MassEffectModder
             if (mipMaps.Count > 1)
                 mipMaps.RemoveRange(1, mipMaps.Count - 1);
 
-            if (dstFormat != pixelFormat)
+            if (dstFormat != pixelFormat || (dstFormat == PixelFormat.DXT1 && !dxt1HasAlpha))
             {
-                byte[] top = convertToFormat(pixelFormat, mipMaps[0].data, width, height, dstFormat, dxt1HasAlpha);
+                byte[] top = convertToFormat(pixelFormat, mipMaps[0].data, width, height, dstFormat, dxt1HasAlpha, dxt1Threshold);
                 mipMaps.RemoveAt(0);
                 mipMaps.Add(new MipMap(top, width, height, dstFormat));
                 pixelFormat = dstFormat;
-                if (dstFormat == PixelFormat.DXT1 ||
-                    dstFormat == PixelFormat.ATI2 ||
-                    dstFormat == PixelFormat.RGB ||
-                    dstFormat == PixelFormat.G8 ||
-                    dstFormat == PixelFormat.V8U8)
-                {
-                    hasAlpha = false;
-                }
             }
 
             int prevW, prevH;
@@ -531,7 +521,7 @@ namespace MassEffectModder
                 tempData = downscaleARGB(tempData, prevW, prevH);
                 if (pixelFormat != PixelFormat.ARGB)
                 {
-                    byte[] converted = convertToFormat(PixelFormat.ARGB, tempData, width, height, pixelFormat);
+                    byte[] converted = convertToFormat(PixelFormat.ARGB, tempData, width, height, pixelFormat, dxt1HasAlpha, dxt1Threshold);
                     mipMaps.Add(new MipMap(converted, origW, origH, pixelFormat));
                 }
                 else
