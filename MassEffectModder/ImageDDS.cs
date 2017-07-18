@@ -22,6 +22,7 @@
 using System;
 using System.IO;
 using StreamHelpers;
+using System.Threading.Tasks;
 
 namespace MassEffectModder
 {
@@ -544,41 +545,56 @@ namespace MassEffectModder
                 blockSize = CompressonatorCodecs.Codecs.BLOCK_SIZE_4X4BPP4;
 
             byte[] dst = new byte[blockSize * (w / 4) * (h / 4)];
-            for (int y = 0; y < h / 4; y++)
+            int cores = Environment.ProcessorCount;
+            int partSize = (h / 4) / cores;
+            if (partSize < 4)
+                cores = 1;
+            int[] range = new int[cores + 1];
+
+            for (int p = 1; p <= cores; p++)
             {
-                for (int x = 0; x < w / 4; x++)
-                {
-                    if (dstFormat == PixelFormat.DXT1)
-                    {
-                        srcBlock = readBlock4X4ARGB(src, w, x, y);
-                        uint[] block = CompressonatorCodecs.Codecs.CompressRGBBlock(srcBlock, true, useDXT1Alpha, DXT1Threshold);
-                        writeBlock4X4BPP4(block, dst, w, x, y);
-                    }
-                    else if (dstFormat == PixelFormat.DXT3)
-                    {
-                        srcBlock = readBlock4X4ARGB(src, w, x, y);
-                        uint[] block = CompressonatorCodecs.Codecs.CompressRGBABlock_ExplicitAlpha(srcBlock);
-                        writeBlock4X4BPP8(block, dst, w, x, y);
-                    }
-                    else if (dstFormat == PixelFormat.DXT5)
-                    {
-                        srcBlock = readBlock4X4ARGB(src, w, x, y);
-                        uint[] block = CompressonatorCodecs.Codecs.CompressRGBABlock(srcBlock);
-                        writeBlock4X4BPP8(block, dst, w, x, y);
-                    }
-                    else if (dstFormat == PixelFormat.ATI2)
-                    {
-                        byte[] srcBlockX = new byte[CompressonatorCodecs.Codecs.BLOCK_SIZE_4X4BPP8];
-                        byte[] srcBlockY = new byte[CompressonatorCodecs.Codecs.BLOCK_SIZE_4X4BPP8];
-                        readBlock4X4ATI2(src, w, srcBlockX, srcBlockY, x, y);
-                        uint[] blockX = CompressonatorCodecs.Codecs.CompressAlphaBlock(srcBlockX);
-                        uint[] blockY = CompressonatorCodecs.Codecs.CompressAlphaBlock(srcBlockY);
-                        writeBlock4X4ATI2(blockX, blockY, dst, w, x, y);
-                    }
-                    else
-                        throw new Exception("not supported codec");
-                }
+                range[p] = (partSize * p) - 1;
             }
+            range[cores] = h / 4;
+
+            Parallel.For(0, cores, p =>
+            {
+                for (int y = range[p]; y < range[p + 1]; y++)
+                {
+                    for (int x = 0; x < w / 4; x++)
+                    {
+                        if (dstFormat == PixelFormat.DXT1)
+                        {
+                            srcBlock = readBlock4X4ARGB(src, w, x, y);
+                            uint[] block = CompressonatorCodecs.Codecs.CompressRGBBlock(srcBlock, true, useDXT1Alpha, DXT1Threshold);
+                            writeBlock4X4BPP4(block, dst, w, x, y);
+                        }
+                        else if (dstFormat == PixelFormat.DXT3)
+                        {
+                            srcBlock = readBlock4X4ARGB(src, w, x, y);
+                            uint[] block = CompressonatorCodecs.Codecs.CompressRGBABlock_ExplicitAlpha(srcBlock);
+                            writeBlock4X4BPP8(block, dst, w, x, y);
+                        }
+                        else if (dstFormat == PixelFormat.DXT5)
+                        {
+                            srcBlock = readBlock4X4ARGB(src, w, x, y);
+                            uint[] block = CompressonatorCodecs.Codecs.CompressRGBABlock(srcBlock);
+                            writeBlock4X4BPP8(block, dst, w, x, y);
+                        }
+                        else if (dstFormat == PixelFormat.ATI2)
+                        {
+                            byte[] srcBlockX = new byte[CompressonatorCodecs.Codecs.BLOCK_SIZE_4X4BPP8];
+                            byte[] srcBlockY = new byte[CompressonatorCodecs.Codecs.BLOCK_SIZE_4X4BPP8];
+                            readBlock4X4ATI2(src, w, srcBlockX, srcBlockY, x, y);
+                            uint[] blockX = CompressonatorCodecs.Codecs.CompressAlphaBlock(srcBlockX);
+                            uint[] blockY = CompressonatorCodecs.Codecs.CompressAlphaBlock(srcBlockY);
+                            writeBlock4X4ATI2(blockX, blockY, dst, w, x, y);
+                        }
+                        else
+                            throw new Exception("not supported codec");
+                    }
+                }
+            });
 
             return dst;
         }
@@ -588,44 +604,58 @@ namespace MassEffectModder
             byte[] dst = new byte[w * h * 4];
             byte[] blockDst;
             uint[] block;
+            int cores = Environment.ProcessorCount;
+            int partSize = (h / 4) / cores;
+            if (partSize < 4)
+                cores = 1;
+            int[] range = new int[cores + 1];
 
-            for (int y = 0; y < h / 4; y++)
+            for (int p = 1; p <= cores; p++)
             {
-                for (int x = 0; x < w / 4; x++)
-                {
-                    if (srcFormat == PixelFormat.DXT1)
-                    {
-                        block = readBlock4X4BPP4(src, w, x, y);
-                        blockDst = CompressonatorCodecs.Codecs.DecompressRGBBlock(block, true);
-                        writeBlock4X4ARGB(blockDst, dst, w, x, y);
-                    }
-                    else if (srcFormat == PixelFormat.DXT3)
-                    {
-                        block = readBlock4X4BPP8(src, w, x, y);
-                        blockDst = CompressonatorCodecs.Codecs.DecompressRGBABlock_ExplicitAlpha(block);
-                        writeBlock4X4ARGB(blockDst, dst, w, x, y);
-                    }
-                    else if (srcFormat == PixelFormat.DXT5)
-                    {
-                        block = readBlock4X4BPP8(src, w, x, y);
-                        blockDst = CompressonatorCodecs.Codecs.DecompressRGBABlock(block);
-                        writeBlock4X4ARGB(blockDst, dst, w, x, y);
-                    }
-                    else if (srcFormat == PixelFormat.ATI2)
-                    {
-                        block = readBlock4X4BPP8(src, w, x, y);
-                        uint[] blockX = new uint[2];
-                        uint[] blockY = new uint[2];
-                        Array.Copy(block, 2, blockX, 0, 2);
-                        Array.Copy(block, 0, blockY, 0, 2);
-                        byte[] blockDstR = CompressonatorCodecs.Codecs.DecompressAlphaBlock(blockX);
-                        byte[] blockDstG = CompressonatorCodecs.Codecs.DecompressAlphaBlock(blockY);
-                        writeBlock4X4ARGBATI2(blockDstR, blockDstG, dst, w, x, y);
-                    }
-                    else
-                        throw new Exception("not supported codec");
-                }
+                range[p] = (partSize * p) - 1;
             }
+            range[cores] = h / 4;
+
+            Parallel.For(0, cores, p =>
+            {
+                for (int y = range[p]; y < range[p + 1]; y++)
+                {
+                    for (int x = 0; x < w / 4; x++)
+                    {
+                        if (srcFormat == PixelFormat.DXT1)
+                        {
+                            block = readBlock4X4BPP4(src, w, x, y);
+                            blockDst = CompressonatorCodecs.Codecs.DecompressRGBBlock(block, true);
+                            writeBlock4X4ARGB(blockDst, dst, w, x, y);
+                        }
+                        else if (srcFormat == PixelFormat.DXT3)
+                        {
+                            block = readBlock4X4BPP8(src, w, x, y);
+                            blockDst = CompressonatorCodecs.Codecs.DecompressRGBABlock_ExplicitAlpha(block);
+                            writeBlock4X4ARGB(blockDst, dst, w, x, y);
+                        }
+                        else if (srcFormat == PixelFormat.DXT5)
+                        {
+                            block = readBlock4X4BPP8(src, w, x, y);
+                            blockDst = CompressonatorCodecs.Codecs.DecompressRGBABlock(block);
+                            writeBlock4X4ARGB(blockDst, dst, w, x, y);
+                        }
+                        else if (srcFormat == PixelFormat.ATI2)
+                        {
+                            block = readBlock4X4BPP8(src, w, x, y);
+                            uint[] blockX = new uint[2];
+                            uint[] blockY = new uint[2];
+                            Array.Copy(block, 2, blockX, 0, 2);
+                            Array.Copy(block, 0, blockY, 0, 2);
+                            byte[] blockDstR = CompressonatorCodecs.Codecs.DecompressAlphaBlock(blockX);
+                            byte[] blockDstG = CompressonatorCodecs.Codecs.DecompressAlphaBlock(blockY);
+                            writeBlock4X4ARGBATI2(blockDstR, blockDstG, dst, w, x, y);
+                        }
+                        else
+                            throw new Exception("not supported codec");
+                    }
+                }
+            });
 
             return dst;
         }
