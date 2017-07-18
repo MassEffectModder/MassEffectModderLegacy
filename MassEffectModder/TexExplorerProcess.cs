@@ -357,7 +357,12 @@ namespace MassEffectModder
                             (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1) ||
                             image.pixelFormat != pixelFormat)
                         {
-                            image.correctMips(pixelFormat);
+                            bool dxt1HasAlpha = false;
+                            byte dxt1Threshold = 128;
+                            if (pixelFormat == PixelFormat.DXT1 && texture.properties.exists("CompressionSettings"))
+                                if (texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
+                                    dxt1HasAlpha = true;
+                            image.correctMips(pixelFormat, dxt1HasAlpha, dxt1Threshold);
                             src = image.StoreImageToDDS();
                         }
 

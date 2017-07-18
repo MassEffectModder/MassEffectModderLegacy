@@ -259,7 +259,12 @@ namespace MassEffectModder
                                         (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1) ||
                                         image.pixelFormat != pixelFormat)
                                     {
-                                        image.correctMips(pixelFormat);
+                                        bool dxt1HasAlpha = false;
+                                        byte dxt1Threshold = 128;
+                                        if (pixelFormat == PixelFormat.DXT1 && texture.properties.exists("CompressionSettings"))
+                                            if (texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
+                                                dxt1HasAlpha = true;
+                                        image.correctMips(pixelFormat, dxt1HasAlpha, dxt1Threshold);
                                         mod.data = image.StoreImageToDDS();
                                     }
                                 }
@@ -382,7 +387,12 @@ namespace MassEffectModder
                                     (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1) ||
                                     image.pixelFormat != pixelFormat)
                                 {
-                                    image.correctMips(pixelFormat);
+                                    bool dxt1HasAlpha = false;
+                                    byte dxt1Threshold = 128;
+                                    if (pixelFormat == PixelFormat.DXT1 && texture.properties.exists("CompressionSettings"))
+                                        if (texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
+                                            dxt1HasAlpha = true;
+                                    image.correctMips(pixelFormat, dxt1HasAlpha, dxt1Threshold);
                                     mod.data = image.StoreImageToDDS();
                                 }
                                 mods.Add(mod);
@@ -468,7 +478,12 @@ namespace MassEffectModder
                             (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1) ||
                             image.pixelFormat != pixelFormat)
                         {
-                            image.correctMips(pixelFormat);
+                            bool dxt1HasAlpha = false;
+                            byte dxt1Threshold = 128;
+                            if (pixelFormat == PixelFormat.DXT1 && texture.properties.exists("CompressionSettings"))
+                                if (texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
+                                    dxt1HasAlpha = true;
+                            image.correctMips(pixelFormat, dxt1HasAlpha, dxt1Threshold);
                             mod.data = image.StoreImageToDDS();
                         }
 
@@ -539,7 +554,12 @@ namespace MassEffectModder
                         continue;
                     }
 
-                    image.correctMips(pixelFormat);
+                    bool dxt1HasAlpha = false;
+                    byte dxt1Threshold = 128;
+                    if (pixelFormat == PixelFormat.DXT1 && texture.properties.exists("CompressionSettings"))
+                        if (texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
+                            dxt1HasAlpha = true;
+                    image.correctMips(pixelFormat, dxt1HasAlpha, dxt1Threshold);
                     mod.data = image.StoreImageToDDS();
                     mod.textureName = foundCrcList[0].name;
                     mod.binaryMod = false;
@@ -642,7 +662,74 @@ namespace MassEffectModder
 
         static public string convertGameTexture(string inputFile, string outputFile)
         {
-            return "";
+            string errors = "";
+            string filename = Path.GetFileNameWithoutExtension(inputFile).ToLowerInvariant();
+            if (!filename.Contains("0x"))
+            {
+                errors += "Texture filename not valid: " + Path.GetFileName(inputFile) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
+                return errors;
+            }
+            int idx = filename.IndexOf("0x");
+            if (filename.Length - idx < 10)
+            {
+                errors += "Texture filename not valid: " + Path.GetFileName(inputFile) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
+                return errors;
+            }
+            uint crc;
+            string crcStr = filename.Substring(idx + 2, 8);
+            try
+            {
+                crc = uint.Parse(crcStr, System.Globalization.NumberStyles.HexNumber);
+            }
+            catch
+            {
+                errors += "Texture filename not valid: " + Path.GetFileName(inputFile) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
+                return errors;
+            }
+
+            List<FoundTexture> foundCrcList = textures.FindAll(s => s.crc == crc);
+            if (foundCrcList.Count == 0)
+            {
+                errors += "Texture skipped. Texture " + Path.GetFileName(inputFile) + " is not present in your game setup." + Environment.NewLine;
+                return errors;
+            }
+
+            Package pkg = null;
+            try
+            {
+                pkg = new Package(GameData.GamePath + foundCrcList[0].list[0].path);
+            }
+            catch
+            {
+                errors += "Missing package file: " + foundCrcList[0].list[0].path + " - Skipping, file: " + Path.GetFileName(inputFile) + Environment.NewLine;
+                return errors;
+            }
+            Texture texture = new Texture(pkg, foundCrcList[0].list[0].exportID, pkg.getExportData(foundCrcList[0].list[0].exportID));
+            string fmt = texture.properties.getProperty("Format").valueName;
+            PixelFormat pixelFormat = Image.getEngineFormatType(fmt);
+            Image image = new Image(inputFile);
+
+            if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
+                texture.mipMapsList[0].width / texture.mipMapsList[0].height)
+            {
+                errors += "Error in texture: " + Path.GetFileName(inputFile) + " This texture has wrong aspect ratio, skipping texture..." + Environment.NewLine;
+                return errors;
+            }
+
+            bool dxt1HasAlpha = false;
+            byte dxt1Threshold = 128;
+            if (pixelFormat == PixelFormat.DXT1 && texture.properties.exists("CompressionSettings"))
+                if (texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
+                    dxt1HasAlpha = true;
+            image.correctMips(pixelFormat, dxt1HasAlpha, dxt1Threshold);
+            if (File.Exists(outputFile))
+                File.Delete(outputFile);
+            using (FileStream fs = new FileStream(outputFile, FileMode.CreateNew, FileAccess.Write))
+            {
+                fs.WriteFromBuffer(image.StoreImageToDDS());
+            }
+
+            return errors;
         }
 
         static public bool convertGameImage(int gameId, string inputFile, string outputFile)
@@ -705,11 +792,13 @@ namespace MassEffectModder
             list.AddRange(Directory.GetFiles(inputDir, "*.jpeg").Where(item => item.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)));
             list.Sort();
 
-            string errors = "";
+            if (!Directory.Exists(outputDir))
+                Directory.CreateDirectory(outputDir);
 
+            string errors = "";
             foreach (string file in list)
             {
-                errors += convertGameTexture(file, Path.Combine(inputDir, file));
+                errors += convertGameTexture(file, Path.Combine(outputDir, Path.GetFileNameWithoutExtension(file) + ".dds"));
             }
 
             string filename = "convert-errors.txt";

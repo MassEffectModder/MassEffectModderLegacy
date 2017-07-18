@@ -272,6 +272,11 @@ namespace MassEffectModder
                 }
                 else
                 {
+                    if (Path.GetExtension(outputFile).ToLowerInvariant() != ".dds")
+                    {
+                        Console.WriteLine("Error: output file is not dds: " + outputFile);
+                        goto fail;
+                    }
                     Console.WriteLine(Environment.NewLine + Environment.NewLine +
                         "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
                     if (!CmdLineConverter.convertGameImage(gameId, inputFile, outputFile))
