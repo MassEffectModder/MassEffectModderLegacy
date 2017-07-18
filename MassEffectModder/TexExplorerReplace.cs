@@ -81,6 +81,9 @@ namespace MassEffectModder
                 MatchedTexture nodeTexture = list[n];
                 Package package = cachePackageMgr.OpenPackage(GameData.GamePath + nodeTexture.path);
                 Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
+                string fmt = texture.properties.getProperty("Format").valueName;
+                PixelFormat pixelFormat = Image.getEngineFormatType(fmt);
+
                 while (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty))
                 {
                     texture.mipMapsList.Remove(texture.mipMapsList.First(s => s.storageType == Texture.StorageTypes.empty));
@@ -93,24 +96,10 @@ namespace MassEffectModder
                         master = false;
                         if (!masterTextures.Exists(s => s.packageName.ToLowerInvariant() == texture.packageName.ToLowerInvariant()))
                         {
-                            errors += "Error in texture: " + textureName + " Broken game file: " + nodeTexture.path + ", skipping texture..." + Environment.NewLine;
+                            errors += "Error in texture: " + textureName + ". Broken game file: " + nodeTexture.path + ", skipping texture..." + Environment.NewLine;
                             continue;
                         }
                     }
-                }
-
-                if (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1)
-                {
-                    errors += "Error in texture: " + textureName + " This texture has not all the required mipmaps, skipping texture..." + Environment.NewLine;
-                    break;
-                }
-
-                string fmt = texture.properties.getProperty("Format").valueName;
-                PixelFormat pixelFormat = Image.getEngineFormatType(fmt);
-                if (image.pixelFormat != pixelFormat)
-                {
-                    errors += "Error in texture: " + textureName + " This texture has wrong texture format, should be: " + pixelFormat + ", skipping texture..." + Environment.NewLine;
-                    break;
                 }
 
                 if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
@@ -118,6 +107,29 @@ namespace MassEffectModder
                 {
                     errors += "Error in texture: " + textureName + " This texture has wrong aspect ratio, skipping texture..." + Environment.NewLine;
                     break;
+                }
+
+                if (!image.checkDDSHaveAllMipmaps() ||
+                    (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1) ||
+                    image.pixelFormat != pixelFormat)
+                {
+                    bool dxt1HasAlpha = false;
+                    byte dxt1Threshold = 128;
+                    if (pixelFormat == PixelFormat.DXT1 && texture.properties.exists("CompressionSettings"))
+                    {
+                        if (texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
+                        {
+                            dxt1HasAlpha = true;
+                            if (image.pixelFormat == PixelFormat.ARGB ||
+                                image.pixelFormat == PixelFormat.DXT3 ||
+                                image.pixelFormat == PixelFormat.DXT5)
+                            {
+                                errors += "Warning for texture: " + textureName + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
+                            }
+                        }
+                    }
+                    image.correctMips(pixelFormat, dxt1HasAlpha, dxt1Threshold);
+                    errors += "Error in game data: " + nodeTexture.path + ", skipping texture..." + Environment.NewLine;
                 }
 
                 // remove lower mipmaps from source image which not exist in game data
@@ -435,17 +447,12 @@ namespace MassEffectModder
 
             using (OpenFileDialog selectDDS = new OpenFileDialog())
             {
-                selectDDS.Title = "Please select DDS file";
-                selectDDS.Filter = "DDS file|*.dds";
+                selectDDS.Title = "Please select Texture file";
+                selectDDS.Filter = "Texture (DDS PNG BMP TGA)|*.dds;*.png;*.bmp;*.tga";
                 if (selectDDS.ShowDialog() != DialogResult.OK)
                     return;
 
                 Image image = new Image(selectDDS.FileName);
-                if (!image.checkDDSHaveAllMipmaps())
-                {
-                    MessageBox.Show("This texture has not all the required mipmaps, canceling...");
-                    return;
-                }
 
                 bool loadMod = loadMODsToolStripMenuItem.Enabled;
                 bool clearMod = clearMODsToolStripMenuItem.Enabled;

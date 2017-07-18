@@ -238,12 +238,6 @@ namespace MassEffectModder
                             if (foundTexture.crc != 0)
                             {
                                 Image image = new Image(dst, Image.ImageFormat.DDS);
-                                if (!image.checkDDSHaveAllMipmaps())
-                                {
-                                    errors += "Error in texture: " + name + string.Format("_0x{0:X8}", crc) + " Texture skipped. This texture has not all the required mipmaps." + Environment.NewLine;
-                                    log += "Error in texture: " + name + string.Format("_0x{0:X8}", crc) + " Texture skipped. This texture has not all the required mipmaps." + Environment.NewLine;
-                                    continue;
-                                }
                                 errors += replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc);
                             }
                             else
@@ -359,9 +353,17 @@ namespace MassEffectModder
                         {
                             bool dxt1HasAlpha = false;
                             byte dxt1Threshold = 128;
-                            if (pixelFormat == PixelFormat.DXT1 && texture.properties.exists("CompressionSettings"))
-                                if (texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
-                                    dxt1HasAlpha = true;
+                            if (texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
+                            {
+                                dxt1HasAlpha = true;
+                                if (image.pixelFormat == PixelFormat.ARGB ||
+                                    image.pixelFormat == PixelFormat.DXT3 ||
+                                    image.pixelFormat == PixelFormat.DXT5)
+                                {
+                                    errors += "Warning for texture: " + Path.GetFileName(file) + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
+                                    log += "Warning for texture: " + Path.GetFileName(file) + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
+                                }
+                            }
                             image.correctMips(pixelFormat, dxt1HasAlpha, dxt1Threshold);
                             src = image.StoreImageToDDS();
                         }

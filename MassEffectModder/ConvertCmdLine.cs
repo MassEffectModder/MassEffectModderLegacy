@@ -261,9 +261,16 @@ namespace MassEffectModder
                                     {
                                         bool dxt1HasAlpha = false;
                                         byte dxt1Threshold = 128;
-                                        if (pixelFormat == PixelFormat.DXT1 && texture.properties.exists("CompressionSettings"))
-                                            if (texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
-                                                dxt1HasAlpha = true;
+                                        if (texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
+                                        {
+                                            dxt1HasAlpha = true;
+                                            if (image.pixelFormat == PixelFormat.ARGB ||
+                                                image.pixelFormat == PixelFormat.DXT3 ||
+                                                image.pixelFormat == PixelFormat.DXT5)
+                                            {
+                                                errors += "Warning for texture: " + textureName + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
+                                            }
+                                        }
                                         image.correctMips(pixelFormat, dxt1HasAlpha, dxt1Threshold);
                                         mod.data = image.StoreImageToDDS();
                                     }
@@ -389,9 +396,16 @@ namespace MassEffectModder
                                 {
                                     bool dxt1HasAlpha = false;
                                     byte dxt1Threshold = 128;
-                                    if (pixelFormat == PixelFormat.DXT1 && texture.properties.exists("CompressionSettings"))
-                                        if (texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
-                                            dxt1HasAlpha = true;
+                                    if (texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
+                                    {
+                                        dxt1HasAlpha = true;
+                                        if (image.pixelFormat == PixelFormat.ARGB ||
+                                            image.pixelFormat == PixelFormat.DXT3 ||
+                                            image.pixelFormat == PixelFormat.DXT5)
+                                        {
+                                            errors += "Warning for texture: " + textureName + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
+                                        }
+                                    }
                                     image.correctMips(pixelFormat, dxt1HasAlpha, dxt1Threshold);
                                     mod.data = image.StoreImageToDDS();
                                 }
@@ -480,9 +494,16 @@ namespace MassEffectModder
                         {
                             bool dxt1HasAlpha = false;
                             byte dxt1Threshold = 128;
-                            if (pixelFormat == PixelFormat.DXT1 && texture.properties.exists("CompressionSettings"))
-                                if (texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
-                                    dxt1HasAlpha = true;
+                            if (texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
+                            {
+                                dxt1HasAlpha = true;
+                                if (image.pixelFormat == PixelFormat.ARGB ||
+                                    image.pixelFormat == PixelFormat.DXT3 ||
+                                    image.pixelFormat == PixelFormat.DXT5)
+                                {
+                                    errors += "Warning for texture: " + Path.GetFileName(file) + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
+                                }
+                            }
                             image.correctMips(pixelFormat, dxt1HasAlpha, dxt1Threshold);
                             mod.data = image.StoreImageToDDS();
                         }
@@ -556,9 +577,16 @@ namespace MassEffectModder
 
                     bool dxt1HasAlpha = false;
                     byte dxt1Threshold = 128;
-                    if (pixelFormat == PixelFormat.DXT1 && texture.properties.exists("CompressionSettings"))
-                        if (texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
-                            dxt1HasAlpha = true;
+                    if (texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
+                    {
+                        dxt1HasAlpha = true;
+                        if (image.pixelFormat == PixelFormat.ARGB ||
+                            image.pixelFormat == PixelFormat.DXT3 ||
+                            image.pixelFormat == PixelFormat.DXT5)
+                        {
+                            errors += "Warning for texture: " + Path.GetFileName(file) + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
+                        }
+                    }
                     image.correctMips(pixelFormat, dxt1HasAlpha, dxt1Threshold);
                     mod.data = image.StoreImageToDDS();
                     mod.textureName = foundCrcList[0].name;
@@ -718,9 +746,16 @@ namespace MassEffectModder
 
             bool dxt1HasAlpha = false;
             byte dxt1Threshold = 128;
-            if (pixelFormat == PixelFormat.DXT1 && texture.properties.exists("CompressionSettings"))
-                if (texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
-                    dxt1HasAlpha = true;
+            if (texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
+            {
+                dxt1HasAlpha = true;
+                if (image.pixelFormat == PixelFormat.ARGB ||
+                    image.pixelFormat == PixelFormat.DXT3 ||
+                    image.pixelFormat == PixelFormat.DXT5)
+                {
+                    errors += "Warning for texture: " + Path.GetFileName(inputFile) + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
+                }
+            }
             image.correctMips(pixelFormat, dxt1HasAlpha, dxt1Threshold);
             if (File.Exists(outputFile))
                 File.Delete(outputFile);
