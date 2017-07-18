@@ -83,7 +83,7 @@ namespace MassEffectModder
 
             packagePath = package.packageFile.Name;
             packageName = Path.GetFileNameWithoutExtension(package.packageFile.Name).ToUpper();
-            if (GameData.gameType == MeType.ME1_TYPE && package.compressed)
+            if (GameData.gameType == MeType.ME1_TYPE)
             {
                 string basePkg = package.resolvePackagePath(package.exportsTable[exportId].linkId).Split('.')[0].ToUpper();
                 if (basePkg != "")
