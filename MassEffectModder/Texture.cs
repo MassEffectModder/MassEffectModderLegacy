@@ -81,15 +81,6 @@ namespace MassEffectModder
             if (data.Length == properties.propertyEndOffset)
                 return;
 
-            packagePath = package.packageFile.Name;
-            packageName = Path.GetFileNameWithoutExtension(package.packageFile.Name).ToUpper();
-            if (GameData.gameType == MeType.ME1_TYPE)
-            {
-                string basePkg = package.resolvePackagePath(package.exportsTable[exportId].linkId).Split('.')[0].ToUpper();
-                if (basePkg != "")
-                    packageName = basePkg;
-            }
-
             textureData = new MemoryStream(data, properties.propertyEndOffset, data.Length - properties.propertyEndOffset);
             if (GameData.gameType != MeType.ME3_TYPE)
             {
@@ -138,6 +129,26 @@ namespace MassEffectModder
             }
 
             restOfData = textureData.ReadToBuffer(textureData.Length - textureData.Position);
+
+            packagePath = package.packageFile.Name;
+            packageName = Path.GetFileNameWithoutExtension(package.packageFile.Name).ToUpper();
+            if (GameData.gameType == MeType.ME1_TYPE)
+            {
+                string basePkg = package.resolvePackagePath(package.exportsTable[exportId].linkId).Split('.')[0].ToUpper();
+                if (basePkg != "")
+                {
+                    basePkg = GameData.packageFiles.Find(s => Path.GetFileNameWithoutExtension(s).Equals(basePkg, StringComparison.OrdinalIgnoreCase));
+                    if (basePkg != null)
+                    {
+                        if (mipMapsList.Exists(s => s.storageType == StorageTypes.extLZO) ||
+                            mipMapsList.Exists(s => s.storageType == StorageTypes.extZlib) ||
+                            mipMapsList.Exists(s => s.storageType == StorageTypes.extUnc))
+                        {
+                            packageName = Path.GetFileNameWithoutExtension(basePkg).ToUpper();
+                        }
+                    }
+                }
+            }
         }
 
         public void replaceMipMaps(List<MipMap> newMipMaps)
