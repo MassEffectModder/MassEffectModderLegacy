@@ -354,90 +354,12 @@ namespace MassEffectModder
             public byte[] md5;
         }
 
-        static MD5FileEntry[] ME1BadControllerMOD = new MD5FileEntry[]
+        static MD5FileEntry[] badMOD = new MD5FileEntry[]
         {
             new MD5FileEntry
             {
-                path = @"\BioGame\CookedPC\BIOC_Base.u",
+                path = @"\BioGame\CookedPC\dummy",
                 md5 = new byte[] { 0xB0, 0xC3, 0x30, 0x9A, 0x1A, 0x24, 0x27, 0xCC, 0x3C, 0xC7, 0xF4, 0xD0, 0xCC, 0x36, 0xE0, 0x85, },
-            },
-            new MD5FileEntry
-            {
-                path = @"\BioGame\CookedPC\BIOC_Materials.u",
-                md5 = new byte[] { 0xE0, 0x05, 0x5B, 0xE6, 0x52, 0x4C, 0xF3, 0x6E, 0xFE, 0xAF, 0x7D, 0xF9, 0x59, 0xFD, 0x4F, 0xDE, },
-            },
-            new MD5FileEntry
-            {
-                path = @"\BioGame\CookedPC\Engine.u",
-                md5 = new byte[] { 0x1C, 0x9F, 0xE4, 0x85, 0x6F, 0xF5, 0x3E, 0xEE, 0xAC, 0x47, 0x64, 0x0D, 0x24, 0xBA, 0xA5, 0xE0, },
-            },
-            new MD5FileEntry
-            {
-                path = @"\BioGame\CookedPC\Startup_int.upk",
-                md5 = new byte[] { 0x77, 0x87, 0xC6, 0x24, 0x48, 0x8C, 0x71, 0x89, 0xF8, 0xFE, 0x3F, 0xF3, 0x03, 0xA6, 0x93, 0x53, },
-            },
-            new MD5FileEntry
-            {
-                path = @"\BioGame\CookedPC\BIOC_Materials.u",
-                md5 = new byte[] { 0x0D, 0x0E, 0x4D, 0x96, 0xAC, 0x8E, 0x86, 0x0E, 0xBE, 0x19, 0x71, 0x97, 0x3E, 0xB5, 0xA8, 0x5A, },
-            },
-            new MD5FileEntry
-            {
-                path = @"\BioGame\CookedPC\Engine.u",
-                md5 = new byte[] { 0x1C, 0x9F, 0xE4, 0x85, 0x6F, 0xF5, 0x3E, 0xEE, 0xAC, 0x47, 0x64, 0x0D, 0x24, 0xBA, 0xA5, 0xE0, },
-            },
-            new MD5FileEntry
-            {
-                path = @"\BioGame\CookedPC\Startup_int.upk",
-                md5 = new byte[] { 0xB5, 0x4E, 0x98, 0x0F, 0x58, 0x4F, 0xD2, 0x0C, 0xBA, 0x63, 0xAB, 0x02, 0x90, 0x9D, 0xB7, 0x3E, },
-            },
-        };
-
-        static MD5FileEntry[] ME1BadFasterElevatorsMOD = new MD5FileEntry[]
-        {
-            new MD5FileEntry
-            {
-                path = @"\BioGame\CookedPC\Maps\ICE\PLC\BIOA_ICE60_11_PLC.SFM",
-                md5 = new byte[] { 0x2e, 0xab, 0xce, 0x34, 0x53, 0x57, 0xd6, 0xb8, 0x01, 0x4e, 0xf3, 0x37, 0x54, 0xc4, 0xf0, 0x65, },
-            },
-            new MD5FileEntry
-            {
-                path = @"\BioGame\CookedPC\Maps\JUG\PLC\BIOA_JUG80_00_PLC.SFM",
-                md5 = new byte[] { 0x35, 0x3e, 0x7d, 0x87, 0x7e, 0x76, 0x9d, 0x5d, 0x77, 0xdb, 0x09, 0x97, 0xcc, 0xfa, 0xf5, 0x42, },
-            },
-            new MD5FileEntry
-            {
-                path = @"\BioGame\CookedPC\Maps\LAV\PLC\BIOA_LAV70_00_PLC.SFM",
-                md5 = new byte[] { 0x4c, 0x56, 0x85, 0x01, 0x3e, 0xae, 0xd6, 0x4a, 0xf1, 0x23, 0x67, 0xf2, 0x7f, 0x35, 0x94, 0x90, },
-            },
-            new MD5FileEntry
-            {
-                path = @"\BioGame\CookedPC\Maps\STA\DSG\BIOA_STA70_01A_DSG.SFM",
-                md5 = new byte[] { 0x18, 0x52, 0x38, 0x58, 0xd3, 0x18, 0x3a, 0x2e, 0x04, 0x11, 0x45, 0x06, 0xeb, 0x25, 0xcb, 0xdb, },
-            },
-        };
-
-        static MD5FileEntry[] ME1BadSkipMenuAndMoviesMOD = new MD5FileEntry[]
-        {
-            new MD5FileEntry
-            {
-                path = @"\BioGame\CookedPC\Maps\EntryMenu.SFM",
-                md5 = new byte[] { 0x02, 0xd0, 0x08, 0x84, 0x40, 0xfd, 0x70, 0xe5, 0x7f, 0x78, 0xce, 0x21, 0xb7, 0x8e, 0x7f, 0x03, },
-            },
-            new MD5FileEntry
-            {
-                path = @"\BioGame\CookedPC\Maps\EntryMenu.SFM",
-                md5 = new byte[] { 0x05, 0x9e, 0xe2, 0xec, 0x35, 0x51, 0xbe, 0x0f, 0xff, 0x6c, 0x2b, 0x84, 0xe3, 0xd6, 0xd3, 0x92, },
-            },
-            new MD5FileEntry
-            {
-                path = @"\BioGame\CookedPC\Maps\EntryMenu.SFM",
-                md5 = new byte[] { 0x4b, 0xf8, 0x58, 0x08, 0x93, 0xf3, 0x15, 0x3f, 0x2a, 0x42, 0x76, 0xd4, 0xf9, 0x97, 0xba, 0xda, },
-            },
-            new MD5FileEntry
-            {
-                path = @"\BioGame\CookedPC\Maps\EntryMenu.SFM",
-                md5 = new byte[] { 0xb1, 0x79, 0x34, 0x0d, 0xc5, 0x81, 0xaa, 0x30, 0x4b, 0x40, 0x0e, 0x8a, 0x7e, 0xe5, 0x13, 0x1a, },
             },
         };
 
@@ -750,10 +672,10 @@ namespace MassEffectModder
             {
                 //using (FileStream fs = new FileStream("MD5EntriesME" + (int)gameType + ".cs", FileMode.Create, FileAccess.Write))
                 {
-                    for (int l = 0; l < ME1BadControllerMOD.Count(); l++)
+                    for (int l = 0; l < badMOD.Count(); l++)
                     {
-                        byte[] md5 = calculateMD5(GameData.GamePath + ME1BadControllerMOD[l].path);
-                        if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, ME1BadControllerMOD[l].md5))
+                        byte[] md5 = calculateMD5(GameData.GamePath + badMOD[l].path);
+                        if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, badMOD[l].md5))
                         {
                             return true;
                         }
@@ -763,22 +685,6 @@ namespace MassEffectModder
                             fs.WriteStringASCII(string.Format("0x{0:X2}, ", md5[i]));
                         }
                         fs.WriteStringASCII("},\n},\n");*/
-                    }
-                    for (int l = 0; l < ME1BadFasterElevatorsMOD.Count(); l++)
-                    {
-                        byte[] md5 = calculateMD5(GameData.GamePath + ME1BadFasterElevatorsMOD[l].path);
-                        if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, ME1BadFasterElevatorsMOD[l].md5))
-                        {
-                            return true;
-                        }
-                    }
-                    for (int l = 0; l < ME1BadSkipMenuAndMoviesMOD.Count(); l++)
-                    {
-                        byte[] md5 = calculateMD5(GameData.GamePath + ME1BadSkipMenuAndMoviesMOD[l].path);
-                        if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, ME1BadSkipMenuAndMoviesMOD[l].md5))
-                        {
-                            return true;
-                        }
                     }
                 }
             }
@@ -854,10 +760,10 @@ namespace MassEffectModder
             if (tfcFiles != null)
                 tfcFiles.Sort();
 
-            if (mainWindow != null && detectBrokenMod(gameType))
+            /*if (mainWindow != null && detectBrokenMod(gameType))
             {
-                errors += Environment.NewLine + "------- Detected one or more of ME1 not compatible mods: Controller, Faster Elevators, Skip Menu/Movies mods! MEM will not work properly due broken content in mod --------" + Environment.NewLine + Environment.NewLine;
-            }
+                errors += Environment.NewLine + "------- Detected not compatible mod --------" + Environment.NewLine + Environment.NewLine;
+            }*/
 
             for (int l = 0; l < packageMainFiles.Count; l++)
             {

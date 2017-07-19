@@ -157,14 +157,14 @@ namespace MassEffectModder
             if (File.Exists(filename))
                 File.Delete(filename);
 
-            if (Misc.detectBrokenMod(GameData.gameType))
+            /*if (Misc.detectBrokenMod(GameData.gameType))
             {
                 if (mainWindow != null)
                 {
-                    MessageBox.Show("Detected ME1 Controller or/and Faster Elevators mod!\nMEM will not work properly due broken content in mod.");
+                    MessageBox.Show("Detected mod compatible mod.");
                 }
                 return "";
-            }
+            }*/
 
             if (MipMaps.checkGameDataModded(cachePackageMgr))
             {
