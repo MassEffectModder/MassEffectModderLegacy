@@ -549,6 +549,7 @@ namespace MassEffectModder
             int partSize = (h / 4) / cores;
             if (partSize < 4)
                 cores = 1;
+            cores = 1; // force to one thread for now
             int[] range = new int[cores + 1];
 
             for (int p = 1; p <= cores; p++)
@@ -608,6 +609,7 @@ namespace MassEffectModder
             int partSize = (h / 4) / cores;
             if (partSize < 4)
                 cores = 1;
+            cores = 1; // force to one thread for now
             int[] range = new int[cores + 1];
 
             for (int p = 1; p <= cores; p++)
