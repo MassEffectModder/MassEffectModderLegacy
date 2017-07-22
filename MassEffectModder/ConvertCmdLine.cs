@@ -298,6 +298,7 @@ namespace MassEffectModder
                             result = ZlibHelper.Zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
                             if (result != 0)
                                 throw new Exception();
+                            fileName = fileName.Trim();
                             if (Path.GetExtension(fileName).ToLowerInvariant() == ".def" ||
                                 Path.GetExtension(fileName).ToLowerInvariant() == ".log")
                             {
@@ -329,11 +330,11 @@ namespace MassEffectModder
                                 result = ZlibHelper.Zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
                                 if (result != 0)
                                     throw new Exception();
-                                string filename = Path.GetFileName(fileName);
+                                string filename = Path.GetFileName(fileName).Trim();
                                 foreach (string dds in ddsList)
                                 {
                                     string ddsFile = dds.Split('|')[1];
-                                    if (ddsFile.ToLowerInvariant() != filename.ToLowerInvariant())
+                                    if (ddsFile.ToLowerInvariant().Trim() != filename.ToLowerInvariant())
                                         continue;
                                     crc = uint.Parse(dds.Split('|')[0].Substring(2), System.Globalization.NumberStyles.HexNumber);
                                     break;
@@ -952,6 +953,7 @@ namespace MassEffectModder
                     result = ZlibHelper.Zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
                     if (result != 0)
                         throw new Exception();
+                    fileName = Path.GetFileName(fileName).Trim();
                     byte[] listText = new byte[dstLen];
                     result = ZlibHelper.Zip.ReadCurrentFile(handle, listText, dstLen);
                     if (result != 0)
@@ -969,7 +971,7 @@ namespace MassEffectModder
                             result = ZlibHelper.Zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
                             if (result != 0)
                                 throw new Exception();
-                            string filename = Path.GetFileName(fileName);
+                            string filename = Path.GetFileName(fileName).Trim();
                             if (Path.GetExtension(filename).ToLowerInvariant() == ".def" ||
                                 Path.GetExtension(filename).ToLowerInvariant() == ".log")
                             {

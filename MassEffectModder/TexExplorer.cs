@@ -1150,6 +1150,7 @@ namespace MassEffectModder
                         for (ulong i = 0; i < numEntries; i++)
                         {
                             result = ZlibHelper.Zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
+                            fileName = fileName.Trim();
                             if (result != 0)
                                 throw new Exception();
                             if (Path.GetExtension(fileName).ToLowerInvariant() == ".def" ||
@@ -1183,15 +1184,16 @@ namespace MassEffectModder
                                 result = ZlibHelper.Zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
                                 if (result != 0)
                                     throw new Exception();
-                                string filename = Path.GetFileName(fileName);
+                                fileName = fileName.Trim();
                                 foreach (string dds in ddsList)
                                 {
                                     string ddsFile = dds.Split('|')[1];
-                                    if (ddsFile.ToLowerInvariant() != filename.ToLowerInvariant())
+                                    if (ddsFile.ToLowerInvariant().Trim() != fileName.ToLowerInvariant())
                                         continue;
                                     crc = uint.Parse(dds.Split('|')[0].Substring(2), System.Globalization.NumberStyles.HexNumber);
                                     break;
                                 }
+                                string filename = Path.GetFileName(fileName);
                                 if (crc == 0)
                                 {
                                     if (Path.GetExtension(filename).ToLowerInvariant() != ".def" &&
@@ -1227,7 +1229,6 @@ namespace MassEffectModder
                                 Texture texture = new Texture(pkg, foundCrcList[0].list[0].exportID, pkg.getExportData(foundCrcList[0].list[0].exportID));
                                 string fmt = texture.properties.getProperty("Format").valueName;
                                 PixelFormat pixelFormat = Image.getEngineFormatType(fmt);
-                                uint tag = BitConverter.ToUInt32(mod.data, 0);
 
                                 Image image = new Image(mod.data, Path.GetExtension(filename));
                                 if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=

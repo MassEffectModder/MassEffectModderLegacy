@@ -222,7 +222,13 @@ namespace MassEffectModder
                 case PixelFormat.ATI2:
                     {
                         if (w < 4 || h < 4)
+                        {
+                            if (w < 4)
+                                w = 4;
+                            if (h < 4)
+                                h = 4;
                             return new byte[w * h * 4];
+                        }
                         tmpData = decompressMipmap(format, src, w, h);
                         break;
                     }
@@ -434,7 +440,13 @@ namespace MassEffectModder
                 case PixelFormat.ATI2:
                     tempData = convertRawToARGB(src, w, h, srcFormat);
                     if (w < 4 || h < 4)
+                    {
+                        if (w < 4)
+                            w = 4;
+                        if (h < 4)
+                            h = 4;
                         tempData = new byte[MipMap.getBufferSize(w, h, dstFormat)];
+                    }
                     else
                         tempData = compressMipmap(dstFormat, tempData, w, h, dxt1HasAlpha, dxt1Threshold);
                     break;
@@ -504,24 +516,22 @@ namespace MassEffectModder
                     pixelFormat == PixelFormat.DXT3 ||
                     pixelFormat == PixelFormat.DXT5)
                 {
-                    if (width < 4 && height < 4)
-                    {
-                        mipMaps.Add(new MipMap(mipMaps[mipMaps.Count - 1].data, origW, origH, pixelFormat));
-                        continue;
-                    }
-                    else if (width < 4 || height < 4)
+                    if (width < 4 || height < 4)
                     {
                         if (width < 4)
                             width = 4;
                         if (height < 4)
                             height = 4;
+                        tempData = new byte[MipMap.getBufferSize(width, height, dstFormat)];
+                        mipMaps.Add(new MipMap(tempData, origW, origH, pixelFormat));
+                        continue;
                     }
                 }
 
                 tempData = downscaleARGB(tempData, prevW, prevH);
                 if (pixelFormat != PixelFormat.ARGB)
                 {
-                    byte[] converted = convertToFormat(PixelFormat.ARGB, tempData, width, height, pixelFormat, dxt1HasAlpha, dxt1Threshold);
+                    byte[] converted = convertToFormat(PixelFormat.ARGB, tempData, origW, origH, pixelFormat, dxt1HasAlpha, dxt1Threshold);
                     mipMaps.Add(new MipMap(converted, origW, origH, pixelFormat));
                 }
                 else
