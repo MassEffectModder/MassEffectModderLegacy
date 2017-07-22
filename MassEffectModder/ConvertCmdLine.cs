@@ -941,6 +941,7 @@ namespace MassEffectModder
 
             foreach (string file in files)
             {
+                Console.WriteLine("Extract TPF: " + file);
                 string outputTPFdir = outputDir + "\\" + Path.GetFileNameWithoutExtension(file);
                 if (!Directory.Exists(outputTPFdir))
                     Directory.CreateDirectory(outputTPFdir);
@@ -989,10 +990,12 @@ namespace MassEffectModder
                             {
                                 fs.WriteFromBuffer(data);
                             }
+                            Console.WriteLine(Path.Combine(outputTPFdir, filename));
                         }
                         catch
                         {
                             errors += "Skipping damaged content, entry: " + (i + 1) + " file: " + fileName + " - mod: " + file + Environment.NewLine;
+                            Console.WriteLine("Skipping damaged content, entry: " + (i + 1) + " file: " + fileName + " - mod: " + file);
                         }
                         ZlibHelper.Zip.GoToNextFile(handle);
                     }
@@ -1002,6 +1005,7 @@ namespace MassEffectModder
                 catch
                 {
                     errors += "TPF file is damaged: " + file + Environment.NewLine;
+                    Console.WriteLine("TPF file is damaged: " + file);
                     if (handle != IntPtr.Zero)
                         ZlibHelper.Zip.Close(handle);
                     handle = IntPtr.Zero;
@@ -1044,6 +1048,7 @@ namespace MassEffectModder
 
             foreach (string file in files)
             {
+                Console.WriteLine("Extract MOD: " + file);
                 string outputMODdir = outputDir + "\\" + Path.GetFileNameWithoutExtension(file);
                 if (!Directory.Exists(outputMODdir))
                     Directory.CreateDirectory(outputMODdir);
@@ -1075,6 +1080,7 @@ namespace MassEffectModder
                                 len = fs.ReadInt32();
                                 fs.Skip(len);
                                 errors += "Skipping non texture entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
+                                Console.WriteLine("Skipping non texture entry: " + (i + 1) + " - mod: " + file);
                             }
                             else
                             {
@@ -1092,6 +1098,7 @@ namespace MassEffectModder
                                     len = fs.ReadInt32();
                                     fs.Skip(len);
                                     errors += "Skipping not compatible content, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
+                                    Console.WriteLine("Skipping not compatible content, entry: " + (i + 1) + " - mod: " + file);
                                     continue;
                                 }
                                 len = fs.ReadInt32();
@@ -1099,13 +1106,15 @@ namespace MassEffectModder
                                 {
                                     fs2.WriteFromStream(fs, len);
                                 }
+                                Console.WriteLine(Path.Combine(outputMODdir, textureName) + ".dds");
                             }
                         }
                     }
                 }
                 catch
                 {
-                    errors += "Mod is not compatible: " + file + Environment.NewLine;
+                    errors += "MOD is not compatible: " + file + Environment.NewLine;
+                    Console.WriteLine("MOD is not compatible: " + file);
                     continue;
                 }
             }
