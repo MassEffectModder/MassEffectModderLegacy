@@ -361,8 +361,9 @@ namespace MassEffectModder
                 labelPreVanilla.Text = "Game files are not vanilla!";
                 labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.Red);
                 labelFinalStatus.Text = "Preliminary check detected potential issue...";
-                string message = "The installer detected that following game files are not identical to vanilla.\n" +
-                    "The list of files you can find in just opened another window.\n\n" +
+                string message = "The installer detected that the following game files\n" +
+                    "are not unmodded (vanilla) game files\n" +
+                    "You can find the list of files in the window that just opened.\n\n" +
                     "The correct installation order is as follows:\n" +
                     "1. Content mods (PCC, DLC mods)\n";
                 if (gameId == 1)
@@ -373,16 +374,23 @@ namespace MassEffectModder
                 else
                     message += "2. ALOT & ALOT Addon\n";
                 message += "3. Texture and meshes mods (TPF, DDS, MOD)\n\n" +
-                    "- If you have installed texture mods already, revert your game to vanilla state,\n" +
+                    "- If you have installed texture mods already, revert your game to vanilla,\n" +
                     "  then follow the correct installation order.\n\n" +
                     "- If you have properly installed content mods before this mod,\n" +
-                    "  this result is normal and you can continue installation.\n" +
-                    "  It's advised to check the list if they are suppose to be NOT in vanilla state.\n\n" +
-                    "  If you are not sure what you installed it's recommended you revert your game to vanilla state\n" +
-                    "  and run this check but only on vanilla game.\n" +
-                    "  If it pass then you can install content mods (PCC, DLC mods).\n" +
-                    "  Then continue installation.\n\n";
-                MessageBox.Show(message, "Warning!");
+                    "  this result is normal and you can continue the installation.\n" +
+                    "  It's advised to verify if all items in the list are supposed to be modded.\n" +
+                    "  To verify : compare the list of files that failed the check against the list of files you copied\n" +
+                    "  from your content mods to the ";
+                if (gameId == 3)
+                    message += "CookedPCConsole";
+                else
+                    message += "CookedPC";
+                message += " directory. Both lists should be identical.\n\n" +
+                    "  If you are not sure what you installed it is recommended that you revert your game to vanilla\n" +
+                    "  and run this check again, to make sure the files are indeed vanilla.\n" +
+                    "  If it passes then you can install content mods (PCC, DLC mods),\n" +
+                    "  and continue installation.\n\n";
+                MessageBox.Show(message, "Warning !");
             }
             else
             {
@@ -894,9 +902,9 @@ namespace MassEffectModder
         {
             if (checkBoxOptionVanilla.Checked)
             {
-                if (MessageBox.Show("This option is for an advanced user!\n\n" +
-                    "Disabling vanilla game check preventing detection various potential issues.\n\n" +
-                    "Are you sure?", "Warning!", MessageBoxButtons.YesNo) == DialogResult.No)
+                if (MessageBox.Show("This option is for advanced users !\n\n" +
+                    "Disabling the check of the game files prevents the detection of various potential issues.\n\n" +
+                    "If you are not sure press 'Cancel'", "Warning !", MessageBoxButtons.OKCancel) == DialogResult.Cancel)
                 {
                     checkBoxOptionVanilla.CheckedChanged -= checkBoxOptionVanilla_CheckedChanged;
                     checkBoxOptionVanilla.Checked = false;
