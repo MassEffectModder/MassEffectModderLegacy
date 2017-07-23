@@ -683,7 +683,7 @@ namespace MassEffectModder
 
             using (FolderBrowserDialog modFile = new FolderBrowserDialog())
             {
-                modFile.Description = "Please select destination directory for MOD extraction";
+                modFile.Description = "Please select destination directory for MEM extraction";
                 modFile.SelectedPath = GameData.lastExtractMODPath;
                 if (modFile.ShowDialog() == DialogResult.OK)
                 {
@@ -704,12 +704,12 @@ namespace MassEffectModder
                         {
                             string outDir = Path.Combine(modFile.SelectedPath, Path.GetFileNameWithoutExtension(item.Name));
                             Directory.CreateDirectory(outDir);
-                            _mainWindow.updateStatusLabel("MOD: " + item.Text + "extracting...");
+                            _mainWindow.updateStatusLabel("MEM: " + item.Text + "extracting...");
                             _mainWindow.updateStatusLabel2("");
                             richTextBoxInfo.Text += mipMaps.extractTextureMod(item.Name, outDir, _textures, cachePackageMgr, this, ref log);
                         }
                         var time = Misc.stopTimer();
-                        _mainWindow.updateStatusLabel("MODs extracted. Process total time: " + Misc.getTimerFormat(time));
+                        _mainWindow.updateStatusLabel("MEMs extracted. Process total time: " + Misc.getTimerFormat(time));
                         _mainWindow.updateStatusLabel2("");
                         if (richTextBoxInfo.Text != "")
                         {
@@ -735,23 +735,29 @@ namespace MassEffectModder
 
             using (FolderBrowserDialog modFile = new FolderBrowserDialog())
             {
-                modFile.Description = "Please select source directory for MOD creation";
+                modFile.Description = "Please select source directory for MEM creation";
                 modFile.SelectedPath = gameData.lastCreateMODPath;
                 if (modFile.ShowDialog() == DialogResult.OK)
                 {
                     gameData.lastCreateMODPath = modFile.SelectedPath;
                     long diskUsage = new DirectoryInfo(modFile.SelectedPath).GetFiles("*.dds").ToList().Sum(file => file.Length);
+                    diskUsage += new DirectoryInfo(modFile.SelectedPath).GetFiles("*.bmp").ToList().Sum(file => file.Length);
+                    diskUsage += new DirectoryInfo(modFile.SelectedPath).GetFiles("*.png").ToList().Sum(file => file.Length);
+                    diskUsage += new DirectoryInfo(modFile.SelectedPath).GetFiles("*.tga").ToList().Sum(file => file.Length);
+                    diskUsage += new DirectoryInfo(modFile.SelectedPath).GetFiles("*.jpg").ToList().Sum(file => file.Length);
+                    diskUsage += new DirectoryInfo(modFile.SelectedPath).GetFiles("*.jpeg").ToList().Sum(file => file.Length);
+                    diskUsage += new DirectoryInfo(modFile.SelectedPath).GetFiles("*.bin").ToList().Sum(file => file.Length);
                     long diskFreeSpace = Misc.getDiskFreeSpace(modFile.SelectedPath);
                     diskUsage = (long)(diskUsage / 1.5);
                     if (diskUsage < diskFreeSpace)
                     {
                         Misc.startTimer();
-                        _mainWindow.updateStatusLabel("MOD packing...");
+                        _mainWindow.updateStatusLabel("MEM packing...");
                         _mainWindow.updateStatusLabel2("");
                         string log = "";
-                        richTextBoxInfo.Text = mipMaps.createTextureMod(modFile.SelectedPath,
+                        richTextBoxInfo.Text = CmdLineConverter.convertDataModtoMem(modFile.SelectedPath,
                             Path.Combine(Path.GetDirectoryName(modFile.SelectedPath), Path.GetFileName(modFile.SelectedPath)) + ".mem",
-                            _textures, _mainWindow, ref log);
+                            _textures, _mainWindow, ref log, true);
                         var time = Misc.stopTimer();
                         if (richTextBoxInfo.Text != "")
                         {
@@ -778,7 +784,7 @@ namespace MassEffectModder
 
             using (FolderBrowserDialog modFile = new FolderBrowserDialog())
             {
-                modFile.Description = "Please select source directory for MOD creation";
+                modFile.Description = "Please select source directory for MEM creation";
                 modFile.SelectedPath = gameData.lastCreateMODPath;
                 if (modFile.ShowDialog() == DialogResult.OK)
                 {
@@ -796,13 +802,19 @@ namespace MassEffectModder
                     for (int i = 0; i < listDirs.Count; i++)
                     {
                         diskUsage += new DirectoryInfo(listDirs[i]).GetFiles("*.dds").ToList().Sum(file => file.Length);
+                        diskUsage += new DirectoryInfo(listDirs[i]).GetFiles("*.bmp").ToList().Sum(file => file.Length);
+                        diskUsage += new DirectoryInfo(listDirs[i]).GetFiles("*.png").ToList().Sum(file => file.Length);
+                        diskUsage += new DirectoryInfo(listDirs[i]).GetFiles("*.tga").ToList().Sum(file => file.Length);
+                        diskUsage += new DirectoryInfo(listDirs[i]).GetFiles("*.jpg").ToList().Sum(file => file.Length);
+                        diskUsage += new DirectoryInfo(listDirs[i]).GetFiles("*.jpeg").ToList().Sum(file => file.Length);
+                        diskUsage += new DirectoryInfo(listDirs[i]).GetFiles("*.bin").ToList().Sum(file => file.Length);
                     }
                     diskUsage = (long)(diskUsage / 1.5);
 
                     if (diskUsage < diskFreeSpace)
                     {
                         Misc.startTimer();
-                        _mainWindow.updateStatusLabel("MODs packing...");
+                        _mainWindow.updateStatusLabel("MEMs packing...");
                         _mainWindow.updateStatusLabel2("");
                         string log = "";
                         richTextBoxInfo.Text = "";
@@ -810,15 +822,15 @@ namespace MassEffectModder
                         pictureBoxPreview.Hide();
                         for (int i = 0; i < listDirs.Count; i++)
                         {
-                            richTextBoxInfo.Text += mipMaps.createTextureMod(listDirs[i], Path.Combine(Path.GetDirectoryName(listDirs[i]), Path.GetFileName(listDirs[i])) + ".mem",
-                                _textures, _mainWindow, ref log);
+                            richTextBoxInfo.Text += CmdLineConverter.convertDataModtoMem(listDirs[i], Path.Combine(Path.GetDirectoryName(listDirs[i]), Path.GetFileName(listDirs[i])) + ".mem",
+                                _textures, _mainWindow, ref log, true);
                         }
                         var time = Misc.stopTimer();
                         if (richTextBoxInfo.Text != "")
                         {
                             MessageBox.Show("WARNING: Some errors have occured!");
                         }
-                        _mainWindow.updateStatusLabel("MODs packed. Process total time: " + Misc.getTimerFormat(time));
+                        _mainWindow.updateStatusLabel("MEMs packed. Process total time: " + Misc.getTimerFormat(time));
                     }
                     else
                     {
