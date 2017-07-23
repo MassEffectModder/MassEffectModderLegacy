@@ -101,9 +101,9 @@
             this.checkBoxPreEnableRepack = new System.Windows.Forms.CheckBox();
             this.checkBoxPreEnablePack = new System.Windows.Forms.CheckBox();
             this.groupBoxOptions = new System.Windows.Forms.GroupBox();
+            this.buttonUnpackDLC = new System.Windows.Forms.Button();
             this.checkBoxOptionFaster = new System.Windows.Forms.CheckBox();
             this.checkBoxOptionVanilla = new System.Windows.Forms.CheckBox();
-            this.buttonUnpackDLC = new System.Windows.Forms.Button();
             this.groupBoxPreInstallCheck.SuspendLayout();
             this.groupBoxInstaller.SuspendLayout();
             this.groupBoxOptions.SuspendLayout();
@@ -675,6 +675,16 @@
             this.groupBoxOptions.TabStop = false;
             this.groupBoxOptions.Text = "Options";
             // 
+            // buttonUnpackDLC
+            // 
+            this.buttonUnpackDLC.Location = new System.Drawing.Point(445, 28);
+            this.buttonUnpackDLC.Name = "buttonUnpackDLC";
+            this.buttonUnpackDLC.Size = new System.Drawing.Size(111, 23);
+            this.buttonUnpackDLC.TabIndex = 51;
+            this.buttonUnpackDLC.Text = "Unpack DLCs";
+            this.buttonUnpackDLC.UseVisualStyleBackColor = true;
+            this.buttonUnpackDLC.Click += new System.EventHandler(this.buttonUnpackDLC_Click);
+            // 
             // checkBoxOptionFaster
             // 
             this.checkBoxOptionFaster.AutoSize = true;
@@ -697,16 +707,7 @@
             this.checkBoxOptionVanilla.TabStop = false;
             this.checkBoxOptionVanilla.Text = "Skip vanilla check";
             this.checkBoxOptionVanilla.UseVisualStyleBackColor = true;
-            // 
-            // buttonUnpackDLC
-            // 
-            this.buttonUnpackDLC.Location = new System.Drawing.Point(445, 28);
-            this.buttonUnpackDLC.Name = "buttonUnpackDLC";
-            this.buttonUnpackDLC.Size = new System.Drawing.Size(111, 23);
-            this.buttonUnpackDLC.TabIndex = 51;
-            this.buttonUnpackDLC.Text = "Unpack DLCs";
-            this.buttonUnpackDLC.UseVisualStyleBackColor = true;
-            this.buttonUnpackDLC.Click += new System.EventHandler(this.buttonUnpackDLC_Click);
+            this.checkBoxOptionVanilla.CheckedChanged += new System.EventHandler(this.checkBoxOptionVanilla_CheckedChanged);
             // 
             // Installer
             // 

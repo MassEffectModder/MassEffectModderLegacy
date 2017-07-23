@@ -86,30 +86,7 @@ namespace MassEffectModder
             labelStatusLOD.Text = "";
             labelFinalStatus.Text = "Before beginning, press the CHECK button.";
 
-            if (gameId != 3)
-            {
-                checkBoxPreEnablePack.Visible = false;
-                labelME3DLCPack.Visible = false;
-                checkBoxPackDLC.Visible = false;
-                labelStatusPackDLC.Visible = false;
-
-                labelMERepackZlib.Visible = false;
-                checkBoxRepackZlib.Visible = false;
-                labelStatusRepackZlib.Visible = false;
-                buttonUnpackDLC.Visible = false;
-            }
-            if (gameId == 3)
-            {
-                checkBoxPreEnableRepack.Visible = false;
-                labelMERepackZlib.Visible = false;
-                labelME3DLCPack.Visible = false;
-                checkBoxRepackZlib.Visible = false;
-                labelStatusRepackZlib.Visible = false;
-
-                labelME3DLCPack.Visible = false;
-                checkBoxPackDLC.Visible = false;
-                labelStatusPackDLC.Visible = false;
-            }
+            buttonsDefault(gameId);
 
             checkBoxOptionVanilla.Checked = false;
             checkBoxOptionFaster.Checked = false;
@@ -139,8 +116,9 @@ namespace MassEffectModder
                 labelPreMods.Text = "No MEM mods found!";
                 labelPreMods.ForeColor = Color.FromKnownColor(KnownColor.Red);
                 labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
-                buttonPreInstallCheck.Enabled = true;
                 buttonsEnable(true);
+                buttonPreInstallCheck.Enabled = true;
+                buttonUnpackDLC.Enabled = false;
                 return;
             }
             errors = "";
@@ -180,8 +158,9 @@ namespace MassEffectModder
                 labelPreMods.Text = "There are some errors while detecting MEM mods!";
                 labelPreMods.ForeColor = Color.FromKnownColor(KnownColor.Red);
                 labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
-                buttonPreInstallCheck.Enabled = true;
                 buttonsEnable(true);
+                buttonPreInstallCheck.Enabled = true;
+                buttonUnpackDLC.Enabled = false;
 
                 if (File.Exists(filename))
                     File.Delete(filename);
@@ -207,8 +186,9 @@ namespace MassEffectModder
                 labelPreGamePath.Text = "Game path is wrong!";
                 labelPreGamePath.ForeColor = Color.FromKnownColor(KnownColor.Red);
                 labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
-                buttonPreInstallCheck.Enabled = true;
                 buttonsEnable(true);
+                buttonPreInstallCheck.Enabled = true;
+                buttonUnpackDLC.Enabled = false;
                 return;
             }
             if (!gameData.getPackages(true, true))
@@ -216,8 +196,9 @@ namespace MassEffectModder
                 labelPreGamePath.Text = "Missing game data!";
                 labelPreGamePath.ForeColor = Color.FromKnownColor(KnownColor.Red);
                 labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
-                buttonPreInstallCheck.Enabled = true;
                 buttonsEnable(true);
+                buttonPreInstallCheck.Enabled = true;
+                buttonUnpackDLC.Enabled = false;
                 return;
             }
             if (gameId == (int)MeType.ME1_TYPE)
@@ -227,8 +208,9 @@ namespace MassEffectModder
                     labelPreGamePath.Text = "ME1 game not found!";
                     labelPreGamePath.ForeColor = Color.FromKnownColor(KnownColor.Red);
                     labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
-                    buttonPreInstallCheck.Enabled = true;
                     buttonsEnable(true);
+                    buttonPreInstallCheck.Enabled = true;
+                    buttonUnpackDLC.Enabled = false;
                     return;
                 }
             }
@@ -239,8 +221,9 @@ namespace MassEffectModder
                     labelPreGamePath.Text = "ME2 game not found!";
                     labelPreGamePath.ForeColor = Color.FromKnownColor(KnownColor.Red);
                     labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
-                    buttonPreInstallCheck.Enabled = true;
                     buttonsEnable(true);
+                    buttonPreInstallCheck.Enabled = true;
+                    buttonUnpackDLC.Enabled = false;
                     return;
                 }
             }
@@ -251,8 +234,9 @@ namespace MassEffectModder
                     labelPreGamePath.Text = "ME3 game not found!";
                     labelPreGamePath.ForeColor = Color.FromKnownColor(KnownColor.Red);
                     labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
-                    buttonPreInstallCheck.Enabled = true;
                     buttonsEnable(true);
+                    buttonPreInstallCheck.Enabled = true;
+                    buttonUnpackDLC.Enabled = false;
                     return;
                 }
             }
@@ -292,8 +276,9 @@ namespace MassEffectModder
                 labelPreAccess.Text = "Write access denied to game folders!";
                 labelPreAccess.ForeColor = Color.FromKnownColor(KnownColor.Red);
                 labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
-                buttonPreInstallCheck.Enabled = true;
                 buttonsEnable(true);
+                buttonPreInstallCheck.Enabled = true;
+                buttonUnpackDLC.Enabled = false;
                 return;
             }
             labelPreAccess.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
@@ -337,8 +322,9 @@ namespace MassEffectModder
                 labelPreSpace.Text = "You have not enough disk space remaining. You need about " + Misc.getBytesFormat(diskUsage) + " free.";
                 labelPreSpace.ForeColor = Color.FromKnownColor(KnownColor.Red);
                 labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
-                buttonPreInstallCheck.Enabled = true;
                 buttonsEnable(true);
+                buttonPreInstallCheck.Enabled = true;
+                buttonUnpackDLC.Enabled = false;
                 return;
             }
             labelPreSpace.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
@@ -375,6 +361,28 @@ namespace MassEffectModder
                 labelPreVanilla.Text = "Game files are not vanilla!";
                 labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.Red);
                 labelFinalStatus.Text = "Preliminary check detected potential issue...";
+                string message = "The installer detected that following game files are not identical to vanilla.\n" +
+                    "The list of files you can find in just opened another window.\n\n" +
+                    "The correct installation order is as follows:\n" +
+                    "1. Content mods (PCC, DLC mods)\n";
+                if (gameId == 1)
+                {
+                    message += "2. MEUITM\n";
+                    message += "2a. ALOT Addon\n";
+                }
+                else
+                    message += "2. ALOT & ALOT Addon\n";
+                message += "3. Texture and meshes mods (TPF, DDS, MOD)\n\n" +
+                    "- If you have installed texture mods already, revert your game to vanilla state,\n" +
+                    "  then follow the correct installation order.\n\n" +
+                    "- If you have properly installed content mods before this mod,\n" +
+                    "  this result is normal and you can continue installation.\n" +
+                    "  It's advised to check the list if they are suppose to be NOT in vanilla state.\n\n" +
+                    "  If you are not sure what you installed it's recommended you revert your game to vanilla state\n" +
+                    "  and run this check but only on vanilla game.\n" +
+                    "  If it pass then you can install content mods (PCC, DLC mods).\n" +
+                    "  Then continue installation.\n\n";
+                MessageBox.Show(message, "Warning!");
             }
             else
             {
@@ -503,6 +511,36 @@ namespace MassEffectModder
                     }
                 }
             }
+        }
+
+        public void buttonsDefault(int gameId)
+        {
+            if (gameId != 3)
+            {
+                checkBoxPreEnablePack.Visible = false;
+                labelME3DLCPack.Visible = false;
+                checkBoxPackDLC.Visible = false;
+                labelStatusPackDLC.Visible = false;
+
+                labelMERepackZlib.Visible = false;
+                checkBoxRepackZlib.Visible = false;
+                labelStatusRepackZlib.Visible = false;
+                buttonUnpackDLC.Visible = false;
+            }
+            if (gameId == 3)
+            {
+                checkBoxPreEnableRepack.Visible = false;
+                labelMERepackZlib.Visible = false;
+                labelME3DLCPack.Visible = false;
+                checkBoxRepackZlib.Visible = false;
+                labelStatusRepackZlib.Visible = false;
+
+                labelME3DLCPack.Visible = false;
+                checkBoxPackDLC.Visible = false;
+                labelStatusPackDLC.Visible = false;
+            }
+
+            Application.DoEvents();
         }
 
         public void clearPreCheckStatus()
@@ -850,6 +888,27 @@ namespace MassEffectModder
             ME3DLC.unpackAllDLC(null, this);
             updateStatusPackDLC("");
             buttonsEnable(true);
+        }
+
+        private void checkBoxOptionVanilla_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBoxOptionVanilla.Checked)
+            {
+                if (MessageBox.Show("This option is for an advanced user!\n\n" +
+                    "Disabling vanilla game check preventing detection various potential issues.\n\n" +
+                    "Are you sure?", "Warning!", MessageBoxButtons.YesNo) == DialogResult.No)
+                {
+                    checkBoxOptionVanilla.CheckedChanged -= checkBoxOptionVanilla_CheckedChanged;
+                    checkBoxOptionVanilla.Checked = false;
+                    checkBoxOptionVanilla.CheckedChanged += checkBoxOptionVanilla_CheckedChanged;
+                }
+            }
+            else
+            {
+                checkBoxOptionVanilla.CheckedChanged -= checkBoxOptionVanilla_CheckedChanged;
+                checkBoxOptionVanilla.Checked = false;
+                checkBoxOptionVanilla.CheckedChanged += checkBoxOptionVanilla_CheckedChanged;
+            }
         }
     }
 }
