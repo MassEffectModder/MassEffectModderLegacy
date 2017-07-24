@@ -201,6 +201,7 @@ namespace MassEffectModder
                         byte[] pixels = new byte[srcBitmap.PixelWidth * srcBitmap.PixelHeight * 4];
                         frame.CopyPixels(pixels, srcBitmap.PixelWidth * 4, 0);
 
+                        pixelFormat = PixelFormat.ARGB;
                         MipMap mipmap = new MipMap(pixels, srcBitmap.PixelWidth, srcBitmap.PixelHeight, PixelFormat.ARGB);
                         mipMaps.Add(mipmap);
                         break;

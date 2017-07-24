@@ -104,6 +104,7 @@ namespace MassEffectModder
                     stream.Skip(4 - (imageWidth % 4));
             }
 
+            pixelFormat = PixelFormat.ARGB;
             MipMap mipmap = new MipMap(buffer, imageWidth, imageHeight, PixelFormat.ARGB);
             mipMaps.Add(mipmap);
         }

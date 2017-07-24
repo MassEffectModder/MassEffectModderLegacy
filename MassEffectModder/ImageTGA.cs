@@ -146,6 +146,7 @@ namespace MassEffectModder
                 }
             }
 
+            pixelFormat = PixelFormat.ARGB;
             MipMap mipmap = new MipMap(buffer, imageWidth, imageHeight, PixelFormat.ARGB);
             mipMaps.Add(mipmap);
         }

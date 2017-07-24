@@ -130,7 +130,6 @@ namespace MassEffectModder
                         }
                     }
                     image.correctMips(pixelFormat, dxt1HasAlpha, dxt1Threshold);
-                    errors += "Error in game data: " + nodeTexture.path + ", skipping texture..." + Environment.NewLine;
                 }
 
                 // remove lower mipmaps from source image which not exist in game data
