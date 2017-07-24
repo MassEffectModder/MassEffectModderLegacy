@@ -188,8 +188,8 @@ namespace MassEffectModder
                         else if (format == ImageFormat.JPEG)
                             frame = new JpegBitmapDecoder(stream, BitmapCreateOptions.None, BitmapCacheOption.Default).Frames[0];
 
-                        if (!checkPowerOfTwo((int)frame.Width) ||
-                            !checkPowerOfTwo((int)frame.Height))
+                        if (!checkPowerOfTwo((int)frame.PixelWidth) ||
+                            !checkPowerOfTwo((int)frame.PixelHeight))
                             throw new Exception("dimensions not power of two");
 
                         FormatConvertedBitmap srcBitmap = new FormatConvertedBitmap();
