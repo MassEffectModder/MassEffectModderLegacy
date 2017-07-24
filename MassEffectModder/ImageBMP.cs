@@ -29,6 +29,22 @@ namespace MassEffectModder
     {
         private const int BMP_TAG = 0x4D42;
 
+        private int getShiftFromMask(uint mask)
+        {
+            int shift = 0;
+
+            if (mask == 0)
+                return shift;
+
+            while ((mask & 1) == 0)
+            {
+                mask >>= 1;
+                shift++;
+            }
+
+            return shift;
+        }
+
         private void LoadImageBMP(MemoryStream stream, ImageFormat format)
         {
             ushort tag = stream.ReadUInt16();
@@ -56,6 +72,8 @@ namespace MassEffectModder
 
             bool hasAlphaMask = false;
             uint Rmask = 0xFF0000, Gmask = 0xFF00, Bmask = 0xFF, Amask = 0xFF000000;
+            int Rshift, Gshift, Bshift, Ashift;
+
             if (headerSize >= 40)
             {
                 int compression = stream.ReadInt32();
@@ -78,6 +96,11 @@ namespace MassEffectModder
                 stream.JumpTo(headerSize + 14);
             }
 
+            Rshift = getShiftFromMask(Rmask);
+            Gshift = getShiftFromMask(Gmask);
+            Bshift = getShiftFromMask(Bmask);
+            Ashift = getShiftFromMask(Amask);
+
             byte[] buffer = new byte[imageWidth * imageHeight * 4];
             int pos = 0;
             for (int h = 0; h < imageHeight; h++)
@@ -98,10 +121,10 @@ namespace MassEffectModder
                         uint p3 = (uint)stream.ReadByte();
                         uint p4 = (uint)stream.ReadByte();
                         uint pixel = p4 << 24 | p3 << 16 | p2 << 8 | p1;
-                        buffer[pos++] = (byte)((pixel & Bmask) >> 0);
-                        buffer[pos++] = (byte)((pixel & Gmask) >> 8);
-                        buffer[pos++] = (byte)((pixel & Rmask) >> 16);
-                        buffer[pos++] = (byte)((pixel & Amask) >> 24);
+                        buffer[pos++] = (byte)((pixel & Bmask) >> Bshift);
+                        buffer[pos++] = (byte)((pixel & Gmask) >> Gshift);
+                        buffer[pos++] = (byte)((pixel & Rmask) >> Rshift);
+                        buffer[pos++] = (byte)((pixel & Amask) >> Ashift);
                     }
                 }
                 if (imageWidth % 4 != 0)
