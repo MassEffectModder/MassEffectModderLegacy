@@ -54,7 +54,8 @@ namespace MassEffectModder
             if (bits != 32 && bits != 24)
                 throw new Exception("only 24 and 32 bits BMP supported!");
 
-            uint Rmask = 0, Gmask = 0, Bmask = 0, Amask = 0;
+            bool hasAlphaMask = false;
+            uint Rmask = 0xFF0000, Gmask = 0xFF00, Bmask = 0xFF, Amask = 0xFF000000;
             if (headerSize >= 40)
             {
                 int compression = stream.ReadInt32();
@@ -68,7 +69,10 @@ namespace MassEffectModder
                     Gmask = stream.ReadUInt32();
                     Bmask = stream.ReadUInt32();
                     if (headerSize >= 56)
+                    {
                         Amask = stream.ReadUInt32();
+                        hasAlphaMask = true;
+                    }
                 }
 
                 stream.JumpTo(headerSize + 14);
@@ -85,7 +89,7 @@ namespace MassEffectModder
                         buffer[pos++] = (byte)stream.ReadByte();
                         buffer[pos++] = (byte)stream.ReadByte();
                         buffer[pos++] = (byte)stream.ReadByte();
-                        buffer[pos++] = 0xff;
+                        buffer[pos++] = 255;
                     }
                     else if (bits == 32)
                     {
@@ -94,14 +98,35 @@ namespace MassEffectModder
                         uint p3 = (uint)stream.ReadByte();
                         uint p4 = (uint)stream.ReadByte();
                         uint pixel = p4 << 24 | p3 << 16 | p2 << 8 | p1;
-                        buffer[pos++] = (byte)((pixel & Gmask) >> 16);
-                        buffer[pos++] = (byte)((pixel & Bmask) >> 8);
-                        buffer[pos++] = (byte)((pixel & Rmask) >> 24);
-                        buffer[pos++] = (byte)((pixel & Amask) >> 0);
+                        buffer[pos++] = (byte)((pixel & Bmask) >> 0);
+                        buffer[pos++] = (byte)((pixel & Gmask) >> 8);
+                        buffer[pos++] = (byte)((pixel & Rmask) >> 16);
+                        buffer[pos++] = (byte)((pixel & Amask) >> 24);
                     }
                 }
                 if (imageWidth % 4 != 0)
                     stream.Skip(4 - (imageWidth % 4));
+            }
+
+            if (bits == 32 && !hasAlphaMask)
+            {
+                bool hasAlpha = false;
+                for (int i = 0; i < imageWidth * imageHeight; i++)
+                {
+                    if (buffer[4 * i + 3] != 0)
+                    {
+                        hasAlpha = true;
+                        break;
+                    }
+                }
+
+                if (!hasAlpha)
+                {
+                    for (int i = 0; i < imageWidth * imageHeight; i++)
+                    {
+                        buffer[4 * i + 3] = 255;
+                    }
+                }
             }
 
             pixelFormat = PixelFormat.ARGB;
