@@ -1256,7 +1256,7 @@ namespace MassEffectModder
                                     continue;
                                 }
                                 len = fs.ReadInt32();
-                                string newFile = textureName + /*string.Format("_0x{0:X8}", f.crc) + */".dds";
+                                string newFile = textureName + string.Format("_0x{0:X8}", f.crc) + ".dds";
                                 if (File.Exists(Path.Combine(outputMODdir, newFile)))
                                     File.Delete(Path.Combine(outputMODdir, newFile));
                                 using (FileStream fs2 = new FileStream(Path.Combine(outputMODdir, newFile), FileMode.CreateNew))
