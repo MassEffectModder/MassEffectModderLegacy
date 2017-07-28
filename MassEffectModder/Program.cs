@@ -274,6 +274,8 @@ namespace MassEffectModder
             if (handle != IntPtr.Zero)
                 ZlibHelper.Zip.Close(handle);
 
+            File.Delete(file);
+
             return feleNameExe;
         }
 
@@ -540,7 +542,8 @@ namespace MassEffectModder
 
                 cleanupPreviousUpdate();
                 string filename = prepareForUpdate();
-                filename = unpackUpdate(filename);
+                if (filename != "")
+                    filename = unpackUpdate(filename);
                 if (filename != "")
                 {
                     Process process = new Process();
