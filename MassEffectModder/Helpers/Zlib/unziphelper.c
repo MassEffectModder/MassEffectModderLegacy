@@ -25,6 +25,8 @@
   ---------------------------------------------------------------------------------
 */
 
+#include <string.h>
+
 #include "iomemapi.h"
 #include "unzip.h"
 
@@ -98,7 +100,7 @@ ZLIB_EXPORT void *ZipOpen(unsigned char *src, unsigned long srcLen, unsigned lon
 	return (void *)unzipHandle;
 }
 
-ZLIB_EXPORT int ZipGetCurrentFileInfo(void *handle, const char *fileName, unsigned int sizeOfFileName, unsigned long *dstLen)
+ZLIB_EXPORT int ZipGetCurrentFileInfo(void *handle, char *fileName, unsigned int sizeOfFileName, unsigned long *dstLen)
 {
 	UnzipHandle *unzipHandle = handle;
 	int result;
@@ -109,9 +111,9 @@ ZLIB_EXPORT int ZipGetCurrentFileInfo(void *handle, const char *fileName, unsign
 
 	result = unzGetCurrentFileInfo(unzipHandle->file, &unzipHandle->curFileInfo, f, sizeOfFileName, NULL, 0, NULL, 0);
 	if (result != UNZ_OK)
-		return -1;
+		return result;
 
-	strcpy(fileName, f);
+	strcpy_s(fileName, 256, f);
 	*dstLen = unzipHandle->curFileInfo.uncompressed_size;
 
 	return 0;
@@ -142,7 +144,7 @@ ZLIB_EXPORT int ZipGoToNextFile(void *handle)
 
 	result = unzGoToNextFile(unzipHandle->file);
 	if (result != UNZ_OK)
-		return -1;
+		return result;
 
 	return 0;
 }
@@ -157,7 +159,7 @@ ZLIB_EXPORT int ZipLocateFile(void *handle, const char *filename)
 
 	result = unzLocateFile(unzipHandle->file, filename, 2);
 	if (result != UNZ_OK)
-		return -1;
+		return result;
 
 	return 0;
 }
@@ -183,15 +185,15 @@ ZLIB_EXPORT int ZipReadCurrentFile(void *handle, unsigned char *dst, unsigned in
 		result = unzOpenCurrentFile(unzipHandle->file);
 	}
 	if (result != UNZ_OK)
-		return -1;
+		return result;
 
 	result = unzReadCurrentFile(unzipHandle->file, dst, dst_len);
 	if (result < 0)
-		return -1;
+		return result;
 
 	result = unzCloseCurrentFile(unzipHandle->file);
 	if (result != UNZ_OK)
-		return -1;
+		return result;
 
 	return 0;
 }
@@ -246,20 +248,20 @@ int main(int argc, char** argv)
 	unsigned long fileSize = 0, numEntries = 0;
 
 	void *handle = ZipOpen(buffer, size, &numEntries, 1);
-	result = ZipGetCurrentFileInfo(handle, fileName, sizeof(fileName), &fileSize);
-	if (result < 0)
-	{
-		ZipClose(handle);
-		return -1;
-	}
 	result = ZipLocateFile(handle, "texmod.def");
 	if (result < 0)
 	{
 		ZipClose(handle);
 		return -1;
 	}
+	result = ZipGetCurrentFileInfo(handle, fileName, sizeof(fileName), &fileSize);
+	if (result < 0)
+	{
+		ZipClose(handle);
+		return -1;
+	}
 	unsigned char* fileBuffer = malloc(fileSize);
-	result = ZipReadCurrentFile(handle, "", fileBuffer, fileSize);
+	result = ZipReadCurrentFile(handle, fileBuffer, fileSize, "");
 	if (result < 0)
 	{
 		free(fileBuffer);
@@ -268,11 +270,39 @@ int main(int argc, char** argv)
 	}
 	free(fileBuffer);
 
-	result = ZipGoToNextFile(handle);
+	result = ZipGoToFirstFile(handle);
 	if (result < 0)
 	{
 		ZipClose(handle);
 		return -1;
+	}
+
+	for (unsigned long i = 0; i < numEntries; i++)
+	{
+		result = ZipGetCurrentFileInfo(handle, fileName, sizeof(fileName), &fileSize);
+		if (result < 0)
+		{
+			ZipClose(handle);
+			return -1;
+		}
+
+		fileBuffer = malloc(fileSize);
+		result = ZipReadCurrentFile(handle, fileBuffer, fileSize, "");
+		if (result < 0)
+		{
+			free(fileBuffer);
+			ZipClose(handle);
+			return -1;
+		}
+		free(fileBuffer);
+
+
+		result = ZipGoToNextFile(handle);
+		if (result < 0)
+		{
+			ZipClose(handle);
+			return -1;
+		}
 	}
 
 	ZipClose(handle);
