@@ -129,7 +129,7 @@ ZLIB_EXPORT int ZipGoToFirstFile(void *handle)
 
 	result = unzGoToFirstFile(unzipHandle->file);
 	if (result != UNZ_OK)
-		return -1;
+		return result;
 
 	return 0;
 }
