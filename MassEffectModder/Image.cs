@@ -440,7 +440,9 @@ namespace MassEffectModder
                 case PixelFormat.DXT5:
                 case PixelFormat.ATI2:
                     tempData = convertRawToARGB(src, w, h, srcFormat);
-                    if (w < 4 || h < 4)
+                    if (dstFormat == PixelFormat.ATI2 && (w < 4 || h < 4))
+                        tempData = new byte[MipMap.getBufferSize(w, h, dstFormat)];
+                    else if (w < 4 || h < 4)
                     {
                         if (w < 4)
                             w = 4;
@@ -489,7 +491,7 @@ namespace MassEffectModder
 
             if (dstFormat != pixelFormat || (dstFormat == PixelFormat.DXT1 && !dxt1HasAlpha))
             {
-                byte[] top = convertToFormat(pixelFormat, mipMaps[0].data, width, height, dstFormat, dxt1HasAlpha, dxt1Threshold);
+                byte[] top = convertToFormat(PixelFormat.ARGB, tempData, width, height, dstFormat, dxt1HasAlpha, dxt1Threshold);
                 mipMaps.RemoveAt(0);
                 mipMaps.Add(new MipMap(top, width, height, dstFormat));
                 pixelFormat = dstFormat;
@@ -515,9 +517,16 @@ namespace MassEffectModder
 
                 if (pixelFormat == PixelFormat.DXT1 ||
                     pixelFormat == PixelFormat.DXT3 ||
-                    pixelFormat == PixelFormat.DXT5)
+                    pixelFormat == PixelFormat.DXT5 ||
+                    pixelFormat == PixelFormat.ATI2)
                 {
-                    if (width < 4 || height < 4)
+                    if (pixelFormat == PixelFormat.ATI2 && (width < 4 || height < 4))
+                    {
+                        tempData = new byte[MipMap.getBufferSize(origW, origW, dstFormat)];
+                        mipMaps.Add(new MipMap(tempData, origW, origH, pixelFormat));
+                        continue;
+                    }
+                    else if (width < 4 || height < 4)
                     {
                         if (width < 4)
                             width = 4;
