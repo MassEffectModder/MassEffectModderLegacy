@@ -136,7 +136,7 @@ namespace MassEffectModder
                     sfarFile.JumpTo(filesList[i].dataOffset);
                     int compressedBlockSize = blockSizes[filesList[i].compressedBlockSizesIndex];
                     byte[] inBuf = sfarFile.ReadToBuffer(compressedBlockSize);
-                    byte[] outBuf = SevenZipHelper.LZMA.Decompress(inBuf, (uint)filesList[i].uncomprSize);
+                    byte[] outBuf = new SevenZipHelper.LZMA().Decompress(inBuf, (uint)filesList[i].uncomprSize);
                     if (outBuf.Length == 0)
                         throw new Exception();
                     StreamReader filenamesStream = new StreamReader(new MemoryStream(outBuf));
@@ -209,7 +209,7 @@ namespace MassEffectModder
                         }
                         else
                         {
-                            uncompressedBlockBuffers[(int)j] = SevenZipHelper.LZMA.Decompress(compressedBlockBuffers[(int)j], (uint)uncompressedBlockSize);
+                            uncompressedBlockBuffers[(int)j] = new SevenZipHelper.LZMA().Decompress(compressedBlockBuffers[(int)j], (uint)uncompressedBlockSize);
                             if (uncompressedBlockBuffers[(int)j].Length == 0)
                                 throw new Exception();
                         }
@@ -292,7 +292,7 @@ namespace MassEffectModder
                             }
                             else
                             {
-                                uncompressedBlockBuffers[(int)j] = SevenZipHelper.LZMA.Decompress(compressedBlockBuffers[(int)j], (uint)uncompressedBlockSize);
+                                uncompressedBlockBuffers[(int)j] = new SevenZipHelper.LZMA().Decompress(compressedBlockBuffers[(int)j], (uint)uncompressedBlockSize);
                                 if (uncompressedBlockBuffers[(int)j].Length == 0)
                                     throw new Exception();
                             }
@@ -392,7 +392,7 @@ namespace MassEffectModder
 
                         Parallel.For(0, file.numBlocks, k =>
                         {
-                            compressedBlockBuffers[(int)k] = SevenZipHelper.LZMA.Compress(uncompressedBlockBuffers[(int)k], 9);
+                            compressedBlockBuffers[(int)k] = new SevenZipHelper.LZMA().Compress(uncompressedBlockBuffers[(int)k], 9);
                             if (compressedBlockBuffers[(int)k].Length == 0)
                                 throw new Exception();
                         });

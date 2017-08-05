@@ -209,7 +209,7 @@ namespace MassEffectModder
                     for (int b = 0; b < blocks.Count; b++)
                     {
                         Package.ChunkBlock block = blocks[b];
-                        block.compressedBuffer = LZO2Helper.LZO2.Compress(block.uncompressedBuffer);
+                        block.compressedBuffer = new LZO2Helper.LZO2().Compress(block.uncompressedBuffer);
                         if (block.compressedBuffer.Length == 0)
                             throw new Exception("Compression failed!");
                         block.comprSize = (uint)block.compressedBuffer.Length;
@@ -222,7 +222,7 @@ namespace MassEffectModder
                     {
                         Package.ChunkBlock block = blocks[b];
                         if (type == StorageTypes.extZlib || type == StorageTypes.pccZlib)
-                            block.compressedBuffer = ZlibHelper.Zlib.Compress(block.uncompressedBuffer);
+                            block.compressedBuffer = new ZlibHelper.Zlib().Compress(block.uncompressedBuffer);
                         else
                             throw new Exception("Compression type not expected!");
                         if (block.compressedBuffer.Length == 0)
@@ -295,7 +295,7 @@ namespace MassEffectModder
                 {
                     uint dstLen = 0;
                     Package.ChunkBlock block = blocks[b];
-                    dstLen = LZO2Helper.LZO2.Decompress(block.compressedBuffer, block.comprSize, block.uncompressedBuffer);
+                    dstLen = new LZO2Helper.LZO2().Decompress(block.compressedBuffer, block.comprSize, block.uncompressedBuffer);
                     if (dstLen != block.uncomprSize)
                         throw new Exception("Decompressed data size not expected!");
                 }
@@ -307,7 +307,7 @@ namespace MassEffectModder
                     uint dstLen = 0;
                     Package.ChunkBlock block = blocks[b];
                     if (type == StorageTypes.extZlib || type == StorageTypes.pccZlib)
-                        dstLen = ZlibHelper.Zlib.Decompress(block.compressedBuffer, block.comprSize, block.uncompressedBuffer);
+                        dstLen = new ZlibHelper.Zlib().Decompress(block.compressedBuffer, block.comprSize, block.uncompressedBuffer);
                     if (dstLen != block.uncomprSize)
                         throw new Exception("Decompressed data size not expected!");
                 });

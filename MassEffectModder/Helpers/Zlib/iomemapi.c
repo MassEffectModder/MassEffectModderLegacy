@@ -41,7 +41,7 @@ static uLong ZCALLBACK iomem_read_func(voidpf opaque, voidpf stream, voidpf buf,
 	IOMEMHANDLE* ioMemHandle = stream;
 
 	if (ioMemHandle == Z_NULL || buf == Z_NULL)
-		return -1;
+		return 0;
 	
 	if (ioMemHandle->bufferPos + size > ioMemHandle->bufferLen)
 		size = (uLong)(ioMemHandle->bufferLen - ioMemHandle->bufferPos);
@@ -57,13 +57,13 @@ static uLong ZCALLBACK iomem_write_func(voidpf opaque, voidpf stream, voidpc buf
 	IOMEMHANDLE* ioMemHandle = stream;
 
 	if (ioMemHandle == Z_NULL || buf == Z_NULL)
-		return -1;
+		return 0;
 	
 	if (ioMemHandle->bufferPos + size > ioMemHandle->bufferLen)
 	{
 		voidp tmp = realloc(ioMemHandle->buffer, size);
 		if (tmp == Z_NULL)
-			return -1;
+			return 0;
 		ioMemHandle->buffer = tmp;
 		ioMemHandle->bufferLen = ioMemHandle->bufferPos + size;
 	}
@@ -79,7 +79,7 @@ static ZPOS64_T ZCALLBACK iomem_tell_func(voidpf opaque, voidpf stream)
 	IOMEMHANDLE* ioMemHandle = stream;
 
 	if (ioMemHandle == Z_NULL)
-		return -1;
+		return 0;
 
 	return ioMemHandle->bufferPos;
 }

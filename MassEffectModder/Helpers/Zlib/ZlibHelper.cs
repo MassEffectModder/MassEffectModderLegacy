@@ -25,7 +25,7 @@ using System.Text;
 
 namespace ZlibHelper
 {
-    public static class Zlib
+    public class Zlib
     {
         [DllImport("zlibwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
         private static extern int ZlibDecompress([In] byte[] srcBuf, uint srcLen, [Out] byte[] dstBuf, ref uint dstLen);
@@ -33,7 +33,7 @@ namespace ZlibHelper
         [DllImport("zlibwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
         private static extern int ZlibCompress(int compressionLevel, [In] byte[] srcBuf, uint srcLen, [Out] byte[] dstBuf, ref uint dstLen);
 
-        public unsafe static uint Decompress(byte[] src, uint srcLen, byte[] dst)
+        public uint Decompress(byte[] src, uint srcLen, byte[] dst)
         {
             uint dstLen = (uint)dst.Length;
 
@@ -44,7 +44,7 @@ namespace ZlibHelper
             return dstLen;
         }
 
-        public unsafe static byte[] Compress(byte[] src, int compressionLevel = -1)
+        public byte[] Compress(byte[] src, int compressionLevel = -1)
         {
             byte[] tmpbuf = new byte[(src.Length * 2) + 128];
             uint dstLen = (uint)tmpbuf.Length;
@@ -60,7 +60,7 @@ namespace ZlibHelper
         }
     }
 
-    public static class Zip
+    public class Zip
     {
         [DllImport("zlibwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr ZipOpen([In] byte[] srcBuf, ulong srcLen, ref ulong numEntries, int tpf);
@@ -83,12 +83,12 @@ namespace ZlibHelper
         [DllImport("zlibwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
         private static extern int ZipClose(IntPtr handle);
 
-        public unsafe static IntPtr Open(byte[] srcBuf, ref ulong numEntries, int tpf)
+        public IntPtr Open(byte[] srcBuf, ref ulong numEntries, int tpf)
         {
             return ZipOpen(srcBuf, (ulong)srcBuf.Length, ref numEntries, tpf);
         }
 
-        public unsafe static int GetCurrentFileInfo(IntPtr handle, ref string fileName, ref uint dstLen)
+        public int GetCurrentFileInfo(IntPtr handle, ref string fileName, ref uint dstLen)
         {
             byte[] fileN = new byte[256];
             int result = ZipGetCurrentFileInfo(handle, fileN, (uint)fileN.Length, ref dstLen);
@@ -99,27 +99,27 @@ namespace ZlibHelper
             return result;
         }
 
-        public unsafe static int GoToFirstFile(IntPtr handle)
+        public int GoToFirstFile(IntPtr handle)
         {
             return ZipGoToFirstFile(handle);
         }
 
-        public unsafe static int GoToNextFile(IntPtr handle)
+        public int GoToNextFile(IntPtr handle)
         {
             return ZipGoToNextFile(handle);
         }
 
-        public unsafe static int LocateFile(IntPtr handle, string filename)
+        public int LocateFile(IntPtr handle, string filename)
         {
             return ZipLocateFile(handle, Encoding.ASCII.GetBytes(filename + '\0'));
         }
 
-        public unsafe static int ReadCurrentFile(IntPtr handle, byte[] dstBuf, uint dstLen, byte[] password = null)
+        public int ReadCurrentFile(IntPtr handle, byte[] dstBuf, uint dstLen, byte[] password = null)
         {
             return ZipReadCurrentFile(handle, dstBuf, dstLen, password);
         }
 
-        public unsafe static int Close(IntPtr handle)
+        public int Close(IntPtr handle)
         {
             return ZipClose(handle);
         }

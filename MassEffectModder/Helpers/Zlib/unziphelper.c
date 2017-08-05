@@ -100,7 +100,7 @@ ZLIB_EXPORT void *ZipOpen(unsigned char *src, unsigned long srcLen, unsigned lon
 	return (void *)unzipHandle;
 }
 
-ZLIB_EXPORT int ZipGetCurrentFileInfo(void *handle, char *fileName, unsigned int sizeOfFileName, unsigned long *dstLen)
+ZLIB_EXPORT int ZipGetCurrentFileInfo(void *handle, char *fileName, unsigned long sizeOfFileName, unsigned long *dstLen)
 {
 	UnzipHandle *unzipHandle = handle;
 	int result;
@@ -164,7 +164,7 @@ ZLIB_EXPORT int ZipLocateFile(void *handle, const char *filename)
 	return 0;
 }
 
-ZLIB_EXPORT int ZipReadCurrentFile(void *handle, unsigned char *dst, unsigned int dst_len, unsigned char *pass)
+ZLIB_EXPORT int ZipReadCurrentFile(void *handle, unsigned char *dst, unsigned dst_len, unsigned char *pass)
 {
 	UnzipHandle *unzipHandle = handle;
 	int result;
@@ -177,7 +177,7 @@ ZLIB_EXPORT int ZipReadCurrentFile(void *handle, unsigned char *dst, unsigned in
 #ifdef TEST_CODE
 		result = unzOpenCurrentFilePassword(unzipHandle->file, tpfPassword);
 #else
-		result = unzOpenCurrentFilePassword(unzipHandle->file, unzipHandle->tpfMode == 1 ? tpfPassword : pass == Z_NULL ? "" : pass);
+		result = unzOpenCurrentFilePassword(unzipHandle->file, unzipHandle->tpfMode == 1 ? tpfPassword : pass == Z_NULL ? "" : (const char *)pass);
 #endif
 	}
 	else
@@ -220,7 +220,7 @@ int main(int argc, char** argv)
 		printf("Missing file name argument!\n");
 		return -1;
 	}
-	int err = fopen_s(&file, argv[1], "rb");
+	fopen_s(&file, argv[1], "rb");
 	if (file == NULL)
 	{
 		printf("Can not open file: %s !\n", argv[1]);
@@ -228,7 +228,7 @@ int main(int argc, char** argv)
 	}
 
 	fseek(file, 0, SEEK_END);
-	long size = ftell(file);
+	size_t size = ftell(file);
 	fseek(file, 0, SEEK_SET);
 	unsigned char *buffer = malloc(size);
 	if (buffer == NULL)

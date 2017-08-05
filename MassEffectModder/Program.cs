@@ -141,7 +141,7 @@ namespace MassEffectModder
             tmp.SkipInt32();
             byte[] decompressed = new byte[tmp.ReadInt32()];
             byte[] compressed = tmp.ReadToBuffer((uint)tableME1.Length - 8);
-            if (ZlibHelper.Zlib.Decompress(compressed, (uint)compressed.Length, decompressed) == 0)
+            if (new ZlibHelper.Zlib().Decompress(compressed, (uint)compressed.Length, decompressed) == 0)
                 throw new Exception();
             tmp = new MemoryStream(decompressed);
             int count = tmp.ReadInt32();
@@ -156,7 +156,7 @@ namespace MassEffectModder
             tmp.SkipInt32();
             decompressed = new byte[tmp.ReadInt32()];
             compressed = tmp.ReadToBuffer((uint)tableME2.Length - 8);
-            if (ZlibHelper.Zlib.Decompress(compressed, (uint)compressed.Length, decompressed) == 0)
+            if (new ZlibHelper.Zlib().Decompress(compressed, (uint)compressed.Length, decompressed) == 0)
                 throw new Exception();
             tmp = new MemoryStream(decompressed);
             count = tmp.ReadInt32();
@@ -171,7 +171,7 @@ namespace MassEffectModder
             tmp.SkipInt32();
             decompressed = new byte[tmp.ReadInt32()];
             compressed = tmp.ReadToBuffer((uint)tableME3.Length - 8);
-            if (ZlibHelper.Zlib.Decompress(compressed, (uint)compressed.Length, decompressed) == 0)
+            if (new ZlibHelper.Zlib().Decompress(compressed, (uint)compressed.Length, decompressed) == 0)
                 throw new Exception();
             tmp = new MemoryStream(decompressed);
             count = tmp.ReadInt32();
@@ -238,18 +238,19 @@ namespace MassEffectModder
             string fileName = "";
             string feleNameExe = "";
             uint dstLen = 0;
+            ZlibHelper.Zip zip = new ZlibHelper.Zip();
             try
             {
                 byte[] buffer = File.ReadAllBytes(file);
-                handle = ZlibHelper.Zip.Open(buffer, ref numEntries, 0);
+                handle = zip.Open(buffer, ref numEntries, 0);
                 for (uint i = 0; i < numEntries; i++)
                 {
-                    result = ZlibHelper.Zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
+                    result = zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
                     if (result != 0)
                         throw new Exception();
 
                     byte[] data = new byte[dstLen];
-                    result = ZlibHelper.Zip.ReadCurrentFile(handle, data, dstLen);
+                    result = zip.ReadCurrentFile(handle, data, dstLen);
                     if (result != 0)
                     {
                         throw new Exception();
@@ -263,7 +264,7 @@ namespace MassEffectModder
                     if (Path.GetExtension(fileName).ToLowerInvariant() == ".exe")
                         feleNameExe = "new-" + fileName;
 
-                    ZlibHelper.Zip.GoToNextFile(handle);
+                    zip.GoToNextFile(handle);
                 }
             }
             catch
@@ -272,7 +273,7 @@ namespace MassEffectModder
             }
 
             if (handle != IntPtr.Zero)
-                ZlibHelper.Zip.Close(handle);
+                zip.Close(handle);
 
             File.Delete(file);
 

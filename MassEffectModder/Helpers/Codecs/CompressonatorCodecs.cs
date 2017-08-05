@@ -56,7 +56,7 @@ namespace CompressonatorCodecs
         private static extern void DecompressAlphaBlock([Out] byte[] alphaBlock, [In] uint[] compressedBlock);
 
 
-        public static unsafe uint[] CompressRGBABlock(byte[] rgbBlock)
+        public static uint[] CompressRGBABlock(byte[] rgbBlock)
         {
             if (rgbBlock.Length != BLOCK_SIZE_4X4X4)
                 throw new Exception();
@@ -65,7 +65,7 @@ namespace CompressonatorCodecs
             return compressedBlock;
         }
 
-        public static unsafe byte[] DecompressRGBABlock(uint[] compressedBlock)
+        public static byte[] DecompressRGBABlock(uint[] compressedBlock)
         {
             if (compressedBlock.Length != 4)
                 throw new Exception();
@@ -74,7 +74,7 @@ namespace CompressonatorCodecs
             return rgbBlock;
         }
 
-        public static unsafe uint[] CompressRGBABlock_ExplicitAlpha(byte[] rgbBlock)
+        public static uint[] CompressRGBABlock_ExplicitAlpha(byte[] rgbBlock)
         {
             if (rgbBlock.Length != BLOCK_SIZE_4X4X4)
                 throw new Exception();
@@ -83,7 +83,7 @@ namespace CompressonatorCodecs
             return compressedBlock;
         }
 
-        public static unsafe byte[] DecompressRGBABlock_ExplicitAlpha(uint[] compressedBlock)
+        public static byte[] DecompressRGBABlock_ExplicitAlpha(uint[] compressedBlock)
         {
             if (compressedBlock.Length != 4)
                 throw new Exception();
@@ -92,7 +92,7 @@ namespace CompressonatorCodecs
             return rgbBlock;
         }
 
-        public static unsafe uint[] CompressRGBBlock(byte[] rgbBlock, bool bDXT1 = false,
+        public static uint[] CompressRGBBlock(byte[] rgbBlock, bool bDXT1 = false,
             bool bDXT1UseAlpha = false, byte nDXT1AlphaThreshold = 128)
         {
             if (rgbBlock.Length != BLOCK_SIZE_4X4X4)
@@ -102,7 +102,7 @@ namespace CompressonatorCodecs
             return compressedBlock;
         }
 
-        public static unsafe byte[] DecompressRGBBlock(uint[] compressedBlock, bool bDXT1)
+        public static byte[] DecompressRGBBlock(uint[] compressedBlock, bool bDXT1)
         {
             if (compressedBlock.Length != 2)
                 throw new Exception();
@@ -111,7 +111,7 @@ namespace CompressonatorCodecs
             return rgbBlock;
         }
 
-        public static unsafe uint[] CompressAlphaBlock(byte[] alphaBlock)
+        public static uint[] CompressAlphaBlock(byte[] alphaBlock)
         {
             if (alphaBlock.Length != BLOCK_SIZE_4X4BPP8)
                 throw new Exception();
@@ -120,7 +120,7 @@ namespace CompressonatorCodecs
             return compressedBlock;
         }
 
-        public static unsafe byte[] DecompressAlphaBlock(uint[] compressedBlock)
+        public static byte[] DecompressAlphaBlock(uint[] compressedBlock)
         {
             if (compressedBlock.Length != 2)
                 throw new Exception();

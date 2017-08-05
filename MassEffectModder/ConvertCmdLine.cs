@@ -374,13 +374,14 @@ namespace MassEffectModder
                 else if (file.EndsWith(".tpf", StringComparison.OrdinalIgnoreCase))
                 {
                     IntPtr handle = IntPtr.Zero;
+                    ZlibHelper.Zip zip = new ZlibHelper.Zip();
                     try
                     {
                         byte[] buffer = File.ReadAllBytes(file);
-                        handle = ZlibHelper.Zip.Open(buffer, ref numEntries, 1);
+                        handle = zip.Open(buffer, ref numEntries, 1);
                         for (ulong i = 0; i < numEntries; i++)
                         {
-                            result = ZlibHelper.Zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
+                            result = zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
                             if (result != 0)
                                 throw new Exception();
                             fileName = fileName.Trim();
@@ -389,7 +390,7 @@ namespace MassEffectModder
                             {
                                 break;
                             }
-                            ZlibHelper.Zip.GoToNextFile(handle);
+                            zip.GoToNextFile(handle);
                         }
                         if (Path.GetExtension(fileName).ToLowerInvariant() != ".def" &&
                             Path.GetExtension(fileName).ToLowerInvariant() != ".log")
@@ -397,12 +398,12 @@ namespace MassEffectModder
                             throw new Exception();
                         }
                         byte[] listText = new byte[dstLen];
-                        result = ZlibHelper.Zip.ReadCurrentFile(handle, listText, dstLen);
+                        result = zip.ReadCurrentFile(handle, listText, dstLen);
                         if (result != 0)
                             throw new Exception();
                         ddsList = Encoding.ASCII.GetString(listText).Trim('\0').Replace("\r", "").TrimEnd('\n').Split('\n');
 
-                        result = ZlibHelper.Zip.GoToFirstFile(handle);
+                        result = zip.GoToFirstFile(handle);
                         if (result != 0)
                             throw new Exception();
 
@@ -412,7 +413,7 @@ namespace MassEffectModder
                             try
                             {
                                 uint crc = 0;
-                                result = ZlibHelper.Zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
+                                result = zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
                                 if (result != 0)
                                     throw new Exception();
                                 string filename = Path.GetFileName(fileName).Trim();
@@ -432,7 +433,7 @@ namespace MassEffectModder
                                         errors += "Skipping file: " + filename + " not found in definition file, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                         log += "Skipping file: " + filename + " not found in definition file, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                     }
-                                    ZlibHelper.Zip.GoToNextFile(handle);
+                                    zip.GoToNextFile(handle);
                                     continue;
                                 }
 
@@ -441,7 +442,7 @@ namespace MassEffectModder
                                 {
                                     errors += "Texture skipped. File " + filename + string.Format(" - 0x{0:X8}", crc) + " is not present in your game setup - mod: " + file + Environment.NewLine;
                                     log += "Texture skipped. File " + filename + string.Format(" - 0x{0:X8}", crc) + " is not present in your game setup - mod: " + file + Environment.NewLine;
-                                    ZlibHelper.Zip.GoToNextFile(handle);
+                                    zip.GoToNextFile(handle);
                                     continue;
                                 }
 
@@ -450,12 +451,12 @@ namespace MassEffectModder
                                 mod.binaryMod = false;
                                 mod.textureCrc = crc;
                                 mod.data = new byte[dstLen];
-                                result = ZlibHelper.Zip.ReadCurrentFile(handle, mod.data, dstLen);
+                                result = zip.ReadCurrentFile(handle, mod.data, dstLen);
                                 if (result != 0)
                                 {
                                     errors += "Error in texture: " + textureName + string.Format("_0x{0:X8}", crc) + ", skipping texture, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                     log += "Error in texture: " + textureName + string.Format("_0x{0:X8}", crc) + ", skipping texture, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
-                                    ZlibHelper.Zip.GoToNextFile(handle);
+                                    zip.GoToNextFile(handle);
                                     continue;
                                 }
 
@@ -480,7 +481,7 @@ namespace MassEffectModder
                                 {
                                     errors += "Error in texture: " + textureName + string.Format("_0x{0:X8}", crc) + " This texture has wrong aspect ratio, skipping texture, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                     log += "Error in texture: " + textureName + string.Format("_0x{0:X8}", crc) + " This texture has wrong aspect ratio, skipping texture, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
-                                    ZlibHelper.Zip.GoToNextFile(handle);
+                                    zip.GoToNextFile(handle);
                                     continue;
                                 }
 
@@ -512,9 +513,9 @@ namespace MassEffectModder
                                 errors += "Skipping not compatible content, entry: " + (i + 1) + " file: " + fileName + " - mod: " + file + Environment.NewLine;
                                 log += "Skipping not compatible content, entry: " + (i + 1) + " file: " + fileName + " - mod: " + file + Environment.NewLine;
                             }
-                            ZlibHelper.Zip.GoToNextFile(handle);
+                            zip.GoToNextFile(handle);
                         }
-                        ZlibHelper.Zip.Close(handle);
+                        zip.Close(handle);
                         handle = IntPtr.Zero;
                     }
                     catch
@@ -522,7 +523,7 @@ namespace MassEffectModder
                         errors += "Mod is not compatible: " + file + Environment.NewLine;
                         log += "Mod is not compatible: " + file + Environment.NewLine;
                         if (handle != IntPtr.Zero)
-                            ZlibHelper.Zip.Close(handle);
+                            zip.Close(handle);
                         handle = IntPtr.Zero;
                         continue;
                     }
@@ -1069,21 +1070,22 @@ namespace MassEffectModder
                     Directory.CreateDirectory(outputTPFdir);
 
                 IntPtr handle = IntPtr.Zero;
+                ZlibHelper.Zip zip = new ZlibHelper.Zip();
                 try
                 {
                     byte[] buffer = File.ReadAllBytes(file);
-                    handle = ZlibHelper.Zip.Open(buffer, ref numEntries, 1);
-                    result = ZlibHelper.Zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
+                    handle = zip.Open(buffer, ref numEntries, 1);
+                    result = zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
                     if (result != 0)
                         throw new Exception();
                     fileName = Path.GetFileName(fileName).Trim();
                     byte[] listText = new byte[dstLen];
-                    result = ZlibHelper.Zip.ReadCurrentFile(handle, listText, dstLen);
+                    result = zip.ReadCurrentFile(handle, listText, dstLen);
                     if (result != 0)
                         throw new Exception();
                     ddsList = Encoding.ASCII.GetString(listText).Trim('\0').Replace("\r", "").TrimEnd('\n').Split('\n');
 
-                    result = ZlibHelper.Zip.GoToFirstFile(handle);
+                    result = zip.GoToFirstFile(handle);
                     if (result != 0)
                         throw new Exception();
 
@@ -1091,19 +1093,19 @@ namespace MassEffectModder
                     {
                         try
                         {
-                            result = ZlibHelper.Zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
+                            result = zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
                             if (result != 0)
                                 throw new Exception();
                             string filename = Path.GetFileName(fileName).Trim();
                             if (Path.GetExtension(filename).ToLowerInvariant() == ".def" ||
                                 Path.GetExtension(filename).ToLowerInvariant() == ".log")
                             {
-                                ZlibHelper.Zip.GoToNextFile(handle);
+                                zip.GoToNextFile(handle);
                                 continue;
                             }
 
                             byte[] data = new byte[dstLen];
-                            result = ZlibHelper.Zip.ReadCurrentFile(handle, data, dstLen);
+                            result = zip.ReadCurrentFile(handle, data, dstLen);
                             if (result != 0)
                             {
                                 throw new Exception();
@@ -1119,9 +1121,9 @@ namespace MassEffectModder
                             errors += "Skipping damaged content, entry: " + (i + 1) + " file: " + fileName + " - mod: " + file + Environment.NewLine;
                             Console.WriteLine("Skipping damaged content, entry: " + (i + 1) + " file: " + fileName + " - mod: " + file);
                         }
-                        ZlibHelper.Zip.GoToNextFile(handle);
+                        zip.GoToNextFile(handle);
                     }
-                    ZlibHelper.Zip.Close(handle);
+                    zip.Close(handle);
                     handle = IntPtr.Zero;
                 }
                 catch
@@ -1129,7 +1131,7 @@ namespace MassEffectModder
                     errors += "TPF file is damaged: " + file + Environment.NewLine;
                     Console.WriteLine("TPF file is damaged: " + file);
                     if (handle != IntPtr.Zero)
-                        ZlibHelper.Zip.Close(handle);
+                        zip.Close(handle);
                     handle = IntPtr.Zero;
                     continue;
                 }
