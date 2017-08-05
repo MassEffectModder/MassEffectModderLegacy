@@ -164,7 +164,7 @@ ZLIB_EXPORT int ZipLocateFile(void *handle, const char *filename)
 	return 0;
 }
 
-ZLIB_EXPORT int ZipReadCurrentFile(void *handle, unsigned char *dst, unsigned dst_len, unsigned char *pass)
+ZLIB_EXPORT int ZipReadCurrentFile(void *handle, unsigned char *dst, unsigned long dst_len, unsigned char *pass)
 {
 	UnzipHandle *unzipHandle = handle;
 	int result;

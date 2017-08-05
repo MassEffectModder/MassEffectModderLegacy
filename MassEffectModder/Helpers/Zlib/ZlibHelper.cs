@@ -66,7 +66,7 @@ namespace ZlibHelper
         private static extern IntPtr ZipOpen([In] byte[] srcBuf, ulong srcLen, ref ulong numEntries, int tpf);
 
         [DllImport("zlibwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
-        private static extern int ZipGetCurrentFileInfo(IntPtr handle, [Out] byte[] fileName, uint sizeOfFileName, ref uint dstLen);
+        private static extern int ZipGetCurrentFileInfo(IntPtr handle, [Out] byte[] fileName, ulong sizeOfFileName, ref ulong dstLen);
 
         [DllImport("zlibwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
         private static extern int ZipGoToFirstFile(IntPtr handle);
@@ -78,7 +78,7 @@ namespace ZlibHelper
         private static extern int ZipLocateFile(IntPtr handle, [In] byte[] filename);
 
         [DllImport("zlibwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
-        private static extern int ZipReadCurrentFile(IntPtr handle, [Out] byte[] dstBuf, uint dstLen, [In] byte[] password);
+        private static extern int ZipReadCurrentFile(IntPtr handle, [Out] byte[] dstBuf, ulong dstLen, [In] byte[] password);
 
         [DllImport("zlibwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
         private static extern int ZipClose(IntPtr handle);
@@ -88,7 +88,7 @@ namespace ZlibHelper
             return ZipOpen(srcBuf, (ulong)srcBuf.Length, ref numEntries, tpf);
         }
 
-        public int GetCurrentFileInfo(IntPtr handle, ref string fileName, ref uint dstLen)
+        public int GetCurrentFileInfo(IntPtr handle, ref string fileName, ref ulong dstLen)
         {
             byte[] fileN = new byte[256];
             int result = ZipGetCurrentFileInfo(handle, fileN, (uint)fileN.Length, ref dstLen);
@@ -114,7 +114,7 @@ namespace ZlibHelper
             return ZipLocateFile(handle, Encoding.ASCII.GetBytes(filename + '\0'));
         }
 
-        public int ReadCurrentFile(IntPtr handle, byte[] dstBuf, uint dstLen, byte[] password = null)
+        public int ReadCurrentFile(IntPtr handle, byte[] dstBuf, ulong dstLen, byte[] password = null)
         {
             return ZipReadCurrentFile(handle, dstBuf, dstLen, password);
         }

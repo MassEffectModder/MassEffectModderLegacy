@@ -1031,7 +1031,7 @@ namespace MassEffectModder
 
             int result;
             string fileName = "";
-            uint dstLen = 0;
+            ulong dstLen = 0;
             string[] ddsList = null;
             ulong numEntries = 0;
             List<BinaryMod> mods = new List<BinaryMod>();
@@ -1158,6 +1158,7 @@ namespace MassEffectModder
                     ZlibHelper.Zip zip = new ZlibHelper.Zip();
                     try
                     {
+                        int indexTpf = -1;
                         byte[] buffer = File.ReadAllBytes(file);
                         handle = zip.Open(buffer, ref numEntries, 1);
                         for (ulong i = 0; i < numEntries; i++)
@@ -1169,6 +1170,7 @@ namespace MassEffectModder
                             if (Path.GetExtension(fileName).ToLowerInvariant() == ".def" ||
                                 Path.GetExtension(fileName).ToLowerInvariant() == ".log")
                             {
+                                indexTpf = (int)i;
                                 break;
                             }
                             result = zip.GoToNextFile(handle);
@@ -1187,6 +1189,11 @@ namespace MassEffectModder
 
                         for (uint i = 0; i < numEntries; i++)
                         {
+                            if (i == indexTpf)
+                            {
+                                result = zip.GoToNextFile(handle);
+                                continue;
+                            }
                             BinaryMod mod = new BinaryMod();
                             try
                             {

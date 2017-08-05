@@ -111,7 +111,7 @@ namespace MassEffectModder
 
             int result;
             string fileName = "";
-            uint dstLen = 0;
+            ulong dstLen = 0;
             string[] ddsList = null;
             ulong numEntries = 0;
             FileStream outFs;
@@ -373,6 +373,7 @@ namespace MassEffectModder
                 }
                 else if (file.EndsWith(".tpf", StringComparison.OrdinalIgnoreCase))
                 {
+                    int indexTpf = -1;
                     IntPtr handle = IntPtr.Zero;
                     ZlibHelper.Zip zip = new ZlibHelper.Zip();
                     try
@@ -388,14 +389,12 @@ namespace MassEffectModder
                             if (Path.GetExtension(fileName).ToLowerInvariant() == ".def" ||
                                 Path.GetExtension(fileName).ToLowerInvariant() == ".log")
                             {
+                                indexTpf = (int)i;
                                 break;
                             }
-                            zip.GoToNextFile(handle);
-                        }
-                        if (Path.GetExtension(fileName).ToLowerInvariant() != ".def" &&
-                            Path.GetExtension(fileName).ToLowerInvariant() != ".log")
-                        {
-                            throw new Exception();
+                            result = zip.GoToNextFile(handle);
+                            if (result != 0)
+                                throw new Exception();
                         }
                         byte[] listText = new byte[dstLen];
                         result = zip.ReadCurrentFile(handle, listText, dstLen);
@@ -409,6 +408,11 @@ namespace MassEffectModder
 
                         for (uint i = 0; i < numEntries; i++)
                         {
+                            if (i == indexTpf)
+                            {
+                                result = zip.GoToNextFile(handle);
+                                continue;
+                            }
                             TexExplorer.BinaryMod mod = new TexExplorer.BinaryMod();
                             try
                             {
@@ -1052,8 +1056,7 @@ namespace MassEffectModder
             string[] files = null;
             int result;
             string fileName = "";
-            uint dstLen = 0;
-            string[] ddsList = null;
+            ulong dstLen = 0;
             ulong numEntries = 0;
             List<string> list = Directory.GetFiles(inputDir, "*.tpf").Where(item => item.EndsWith(".tpf", StringComparison.OrdinalIgnoreCase)).ToList();
             list.Sort();
@@ -1075,18 +1078,7 @@ namespace MassEffectModder
                 {
                     byte[] buffer = File.ReadAllBytes(file);
                     handle = zip.Open(buffer, ref numEntries, 1);
-                    result = zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
-                    if (result != 0)
-                        throw new Exception();
-                    fileName = Path.GetFileName(fileName).Trim();
-                    byte[] listText = new byte[dstLen];
-                    result = zip.ReadCurrentFile(handle, listText, dstLen);
-                    if (result != 0)
-                        throw new Exception();
-                    ddsList = Encoding.ASCII.GetString(listText).Trim('\0').Replace("\r", "").TrimEnd('\n').Split('\n');
-
-                    result = zip.GoToFirstFile(handle);
-                    if (result != 0)
+                    if (handle == IntPtr.Zero)
                         throw new Exception();
 
                     for (uint i = 0; i < numEntries; i++)

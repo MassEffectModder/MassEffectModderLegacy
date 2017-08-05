@@ -237,7 +237,7 @@ namespace MassEffectModder
             ulong numEntries = 0;
             string fileName = "";
             string feleNameExe = "";
-            uint dstLen = 0;
+            ulong dstLen = 0;
             ZlibHelper.Zip zip = new ZlibHelper.Zip();
             try
             {
