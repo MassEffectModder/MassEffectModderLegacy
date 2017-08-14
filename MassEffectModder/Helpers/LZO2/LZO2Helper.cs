@@ -45,7 +45,7 @@ namespace LZO2Helper
 
         public byte[] Compress(byte[] src)
         {
-            byte[] tmpbuf = new byte[src.Length + (src.Length / 16) + 64 + 3];
+            byte[] tmpbuf = new byte[src.Length + src.Length / 16 + 64 + 3];
             uint dstLen = 0;
 
             int status = LZOCompress(src, (uint)src.Length, tmpbuf, ref dstLen);

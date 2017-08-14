@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lzo2wrapper", "lzo2wrapper.vcxproj", "{964A5986-62A4-4058-82F6-AA494DD5CFFD}"
 EndProject
@@ -11,6 +11,7 @@ Global
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{964A5986-62A4-4058-82F6-AA494DD5CFFD}.Debug|x64.ActiveCfg = Debug|x64
+		{964A5986-62A4-4058-82F6-AA494DD5CFFD}.Debug|x64.Build.0 = Debug|x64
 		{964A5986-62A4-4058-82F6-AA494DD5CFFD}.Release|x64.ActiveCfg = Release|x64
 		{964A5986-62A4-4058-82F6-AA494DD5CFFD}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
