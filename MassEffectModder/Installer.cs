@@ -32,6 +32,7 @@ namespace MassEffectModder
 {
     public partial class Installer : Form
     {
+        const uint MEMI_TAG = 0x495D454D;
         public bool exitToModder;
         ConfIni configIni;
         ConfIni installerIni;
@@ -95,6 +96,69 @@ namespace MassEffectModder
             clearPreCheckStatus();
 
             buttonSTART.Enabled = false;
+
+            return true;
+        }
+
+        bool detectMod(int gameId)
+        {
+            string path = "";
+            if (gameId == (int)MeType.ME1_TYPE)
+            {
+                path = GameData.GamePath + @"\BioGame\CookedPC\testVolumeLight_VFX.upk";
+            }
+            if (gameId == (int)MeType.ME2_TYPE)
+            {
+                path = GameData.GamePath + @"\BioGame\CookedPC\BIOC_Materials.pcc";
+            }
+            if (gameId == (int)MeType.ME3_TYPE)
+            {
+                path = GameData.GamePath + @"\BIOGame\CookedPCConsole\adv_combat_tutorial_xbox_D_Int.afc";
+            }
+            try
+            {
+                using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+                {
+                    fs.Seek(-4, SeekOrigin.End);
+                    if (fs.ReadUInt32() == MEMI_TAG)
+                        return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+
+            return false;
+        }
+
+        bool applyModTag(int gameId)
+        {
+            string path = "";
+            if (gameId == (int)MeType.ME1_TYPE)
+            {
+                path = GameData.GamePath + @"\BioGame\CookedPC\testVolumeLight_VFX.upk";
+            }
+            if (gameId == (int)MeType.ME2_TYPE)
+            {
+                path = GameData.GamePath + @"\BioGame\CookedPC\BIOC_Materials.pcc";
+            }
+            if (gameId == (int)MeType.ME3_TYPE)
+            {
+                path = GameData.GamePath + @"\BIOGame\CookedPCConsole\adv_combat_tutorial_xbox_D_Int.afc";
+            }
+            try
+            {
+                using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Write))
+                {
+                    fs.SeekEnd();
+                    fs.WriteUInt32(MEMI_TAG);
+                }
+            }
+            catch
+            {
+                return false;
+            }
 
             return true;
         }
@@ -338,6 +402,15 @@ namespace MassEffectModder
             if (Misc.detectBrokenMod((MeType)gameId))
             {
                 labelPreVanilla.Text = "Detected not compatible mod!";
+                labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.Red);
+                labelFinalStatus.Text = "Preliminary check detected issue...";
+                buttonPreInstallCheck.Enabled = true;
+                buttonsEnable(true);
+                return;
+            }
+            if (detectMod(gameId))
+            {
+                labelPreVanilla.Text = "Detected previous installation!";
                 labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.Red);
                 labelFinalStatus.Text = "Preliminary check detected issue...";
                 buttonPreInstallCheck.Enabled = true;
@@ -778,6 +851,8 @@ namespace MassEffectModder
                 checkBoxPackDLC.Checked = true;
             }
 
+            if (!applyModTag(gameId))
+                errors += "Failed applying stamp for installation!\n";
 
             var time = Misc.stopTimer();
             labelFinalStatus.Text = "Process finished. Process total time: " + Misc.getTimerFormat(time);
