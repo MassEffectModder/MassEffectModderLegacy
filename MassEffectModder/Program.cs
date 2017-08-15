@@ -236,7 +236,7 @@ namespace MassEffectModder
             int result;
             ulong numEntries = 0;
             string fileName = "";
-            string feleNameExe = "";
+            string fileNameExe = "";
             ulong dstLen = 0;
             ZlibHelper.Zip zip = new ZlibHelper.Zip();
             try
@@ -262,7 +262,7 @@ namespace MassEffectModder
                         fs.WriteFromBuffer(data);
                     }
                     if (Path.GetExtension(fileName).ToLowerInvariant() == ".exe")
-                        feleNameExe = "new-" + fileName;
+                        fileNameExe = "new-" + fileName;
 
                     zip.GoToNextFile(handle);
                 }
@@ -277,7 +277,7 @@ namespace MassEffectModder
 
             File.Delete(file);
 
-            return feleNameExe;
+            return fileNameExe;
         }
 
         static private void cleanupPreviousUpdate()
@@ -557,7 +557,7 @@ namespace MassEffectModder
                         unloadEmbeddedDlls();
                         Environment.Exit(0);
                     }
-                    MessageBox.Show("Failed start update MEM insatnce!");
+                    MessageBox.Show("Failed start update MEM instance!");
                 }
 
                 loadMD5Tables();
@@ -579,7 +579,7 @@ namespace MassEffectModder
             Environment.Exit(0);
 fail:
             unloadEmbeddedDlls();
-            Environment.Exit(0);
+            Environment.Exit(1);
         }
 
     }
