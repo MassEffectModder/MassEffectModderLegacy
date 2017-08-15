@@ -27,12 +27,13 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using Microsoft.VisualBasic.Devices;
 
 namespace MassEffectModder
 {
     public partial class Installer : Form
     {
-        const uint MEMI_TAG = 0x495D454D;
+        const uint MEMI_TAG = 0x494D454D;
         public bool exitToModder;
         ConfIni configIni;
         ConfIni installerIni;
@@ -96,6 +97,17 @@ namespace MassEffectModder
             clearPreCheckStatus();
 
             buttonSTART.Enabled = false;
+
+            ulong memorySize = ((new ComputerInfo().TotalPhysicalMemory / 1024 / 1024) + 1023) / 1024;
+            if (memorySize < 8 && gameId == 3)
+            {
+                MessageBox.Show("Not enough of physical RAM (8GB is required), exiting...", "Installer");
+                return false;
+            }
+            else if (memorySize <= 4 && gameId != 3)
+            {
+                MessageBox.Show("Detected small physical RAM (8GB is recommended).\nInstallation may take a long time.", "Installer");
+            }
 
             return true;
         }
