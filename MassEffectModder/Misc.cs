@@ -355,12 +355,12 @@ namespace MassEffectModder
         }
 
         static MD5FileEntry[] badMOD = new MD5FileEntry[]
-        {
+        {/*
             new MD5FileEntry
             {
                 path = @"\BioGame\CookedPC\dummy",
                 md5 = new byte[] { 0xB0, 0xC3, 0x30, 0x9A, 0x1A, 0x24, 0x27, 0xCC, 0x3C, 0xC7, 0xF4, 0xD0, 0xCC, 0x36, 0xE0, 0x85, },
-            },
+            },*/
         };
 
         static public void VerifyME1Exe(GameData gameData, bool gui = true)
