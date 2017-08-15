@@ -102,14 +102,14 @@ namespace MassEffectModder
                                 if (mainWindow != null)
                                 {
                                     MessageBox.Show("Detected removal of game files since last game data scan." +
-                                    "\n\nYou need to restore the game to vanilla state then reinstall optional DLC mods." +
+                                    "\n\nYou need to restore the game to vanilla state then reinstall optional DLC/PCC mods." +
                                     "\n\nThen from the main menu, select 'Remove Textures Scan File' and start Texture Manager again.");
                                     return "";
                                 }
                                 else if (!force)
                                 {
                                     errors += "Detected removal of game files since last game data scan." + Environment.NewLine + Environment.NewLine +
-                                    "You need to restore the game to vanilla state then reinstall optional DLC mods.";
+                                    "You need to restore the game to vanilla state then reinstall optional DLC/PCC mods.";
                                     return "";
                                 }
                             }
@@ -121,14 +121,14 @@ namespace MassEffectModder
                                 if (mainWindow != null)
                                 {
                                     MessageBox.Show("Detected additional game files not present in latest game data scan." +
-                                    "\n\nYou need to restore the game to vanilla state then reinstall optional DLC mods." +
+                                    "\n\nYou need to restore the game to vanilla state then reinstall optional DLC/PCC mods." +
                                     "\n\nThen from the main menu, select 'Remove Textures Scan File' and start Texture Manager again.");
                                     return "";
                                 }
                                 else if (!force)
                                 {
                                     errors += "Detected additional game files not present in latest game data scan." + Environment.NewLine + Environment.NewLine +
-                                    "You need to restore the game to vanilla state then reinstall optional DLC mods.";
+                                    "You need to restore the game to vanilla state then reinstall optional DLC/PCC mods.";
                                     return "";
                                 }
                             }
@@ -157,28 +157,28 @@ namespace MassEffectModder
             if (File.Exists(filename))
                 File.Delete(filename);
 
-            /*if (Misc.detectBrokenMod(GameData.gameType))
+            if (Misc.detectBrokenMod(GameData.gameType))
             {
                 if (mainWindow != null)
                 {
                     MessageBox.Show("Detected mod compatible mod.");
                 }
                 return "";
-            }*/
+            }
 
             if (MipMaps.checkGameDataModded(cachePackageMgr))
             {
                 if (mainWindow != null)
                 {
                     MessageBox.Show("Detected modded game. Can not continue." +
-                    "\n\nYou need to restore the game to vanilla state then reinstall optional DLC mods." +
+                    "\n\nYou need to restore the game to vanilla state then reinstall optional DLC/PCC mods." +
                     "\n\nThen start Texture Manager again.");
                     return "";
                 }
                 else if (!force)
                 {
                     errors += "Detected modded game. Can not continue." + Environment.NewLine + Environment.NewLine +
-                    "You need to restore the game to vanilla state then reinstall optional DLC mods.";
+                    "You need to restore the game to vanilla state then reinstall optional DLC/PCC mods.";
                     return "";
                 }
             }
@@ -187,7 +187,7 @@ namespace MassEffectModder
             {
                 DialogResult result = MessageBox.Show("Replacing textures and creating mods requires generating a map of the game's textures.\n" +
                 "You only need to do it once.\n\n" +
-                "IMPORTANT! Your game needs to be in vanilla state and have optional DLC mods installed.\n\n" +
+                "IMPORTANT! Your game needs to be in vanilla state and have optional DLC/PCC mods installed.\n\n" +
                 "Are you sure you want to proceed?", "Textures mapping", MessageBoxButtons.YesNo);
                 if (result == DialogResult.No)
                 {

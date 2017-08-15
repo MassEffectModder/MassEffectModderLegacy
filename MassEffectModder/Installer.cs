@@ -335,7 +335,7 @@ namespace MassEffectModder
             labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
             labelPreVanilla.Text = "Checking...";
             Application.DoEvents();
-            /*if (Misc.detectBrokenMod((MeType)gameId))
+            if (Misc.detectBrokenMod((MeType)gameId))
             {
                 labelPreVanilla.Text = "Detected not compatible mod!";
                 labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.Red);
@@ -343,7 +343,7 @@ namespace MassEffectModder
                 buttonPreInstallCheck.Enabled = true;
                 buttonsEnable(true);
                 return;
-            }*/
+            }
 
             if (!checkBoxOptionVanilla.Checked)
                 errors = Misc.checkGameFiles((MeType)gameId, null, this);
