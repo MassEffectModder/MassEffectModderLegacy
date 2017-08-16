@@ -426,7 +426,7 @@
             this.labelPreVanilla.ForeColor = System.Drawing.Color.LimeGreen;
             this.labelPreVanilla.Location = new System.Drawing.Point(187, 165);
             this.labelPreVanilla.Name = "labelPreVanilla";
-            this.labelPreVanilla.Size = new System.Drawing.Size(252, 13);
+            this.labelPreVanilla.Size = new System.Drawing.Size(369, 13);
             this.labelPreVanilla.TabIndex = 40;
             this.labelPreVanilla.Text = "label";
             // 

@@ -425,7 +425,7 @@ namespace MassEffectModder
             }
             if (detectMod(gameId))
             {
-                labelPreVanilla.Text = "Detected previous installation!";
+                labelPreVanilla.Text = "Detected modded game ! Please reinstall ME" + gameId + " and restart.";
                 labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.Red);
                 labelFinalStatus.Text = "Preliminary check detected issue...";
                 buttonPreInstallCheck.Enabled = true;
