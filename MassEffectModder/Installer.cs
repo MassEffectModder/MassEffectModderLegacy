@@ -99,14 +99,17 @@ namespace MassEffectModder
             buttonSTART.Enabled = false;
 
             ulong memorySize = ((new ComputerInfo().TotalPhysicalMemory / 1024 / 1024) + 1023) / 1024;
-            if (memorySize < 8 && gameId == 3)
+            if (memorySize < 4 && gameId == 3)
             {
-                MessageBox.Show("Not enough of physical RAM (8GB is required), exiting...", "Installer");
-                return false;
+                MessageBox.Show("Detected small amount of physical RAM (8GB is recommended).\nInstallation may take many hours or fail.", "Installer");
+            }
+            else if (memorySize <= 8 && gameId == 3)
+            {
+                MessageBox.Show("Detected small amount of physical RAM (8GB is recommended).\nInstallation may take several hours.", "Installer");
             }
             else if (memorySize <= 4 && gameId != 3)
             {
-                MessageBox.Show("Detected small physical RAM (8GB is recommended).\nInstallation may take a long time.", "Installer");
+                MessageBox.Show("Detected small amount of physical RAM (8GB is recommended).\nInstallation may take a long time.", "Installer");
             }
 
             return true;
