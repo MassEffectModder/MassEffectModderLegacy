@@ -58,8 +58,12 @@ namespace MassEffectModder
 
             int imageWidth = stream.ReadInt32();
             int imageHeight = stream.ReadInt32();
+            bool downToTop = true;
             if (imageHeight < 0)
-                throw new Exception("down to top not supported in BMP!");
+            {
+                imageHeight = -imageHeight;
+                downToTop = false;
+            }
             if (!checkPowerOfTwo(imageWidth) ||
                 !checkPowerOfTwo(imageHeight))
                 throw new Exception("dimensions not power of two");
@@ -102,7 +106,8 @@ namespace MassEffectModder
             Ashift = getShiftFromMask(Amask);
 
             byte[] buffer = new byte[imageWidth * imageHeight * 4];
-            int pos = 0;
+            int pos = downToTop ? imageWidth * (imageHeight - 1) * 4 : 0;
+            int delta = downToTop ? -imageWidth * 4 * 2 : 0;
             for (int h = 0; h < imageHeight; h++)
             {
                 for (int i = 0; i < imageWidth; i++)
@@ -129,6 +134,7 @@ namespace MassEffectModder
                 }
                 if (imageWidth % 4 != 0)
                     stream.Skip(4 - (imageWidth % 4));
+                pos += delta;
             }
 
             if (bits == 32 && !hasAlphaMask)
