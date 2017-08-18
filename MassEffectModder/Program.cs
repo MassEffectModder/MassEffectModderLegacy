@@ -291,6 +291,87 @@ namespace MassEffectModder
                 File.Delete(filePdb);
         }
 
+        static void DisplayHelp()
+        {
+            Console.WriteLine(Environment.NewLine + Environment.NewLine +
+                "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
+            Console.WriteLine("Help:\n");
+            Console.WriteLine("  -help\n");
+            Console.WriteLine("     This help");
+            Console.WriteLine("");
+            Console.WriteLine("  -version\n");
+            Console.WriteLine("     Display MEM version");
+            Console.WriteLine("");
+            Console.WriteLine("  -convert-to-mem <game id> <input dir> <output file>\n");
+            Console.WriteLine("     game id: 1 for ME1, 2 for ME2, 3 for ME3");
+            Console.WriteLine("     input dir: directory to be converted, containing following file extension(s):");
+            Console.WriteLine("        MEM, MOD, TPF");
+            Console.WriteLine("        BIN - package export raw data");
+            Console.WriteLine("           Naming pattern used for package in DLC:");
+            Console.WriteLine("             D<DLC dir length>-<DLC dir>-<pkg filename length>-<pkg filename>-E<pkg export id>.bin");
+            Console.WriteLine("             example: D10-DLC_HEN_PR-23-BioH_EDI_02_Explore.pcc-E6101.bin");
+            Console.WriteLine("           Naming pattern used for package in base directory:");
+            Console.WriteLine("             B<pkg filename length>-<pkg filename>-E<pkg export id>.bin");
+            Console.WriteLine("             example: B23-BioH_EDI_00_Explore.pcc-E5090.bin");
+            Console.WriteLine("        DDS, BMP, TGA, PNG, JPG, JPEG");
+            Console.WriteLine("           input format supported for DDS images:");
+            Console.WriteLine("              DXT1, DXT3, DTX5, ATI2, V8U8, G8, RGBA, RGB");
+            Console.WriteLine("           input format supported for TGA images:");
+            Console.WriteLine("              uncompressed RGBA/RGB, compressed RGBA/RGB");
+            Console.WriteLine("           input format supported for BMP images:");
+            Console.WriteLine("              uncompressed RGBA/RGB/RGBX");
+            Console.WriteLine("           Image filename must include texture CRC (0xhhhhhhhh)");
+            Console.WriteLine("");
+            Console.WriteLine("  -convert-game-image <game id> <input image> <output image>\n");
+            Console.WriteLine("     game id: 1 for ME1, 2 for ME2, 3 for ME3");
+            Console.WriteLine("     Input file with following extension:");
+            Console.WriteLine("        DDS, BMP, TGA, PNG, JPG, JPEG");
+            Console.WriteLine("           input format supported for DDS images:");
+            Console.WriteLine("              DXT1, DXT3, DTX5, ATI2, V8U8, G8, RGBA, RGB");
+            Console.WriteLine("           input format supported for TGA images:");
+            Console.WriteLine("              uncompressed RGBA/RGB, compressed RGBA/RGB");
+            Console.WriteLine("           input format supported for BMP images:");
+            Console.WriteLine("              uncompressed RGBA/RGB/RGBX");
+            Console.WriteLine("           Image filename must include texture CRC (0xhhhhhhhh)");
+            Console.WriteLine("     Output file is DDS image");
+            Console.WriteLine("");
+            Console.WriteLine("  -convert-game-images <game id> <input dir> <output dir>\n");
+            Console.WriteLine("     game id: 1 for ME1, 2 for ME2, 3 for ME3");
+            Console.WriteLine("     input dir: directory to be converted, containing following file extension(s):");
+            Console.WriteLine("        Input files with following extension:");
+            Console.WriteLine("        DDS, BMP, TGA, PNG, JPEG");
+            Console.WriteLine("           input format supported for DDS images:");
+            Console.WriteLine("              DXT1, DXT3, DTX5, ATI2, V8U8, G8, RGBA, RGB");
+            Console.WriteLine("           input format supported for TGA images:");
+            Console.WriteLine("              uncompressed RGBA/RGB, compressed RGBA/RGB");
+            Console.WriteLine("           input pixel format supported for BMP images:");
+            Console.WriteLine("              uncompressed RGBA/RGB/RGBX");
+            Console.WriteLine("           Image filename must include texture CRC (0xhhhhhhhh)");
+            Console.WriteLine("     output dir: directory where textures converted to DDS are placed");
+            Console.WriteLine("");
+            Console.WriteLine("  -extract-mod <game id> <input dir> <output dir>\n");
+            Console.WriteLine("     game id: 1 for ME1, 2 for ME2, 3 for ME3");
+            Console.WriteLine("     input dir: directory of ME3Explorer MOD file(s)");
+            Console.WriteLine("     Can extract textures and package export raw data");
+            Console.WriteLine("     Naming pattern used for package in DLC:");
+            Console.WriteLine("        D<DLC dir length>-<DLC dir>-<pkg filename length>-<pkg filename>-E<pkg export id>.bin");
+            Console.WriteLine("        example: D10-DLC_HEN_PR-23-BioH_EDI_02_Explore.pcc-E6101.bin");
+            Console.WriteLine("     Naming pattern used for package in base directory:");
+            Console.WriteLine("        B<pkg filename length>-<pkg filename>-E<pkg export id>.bin");
+            Console.WriteLine("        example: B23-BioH_EDI_00_Explore.pcc-E5090.bin");
+            Console.WriteLine("");
+            Console.WriteLine("  -extract-tpf <input dir> <output dir>\n");
+            Console.WriteLine("     input dir: directory containing the TPF file(s) to be extracted");
+            Console.WriteLine("     Textures are extracted as they are in the TPF, no additional modifications are made.");
+            Console.WriteLine("");
+            Console.WriteLine("  -convert-image <output pixel format> [dxt1 alpha threshold] <input image> <output image>\n");
+            Console.WriteLine("     input image file types: DDS, BMP, TGA, PNG, JPEG");
+            Console.WriteLine("     output image file type: DDS");
+            Console.WriteLine("     output pixel format: DXT1 (no alpha), DXT1a (alpha), DXT3, DXT5, ATI2, V8U8, G8, RGBA, RGB");
+            Console.WriteLine("     For DXT1a you have to set the alpha threshold (0-255). 128 is suggested as a default value.");
+            Console.WriteLine("\n");
+        }
+
         [STAThread]
 
         static void Main(string[] args)
@@ -307,6 +388,20 @@ namespace MassEffectModder
             {
                 cmd = args[0];
                 loadEmbeddedDlls();
+            }
+
+            if (cmd.Equals("-help", StringComparison.OrdinalIgnoreCase))
+            {
+                DisplayHelp();
+                unloadEmbeddedDlls();
+                Environment.Exit(0);
+            }
+            if (cmd.Equals("-version", StringComparison.OrdinalIgnoreCase))
+            {
+                Console.WriteLine(Environment.NewLine + Environment.NewLine +
+                    "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
+                unloadEmbeddedDlls();
+                Environment.Exit(0);
             }
 
             if (cmd.Equals("-update-mem", StringComparison.OrdinalIgnoreCase))
@@ -351,6 +446,7 @@ namespace MassEffectModder
                 if (args.Length != 4)
                 {
                     Console.WriteLine("Error: wrong arguments!");
+                    DisplayHelp();
                     goto fail;
                 }
 
@@ -366,6 +462,7 @@ namespace MassEffectModder
                 if (gameId != 1 && gameId != 2 && gameId != 3)
                 {
                     Console.WriteLine("Error: wrong game id!");
+                    DisplayHelp();
                     goto fail;
                 }
             }
@@ -456,6 +553,7 @@ namespace MassEffectModder
                 if (args.Length != 3)
                 {
                     Console.WriteLine("Error: wrong arguments!");
+                    DisplayHelp();
                     goto fail;
                 }
 
@@ -481,6 +579,7 @@ namespace MassEffectModder
                 if (args.Length < 4)
                 {
                     Console.WriteLine("Error: wrong arguments!");
+                    DisplayHelp();
                     goto fail;
                 }
 
