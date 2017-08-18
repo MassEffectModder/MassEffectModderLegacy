@@ -202,8 +202,19 @@ namespace MassEffectModder
                         }
                         else if (modFiles[i].tag == FileBinaryTag)
                         {
-                            string filename = name;
-                            using (FileStream output = new FileStream(Path.Combine(outDir, Path.GetFileName(filename)), FileMode.Create, FileAccess.Write))
+                            string path = pkgPath;
+                            string newFilename;
+                            if (path.Contains("\\DLC\\"))
+                            {
+                                string dlcName = path.Split('\\')[3];
+                                newFilename = "D" + dlcName.Length + "-" + dlcName + "-";
+                            }
+                            else
+                            {
+                                newFilename = "B";
+                            }
+                            newFilename += Path.GetFileName(path).Length + "-" + Path.GetFileName(path) + "-E" + exportId + ".bin";
+                            using (FileStream output = new FileStream(Path.Combine(outDir, newFilename), FileMode.Create, FileAccess.Write))
                             {
                                 output.Write(dst, 0, (int)dstLen);
                             }
