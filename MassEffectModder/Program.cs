@@ -671,16 +671,23 @@ namespace MassEffectModder
                     "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
                 if (cmd.Equals("-extract-all-dds", StringComparison.OrdinalIgnoreCase))
                     if (!CmdLineConverter.extractAllTextures(gameId, outputDir, false, tfcFilter))
-                {
-                    goto fail;
-                }
+                    {
+                        goto fail;
+                    }
                 if (cmd.Equals("-extract-all-png", StringComparison.OrdinalIgnoreCase))
                     if (!CmdLineConverter.extractAllTextures(gameId, outputDir, true, ""))
-                {
-                    goto fail;
-                }
+                    {
+                        goto fail;
+                    }
             }
             else
+            {
+                DisplayHelp();
+                unloadEmbeddedDlls();
+                Environment.Exit(0);
+            }
+
+            if (args.Length == 0)
             {
                 ShowWindow(GetConsoleWindow(), 0);
                 Application.EnableVisualStyles();
