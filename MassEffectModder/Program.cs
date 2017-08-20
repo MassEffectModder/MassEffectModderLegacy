@@ -680,7 +680,7 @@ namespace MassEffectModder
                         goto fail;
                     }
             }
-            else
+            else if (args.Length > 0)
             {
                 DisplayHelp();
                 unloadEmbeddedDlls();
