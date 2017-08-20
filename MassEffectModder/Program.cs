@@ -381,7 +381,10 @@ namespace MassEffectModder
             Console.WriteLine("     output dir: directory where textures converted to PNG are placed");
             Console.WriteLine("     Textures are extracted with only top mipmap.");
             Console.WriteLine("");
-            Console.WriteLine("\n");
+            Console.WriteLine("  -me3dlcmod-for-mgamerz <mem file> <tfc name>\n");
+            Console.WriteLine("");
+ 
+             Console.WriteLine("\n");
         }
 
         [STAThread]
@@ -679,6 +682,24 @@ namespace MassEffectModder
                     {
                         goto fail;
                     }
+            }
+            else if (cmd.Equals("-me3dlcmod-for-mgamerz", StringComparison.OrdinalIgnoreCase))
+            {
+                if (args.Length != 3)
+                {
+                    Console.WriteLine("Error: wrong arguments!");
+                    DisplayHelp();
+                    goto fail;
+                }
+
+                inputFile = args[1];
+                string tfcName = args[2];
+                    Console.WriteLine(Environment.NewLine + Environment.NewLine +
+                        "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
+                if (!CmdLineConverter.applyMEMSpecialModME3(inputFile, tfcName))
+                {
+                    goto fail;
+                }
             }
             else if (args.Length > 0)
             {
