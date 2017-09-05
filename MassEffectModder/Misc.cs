@@ -65,6 +65,9 @@ namespace MassEffectModder
             }
             else if (gameId == MeType.ME2_TYPE)
             {
+                log += "TEXTUREGROUP_World=" + engineConf.Read("TEXTUREGROUP_World", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_WorldNormalMap=" + engineConf.Read("TEXTUREGROUP_WorldNormalMap", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_AmbientLightMap=" + engineConf.Read("TEXTUREGROUP_AmbientLightMap", "SystemSettings") + Environment.NewLine;
                 log += "TEXTUREGROUP_LightAndShadowMap=" + engineConf.Read("TEXTUREGROUP_LightAndShadowMap", "SystemSettings") + Environment.NewLine;
                 log += "TEXTUREGROUP_RenderTarget=" + engineConf.Read("TEXTUREGROUP_RenderTarget", "SystemSettings") + Environment.NewLine;
                 log += "TEXTUREGROUP_Environment_64=" + engineConf.Read("TEXTUREGROUP_Environment_64", "SystemSettings") + Environment.NewLine;
@@ -90,6 +93,12 @@ namespace MassEffectModder
             }
             else if (gameId == MeType.ME3_TYPE)
             {
+                log += "TEXTUREGROUP_World=" + engineConf.Read("TEXTUREGROUP_World", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_WorldSpecular=" + engineConf.Read("TEXTUREGROUP_WorldSpecular", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_WorldNormalMap=" + engineConf.Read("TEXTUREGROUP_WorldNormalMap", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_AmbientLightMap=" + engineConf.Read("TEXTUREGROUP_AmbientLightMap", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_LightAndShadowMap=" + engineConf.Read("TEXTUREGROUP_LightAndShadowMap", "SystemSettings") + Environment.NewLine;
+                log += "TEXTUREGROUP_RenderTarget=" + engineConf.Read("TEXTUREGROUP_RenderTarget", "SystemSettings") + Environment.NewLine;
                 log += "TEXTUREGROUP_Environment_64=" + engineConf.Read("TEXTUREGROUP_Environment_64", "SystemSettings") + Environment.NewLine;
                 log += "TEXTUREGROUP_Environment_128=" + engineConf.Read("TEXTUREGROUP_Environment_128", "SystemSettings") + Environment.NewLine;
                 log += "TEXTUREGROUP_Environment_256=" + engineConf.Read("TEXTUREGROUP_Environment_256", "SystemSettings") + Environment.NewLine;
@@ -148,6 +157,9 @@ namespace MassEffectModder
             }
             else if (gameId == MeType.ME2_TYPE)
             {
+                engineConf.Write("TEXTUREGROUP_World", "(MinLODSize=256,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_WorldNormalMap", "(MinLODSize=256,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_AmbientLightMap", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "SystemSettings");
                 engineConf.Write("TEXTUREGROUP_LightAndShadowMap", "(MinLODSize=1024,MaxLODSize=4096,LODBias=0)", "SystemSettings");
                 engineConf.Write("TEXTUREGROUP_RenderTarget", "(MinLODSize=2048,MaxLODSize=4096,LODBias=0)", "SystemSettings");
                 engineConf.Write("TEXTUREGROUP_Environment_64", "(MinLODSize=128,MaxLODSize=4096,LODBias=0)", "SystemSettings");
@@ -173,6 +185,12 @@ namespace MassEffectModder
             }
             else if (gameId == MeType.ME3_TYPE)
             {
+                engineConf.Write("TEXTUREGROUP_World", "(MinLODSize=256,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_WorldSpecular", "(MinLODSize=256,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_WorldNormalMap", "(MinLODSize=256,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_AmbientLightMap", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_LightAndShadowMap", "(MinLODSize=1024,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+                engineConf.Write("TEXTUREGROUP_RenderTarget", "(MinLODSize=2048,MaxLODSize=4096,LODBias=0)", "SystemSettings");
                 engineConf.Write("TEXTUREGROUP_Environment_64", "(MinLODSize=128,MaxLODSize=4096,LODBias=0)", "SystemSettings");
                 engineConf.Write("TEXTUREGROUP_Environment_128", "(MinLODSize=256,MaxLODSize=4096,LODBias=0)", "SystemSettings");
                 engineConf.Write("TEXTUREGROUP_Environment_256", "(MinLODSize=512,MaxLODSize=4096,LODBias=0)", "SystemSettings");
@@ -231,6 +249,9 @@ namespace MassEffectModder
             }
             else if (gameId == MeType.ME2_TYPE)
             {
+                engineConf.DeleteKey("TEXTUREGROUP_World", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_WorldNormalMap", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_AmbientLightMap", "SystemSettings");
                 engineConf.DeleteKey("TEXTUREGROUP_LightAndShadowMap", "SystemSettings");
                 engineConf.DeleteKey("TEXTUREGROUP_RenderTarget", "SystemSettings");
                 engineConf.DeleteKey("TEXTUREGROUP_Environment_64", "SystemSettings");
@@ -256,6 +277,12 @@ namespace MassEffectModder
             }
             else if (gameId == MeType.ME3_TYPE)
             {
+                engineConf.DeleteKey("TEXTUREGROUP_World", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_WorldSpecular", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_WorldNormalMap", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_AmbientLightMap", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_LightAndShadowMap", "SystemSettings");
+                engineConf.DeleteKey("TEXTUREGROUP_RenderTarget", "SystemSettings");
                 engineConf.DeleteKey("TEXTUREGROUP_Environment_64", "SystemSettings");
                 engineConf.DeleteKey("TEXTUREGROUP_Environment_128", "SystemSettings");
                 engineConf.DeleteKey("TEXTUREGROUP_Environment_256", "SystemSettings");
