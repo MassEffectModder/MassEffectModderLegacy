@@ -103,7 +103,7 @@ namespace MassEffectModder
             {
                 MessageBox.Show("Detected small amount of physical RAM (8GB is recommended).\nInstallation may take many hours or fail.", "Installer");
             }
-            else if (memorySize <= 8 && gameId == 3)
+            else if (memorySize < 8 && gameId == 3)
             {
                 MessageBox.Show("Detected small amount of physical RAM (8GB is recommended).\nInstallation may take several hours.", "Installer");
             }
