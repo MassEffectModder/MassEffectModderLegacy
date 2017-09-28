@@ -253,6 +253,13 @@ namespace MassEffectModder
                                     mipmap.storageType = Texture.StorageTypes.extLZO;
                                 }
                             }
+                            else if (GameData.gameType == MeType.ME1_TYPE && master == true && n > 0)
+                            {
+                                if (mipmap.storageType == Texture.StorageTypes.pccUnc)
+                                {
+                                    mipmap.storageType = Texture.StorageTypes.pccLZO;
+                                }
+                            }
                             else if (GameData.gameType == MeType.ME2_TYPE || GameData.gameType == MeType.ME3_TYPE)
                             {
                                 if (texture.properties.exists("TextureFileCacheName"))
