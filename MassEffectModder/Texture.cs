@@ -158,8 +158,7 @@ namespace MassEffectModder
             textureData = new MemoryStream();
             if (GameData.gameType != MeType.ME3_TYPE)
             {
-                textureData.WriteZeros(12);
-                textureData.WriteUInt32(0); // filled later
+                textureData.WriteZeros(16);
             }
             textureData.WriteInt32(newMipMaps.Count);
             for (int l = 0; l < newMipMaps.Count; l++)
@@ -484,8 +483,7 @@ namespace MassEffectModder
             {
                 if (GameData.gameType != MeType.ME3_TYPE)
                 {
-                    newData.WriteZeros(12);
-                    newData.WriteUInt32(pccTextureDataOffset + 12 + 4);
+                    newData.WriteZeros(16);
                 }
                 newData.WriteInt32(mipMapsList.Count());
                 for (int l = 0; l < mipMapsList.Count(); l++)
