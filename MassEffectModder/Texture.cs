@@ -494,8 +494,7 @@ namespace MassEffectModder
                     newData.WriteInt32(mipmap.compressedSize);
                     if (mipmap.storageType == StorageTypes.pccUnc)
                     {
-                        mipmap.dataOffset = (uint)newData.Position + pccTextureDataOffset + 4;
-                        newData.WriteUInt32(mipmap.dataOffset);
+                        newData.WriteUInt32(0);
                         textureData.JumpTo(mipmap.internalOffset);
                         newData.WriteFromBuffer(textureData.ReadToBuffer(mipmap.uncompressedSize));
                     }
