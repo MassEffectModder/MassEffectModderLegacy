@@ -189,10 +189,17 @@ namespace MassEffectModder
                         {
                             List<string> files = Directory.GetFiles(GameData.bioGamePath, archive + ".tfc",
                                 SearchOption.AllDirectories).Where(item => item.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase)).ToList();
-                            if (files.Count == 0)
-                                archiveFile = Path.Combine(GameData.MainData, "Textures.tfc");
-                            else if (files.Count == 1)
+                            if (files.Count == 1)
                                 archiveFile = files[0];
+                            else if (files.Count == 0)
+                            {
+                                DLCArchiveFile = Path.Combine(Path.GetDirectoryName(DLCArchiveFile),
+                                    "Textures_" + Path.GetFileName(Path.GetDirectoryName(Path.GetDirectoryName(GameData.GamePath + nodeTexture.path)) + ".tfc"));
+                                if (File.Exists(DLCArchiveFile))
+                                    archiveFile = DLCArchiveFile;
+                                else
+                                    archiveFile = Path.Combine(GameData.MainData, "Textures.tfc");
+                            }
                             else
                                 throw new Exception("");
                         }
