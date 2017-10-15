@@ -47,7 +47,7 @@ namespace MassEffectModder
                 uint version = fs.ReadUInt32();
                 if (tag != TexExplorer.textureMapBinTag || version != TexExplorer.textureMapBinVersion)
                 {
-                    Console.WriteLine("Texture map not compatible: " + path);
+                    Console.WriteLine("Detected wrong or old version of textures scan file. Can not continue!" + Environment.NewLine);
                     return false;
                 }
 

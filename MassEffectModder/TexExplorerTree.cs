@@ -57,14 +57,20 @@ namespace MassEffectModder
                     {
                         if (mainWindow != null)
                         {
-                            MessageBox.Show("Wrong " + filename + " file!");
+                            MessageBox.Show("Detected wrong or old version of textures scan file!" +
+                            "\n\nYou need to restore the game to vanilla state then reinstall optional DLC/PCC mods." +
+                            "\n\nThen from the main menu, select 'Remove Textures Scan File' and start Texture Manager again.");
                             mainWindow.updateStatusLabel("");
                             mainWindow.updateStatusLabel2("");
                             texEplorer.Close();
                         }
                         fs.Close();
-                        log += "Wrong " + filename + " file!" + Environment.NewLine;
-                        return "Wrong " + filename + " file!" + Environment.NewLine;
+                        log += "Detected wrong or old version of textures scan file!" + Environment.NewLine;
+                        log += "You need to restore the game to vanilla state then reinstall optional DLC/PCC mods." + Environment.NewLine;
+                        log += "Then from the main menu, select 'Remove Textures Scan File' and start Texture Manager again." + Environment.NewLine;
+                        return "Detected wrong or old version of textures scan file!" + Environment.NewLine +
+                            "You need to restore the game to vanilla state then reinstall optional DLC/PCC mods." + Environment.NewLine +
+                            "Then from the main menu, select 'Remove Textures Scan File' and start Texture Manager again." + Environment.NewLine;
                     }
 
                     uint countTexture = fs.ReadUInt32();
