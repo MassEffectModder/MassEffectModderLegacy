@@ -91,62 +91,51 @@ namespace MassEffectModder
                         }
                         textures.Add(texture);
                     }
-                    if (fs.Position < new FileInfo(filename).Length)
+
+                    List<string> packages = new List<string>();
+                    int numPackages = fs.ReadInt32();
+                    for (int i = 0; i < numPackages; i++)
                     {
-                        List<string> packages = new List<string>();
-                        int numPackages = fs.ReadInt32();
-                        for (int i = 0; i < numPackages; i++)
+                        string pkgPath = fs.ReadStringASCIINull();
+                        pkgPath = GameData.GamePath + pkgPath;
+                        packages.Add(pkgPath);
+                    }
+                    for (int i = 0; i < packages.Count; i++)
+                    {
+                        if (GameData.packageFiles.Find(s => s.Equals(packages[i], StringComparison.OrdinalIgnoreCase)) == null)
                         {
-                            string pkgPath = fs.ReadStringASCIINull();
-                            pkgPath = GameData.GamePath + pkgPath;
-                            packages.Add(pkgPath);
-                        }
-                        for (int i = 0; i < packages.Count; i++)
-                        {
-                            if (GameData.packageFiles.Find(s => s.Equals(packages[i], StringComparison.OrdinalIgnoreCase)) == null)
+                            if (mainWindow != null)
                             {
-                                if (mainWindow != null)
-                                {
-                                    MessageBox.Show("Detected removal of game files since last game data scan." +
-                                    "\n\nYou need to restore the game to vanilla state then reinstall optional DLC/PCC mods." +
-                                    "\n\nThen from the main menu, select 'Remove Textures Scan File' and start Texture Manager again.");
-                                    return "";
-                                }
-                                else if (!force)
-                                {
-                                    errors += "Detected removal of game files since last game data scan." + Environment.NewLine + Environment.NewLine +
-                                    "You need to restore the game to vanilla state then reinstall optional DLC/PCC mods.";
-                                    return "";
-                                }
+                                MessageBox.Show("Detected removal of game files since last game data scan." +
+                                "\n\nYou need to restore the game to vanilla state then reinstall optional DLC/PCC mods." +
+                                "\n\nThen from the main menu, select 'Remove Textures Scan File' and start Texture Manager again.");
+                                return "";
                             }
-                        }
-                        for (int i = 0; i < GameData.packageFiles.Count; i++)
-                        {
-                            if (packages.Find(s => s.Equals(GameData.packageFiles[i], StringComparison.OrdinalIgnoreCase)) == null)
+                            else if (!force)
                             {
-                                if (mainWindow != null)
-                                {
-                                    MessageBox.Show("Detected additional game files not present in latest game data scan." +
-                                    "\n\nYou need to restore the game to vanilla state then reinstall optional DLC/PCC mods." +
-                                    "\n\nThen from the main menu, select 'Remove Textures Scan File' and start Texture Manager again.");
-                                    return "";
-                                }
-                                else if (!force)
-                                {
-                                    errors += "Detected additional game files not present in latest game data scan." + Environment.NewLine + Environment.NewLine +
-                                    "You need to restore the game to vanilla state then reinstall optional DLC/PCC mods.";
-                                    return "";
-                                }
+                                errors += "Detected removal of game files since last game data scan." + Environment.NewLine + Environment.NewLine +
+                                "You need to restore the game to vanilla state then reinstall optional DLC/PCC mods.";
+                                return "";
                             }
                         }
                     }
-                    else
+                    for (int i = 0; i < GameData.packageFiles.Count; i++)
                     {
-                        fs.SeekEnd();
-                        fs.WriteInt32(GameData.packageFiles.Count);
-                        for (int i = 0; i < GameData.packageFiles.Count; i++)
+                        if (packages.Find(s => s.Equals(GameData.packageFiles[i], StringComparison.OrdinalIgnoreCase)) == null)
                         {
-                            fs.WriteStringASCIINull(GameData.RelativeGameData(GameData.packageFiles[i]));
+                            if (mainWindow != null)
+                            {
+                                MessageBox.Show("Detected additional game files not present in latest game data scan." +
+                                "\n\nYou need to restore the game to vanilla state then reinstall optional DLC/PCC mods." +
+                                "\n\nThen from the main menu, select 'Remove Textures Scan File' and start Texture Manager again.");
+                                return "";
+                            }
+                            else if (!force)
+                            {
+                                errors += "Detected additional game files not present in latest game data scan." + Environment.NewLine + Environment.NewLine +
+                                "You need to restore the game to vanilla state then reinstall optional DLC/PCC mods.";
+                                return "";
+                            }
                         }
                     }
                     treeScan = textures;
