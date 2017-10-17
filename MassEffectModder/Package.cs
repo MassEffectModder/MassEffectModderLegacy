@@ -1297,7 +1297,7 @@ namespace MassEffectModder
             }
             packageFile.Close();
             packageFile.Dispose();
-            if (!memoryMode && Directory.Exists(packagePath + "-exports"))
+            if (!memoryMode && modified && Directory.Exists(packagePath + "-exports"))
                 Directory.Delete(packagePath + "-exports", true);
         }
     }
