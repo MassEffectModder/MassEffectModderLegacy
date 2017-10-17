@@ -23,7 +23,6 @@ using StreamHelpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 
@@ -77,16 +76,18 @@ namespace MassEffectModder
                     for (int i = 0; i < countTexture; i++)
                     {
                         FoundTexture texture = new FoundTexture();
-                        texture.name = fs.ReadStringASCIINull();
+                        int len = fs.ReadInt32();
+                        texture.name = fs.ReadStringASCII(len);
                         texture.crc = fs.ReadUInt32();
-                        texture.packageName = fs.ReadStringASCIINull();
                         uint countPackages = fs.ReadUInt32();
                         texture.list = new List<MatchedTexture>();
                         for (int k = 0; k < countPackages; k++)
                         {
                             MatchedTexture matched = new MatchedTexture();
                             matched.exportID = fs.ReadInt32();
-                            matched.path = fs.ReadStringASCIINull();
+                            matched.linkToMaster = fs.ReadInt32();
+                            len = fs.ReadInt32();
+                            matched.path = fs.ReadStringASCII(len);
                             texture.list.Add(matched);
                         }
                         textures.Add(texture);
@@ -96,7 +97,8 @@ namespace MassEffectModder
                     int numPackages = fs.ReadInt32();
                     for (int i = 0; i < numPackages; i++)
                     {
-                        string pkgPath = fs.ReadStringASCIINull();
+                        int len = fs.ReadInt32();
+                        string pkgPath = fs.ReadStringASCII(len);
                         pkgPath = GameData.GamePath + pkgPath;
                         packages.Add(pkgPath);
                     }
@@ -138,6 +140,7 @@ namespace MassEffectModder
                             }
                         }
                     }
+
                     treeScan = textures;
                     if (mainWindow != null)
                     {
@@ -205,6 +208,41 @@ namespace MassEffectModder
                 errors += FindTextures(textures, GameData.packageFiles[i], cachePackageMgr, ref log);
             }
 
+            if (GameData.gameType == MeType.ME1_TYPE)
+            {
+                for (int k = 0; k < textures.Count; k++)
+                {
+                    for (int t = 0; t < textures[k].list.Count; t++)
+                    {
+                        if (textures[k].list[t].slave)
+                        {
+                            string pkgName = textures[k].list[t].packageName;
+                            uint mipmapOffset = textures[k].list[t].mipmapOffset;
+                            MatchedTexture slaveTexture = textures[k].list[t];
+                            bool found = false;
+                            if (pkgName == Path.GetFileNameWithoutExtension(textures[k].list[t].path).ToUpperInvariant())
+                                throw new Exception();
+                            for (int j = 0; j < textures[k].list.Count; j++)
+                            {
+                                if (!textures[k].list[j].slave)
+                                {
+                                    if (textures[k].list[j].mipmapOffset == mipmapOffset &&
+                                        textures[k].list[j].packageName == pkgName)
+                                    {
+                                        slaveTexture.linkToMaster = j;
+                                        textures[k].list[t] = slaveTexture;
+                                        found = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (!found)
+                                throw new Exception();
+                        }
+                    }
+                }
+            }
+
             using (FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
             {
                 fs.WriteUInt32(TexExplorer.textureMapBinTag);
@@ -212,20 +250,24 @@ namespace MassEffectModder
                 fs.WriteInt32(textures.Count);
                 for (int i = 0; i < textures.Count; i++)
                 {
-                    fs.WriteStringASCIINull(textures[i].name);
+                    fs.WriteInt32(textures[i].name.Length);
+                    fs.WriteStringASCII(textures[i].name);
                     fs.WriteUInt32(textures[i].crc);
-                    fs.WriteStringASCIINull(textures[i].packageName);
                     fs.WriteInt32(textures[i].list.Count);
                     for (int k = 0; k < textures[i].list.Count; k++)
                     {
                         fs.WriteInt32(textures[i].list[k].exportID);
-                        fs.WriteStringASCIINull(textures[i].list[k].path);
+                        fs.WriteInt32(textures[i].list[k].linkToMaster);
+                        fs.WriteInt32(textures[i].list[k].path.Length);
+                        fs.WriteStringASCII(textures[i].list[k].path);
                     }
                 }
                 fs.WriteInt32(GameData.packageFiles.Count);
                 for (int i = 0; i < GameData.packageFiles.Count; i++)
                 {
-                    fs.WriteStringASCIINull(GameData.RelativeGameData(GameData.packageFiles[i]));
+                    string s = GameData.RelativeGameData(GameData.packageFiles[i]);
+                    fs.WriteInt32(s.Length);
+                    fs.WriteStringASCII(s);
                 }
             }
 
@@ -289,14 +331,15 @@ namespace MassEffectModder
                     Texture.MipMap mipmap = texture.getTopMipmap();
                     string name = package.exportsTable[i].objectName;
                     MatchedTexture matchTexture = new MatchedTexture();
-                    bool slave = false;
                     matchTexture.exportID = i;
                     matchTexture.path = GameData.RelativeGameData(packagePath);
-                    if (GameData.gameType != MeType.ME1_TYPE)
-                        slave = true;
+                    matchTexture.packageName = texture.packageName;
+                    matchTexture.slave = texture.slave;
+                    matchTexture.linkToMaster = -1;
+                    if (matchTexture.slave)
+                        matchTexture.mipmapOffset = mipmap.dataOffset;
                     else
-                        if (texture.packageName.ToLowerInvariant() != Path.GetFileNameWithoutExtension(package.packageFile.Name).ToLowerInvariant())
-                            slave = true;
+                        matchTexture.mipmapOffset = package.exportsTable[i].dataOffset + (uint)texture.properties.propertyEndOffset + mipmap.internalOffset;
 
                     uint crc = texture.getCrcTopMipmap();
                     if (crc == 0)
@@ -309,7 +352,7 @@ namespace MassEffectModder
                     FoundTexture foundTexName = textures.Find(s => s.crc == crc);
                     if (foundTexName.crc != 0)
                     {
-                        if (slave)
+                        if (matchTexture.slave || GameData.gameType != MeType.ME1_TYPE)
                             foundTexName.list.Add(matchTexture);
                         else
                             foundTexName.list.Insert(0, matchTexture);
@@ -321,11 +364,11 @@ namespace MassEffectModder
                         foundTex.list.Add(matchTexture);
                         foundTex.name = name;
                         foundTex.crc = crc;
-                        foundTex.packageName = texture.packageName;
                         textures.Add(foundTex);
                     }
                 }
             }
+
             if (cachePackageMgr == null)
             {
                 package.Dispose();
@@ -350,7 +393,7 @@ namespace MassEffectModder
                 bool found = false;
                 for (int i = 0; i < nodeList.Count; i++)
                 {
-                    if (nodeList[i].Name.ToLowerInvariant() == _textures[l].packageName.ToLowerInvariant())
+                    if (nodeList[i].Name.ToLowerInvariant() == Path.GetFileNameWithoutExtension(_textures[l].list[0].path).ToLowerInvariant())
                     {
                         nodeList[i].textures.Add(_textures[l]);
                         found = true;
@@ -358,7 +401,7 @@ namespace MassEffectModder
                 }
                 if (!found)
                 {
-                    PackageTreeNode treeNode = new PackageTreeNode(_textures[l].packageName);
+                    PackageTreeNode treeNode = new PackageTreeNode(Path.GetFileNameWithoutExtension(_textures[l].list[0].path).ToUpperInvariant());
                     treeNode.textures.Add(_textures[l]);
                     rootNode.Nodes.Add(treeNode);
                     nodeList.Add(treeNode);

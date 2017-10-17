@@ -55,16 +55,18 @@ namespace MassEffectModder
                 for (int i = 0; i < countTexture; i++)
                 {
                     FoundTexture texture = new FoundTexture();
-                    texture.name = fs.ReadStringASCIINull();
+                    int len = fs.ReadInt32();
+                    texture.name = fs.ReadStringASCII(len);
                     texture.crc = fs.ReadUInt32();
-                    texture.packageName = fs.ReadStringASCIINull();
                     uint countPackages = fs.ReadUInt32();
                     texture.list = new List<MatchedTexture>();
                     for (int k = 0; k < countPackages; k++)
                     {
                         MatchedTexture matched = new MatchedTexture();
                         matched.exportID = fs.ReadInt32();
-                        matched.path = fs.ReadStringASCIINull();
+                        matched.linkToMaster = fs.ReadInt32();
+                        len = fs.ReadInt32();
+                        matched.path = fs.ReadStringASCII(len);
                         texture.list.Add(matched);
                     }
                     textures.Add(texture);

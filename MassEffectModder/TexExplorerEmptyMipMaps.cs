@@ -95,45 +95,44 @@ namespace MassEffectModder
                             texture.properties.setIntValue("SizeY", texture.mipMapsList.First().height);
                             texture.properties.setIntValue("MipTailBaseIdx", texture.mipMapsList.Count() - 1);
 
-                            if (texture.packageName.ToLowerInvariant() != Path.GetFileNameWithoutExtension(package.packageFile.Name).ToLowerInvariant())
+                            if (texture.slave)
                             {
                                 if (phase == 1)
                                     continue;
-                                FoundTexture foundTexName = new FoundTexture();
-                                string pkgName = Path.GetFileNameWithoutExtension(GameData.packageFiles[i]).ToLowerInvariant();
+                                FoundTexture foundTexture = new FoundTexture();
+                                int foundListEntry = -1;
+                                string pkgName = GameData.RelativeGameData(package.packagePath).ToLowerInvariant();
                                 for (int k = 0; k < textures.Count; k++)
                                 {
                                     for (int t = 0; t < textures[k].list.Count; t++)
                                     {
                                         if (textures[k].list[t].exportID == l &&
-                                            Path.GetFileNameWithoutExtension(textures[k].list[t].path).ToLowerInvariant() == pkgName)
+                                            textures[k].list[t].path.ToLowerInvariant() == pkgName)
                                         {
-                                            foundTexName = textures[k];
+                                            foundTexture = textures[k];
+                                            foundListEntry = t;
                                             break;
                                         }
                                     }
                                 }
-                                if (foundTexName.crc == 0)
+                                if (foundListEntry == -1)
                                 {
                                     errors += "Error: Texture " + package.exportsTable[l].objectName + " not found in package: " + GameData.packageFiles[i] + ", skipping..." + Environment.NewLine;
                                     goto skip;
                                 }
 
-                                pkgName = texture.packageName.ToLowerInvariant();
-                                MatchedTexture foundTex = foundTexName.list.Find(s => Path.GetFileNameWithoutExtension(s.path).ToLowerInvariant() == pkgName);
-                                if (foundTex.path == null)
-                                    throw new Exception();
-                                Package refPkg = null;
+                                MatchedTexture foundMasterTex = foundTexture.list[foundTexture.list[foundListEntry].linkToMaster];
+                                Package masterPkg = null;
                                 if (cachePackageMgr != null)
-                                    refPkg = cachePackageMgr.OpenPackage(GameData.GamePath + foundTex.path);
+                                    masterPkg = cachePackageMgr.OpenPackage(GameData.GamePath + foundMasterTex.path);
                                 else
-                                    refPkg = new Package(GameData.GamePath + foundTex.path);
-                                int refExportId = foundTex.exportID;
-                                byte[] refData = refPkg.getExportData(refExportId);
-                                refPkg.DisposeCache();
-                                using (Texture refTexture = new Texture(refPkg, refExportId, refData, false))
+                                    masterPkg = new Package(GameData.GamePath + foundMasterTex.path);
+                                int masterExportId = foundMasterTex.exportID;
+                                byte[] masterData = masterPkg.getExportData(masterExportId);
+                                masterPkg.DisposeCache();
+                                using (Texture masterTexture = new Texture(masterPkg, masterExportId, masterData, false))
                                 {
-                                    if (texture.mipMapsList.Count != refTexture.mipMapsList.Count)
+                                    if (texture.mipMapsList.Count != masterTexture.mipMapsList.Count)
                                     {
                                         errors += "Error: Texture " + package.exportsTable[l].objectName + " in package: " + GameData.packageFiles[i] + " has wrong reference, skipping..." + Environment.NewLine;
                                         goto skip;
@@ -145,11 +144,13 @@ namespace MassEffectModder
                                             mipmap.storageType == Texture.StorageTypes.extZlib ||
                                             mipmap.storageType == Texture.StorageTypes.extUnc)
                                         {
-                                            mipmap.dataOffset = refPkg.exportsTable[refExportId].dataOffset + (uint)refTexture.properties.propertyEndOffset + refTexture.mipMapsList[t].internalOffset;
+                                            mipmap.dataOffset = masterPkg.exportsTable[masterExportId].dataOffset + (uint)masterTexture.properties.propertyEndOffset + masterTexture.mipMapsList[t].internalOffset;
                                             texture.mipMapsList[t] = mipmap;
                                         }
                                     }
                                 }
+                                if (cachePackageMgr == null)
+                                    masterPkg.Dispose();
                             }
 skip:
                             using (MemoryStream newData = new MemoryStream())

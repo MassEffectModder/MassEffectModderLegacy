@@ -46,22 +46,25 @@ namespace MassEffectModder
 
     public struct MatchedTexture
     {
-        public string path;
         public int exportID;
+        public string packageName; // only used while texture scan for ME1
+        public string path;
+        public bool slave;
+        public int linkToMaster;
+        public uint mipmapOffset;
     }
 
     public struct FoundTexture
     {
         public string name;
         public uint crc;
-        public string packageName;
         public List<MatchedTexture> list;
     }
 
     public partial class TexExplorer : Form
     {
         public const uint textureMapBinTag = 0x5054454D;
-        public const uint textureMapBinVersion = 1;
+        public const uint textureMapBinVersion = 2;
         public const uint TextureModTag = 0x444F4D54;
         public const uint FileTextureTag = 0x53444446;
         public const uint FileBinTag = 0x4E494246;
@@ -316,7 +319,6 @@ namespace MassEffectModder
                     string text = "";
                     text += "Texture original CRC:  " + string.Format("0x{0:X8}", node.textures[index].crc) + "\n";
                     text += "Node name:     " + node.textures[index].name + "\n";
-                    text += "Package name:  " + node.textures[index].packageName + "\n";
                     for (int index2 = 0; index2 < (detailedInfo ? node.textures[index].list.Count : 1); index2++)
                     {
                         MatchedTexture nodeTexture = node.textures[index].list[index2];
@@ -324,8 +326,9 @@ namespace MassEffectModder
                         Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
                         text += "\nTexture instance: " + (index2 + 1) + "\n";
                         text += "  Texture name:  " + package.exportsTable[nodeTexture.exportID].objectName + "\n";
-                        text += "  Export Id:     " + node.textures[index].list[index2].exportID + "\n";
-                        text += "  Package path:  " + node.textures[index].list[index2].path + "\n";
+                        text += "  Export Id:     " + nodeTexture.exportID + "\n";
+                        text += "  Package name:  " + texture.packageName + "\n";
+                        text += "  Package path:  " + nodeTexture.path + "\n";
                         text += "  Texture properties:\n";
                         for (int l = 0; l < texture.properties.texPropertyList.Count; l++)
                         {
@@ -377,7 +380,7 @@ namespace MassEffectModder
                 }
                 if (found)
                 {
-                    ListViewItem item = new ListViewItem(foundTexture.name + " (" + foundTexture.packageName + ")");
+                    ListViewItem item = new ListViewItem(foundTexture.name + " (" + Path.GetFileNameWithoutExtension(foundTexture.list[0].path).ToUpperInvariant() + ")");
                     item.Name = l.ToString();
                     listViewResults.Items.Add(item);
                 }

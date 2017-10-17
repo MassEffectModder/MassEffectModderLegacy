@@ -72,7 +72,7 @@ namespace MassEffectModder
 
         public string replaceTexture(Image image, List<MatchedTexture> list, CachePackageMgr cachePackageMgr, string textureName, uint crc)
         {
-            List<Texture> masterTextures = new List<Texture>();
+            var masterTextures = new Dictionary<Texture, int>();
             Texture arcTexture = null, cprTexture = null;
             string errors = "";
 
@@ -87,19 +87,6 @@ namespace MassEffectModder
                 while (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty))
                 {
                     texture.mipMapsList.Remove(texture.mipMapsList.First(s => s.storageType == Texture.StorageTypes.empty));
-                }
-                bool master = true;
-                if (GameData.gameType == MeType.ME1_TYPE)
-                {
-                    if (texture.packageName.ToLowerInvariant() != Path.GetFileNameWithoutExtension(package.packageFile.Name).ToLowerInvariant())
-                    {
-                        master = false;
-                        if (!masterTextures.Exists(s => s.packageName.ToLowerInvariant() == texture.packageName.ToLowerInvariant()))
-                        {
-                            errors += "Error in texture: " + textureName + ". Broken game file: " + nodeTexture.path + ", skipping texture..." + Environment.NewLine;
-                            continue;
-                        }
-                    }
                 }
 
                 if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
@@ -251,20 +238,20 @@ namespace MassEffectModder
                         mipmap.storageType = texture.getTopMipmap().storageType;
                         if (texture.mipMapsList.Count() > 1)
                         {
-                            if (GameData.gameType == MeType.ME1_TYPE && master == false)
+                            if (GameData.gameType == MeType.ME1_TYPE && nodeTexture.linkToMaster == -1)
+                            {
+                                if (mipmap.storageType == Texture.StorageTypes.pccUnc)
+                                {
+                                    mipmap.storageType = Texture.StorageTypes.pccLZO;
+                                }
+                            }
+                            else if (GameData.gameType == MeType.ME1_TYPE && nodeTexture.linkToMaster != -1)
                             {
                                 if (mipmap.storageType == Texture.StorageTypes.pccUnc ||
                                     mipmap.storageType == Texture.StorageTypes.pccLZO ||
                                     mipmap.storageType == Texture.StorageTypes.pccZlib)
                                 {
                                     mipmap.storageType = Texture.StorageTypes.extLZO;
-                                }
-                            }
-                            else if (GameData.gameType == MeType.ME1_TYPE && master == true && n > 0)
-                            {
-                                if (mipmap.storageType == Texture.StorageTypes.pccUnc)
-                                {
-                                    mipmap.storageType = Texture.StorageTypes.pccLZO;
                                 }
                             }
                             else if (GameData.gameType == MeType.ME2_TYPE || GameData.gameType == MeType.ME3_TYPE)
@@ -305,10 +292,10 @@ namespace MassEffectModder
                         if (mipmap.storageType == Texture.StorageTypes.pccLZO ||
                             mipmap.storageType == Texture.StorageTypes.pccZlib)
                         {
-                            if (master)
+                            if (nodeTexture.linkToMaster == -1)
                                 mipmap.newData = texture.compressTexture(image.mipMaps[m].data, mipmap.storageType);
                             else
-                                mipmap.newData = masterTextures.Find(s => s.packageName.ToLowerInvariant() == texture.packageName.ToLowerInvariant()).mipMapsList[m].newData;
+                                mipmap.newData = masterTextures.First(s => s.Value == nodeTexture.linkToMaster).Key.mipMapsList[m].newData;
                             mipmap.compressedSize = mipmap.newData.Length;
                         }
                         if (mipmap.storageType == Texture.StorageTypes.pccUnc)
@@ -317,10 +304,10 @@ namespace MassEffectModder
                             mipmap.newData = image.mipMaps[m].data;
                         }
                         if ((mipmap.storageType == Texture.StorageTypes.extLZO ||
-                            mipmap.storageType == Texture.StorageTypes.extZlib) && master == false)
+                            mipmap.storageType == Texture.StorageTypes.extZlib) && nodeTexture.linkToMaster != -1)
                         {
-                            mipmap.compressedSize = masterTextures.Find(s => s.packageName.ToLowerInvariant() == texture.packageName.ToLowerInvariant()).mipMapsList[m].compressedSize;
-                            mipmap.dataOffset = masterTextures.Find(s => s.packageName.ToLowerInvariant() == texture.packageName.ToLowerInvariant()).mipMapsList[m].dataOffset;
+                            mipmap.compressedSize = masterTextures.First(s => s.Value == nodeTexture.linkToMaster).Key.mipMapsList[m].compressedSize;
+                            mipmap.dataOffset = masterTextures.First(s => s.Value == nodeTexture.linkToMaster).Key.mipMapsList[m].dataOffset;
                         }
                     }
                     else
@@ -432,8 +419,8 @@ namespace MassEffectModder
 
                 if (GameData.gameType == MeType.ME1_TYPE)
                 {
-                    if (master)
-                        masterTextures.Add(texture);
+                    if (nodeTexture.linkToMaster == -1)
+                        masterTextures.Add(texture, n);
                 }
                 else
                 {

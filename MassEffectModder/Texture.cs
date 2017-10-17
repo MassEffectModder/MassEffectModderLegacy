@@ -74,6 +74,7 @@ namespace MassEffectModder
         public string packageName;
         byte[] restOfData;
         string packagePath;
+        public bool slave;
 
         public Texture(Package package, int exportId, byte[] data, bool fixDim = true)
         {
@@ -134,19 +135,14 @@ namespace MassEffectModder
             packageName = Path.GetFileNameWithoutExtension(package.packageFile.Name).ToUpper();
             if (GameData.gameType == MeType.ME1_TYPE)
             {
-                string basePkg = package.resolvePackagePath(package.exportsTable[exportId].linkId).Split('.')[0].ToUpper();
-                if (basePkg != "")
+                if (mipMapsList.Exists(s => s.storageType == StorageTypes.extLZO) ||
+                    mipMapsList.Exists(s => s.storageType == StorageTypes.extZlib) ||
+                    mipMapsList.Exists(s => s.storageType == StorageTypes.extUnc))
                 {
-                    basePkg = GameData.packageFiles.Find(s => Path.GetFileNameWithoutExtension(s).Equals(basePkg, StringComparison.OrdinalIgnoreCase));
-                    if (basePkg != null)
-                    {
-                        if (mipMapsList.Exists(s => s.storageType == StorageTypes.extLZO) ||
-                            mipMapsList.Exists(s => s.storageType == StorageTypes.extZlib) ||
-                            mipMapsList.Exists(s => s.storageType == StorageTypes.extUnc))
-                        {
-                            packageName = Path.GetFileNameWithoutExtension(basePkg).ToUpper();
-                        }
-                    }
+                    packageName = package.resolvePackagePath(package.exportsTable[exportId].linkId).Split('.')[0].ToUpper();
+                    if (packageName == "")
+                        throw new Exception("");
+                    slave = true;
                 }
             }
         }
