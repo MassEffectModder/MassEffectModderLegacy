@@ -67,6 +67,8 @@ namespace MassEffectModder
             this.applyModToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteModToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extractModsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.applyModsWithVerificationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.listViewResults = new System.Windows.Forms.ListView();
             this.columnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.treeViewPackages = new System.Windows.Forms.TreeView();
@@ -222,30 +224,44 @@ namespace MassEffectModder
             this.contextMenuStripMods.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.applyModToolStripMenuItem,
             this.deleteModToolStripMenuItem,
-            this.extractModsToolStripMenuItem});
+            this.extractModsToolStripMenuItem,
+            this.toolStripSeparator2,
+            this.applyModsWithVerificationToolStripMenuItem});
             this.contextMenuStripMods.Name = "contextMenuStripTextures";
-            this.contextMenuStripMods.Size = new System.Drawing.Size(143, 70);
+            this.contextMenuStripMods.Size = new System.Drawing.Size(161, 98);
             // 
             // applyModToolStripMenuItem
             // 
             this.applyModToolStripMenuItem.Name = "applyModToolStripMenuItem";
-            this.applyModToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+            this.applyModToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.applyModToolStripMenuItem.Text = "Apply Mods";
             this.applyModToolStripMenuItem.Click += new System.EventHandler(this.applyModToolStripMenuItem_Click);
             // 
             // deleteModToolStripMenuItem
             // 
             this.deleteModToolStripMenuItem.Name = "deleteModToolStripMenuItem";
-            this.deleteModToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+            this.deleteModToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.deleteModToolStripMenuItem.Text = "Clear Mods";
             this.deleteModToolStripMenuItem.Click += new System.EventHandler(this.deleteModToolStripMenuItem_Click);
             // 
             // extractModsToolStripMenuItem
             // 
             this.extractModsToolStripMenuItem.Name = "extractModsToolStripMenuItem";
-            this.extractModsToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+            this.extractModsToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.extractModsToolStripMenuItem.Text = "Extract Mods";
             this.extractModsToolStripMenuItem.Click += new System.EventHandler(this.extractModsToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(157, 6);
+            // 
+            // applyModsWithVerificationToolStripMenuItem
+            // 
+            this.applyModsWithVerificationToolStripMenuItem.Name = "applyModsWithVerificationToolStripMenuItem";
+            this.applyModsWithVerificationToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.applyModsWithVerificationToolStripMenuItem.Text = "Apply and Verify";
+            this.applyModsWithVerificationToolStripMenuItem.Click += new System.EventHandler(this.applyModsWithVerificationToolStripMenuItem_Click);
             // 
             // listViewResults
             // 
@@ -520,5 +536,7 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripMenuItem removeEmptyMipmapsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem batchConvertME3ExplorermodForMEMToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem applyModsWithVerificationToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
     }
 }

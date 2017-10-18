@@ -1466,7 +1466,7 @@ namespace MassEffectModder
                                 if (special)
                                     errors = replaceTextureSpecialME3Mod(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc, tfcName, guid);
                                 else
-                                    errors = new MipMaps().replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc);
+                                    errors = new MipMaps().replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc, false);
                                 if (errors != "")
                                     Console.WriteLine(errors);
                             }

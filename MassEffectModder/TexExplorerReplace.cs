@@ -70,7 +70,7 @@ namespace MassEffectModder
             }
         };
 
-        public string replaceTexture(Image image, List<MatchedTexture> list, CachePackageMgr cachePackageMgr, string textureName, uint crc)
+        public string replaceTexture(Image image, List<MatchedTexture> list, CachePackageMgr cachePackageMgr, string textureName, uint crc, bool verify)
         {
             var masterTextures = new Dictionary<Texture, int>();
             Texture arcTexture = null, cprTexture = null;
@@ -225,9 +225,13 @@ namespace MassEffectModder
                     }
                 }
 
+                if (verify)
+                    nodeTexture.crcs = new List<uint>();
                 List<Texture.MipMap> mipmaps = new List<Texture.MipMap>();
                 for (int m = 0; m < image.mipMaps.Count(); m++)
                 {
+                    if (verify)
+                        nodeTexture.crcs.Add(texture.getCrcData(image.mipMaps[m].data));
                     Texture.MipMap mipmap = new Texture.MipMap();
                     mipmap.width = image.mipMaps[m].origWidth;
                     mipmap.height = image.mipMaps[m].origHeight;
@@ -397,6 +401,10 @@ namespace MassEffectModder
                     if (texture.mipMapsList.Count() == 1)
                         break;
                 }
+
+                if (verify)
+                    list[n] = nodeTexture;
+
                 texture.replaceMipMaps(mipmaps);
                 texture.properties.setIntValue("SizeX", texture.mipMapsList.First().width);
                 texture.properties.setIntValue("SizeY", texture.mipMapsList.First().height);
@@ -464,16 +472,39 @@ namespace MassEffectModder
                 ListViewItem item = listViewTextures.FocusedItem;
                 int index = Convert.ToInt32(item.Name);
 
+                string errors = "";
                 MipMaps mipMaps = new MipMaps();
-                richTextBoxInfo.Text = mipMaps.replaceTexture(image, node.textures[index].list, cachePackageMgr,  node.textures[index].name, node.textures[index].crc);
-                if (richTextBoxInfo.Text != "")
+                errors = mipMaps.replaceTexture(image, node.textures[index].list, cachePackageMgr,  node.textures[index].name, node.textures[index].crc, true);
+
+                cachePackageMgr.CloseAllWithSave();
+
+                for (int t = 0; t < node.textures[index].list.Count; t++)
                 {
+                    MatchedTexture matchedTexture = node.textures[index].list[t];
+                    _mainWindow.updateStatusLabel("Verify: " + node.textures[index].name + " in " + matchedTexture.path);
+                    Package pkg = new Package(GameData.GamePath + matchedTexture.path);
+                    Texture texture = new Texture(pkg, matchedTexture.exportID, pkg.getExportData(matchedTexture.exportID));
+                    for (int m = 0; m < matchedTexture.crcs.Count(); m++)
+                    {
+                        if (matchedTexture.crcs[m] != texture.getCrcData(texture.getMipMapDataByIndex(m)))
+                        {
+                            errors += "CRC does not match: Texture: " + node.textures[index].name + ", instance: " + t + ", mipmap: " +
+                                m + Environment.NewLine;
+                        }
+                    }
+                    matchedTexture.crcs = null;
+                    node.textures[index].list[t] = matchedTexture;
+                }
+                _mainWindow.updateStatusLabel("");
+                _mainWindow.updateStatusLabel2("Texture replacing finished.");
+
+                if (errors != "")
+                {
+                    richTextBoxInfo.Text = errors;
                     richTextBoxInfo.Show();
                     pictureBoxPreview.Hide();
                     MessageBox.Show("WARNING: Some errors have occured!");
                 }
-
-                cachePackageMgr.CloseAllWithSave();
 
                 EnableMenuOptions(true);
                 loadMODsToolStripMenuItem.Enabled = loadMod;

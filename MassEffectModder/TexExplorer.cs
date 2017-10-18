@@ -52,6 +52,7 @@ namespace MassEffectModder
         public bool slave;
         public int linkToMaster;
         public uint mipmapOffset;
+        public List<uint> crcs;
     }
 
     public struct FoundTexture
@@ -595,12 +596,23 @@ namespace MassEffectModder
 
         private void applyModToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            applyModToolStripMenuItem_Click(false);
+        }
+
+        private void applyModsWithVerificationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            applyModToolStripMenuItem_Click(true);
+        }
+
+        private void applyModToolStripMenuItem_Click(bool verify)
+        {
             if (listViewMods.SelectedItems.Count == 0)
                 return;
 
             EnableMenuOptions(false);
             richTextBoxInfo.Text = "";
             string log = "";
+            string errors = "";
 
             long diskFreeSpace = Misc.getDiskFreeSpace(GameData.GamePath);
             long diskUsage = 0;
@@ -611,15 +623,46 @@ namespace MassEffectModder
             diskUsage = (long)(diskUsage * 2.5);
             if (diskUsage < diskFreeSpace)
             {
-                string errors = "";
                 Misc.startTimer();
                 foreach (ListViewItem item in listViewMods.SelectedItems)
                 {
-                    errors += mipMaps.replaceTextureMod(item.Name, _textures, cachePackageMgr, this, ref log);
+                    errors += mipMaps.replaceTextureMod(item.Name, _textures, cachePackageMgr, this, verify, ref log);
                     _mainWindow.updateStatusLabel("MOD: " + item.Text + " applying...");
                     listViewMods.Items.Remove(item);
                 }
+                _mainWindow.updateStatusLabel("");
                 cachePackageMgr.CloseAllWithSave();
+
+                if (verify)
+                {
+                    errors = "";
+                    _mainWindow.updateStatusLabel2("Verification...");
+                    for (int k = 0; k < _textures.Count; k++)
+                    {
+                        FoundTexture foundTexture = _textures[k];
+                        for (int t = 0; t < foundTexture.list.Count; t++)
+                        {
+                            MatchedTexture matchedTexture = foundTexture.list[t];
+                            if (matchedTexture.crcs != null)
+                            {
+                                _mainWindow.updateStatusLabel("Texture: " + foundTexture.name + " in " + matchedTexture.path);
+                                Package pkg = new Package(GameData.GamePath + matchedTexture.path);
+                                Texture texture = new Texture(pkg, matchedTexture.exportID, pkg.getExportData(matchedTexture.exportID));
+                                for (int m = 0; m < matchedTexture.crcs.Count(); m++)
+                                {
+                                    if (matchedTexture.crcs[m] != texture.getCrcData(texture.getMipMapDataByIndex(m)))
+                                    {
+                                        errors += "CRC does not match: Texture: " + foundTexture.name + ", instance: " + t + ", mipmap: " +
+                                            m + Environment.NewLine;
+                                    }
+                                }
+                                matchedTexture.crcs = null;
+                                foundTexture.list[t] = matchedTexture;
+                            }
+                        }
+                    }
+                }
+
                 var time = Misc.stopTimer();
                 if (listViewMods.Items.Count == 0)
                     clearMODsView();
@@ -637,6 +680,7 @@ namespace MassEffectModder
             {
                 MessageBox.Show("You have not enough disk space remaining. You need about " + Misc.getBytesFormat(diskUsage) + " free.");
             }
+
             EnableMenuOptions(true);
         }
 

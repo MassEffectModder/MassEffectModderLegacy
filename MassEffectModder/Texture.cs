@@ -318,7 +318,7 @@ namespace MassEffectModder
             return data;
         }
 
-        private uint getCrcData(byte[] data)
+        public uint getCrcData(byte[] data)
         {
             if (data == null)
                 return 0;
