@@ -67,7 +67,7 @@ namespace Md5SumGen
                 fs.WriteUInt32(md5Tag);
                 byte[] tmp = stream.ToArray();
                 fs.WriteInt32(tmp.Length);
-                fs.WriteFromBuffer(Zlib.Compress(tmp));
+                fs.WriteFromBuffer(Zlib.Compress(tmp, 9));
             }
         }
     }
