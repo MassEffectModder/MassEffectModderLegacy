@@ -48,8 +48,10 @@ namespace MassEffectModder
     {
         public int exportID;
         public string packageName; // only used while texture scan for ME1
-        public string path;
+        public string basePackageName; // only used while texture scan for ME1
+        public bool weakSlave;
         public bool slave;
+        public string path;
         public int linkToMaster;
         public uint mipmapOffset;
         public List<uint> crcs;
@@ -328,7 +330,13 @@ namespace MassEffectModder
                         text += "\nTexture instance: " + (index2 + 1) + "\n";
                         text += "  Texture name:  " + package.exportsTable[nodeTexture.exportID].objectName + "\n";
                         text += "  Export Id:     " + nodeTexture.exportID + "\n";
-                        text += "  Package name:  " + texture.packageName + "\n";
+                        if (GameData.gameType == MeType.ME1_TYPE)
+                        {
+                            if (nodeTexture.linkToMaster == -1)
+                                text += "  Package name:  " + texture.packageName + "\n";
+                            else
+                                text += "  Package name:  " + texture.basePackageName + "\n";
+                        }
                         text += "  Package path:  " + nodeTexture.path + "\n";
                         text += "  Texture properties:\n";
                         for (int l = 0; l < texture.properties.texPropertyList.Count; l++)

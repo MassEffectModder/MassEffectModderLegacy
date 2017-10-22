@@ -95,31 +95,32 @@ namespace MassEffectModder
                             texture.properties.setIntValue("SizeY", texture.mipMapsList.First().height);
                             texture.properties.setIntValue("MipTailBaseIdx", texture.mipMapsList.Count() - 1);
 
-                            if (texture.slave)
+                            FoundTexture foundTexture = new FoundTexture();
+                            int foundListEntry = -1;
+                            string pkgName = GameData.RelativeGameData(package.packagePath).ToLowerInvariant();
+                            for (int k = 0; k < textures.Count; k++)
+                            {
+                                for (int t = 0; t < textures[k].list.Count; t++)
+                                {
+                                    if (textures[k].list[t].exportID == l &&
+                                        textures[k].list[t].path.ToLowerInvariant() == pkgName)
+                                    {
+                                        foundTexture = textures[k];
+                                        foundListEntry = t;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (foundListEntry == -1)
+                            {
+                                errors += "Error: Texture " + package.exportsTable[l].objectName + " not found in package: " + GameData.packageFiles[i] + ", skipping..." + Environment.NewLine;
+                                goto skip;
+                            }
+
+                            if (foundTexture.list[foundListEntry].linkToMaster != -1)
                             {
                                 if (phase == 1)
                                     continue;
-                                FoundTexture foundTexture = new FoundTexture();
-                                int foundListEntry = -1;
-                                string pkgName = GameData.RelativeGameData(package.packagePath).ToLowerInvariant();
-                                for (int k = 0; k < textures.Count; k++)
-                                {
-                                    for (int t = 0; t < textures[k].list.Count; t++)
-                                    {
-                                        if (textures[k].list[t].exportID == l &&
-                                            textures[k].list[t].path.ToLowerInvariant() == pkgName)
-                                        {
-                                            foundTexture = textures[k];
-                                            foundListEntry = t;
-                                            break;
-                                        }
-                                    }
-                                }
-                                if (foundListEntry == -1)
-                                {
-                                    errors += "Error: Texture " + package.exportsTable[l].objectName + " not found in package: " + GameData.packageFiles[i] + ", skipping..." + Environment.NewLine;
-                                    goto skip;
-                                }
 
                                 MatchedTexture foundMasterTex = foundTexture.list[foundTexture.list[foundListEntry].linkToMaster];
                                 Package masterPkg = null;

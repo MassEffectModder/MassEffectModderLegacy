@@ -72,9 +72,11 @@ namespace MassEffectModder
         public TexProperty properties;
         byte[] mipMapData = null;
         public string packageName;
+        public string basePackageName;
         byte[] restOfData;
         string packagePath;
         public bool slave;
+        public bool weakSlave;
 
         public Texture(Package package, int exportId, byte[] data, bool fixDim = true)
         {
@@ -132,17 +134,29 @@ namespace MassEffectModder
             restOfData = textureData.ReadToBuffer(textureData.Length - textureData.Position);
 
             packagePath = package.packageFile.Name;
-            packageName = Path.GetFileNameWithoutExtension(package.packageFile.Name).ToUpper();
+            packageName = Path.GetFileNameWithoutExtension(packagePath).ToUpper();
             if (GameData.gameType == MeType.ME1_TYPE)
             {
+                string baseName = package.resolvePackagePath(package.exportsTable[exportId].linkId).Split('.')[0].ToUpper();
                 if (mipMapsList.Exists(s => s.storageType == StorageTypes.extLZO) ||
                     mipMapsList.Exists(s => s.storageType == StorageTypes.extZlib) ||
                     mipMapsList.Exists(s => s.storageType == StorageTypes.extUnc))
                 {
-                    packageName = package.resolvePackagePath(package.exportsTable[exportId].linkId).Split('.')[0].ToUpper();
-                    if (packageName == "")
+                    basePackageName = baseName;
+                    if (basePackageName == "")
                         throw new Exception("");
                     slave = true;
+                }
+                else
+                {
+                    if (baseName != "")
+                    {
+                        if (GameData.packageFiles.Exists(s => Path.GetFileNameWithoutExtension(s).Equals(baseName, StringComparison.OrdinalIgnoreCase)))
+                        {
+                            basePackageName = baseName;
+                            weakSlave = true;
+                        }
+                    }
                 }
             }
         }
@@ -413,7 +427,7 @@ namespace MassEffectModder
                         string filename;
                         if (GameData.gameType == MeType.ME1_TYPE)
                         {
-                            filename = GameData.packageFiles.Find(s => Path.GetFileNameWithoutExtension(s).Equals(packageName, StringComparison.OrdinalIgnoreCase));
+                            filename = GameData.packageFiles.Find(s => Path.GetFileNameWithoutExtension(s).Equals(basePackageName, StringComparison.OrdinalIgnoreCase));
                         }
                         else
                         {

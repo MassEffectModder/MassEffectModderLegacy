@@ -214,20 +214,66 @@ namespace MassEffectModder
                 {
                     for (int t = 0; t < textures[k].list.Count; t++)
                     {
+                        uint mipmapOffset = textures[k].list[t].mipmapOffset;
                         if (textures[k].list[t].slave)
                         {
-                            string pkgName = textures[k].list[t].packageName;
-                            uint mipmapOffset = textures[k].list[t].mipmapOffset;
                             MatchedTexture slaveTexture = textures[k].list[t];
-                            bool found = false;
-                            if (pkgName == Path.GetFileNameWithoutExtension(textures[k].list[t].path).ToUpperInvariant())
+                            string basePkgName = slaveTexture.basePackageName;
+                            if (basePkgName == Path.GetFileNameWithoutExtension(slaveTexture.path).ToUpperInvariant())
                                 throw new Exception();
+                            bool found = false;
                             for (int j = 0; j < textures[k].list.Count; j++)
                             {
-                                if (!textures[k].list[j].slave)
+                                if (!textures[k].list[j].slave &&
+                                   textures[k].list[j].mipmapOffset == mipmapOffset &&
+                                   textures[k].list[j].packageName == basePkgName)
                                 {
-                                    if (textures[k].list[j].mipmapOffset == mipmapOffset &&
-                                        textures[k].list[j].packageName == pkgName)
+                                    slaveTexture.linkToMaster = j;
+                                    textures[k].list[t] = slaveTexture;
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (!found)
+                                throw new Exception();
+                        }
+                    }
+                    if (!textures[k].list.Exists(s => s.slave) &&
+                        textures[k].list.Exists(s => s.weakSlave))
+                    {
+                        List<MatchedTexture> texList = new List<MatchedTexture>();
+                        for (int t = 0; t < textures[k].list.Count; t++)
+                        {
+                            MatchedTexture tex = textures[k].list[t];
+                            if (tex.weakSlave)
+                                texList.Add(tex);
+                            else
+                                texList.Insert(0, tex);
+                        }
+                        FoundTexture f = textures[k];
+                        f.list = texList;
+                        textures[k] = f;
+                        if (textures[k].list[0].weakSlave)
+                        {
+                            if (textures[k].list.Count > 1)
+                                throw new Exception();
+                            else
+                                continue;
+                        }
+
+                        for (int t = 0; t < textures[k].list.Count; t++)
+                        {
+                            if (textures[k].list[t].weakSlave)
+                            {
+                                MatchedTexture slaveTexture = textures[k].list[t];
+                                string basePkgName = slaveTexture.basePackageName;
+                                if (basePkgName == Path.GetFileNameWithoutExtension(slaveTexture.path).ToUpperInvariant())
+                                    throw new Exception();
+                                bool found = false;
+                                for (int j = 0; j < textures[k].list.Count; j++)
+                                {
+                                    if (!textures[k].list[j].weakSlave &&
+                                       textures[k].list[j].packageName == basePkgName)
                                     {
                                         slaveTexture.linkToMaster = j;
                                         textures[k].list[t] = slaveTexture;
@@ -235,9 +281,9 @@ namespace MassEffectModder
                                         break;
                                     }
                                 }
+                                if (!found)
+                                    throw new Exception();
                             }
-                            if (!found)
-                                throw new Exception();
                         }
                     }
                 }
@@ -334,12 +380,17 @@ namespace MassEffectModder
                     matchTexture.exportID = i;
                     matchTexture.path = GameData.RelativeGameData(packagePath);
                     matchTexture.packageName = texture.packageName;
-                    matchTexture.slave = texture.slave;
-                    matchTexture.linkToMaster = -1;
-                    if (matchTexture.slave)
-                        matchTexture.mipmapOffset = mipmap.dataOffset;
-                    else
-                        matchTexture.mipmapOffset = package.exportsTable[i].dataOffset + (uint)texture.properties.propertyEndOffset + mipmap.internalOffset;
+                    if (GameData.gameType == MeType.ME1_TYPE)
+                    {
+                        matchTexture.basePackageName = texture.basePackageName;
+                        matchTexture.slave = texture.slave;
+                        matchTexture.weakSlave = texture.weakSlave;
+                        matchTexture.linkToMaster = -1;
+                        if (matchTexture.slave)
+                            matchTexture.mipmapOffset = mipmap.dataOffset;
+                        else
+                            matchTexture.mipmapOffset = package.exportsTable[i].dataOffset + (uint)texture.properties.propertyEndOffset + mipmap.internalOffset;
+                    }
 
                     uint crc = texture.getCrcTopMipmap();
                     if (crc == 0)
