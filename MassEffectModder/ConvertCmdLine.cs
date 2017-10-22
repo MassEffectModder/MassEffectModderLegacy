@@ -36,41 +36,75 @@ namespace MassEffectModder
 
         static private bool loadTexturesMap(string path, List<FoundTexture> textures)
         {
+            bool useInternalMap = false;
+            Stream fs;
+
             if (!File.Exists(path))
             {
-                Console.WriteLine("Texture map not exist: " + path);
-                return false;
+                useInternalMap = true;
             }
-            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+            else
             {
+                fs = new FileStream(path, FileMode.Open, FileAccess.Read);
                 uint tag = fs.ReadUInt32();
                 uint version = fs.ReadUInt32();
                 if (tag != TexExplorer.textureMapBinTag || version != TexExplorer.textureMapBinVersion)
-                {
-                    Console.WriteLine("Detected wrong or old version of textures scan file. Can not continue!" + Environment.NewLine);
-                    return false;
-                }
+                    useInternalMap = true;
+                fs.Close();
+            }
 
-                uint countTexture = fs.ReadUInt32();
-                for (int i = 0; i < countTexture; i++)
+            if (useInternalMap)
+            {
+                byte[] buffer = null;
+                Assembly assembly = Assembly.GetExecutingAssembly();
+                string[] resources = assembly.GetManifestResourceNames();
+                for (int l = 0; l < resources.Length; l++)
                 {
-                    FoundTexture texture = new FoundTexture();
-                    int len = fs.ReadInt32();
-                    texture.name = fs.ReadStringASCII(len);
-                    texture.crc = fs.ReadUInt32();
-                    uint countPackages = fs.ReadUInt32();
-                    texture.list = new List<MatchedTexture>();
-                    for (int k = 0; k < countPackages; k++)
+                    if (resources[l].Contains("me" + (int)GameData.gameType + "map.bin"))
                     {
-                        MatchedTexture matched = new MatchedTexture();
-                        matched.exportID = fs.ReadInt32();
-                        matched.linkToMaster = fs.ReadInt32();
-                        len = fs.ReadInt32();
-                        matched.path = fs.ReadStringASCII(len);
-                        texture.list.Add(matched);
+                        using (Stream s = Assembly.GetEntryAssembly().GetManifestResourceStream(resources[l]))
+                        {
+                            buffer = s.ReadToBuffer(s.Length);
+                            break;
+                        }
                     }
-                    textures.Add(texture);
                 }
+                if (buffer == null)
+                    throw new Exception();
+                MemoryStream tmp = new MemoryStream(buffer);
+                if (tmp.ReadUInt32() != 0x504D5443)
+                    throw new Exception();
+                byte[] decompressed = new byte[tmp.ReadInt32()];
+                byte[] compressed = tmp.ReadToBuffer((uint)tmp.Length - 8);
+                if (new ZlibHelper.Zlib().Decompress(compressed, (uint)compressed.Length, decompressed) == 0)
+                    throw new Exception();
+                fs = new MemoryStream(decompressed);
+            }
+            else
+            {
+                fs = new FileStream(path, FileMode.Open, FileAccess.Read);
+            }
+
+            fs.Skip(8);
+            uint countTexture = fs.ReadUInt32();
+            for (int i = 0; i < countTexture; i++)
+            {
+                FoundTexture texture = new FoundTexture();
+                int len = fs.ReadInt32();
+                texture.name = fs.ReadStringASCII(len);
+                texture.crc = fs.ReadUInt32();
+                uint countPackages = fs.ReadUInt32();
+                texture.list = new List<MatchedTexture>();
+                for (int k = 0; k < countPackages; k++)
+                {
+                    MatchedTexture matched = new MatchedTexture();
+                    matched.exportID = fs.ReadInt32();
+                    matched.linkToMaster = fs.ReadInt32();
+                    len = fs.ReadInt32();
+                    matched.path = fs.ReadStringASCII(len);
+                    texture.list.Add(matched);
+                }
+                textures.Add(texture);
             }
 
             return true;

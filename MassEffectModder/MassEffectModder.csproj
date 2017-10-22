@@ -145,6 +145,9 @@
     <EmbeddedResource Include="MD5EntriesME1.bin" />
     <EmbeddedResource Include="MD5EntriesME2.bin" />
     <EmbeddedResource Include="MD5EntriesME3.bin" />
+    <EmbeddedResource Include="me1map.bin" />
+    <EmbeddedResource Include="me2map.bin" />
+    <EmbeddedResource Include="me3map.bin" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
