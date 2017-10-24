@@ -254,12 +254,7 @@ namespace MassEffectModder
                         f.list = texList;
                         textures[k] = f;
                         if (textures[k].list[0].weakSlave)
-                        {
-                            if (textures[k].list.Count > 1)
-                                throw new Exception();
-                            else
-                                continue;
-                        }
+                            continue;
 
                         for (int t = 0; t < textures[k].list.Count; t++)
                         {
