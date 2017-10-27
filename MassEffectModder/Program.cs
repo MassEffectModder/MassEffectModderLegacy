@@ -382,9 +382,11 @@ namespace MassEffectModder
             Console.WriteLine("     Textures are extracted with only top mipmap.");
             Console.WriteLine("");
             Console.WriteLine("  -me3dlcmod-for-mgamerz <mem file> <tfc name>\n");
+            Console.WriteLine("     Replace textures from <mem file> and store in new <tfc name> file.");
+            Console.WriteLine("     New TFC name must be added earlier to PCC files.");
             Console.WriteLine("");
- 
-             Console.WriteLine("\n");
+
+            Console.WriteLine("\n");
         }
 
         [STAThread]
