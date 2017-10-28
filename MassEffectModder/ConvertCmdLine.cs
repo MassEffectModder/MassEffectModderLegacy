@@ -1384,7 +1384,7 @@ namespace MassEffectModder
             return true;
         }
 
-        static public bool applyMEMSpecialModME3(string memFile, string tfcName)
+        static public bool applyMEMSpecialModME3(string memFile, string tfcName, byte[] guid)
         {
             textures = new List<FoundTexture>();
             ConfIni configIni = new ConfIni();
@@ -1407,14 +1407,13 @@ namespace MassEffectModder
             List<string> memFiles = new List<string>();
             memFiles.Add(memFile);
 
-            applyMEMs(memFiles, true, tfcName);
+            applyMEMs(memFiles, true, tfcName, guid);
 
             return true;
         }
 
-        static public void applyMEMs(List<string> memFiles, bool special = false, string tfcName = "")
+        static public void applyMEMs(List<string> memFiles, bool special = false, string tfcName = "", byte[] guid = null)
         {
-            byte[] guid = Guid.NewGuid().ToByteArray();
             CachePackageMgr cachePackageMgr = new CachePackageMgr(null, null);
 
             for (int i = 0; i < memFiles.Count; i++)

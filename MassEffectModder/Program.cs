@@ -381,7 +381,7 @@ namespace MassEffectModder
             Console.WriteLine("     output dir: directory where textures converted to PNG are placed");
             Console.WriteLine("     Textures are extracted with only top mipmap.");
             Console.WriteLine("");
-            Console.WriteLine("  -me3dlcmod-for-mgamerz <mem file> <tfc name>\n");
+            Console.WriteLine("  -me3dlcmod-for-mgamerz <mem file> <tfc name> [<guid in 16 hex digits>]\n");
             Console.WriteLine("     Replace textures from <mem file> and store in new <tfc name> file.");
             Console.WriteLine("     New TFC name must be added earlier to PCC files.");
             Console.WriteLine("");
@@ -687,7 +687,7 @@ namespace MassEffectModder
             }
             else if (cmd.Equals("-me3dlcmod-for-mgamerz", StringComparison.OrdinalIgnoreCase))
             {
-                if (args.Length != 3)
+                if (args.Length != 3 && args.Length != 4)
                 {
                     Console.WriteLine("Error: wrong arguments!");
                     DisplayHelp();
@@ -696,9 +696,26 @@ namespace MassEffectModder
 
                 inputFile = args[1];
                 string tfcName = args[2];
-                    Console.WriteLine(Environment.NewLine + Environment.NewLine +
+                byte[] guid;
+                if (args.Length == 4)
+                {
+                    if (args[3].Length != 32)
+                    {
+                        Console.WriteLine("Error: wrong guid!");
+                        DisplayHelp();
+                        goto fail;
+                    }
+                    guid = new byte[16];
+                    for (int i = 0; i < 32; i += 2)
+                        guid[i / 2] = Convert.ToByte(args[3].Substring(i, 2), 16);
+                }
+                else
+                {
+                    guid = Guid.NewGuid().ToByteArray();
+                }
+                Console.WriteLine(Environment.NewLine + Environment.NewLine +
                         "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
-                if (!CmdLineConverter.applyMEMSpecialModME3(inputFile, tfcName))
+                if (!CmdLineConverter.applyMEMSpecialModME3(inputFile, tfcName, guid))
                 {
                     goto fail;
                 }
