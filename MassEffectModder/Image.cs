@@ -220,7 +220,6 @@ namespace MassEffectModder
                 case PixelFormat.DXT1:
                 case PixelFormat.DXT3:
                 case PixelFormat.DXT5:
-                case PixelFormat.ATI2:
                     {
                         if (w < 4 || h < 4)
                         {
@@ -233,6 +232,11 @@ namespace MassEffectModder
                         tmpData = decompressMipmap(format, src, w, h);
                         break;
                     }
+                case PixelFormat.ATI2:
+                    if (w < 4 || h < 4)
+                        return new byte[w * h * 4];
+                    tmpData = decompressMipmap(format, src, w, h);
+                    break;
                 case PixelFormat.ARGB: tmpData = src; break;
                 case PixelFormat.RGB: tmpData = RGBToARGB(src, w, h); break;
                 case PixelFormat.V8U8: tmpData = V8U8ToARGB(src, w, h); break;
@@ -515,18 +519,18 @@ namespace MassEffectModder
                 width = origW;
                 height = origH;
 
+                if (pixelFormat == PixelFormat.ATI2 && (width < 4 || height < 4))
+                {
+                    tempData = new byte[MipMap.getBufferSize(width, height, dstFormat)];
+                    mipMaps.Add(new MipMap(tempData, width, height, pixelFormat));
+                    continue;
+                }
+
                 if (pixelFormat == PixelFormat.DXT1 ||
                     pixelFormat == PixelFormat.DXT3 ||
-                    pixelFormat == PixelFormat.DXT5 ||
-                    pixelFormat == PixelFormat.ATI2)
+                    pixelFormat == PixelFormat.DXT5)
                 {
-                    if (pixelFormat == PixelFormat.ATI2 && (width < 4 || height < 4))
-                    {
-                        tempData = new byte[MipMap.getBufferSize(origW, origW, dstFormat)];
-                        mipMaps.Add(new MipMap(tempData, origW, origH, pixelFormat));
-                        continue;
-                    }
-                    else if (width < 4 || height < 4)
+                    if (width < 4 || height < 4)
                     {
                         if (width < 4)
                             width = 4;
