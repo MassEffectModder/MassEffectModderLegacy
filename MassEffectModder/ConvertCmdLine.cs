@@ -190,7 +190,7 @@ namespace MassEffectModder
                                 errors += "File " + file + " is not a valid MEM mod, skipping..." + Environment.NewLine;
                                 log += "File " + file + " is not a valid MEM mod, skipping..." + Environment.NewLine;
                             }
-                            return errors;
+                            continue;
                         }
                         else
                         {
@@ -309,7 +309,6 @@ namespace MassEffectModder
                                     }
                                     catch
                                     {
-                                        errors += "Missing package file: " + f.list[0].path + " - Skipping, entry: " + (i + 1) + " file: " + fileName + " - mod: " + file + Environment.NewLine;
                                         log += "Missing package file: " + f.list[0].path + " - Skipping, entry: " + (i + 1) + " file: " + fileName + " - mod: " + file + Environment.NewLine;
                                         continue;
                                     }
@@ -339,7 +338,6 @@ namespace MassEffectModder
                                                 image.pixelFormat == PixelFormat.DXT3 ||
                                                 image.pixelFormat == PixelFormat.DXT5)
                                             {
-                                                errors += "Warning for texture: " + textureName + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
                                                 log += "Warning for texture: " + textureName + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
                                             }
                                         }
@@ -481,7 +479,6 @@ namespace MassEffectModder
                                 List<FoundTexture> foundCrcList = textures.FindAll(s => s.crc == crc);
                                 if (foundCrcList.Count == 0)
                                 {
-                                    errors += "Texture skipped. File " + filename + string.Format(" - 0x{0:X8}", crc) + " is not present in your game setup - mod: " + file + Environment.NewLine;
                                     log += "Texture skipped. File " + filename + string.Format(" - 0x{0:X8}", crc) + " is not present in your game setup - mod: " + file + Environment.NewLine;
                                     zip.GoToNextFile(handle);
                                     continue;
@@ -508,7 +505,6 @@ namespace MassEffectModder
                                 }
                                 catch
                                 {
-                                    errors += "Missing package file: " + foundCrcList[0].list[0].path + " - Skipping, entry: " + (i + 1) + " file: " + fileName + " - mod: " + file + Environment.NewLine;
                                     log += "Missing package file: " + foundCrcList[0].list[0].path + " - Skipping, entry: " + (i + 1) + " file: " + fileName + " - mod: " + file + Environment.NewLine;
                                     continue;
                                 }
@@ -540,7 +536,6 @@ namespace MassEffectModder
                                             image.pixelFormat == PixelFormat.DXT3 ||
                                             image.pixelFormat == PixelFormat.DXT5)
                                         {
-                                            errors += "Warning for texture: " + textureName + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
                                             log += "Warning for texture: " + textureName + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
                                         }
                                     }
@@ -602,7 +597,6 @@ namespace MassEffectModder
                     List<FoundTexture> foundCrcList = textures.FindAll(s => s.crc == crc);
                     if (foundCrcList.Count == 0)
                     {
-                        errors += "Texture skipped. Texture " + Path.GetFileName(file) + " is not present in your game setup." + Environment.NewLine;
                         log += "Texture skipped. Texture " + Path.GetFileName(file) + " is not present in your game setup." + Environment.NewLine;
                         continue;
                     }
@@ -616,7 +610,6 @@ namespace MassEffectModder
                         }
                         catch
                         {
-                            errors += "Missing package file: " + foundCrcList[0].list[0].path + " - Skipping, file: " + Path.GetFileName(file) + Environment.NewLine;
                             log += "Missing package file: " + foundCrcList[0].list[0].path + " - Skipping, file: " + Path.GetFileName(file) + Environment.NewLine;
                             continue;
                         }
@@ -648,7 +641,6 @@ namespace MassEffectModder
                                     image.pixelFormat == PixelFormat.DXT3 ||
                                     image.pixelFormat == PixelFormat.DXT5)
                                 {
-                                    errors += "Warning for texture: " + Path.GetFileName(file) + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
                                     log += "Warning for texture: " + Path.GetFileName(file) + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
                                 }
                             }
@@ -700,7 +692,6 @@ namespace MassEffectModder
                     List<FoundTexture> foundCrcList = textures.FindAll(s => s.crc == crc);
                     if (foundCrcList.Count == 0)
                     {
-                        errors += "Texture skipped. Texture " + Path.GetFileName(file) + " is not present in your game setup." + Environment.NewLine;
                         log += "Texture skipped. Texture " + Path.GetFileName(file) + " is not present in your game setup." + Environment.NewLine;
                         continue;
                     }
@@ -712,7 +703,6 @@ namespace MassEffectModder
                     }
                     catch
                     {
-                        errors += "Missing package file: " + foundCrcList[0].list[0].path + " - Skipping, file: " + Path.GetFileName(file) + Environment.NewLine;
                         log += "Missing package file: " + foundCrcList[0].list[0].path + " - Skipping, file: " + Path.GetFileName(file) + Environment.NewLine;
                         continue;
                     }
@@ -739,7 +729,6 @@ namespace MassEffectModder
                             image.pixelFormat == PixelFormat.DXT3 ||
                             image.pixelFormat == PixelFormat.DXT5)
                         {
-                            errors += "Warning for texture: " + Path.GetFileName(file) + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
                             log += "Warning for texture: " + Path.GetFileName(file) + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
                         }
                     }
@@ -923,7 +912,7 @@ namespace MassEffectModder
                     image.pixelFormat == PixelFormat.DXT3 ||
                     image.pixelFormat == PixelFormat.DXT5)
                 {
-                    errors += "Warning for texture: " + Path.GetFileName(inputFile) + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
+                    Console.WriteLine("Warning for texture: " + Path.GetFileName(inputFile) + ". This texture converted from full alpha to binary alpha." + Environment.NewLine);
                 }
             }
             image.correctMips(pixelFormat, dxt1HasAlpha, dxt1Threshold);
