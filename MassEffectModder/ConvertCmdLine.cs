@@ -171,6 +171,11 @@ namespace MassEffectModder
                     mainWindow.updateStatusLabel("Creating MEM: " + Path.GetFileName(memFilePath));
                     mainWindow.updateStatusLabel2("File " + (n + 1) + " of " + files.Count() + ", " + Path.GetFileName(file));
                 }
+                else
+                {
+                    Console.WriteLine("File: " + Path.GetFileName(file) + Environment.NewLine);
+                }
+                log += "File: " + Path.GetFileName(file) + Environment.NewLine;
 
                 if (file.EndsWith(".mem", StringComparison.OrdinalIgnoreCase))
                 {
@@ -931,7 +936,7 @@ namespace MassEffectModder
             textures = new List<FoundTexture>();
             ConfIni configIni = new ConfIni();
             GameData gameData = new GameData((MeType)gameId, configIni);
-            if (GameData.GamePath == null || !Directory.Exists(GameData.GamePath))
+            if (GameData.GamePath == null || !Directory.Exists(GameData.GamePath) || !gameData.getPackages(false, true))
             {
                 Console.WriteLine("Error: Could not found the game!");
                 return false;
