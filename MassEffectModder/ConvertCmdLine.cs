@@ -182,13 +182,15 @@ namespace MassEffectModder
                         {
                             if (version != TexExplorer.TextureModVersion)
                             {
+                                errors += "File " + file + " was made with an older version of MEM, skipping..." + Environment.NewLine;
                                 log += "File " + file + " was made with an older version of MEM, skipping..." + Environment.NewLine;
                             }
                             else
                             {
+                                errors += "File " + file + " is not a valid MEM mod, skipping..." + Environment.NewLine;
                                 log += "File " + file + " is not a valid MEM mod, skipping..." + Environment.NewLine;
                             }
-                            continue;
+                            return errors;
                         }
                         else
                         {
@@ -267,6 +269,7 @@ namespace MassEffectModder
                                     {
                                         len = fs.ReadInt32();
                                         fs.Skip(len);
+                                        errors += "Skipping not compatible content, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                         log += "Skipping not compatible content, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                         continue;
                                     }
@@ -290,6 +293,7 @@ namespace MassEffectModder
                                     {
                                         len = fs.ReadInt32();
                                         fs.Skip(len);
+                                        errors += "Skipping not compatible content, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                         log += "Skipping not compatible content, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                         continue;
                                     }
@@ -305,6 +309,7 @@ namespace MassEffectModder
                                     }
                                     catch
                                     {
+                                        errors += "Missing package file: " + f.list[0].path + " - Skipping, entry: " + (i + 1) + " file: " + fileName + " - mod: " + file + Environment.NewLine;
                                         log += "Missing package file: " + f.list[0].path + " - Skipping, entry: " + (i + 1) + " file: " + fileName + " - mod: " + file + Environment.NewLine;
                                         continue;
                                     }
@@ -315,6 +320,7 @@ namespace MassEffectModder
                                     if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
                                         texture.mipMapsList[0].width / texture.mipMapsList[0].height)
                                     {
+                                        errors += "Error in texture: " + textureName + string.Format("_0x{0:X8}", f.crc) + " This texture has wrong aspect ratio, skipping texture, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                         log += "Error in texture: " + textureName + string.Format("_0x{0:X8}", f.crc) + " This texture has wrong aspect ratio, skipping texture, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                         continue;
                                     }
@@ -333,6 +339,7 @@ namespace MassEffectModder
                                                 image.pixelFormat == PixelFormat.DXT3 ||
                                                 image.pixelFormat == PixelFormat.DXT5)
                                             {
+                                                errors += "Warning for texture: " + textureName + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
                                                 log += "Warning for texture: " + textureName + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
                                             }
                                         }
@@ -346,7 +353,7 @@ namespace MassEffectModder
                     }
                     catch
                     {
-                        log += "Mod is not compatible: " + file + Environment.NewLine;
+                        errors += "Mod is not compatible: " + file + Environment.NewLine;
                         continue;
                     }
                 }
@@ -396,6 +403,7 @@ namespace MassEffectModder
                     }
                     catch
                     {
+                        errors += "Filename not valid: " + file + Environment.NewLine;
                         log += "Filename not valid: " + file + Environment.NewLine;
                         continue;
                     }
@@ -463,6 +471,7 @@ namespace MassEffectModder
                                     if (Path.GetExtension(filename).ToLowerInvariant() != ".def" &&
                                         Path.GetExtension(filename).ToLowerInvariant() != ".log")
                                     {
+                                        errors += "Skipping file: " + filename + " not found in definition file, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                         log += "Skipping file: " + filename + " not found in definition file, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                     }
                                     zip.GoToNextFile(handle);
@@ -472,6 +481,7 @@ namespace MassEffectModder
                                 List<FoundTexture> foundCrcList = textures.FindAll(s => s.crc == crc);
                                 if (foundCrcList.Count == 0)
                                 {
+                                    errors += "Texture skipped. File " + filename + string.Format(" - 0x{0:X8}", crc) + " is not present in your game setup - mod: " + file + Environment.NewLine;
                                     log += "Texture skipped. File " + filename + string.Format(" - 0x{0:X8}", crc) + " is not present in your game setup - mod: " + file + Environment.NewLine;
                                     zip.GoToNextFile(handle);
                                     continue;
@@ -485,6 +495,7 @@ namespace MassEffectModder
                                 result = zip.ReadCurrentFile(handle, mod.data, dstLen);
                                 if (result != 0)
                                 {
+                                    errors += "Error in texture: " + textureName + string.Format("_0x{0:X8}", crc) + ", skipping texture, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                     log += "Error in texture: " + textureName + string.Format("_0x{0:X8}", crc) + ", skipping texture, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                     zip.GoToNextFile(handle);
                                     continue;
@@ -497,6 +508,7 @@ namespace MassEffectModder
                                 }
                                 catch
                                 {
+                                    errors += "Missing package file: " + foundCrcList[0].list[0].path + " - Skipping, entry: " + (i + 1) + " file: " + fileName + " - mod: " + file + Environment.NewLine;
                                     log += "Missing package file: " + foundCrcList[0].list[0].path + " - Skipping, entry: " + (i + 1) + " file: " + fileName + " - mod: " + file + Environment.NewLine;
                                     continue;
                                 }
@@ -508,6 +520,7 @@ namespace MassEffectModder
                                 if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
                                     texture.mipMapsList[0].width / texture.mipMapsList[0].height)
                                 {
+                                    errors += "Error in texture: " + textureName + string.Format("_0x{0:X8}", crc) + " This texture has wrong aspect ratio, skipping texture, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                     log += "Error in texture: " + textureName + string.Format("_0x{0:X8}", crc) + " This texture has wrong aspect ratio, skipping texture, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                     zip.GoToNextFile(handle);
                                     continue;
@@ -527,6 +540,7 @@ namespace MassEffectModder
                                             image.pixelFormat == PixelFormat.DXT3 ||
                                             image.pixelFormat == PixelFormat.DXT5)
                                         {
+                                            errors += "Warning for texture: " + textureName + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
                                             log += "Warning for texture: " + textureName + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
                                         }
                                     }
@@ -537,6 +551,7 @@ namespace MassEffectModder
                             }
                             catch
                             {
+                                errors += "Skipping not compatible content, entry: " + (i + 1) + " file: " + fileName + " - mod: " + file + Environment.NewLine;
                                 log += "Skipping not compatible content, entry: " + (i + 1) + " file: " + fileName + " - mod: " + file + Environment.NewLine;
                             }
                             zip.GoToNextFile(handle);
@@ -546,6 +561,7 @@ namespace MassEffectModder
                     }
                     catch
                     {
+                        errors += "Mod is not compatible: " + file + Environment.NewLine;
                         log += "Mod is not compatible: " + file + Environment.NewLine;
                         if (handle != IntPtr.Zero)
                             zip.Close(handle);
@@ -559,12 +575,14 @@ namespace MassEffectModder
                     string filename = Path.GetFileNameWithoutExtension(file).ToLowerInvariant();
                     if (!filename.Contains("0x"))
                     {
+                        errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
                         log += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
                         continue;
                     }
                     int idx = filename.IndexOf("0x");
                     if (filename.Length - idx < 10)
                     {
+                        errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
                         log += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
                         continue;
                     }
@@ -576,6 +594,7 @@ namespace MassEffectModder
                     }
                     catch
                     {
+                        errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
                         log += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
                         continue;
                     }
@@ -583,6 +602,7 @@ namespace MassEffectModder
                     List<FoundTexture> foundCrcList = textures.FindAll(s => s.crc == crc);
                     if (foundCrcList.Count == 0)
                     {
+                        errors += "Texture skipped. Texture " + Path.GetFileName(file) + " is not present in your game setup." + Environment.NewLine;
                         log += "Texture skipped. Texture " + Path.GetFileName(file) + " is not present in your game setup." + Environment.NewLine;
                         continue;
                     }
@@ -596,6 +616,7 @@ namespace MassEffectModder
                         }
                         catch
                         {
+                            errors += "Missing package file: " + foundCrcList[0].list[0].path + " - Skipping, file: " + Path.GetFileName(file) + Environment.NewLine;
                             log += "Missing package file: " + foundCrcList[0].list[0].path + " - Skipping, file: " + Path.GetFileName(file) + Environment.NewLine;
                             continue;
                         }
@@ -608,6 +629,7 @@ namespace MassEffectModder
                         if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
                             texture.mipMapsList[0].width / texture.mipMapsList[0].height)
                         {
+                            errors += "Error in texture: " + Path.GetFileName(file) + " This texture has wrong aspect ratio, skipping texture..." + Environment.NewLine;
                             log += "Error in texture: " + Path.GetFileName(file) + " This texture has wrong aspect ratio, skipping texture..." + Environment.NewLine;
                             continue;
                         }
@@ -626,6 +648,7 @@ namespace MassEffectModder
                                     image.pixelFormat == PixelFormat.DXT3 ||
                                     image.pixelFormat == PixelFormat.DXT5)
                                 {
+                                    errors += "Warning for texture: " + Path.GetFileName(file) + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
                                     log += "Warning for texture: " + Path.GetFileName(file) + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
                                 }
                             }
@@ -650,12 +673,14 @@ namespace MassEffectModder
                     string filename = Path.GetFileNameWithoutExtension(file).ToLowerInvariant();
                     if (!filename.Contains("0x"))
                     {
+                        errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
                         log += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
                         continue;
                     }
                     int idx = filename.IndexOf("0x");
                     if (filename.Length - idx < 10)
                     {
+                        errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
                         log += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
                         continue;
                     }
@@ -667,6 +692,7 @@ namespace MassEffectModder
                     }
                     catch
                     {
+                        errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
                         log += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
                         continue;
                     }
@@ -674,6 +700,7 @@ namespace MassEffectModder
                     List<FoundTexture> foundCrcList = textures.FindAll(s => s.crc == crc);
                     if (foundCrcList.Count == 0)
                     {
+                        errors += "Texture skipped. Texture " + Path.GetFileName(file) + " is not present in your game setup." + Environment.NewLine;
                         log += "Texture skipped. Texture " + Path.GetFileName(file) + " is not present in your game setup." + Environment.NewLine;
                         continue;
                     }
@@ -685,6 +712,7 @@ namespace MassEffectModder
                     }
                     catch
                     {
+                        errors += "Missing package file: " + foundCrcList[0].list[0].path + " - Skipping, file: " + Path.GetFileName(file) + Environment.NewLine;
                         log += "Missing package file: " + foundCrcList[0].list[0].path + " - Skipping, file: " + Path.GetFileName(file) + Environment.NewLine;
                         continue;
                     }
@@ -696,6 +724,7 @@ namespace MassEffectModder
                     if (image.mipMaps[0].width / image.mipMaps[0].height !=
                         texture.mipMapsList[0].width / texture.mipMapsList[0].height)
                     {
+                        errors += "Error in texture: " + Path.GetFileName(file) + " This texture has wrong aspect ratio, skipping texture..." + Environment.NewLine;
                         log += "Error in texture: " + Path.GetFileName(file) + " This texture has wrong aspect ratio, skipping texture..." + Environment.NewLine;
                         continue;
                     }
@@ -710,6 +739,7 @@ namespace MassEffectModder
                             image.pixelFormat == PixelFormat.DXT3 ||
                             image.pixelFormat == PixelFormat.DXT5)
                         {
+                            errors += "Warning for texture: " + Path.GetFileName(file) + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
                             log += "Warning for texture: " + Path.GetFileName(file) + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
                         }
                     }
@@ -893,7 +923,7 @@ namespace MassEffectModder
                     image.pixelFormat == PixelFormat.DXT3 ||
                     image.pixelFormat == PixelFormat.DXT5)
                 {
-                    Console.WriteLine("Warning for texture: " + Path.GetFileName(inputFile) + ". This texture converted from full alpha to binary alpha." + Environment.NewLine);
+                    errors += "Warning for texture: " + Path.GetFileName(inputFile) + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
                 }
             }
             image.correctMips(pixelFormat, dxt1HasAlpha, dxt1Threshold);
@@ -1117,6 +1147,7 @@ namespace MassEffectModder
                         }
                         catch
                         {
+                            errors += "Skipping damaged content, entry: " + (i + 1) + " file: " + fileName + " - mod: " + file + Environment.NewLine;
                             Console.WriteLine("Skipping damaged content, entry: " + (i + 1) + " file: " + fileName + " - mod: " + file);
                         }
                         zip.GoToNextFile(handle);
@@ -1158,6 +1189,7 @@ namespace MassEffectModder
 
             Console.WriteLine("Extract MOD files started...");
 
+            string errors = "";
             string[] files = null;
             ulong numEntries = 0;
             List<string> list = Directory.GetFiles(inputDir, "*.mod").Where(item => item.EndsWith(".mod", StringComparison.OrdinalIgnoreCase)).ToList();
@@ -1210,6 +1242,7 @@ namespace MassEffectModder
                                 {
                                     len = fs.ReadInt32();
                                     fs.Skip(len);
+                                    errors += "Skipping not compatible content, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                     Console.WriteLine("Skipping not compatible content, entry: " + (i + 1) + " - mod: " + file);
                                     continue;
                                 }
@@ -1249,6 +1282,7 @@ namespace MassEffectModder
                                 {
                                     len = fs.ReadInt32();
                                     fs.Skip(len);
+                                    errors += "Skipping not compatible content, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                     Console.WriteLine("Skipping not compatible content, entry: " + (i + 1) + " - mod: " + file);
                                     continue;
                                 }
@@ -1267,6 +1301,7 @@ namespace MassEffectModder
                 }
                 catch
                 {
+                    errors += "MOD is not compatible: " + file + Environment.NewLine;
                     Console.WriteLine("MOD is not compatible: " + file);
                     continue;
                 }
