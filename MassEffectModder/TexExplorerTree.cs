@@ -387,7 +387,14 @@ namespace MassEffectModder
                             matchTexture.mipmapOffset = package.exportsTable[i].dataOffset + (uint)texture.properties.propertyEndOffset + mipmap.internalOffset;
                     }
 
-                    uint crc = texture.getCrcTopMipmap();
+                    uint crc = 0;
+                    try
+                    {
+                        crc = texture.getCrcTopMipmap();
+                    }
+                    catch
+                    {
+                    }
                     if (crc == 0)
                     {
                         errors += "Error: Texture " + package.exportsTable[i].objectName + " is broken in package: " + packagePath + ", skipping..." + Environment.NewLine;

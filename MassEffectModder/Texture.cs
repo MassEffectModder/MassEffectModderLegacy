@@ -428,6 +428,8 @@ namespace MassEffectModder
                         if (GameData.gameType == MeType.ME1_TYPE)
                         {
                             filename = GameData.packageFiles.Find(s => Path.GetFileNameWithoutExtension(s).Equals(basePackageName, StringComparison.OrdinalIgnoreCase));
+                            if (filename == null || filename == "")
+                                throw new Exception("File not found in game: " + basePackageName + ".*");
                         }
                         else
                         {
