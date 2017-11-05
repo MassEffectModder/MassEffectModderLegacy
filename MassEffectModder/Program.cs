@@ -424,6 +424,7 @@ namespace MassEffectModder
             if (cmd.Equals("-update-mem", StringComparison.OrdinalIgnoreCase))
             {
                 ShowWindow(GetConsoleWindow(), 0);
+                Thread.Sleep(1000);
                 try
                 {
                     if (args.Length != 2)
