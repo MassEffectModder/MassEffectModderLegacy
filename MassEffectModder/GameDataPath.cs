@@ -38,7 +38,7 @@ namespace MassEffectModder
 
         public bool DLCDataCacheDone = false;
 
-        public GameData(MeType type, ConfIni configIni, bool force = false)
+        public GameData(MeType type, ConfIni configIni, bool force = false, bool installerMode = false)
         {
             gameType = type;
             _configIni = configIni;
@@ -82,31 +82,34 @@ namespace MassEffectModder
                     _path = null;
             }
 
-            OpenFileDialog selectExe = new OpenFileDialog();
-            selectExe.Title = "Please select the Mass Effect " + (int)gameType + " executable file";
-            if (_path != null)
-                selectExe.FileName = _path;
-            switch (gameType)
+            if (!installerMode)
             {
-                case MeType.ME1_TYPE:
-                    selectExe.Filter = "ME1 exe file|MassEffect.exe";
-                    selectExe.FileName = "MassEffect.exe";
-                    break;
-                case MeType.ME2_TYPE:
-                    selectExe.Filter = "ME2 exe file|MassEffect2.exe";
-                    selectExe.FileName = "MassEffect2.exe";
-                    break;
-                case MeType.ME3_TYPE:
-                    selectExe.Filter = "ME3 exe file|MassEffect3.exe";
-                    selectExe.FileName = "MassEffect3.exe";
-                    break;
-            }
-            if (selectExe.ShowDialog() == DialogResult.OK)
-            {
-                if (gameType == MeType.ME3_TYPE)
-                    _path = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(selectExe.FileName)));
-                else
-                    _path = Path.GetDirectoryName(Path.GetDirectoryName(selectExe.FileName));
+                OpenFileDialog selectExe = new OpenFileDialog();
+                selectExe.Title = "Please select the Mass Effect " + (int)gameType + " executable file";
+                if (_path != null)
+                    selectExe.FileName = _path;
+                switch (gameType)
+                {
+                    case MeType.ME1_TYPE:
+                        selectExe.Filter = "ME1 exe file|MassEffect.exe";
+                        selectExe.FileName = "MassEffect.exe";
+                        break;
+                    case MeType.ME2_TYPE:
+                        selectExe.Filter = "ME2 exe file|MassEffect2.exe";
+                        selectExe.FileName = "MassEffect2.exe";
+                        break;
+                    case MeType.ME3_TYPE:
+                        selectExe.Filter = "ME3 exe file|MassEffect3.exe";
+                        selectExe.FileName = "MassEffect3.exe";
+                        break;
+                }
+                if (selectExe.ShowDialog() == DialogResult.OK)
+                {
+                    if (gameType == MeType.ME3_TYPE)
+                        _path = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(selectExe.FileName)));
+                    else
+                        _path = Path.GetDirectoryName(Path.GetDirectoryName(selectExe.FileName));
+                }
             }
             if (_path != null)
                 _configIni.Write(key, _path, "GameDataPath");

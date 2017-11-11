@@ -302,6 +302,12 @@ namespace MassEffectModder
             Console.WriteLine("  -version\n");
             Console.WriteLine("     Display MEM version");
             Console.WriteLine("");
+            Console.WriteLine("  -get-installed-games");
+            Console.WriteLine("     Return bitmask installed games");
+            Console.WriteLine("     bit 0 - ME1");
+            Console.WriteLine("     bit 1 - ME2");
+            Console.WriteLine("     bit 2 - ME3");
+            Console.WriteLine("");
             Console.WriteLine("  -convert-to-mem <game id> <input dir> <output file>\n");
             Console.WriteLine("     game id: 1 for ME1, 2 for ME2, 3 for ME3");
             Console.WriteLine("     input dir: directory to be converted, containing following file extension(s):");
@@ -419,6 +425,24 @@ namespace MassEffectModder
                     "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
                 unloadEmbeddedDlls();
                 Environment.Exit(0);
+            }
+
+            if (cmd.Equals("-get-installed-games", StringComparison.OrdinalIgnoreCase))
+            {
+                int gameMask = 0;
+                ConfIni configIni = new ConfIni();
+                GameData gameData = new GameData(MeType.ME1_TYPE, configIni, false, true);
+                if (GameData.GamePath != null && Directory.Exists(GameData.GamePath) && gameData.getPackages(true, true))
+                    gameMask |= 1;
+                gameData = new GameData(MeType.ME2_TYPE, configIni, false, true);
+                if (GameData.GamePath != null && Directory.Exists(GameData.GamePath) && gameData.getPackages(true, true))
+                    gameMask |= 2;
+                gameData = new GameData(MeType.ME3_TYPE, configIni, false, true);
+                if (GameData.GamePath != null && Directory.Exists(GameData.GamePath) && gameData.getPackages(true, true))
+                    gameMask |= 4;
+
+                unloadEmbeddedDlls();
+                Environment.Exit(gameMask);
             }
 
             if (cmd.Equals("-update-mem", StringComparison.OrdinalIgnoreCase))
