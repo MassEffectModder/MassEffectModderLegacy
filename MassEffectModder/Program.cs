@@ -183,7 +183,7 @@ namespace MassEffectModder
             }
         }
 
-        static private string prepareForUpdate()
+        static private string prepareForUpdate(bool nogui = false, bool onlycheck = false)
         {
             try
             {
@@ -196,8 +196,16 @@ namespace MassEffectModder
                 string githubVersion = parsed["tag_name"];
                 if (int.Parse(githubVersion) > int.Parse(Application.ProductVersion))
                 {
-                    if (MessageBox.Show("New version of MEM is available: " + githubVersion + "\nDo you want update to new version?", "Update", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                    if (onlycheck)
                     {
+                        return parsed["assets"][0]["browser_download_url"];
+                    }
+                    if (!nogui)
+                    {
+                        if (MessageBox.Show("New version of MEM is available: " + githubVersion + "\nDo you want update to new version?", "Update", MessageBoxButtons.YesNo) != DialogResult.Yes)
+                        {
+                            return "";
+                        }
                         progressBar = new ProgressBar();
                         progressBar.Size = new System.Drawing.Size(400, 40);
                         progressBar.Style = ProgressBarStyle.Marquee;
@@ -212,15 +220,16 @@ namespace MassEffectModder
                         progressForm.ControlBox = false;
                         progressForm.Controls.Add(progressBar);
                         progressForm.Show();
-
-                        Uri url = new Uri(parsed["assets"][0]["browser_download_url"]);
-                        string filename = parsed["assets"][0]["name"];
-                        webClient.DownloadFileAsync(url, filename);
-                        while (webClient.IsBusy) { Application.DoEvents(); Thread.Sleep(10); }
-
-                        progressForm.Close();
-                        return filename;
                     }
+
+                    Uri url = new Uri(parsed["assets"][0]["browser_download_url"]);
+                    string filename = parsed["assets"][0]["name"];
+                    webClient.DownloadFileAsync(url, filename);
+                    while (webClient.IsBusy) { Application.DoEvents(); Thread.Sleep(10); }
+
+                    if (!nogui)
+                        progressForm.Close();
+                    return filename;
                 }
             }
             catch
@@ -307,6 +316,12 @@ namespace MassEffectModder
             Console.WriteLine("     bit 0 - ME1");
             Console.WriteLine("     bit 1 - ME2");
             Console.WriteLine("     bit 2 - ME3");
+            Console.WriteLine("");
+            Console.WriteLine("  -check-update");
+            Console.WriteLine("     Return 0 if update is available, 1 if not.");
+            Console.WriteLine("");
+            Console.WriteLine("  -download-update");
+            Console.WriteLine("     Download and install MEM update.");
             Console.WriteLine("");
             Console.WriteLine("  -convert-to-mem <game id> <input dir> <output file>\n");
             Console.WriteLine("     game id: 1 for ME1, 2 for ME2, 3 for ME3");
@@ -421,6 +436,7 @@ namespace MassEffectModder
             }
             if (cmd.Equals("-version", StringComparison.OrdinalIgnoreCase))
             {
+                cleanupPreviousUpdate();
                 Console.WriteLine(Environment.NewLine + Environment.NewLine +
                     "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
                 unloadEmbeddedDlls();
@@ -445,9 +461,56 @@ namespace MassEffectModder
                 Environment.Exit(gameMask);
             }
 
-            if (cmd.Equals("-update-mem", StringComparison.OrdinalIgnoreCase))
+            if (cmd.Equals("-check-update", StringComparison.OrdinalIgnoreCase))
             {
-                ShowWindow(GetConsoleWindow(), 0);
+                if (prepareForUpdate(true, true) != "")
+                {
+                    unloadEmbeddedDlls();
+                    Environment.Exit(0);
+                }
+                else
+                {
+                    unloadEmbeddedDlls();
+                    Environment.Exit(1);
+                }
+            }
+
+            if (cmd.Equals("-download-update", StringComparison.OrdinalIgnoreCase))
+            {
+                string filename = prepareForUpdate(true, false);
+                if (filename != "")
+                {
+                    filename = unpackUpdate(filename);
+                }
+                else
+                {
+                    Console.WriteLine("Failed download MEM update!");
+                    goto fail;
+                }
+                if (filename != "")
+                {
+                    Process process = new Process();
+                    process.StartInfo.FileName = filename;
+                    process.StartInfo.Arguments = "-finish-update-mem " + filename;
+                    process.StartInfo.CreateNoWindow = true;
+                    process.StartInfo.UseShellExecute = false;
+                    if (process.Start())
+                    {
+                        unloadEmbeddedDlls();
+                        Environment.Exit(0);
+                    }
+                    Console.WriteLine("Failed start update MEM instance!");
+                    goto fail;
+                }
+                Console.WriteLine("Failed unpack MEM update!");
+                goto fail;
+            }
+
+            if (cmd.Equals("-update-mem", StringComparison.OrdinalIgnoreCase) ||
+                cmd.Equals("-finish-update-mem", StringComparison.OrdinalIgnoreCase))
+            {
+                if (cmd.Equals("-update-mem"))
+                    ShowWindow(GetConsoleWindow(), 0);
                 Thread.Sleep(1000);
                 try
                 {
@@ -464,6 +527,8 @@ namespace MassEffectModder
                     File.Copy(baseName + ".pdb", filePdb);
 
                     Process process = new Process();
+                    if (cmd.Equals("-finish-update-mem"))
+                        process.StartInfo.Arguments = "-version";
                     process.StartInfo.FileName = fileExe;
                     process.StartInfo.CreateNoWindow = true;
                     process.StartInfo.UseShellExecute = false;
@@ -475,7 +540,10 @@ namespace MassEffectModder
                 }
                 catch
                 {
-                    MessageBox.Show("Failed update MEM!");
+                    if (cmd.Equals("-update-mem"))
+                        MessageBox.Show("Failed update MEM!");
+                    else
+                        Console.WriteLine("Failed update MEM!");
                     goto fail;
                 }
             }
