@@ -96,6 +96,7 @@ namespace MassEffectModder
             checkBoxOptionVanilla.Checked = false;
             checkBoxOptionFaster.Checked = false;
             buttonUnpackDLC.Enabled = false;
+            checkBoxOptionSkipScan.Checked = false;
 
             clearPreCheckStatus();
 
@@ -433,6 +434,10 @@ namespace MassEffectModder
                 updateMode = true;
                 checkBoxOptionVanilla.Visible = false;
                 checkBoxOptionVanilla.Checked = false;
+                checkBoxOptionSkipScan.Visible = false;
+            }
+            if (updateMode || checkBoxOptionSkipScan.Checked)
+            {
                 string mapPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                         Assembly.GetExecutingAssembly().GetName().Name);
                 string mapFile = Path.Combine(mapPath, "me" + gameId + "map.bin");
@@ -446,19 +451,22 @@ namespace MassEffectModder
                     return;
                 }
 
-                List<string> ignoredMods = new List<string>();
-                for (int i = 0; i < 10; i++)
+                if (!checkBoxOptionSkipScan.Checked)
                 {
-                    string ignoredMod = installerIni.Read("Mod" + i, "IgnoreForUpdateMods");
-                    if (ignoredMod != "")
-                        ignoredMods.Add(ignoredMod);
-                }
-                for (int i = 0; i < ignoredMods.Count; i++)
-                {
-                    if (memFiles.Exists(s => s.Contains(ignoredMods[i])))
+                    List<string> ignoredMods = new List<string>();
+                    for (int i = 0; i < 10; i++)
                     {
-                        memFiles.RemoveAt(i);
-                        i--;
+                        string ignoredMod = installerIni.Read("Mod" + i, "IgnoreForUpdateMods");
+                        if (ignoredMod != "")
+                            ignoredMods.Add(ignoredMod);
+                    }
+                    for (int i = 0; i < ignoredMods.Count; i++)
+                    {
+                        if (memFiles.Exists(s => s.Contains(ignoredMods[i])))
+                        {
+                            memFiles.RemoveAt(i);
+                            i--;
+                        }
                     }
                 }
             }
@@ -744,9 +752,15 @@ namespace MassEffectModder
             checkBoxPreEnableRepack.Enabled = enabled;
             checkBoxPreEnablePack.Enabled = enabled;
             if (updateMode)
+            {
                 checkBoxOptionVanilla.Enabled = false;
+                checkBoxOptionSkipScan.Enabled = false;
+            }
             else
+            {
                 checkBoxOptionVanilla.Enabled = enabled;
+                checkBoxOptionSkipScan.Enabled = enabled;
+            }
             checkBoxOptionFaster.Enabled = enabled;
             buttonUnpackDLC.Enabled = enabled;
             Application.DoEvents();
@@ -825,24 +839,27 @@ namespace MassEffectModder
 
             if (checkBoxOptionFaster.Checked)
             {
-                if (GameData.gameType == MeType.ME1_TYPE)
+                if (!updateMode && !checkBoxOptionSkipScan.Checked)
                 {
-                    log += "Remove mipmaps started..." + Environment.NewLine;
-                    updateStatusMipMaps("In progress...");
-                    errors += mipMaps.removeMipMapsME1(1, textures, cachePackageMgr, null, this, checkBoxPreEnableRepack.Checked);
-                    errors += mipMaps.removeMipMapsME1(2, textures, cachePackageMgr, null, this, checkBoxPreEnableRepack.Checked);
-                    checkBoxMipMaps.Checked = true;
-                    updateStatusMipMaps("");
-                    log += "Remove mipmaps finished" + Environment.NewLine + Environment.NewLine;
-                }
-                else
-                {
-                    log += "Remove mipmaps started..." + Environment.NewLine;
-                    updateStatusMipMaps("In progress...");
-                    errors += mipMaps.removeMipMapsME2ME3(textures, cachePackageMgr, null, this, checkBoxPreEnableRepack.Checked);
-                    checkBoxMipMaps.Checked = true;
-                    updateStatusMipMaps("");
-                    log += "Remove mipmaps finished" + Environment.NewLine + Environment.NewLine;
+                    if (GameData.gameType == MeType.ME1_TYPE)
+                    {
+                        log += "Remove mipmaps started..." + Environment.NewLine;
+                        updateStatusMipMaps("In progress...");
+                        errors += mipMaps.removeMipMapsME1(1, textures, cachePackageMgr, null, this, checkBoxPreEnableRepack.Checked);
+                        errors += mipMaps.removeMipMapsME1(2, textures, cachePackageMgr, null, this, checkBoxPreEnableRepack.Checked);
+                        checkBoxMipMaps.Checked = true;
+                        updateStatusMipMaps("");
+                        log += "Remove mipmaps finished" + Environment.NewLine + Environment.NewLine;
+                    }
+                    else
+                    {
+                        log += "Remove mipmaps started..." + Environment.NewLine;
+                        updateStatusMipMaps("In progress...");
+                        errors += mipMaps.removeMipMapsME2ME3(textures, cachePackageMgr, null, this, checkBoxPreEnableRepack.Checked);
+                        checkBoxMipMaps.Checked = true;
+                        updateStatusMipMaps("");
+                        log += "Remove mipmaps finished" + Environment.NewLine + Environment.NewLine;
+                    }
                 }
             }
 
@@ -863,7 +880,7 @@ namespace MassEffectModder
 
             if (!checkBoxOptionFaster.Checked)
             {
-                if (!updateMode)
+                if (!updateMode && !checkBoxOptionSkipScan.Checked)
                 {
                     if (GameData.gameType == MeType.ME1_TYPE)
                     {
@@ -907,7 +924,7 @@ namespace MassEffectModder
             log += "Updating LODs and other settings finished" + Environment.NewLine + Environment.NewLine;
 
 
-            if (!updateMode)
+            if (!updateMode && !checkBoxOptionSkipScan.Checked)
             {
                 if (checkBoxPreEnableRepack.Checked)
                 {
@@ -1083,6 +1100,27 @@ namespace MassEffectModder
                 checkBoxOptionVanilla.CheckedChanged -= checkBoxOptionVanilla_CheckedChanged;
                 checkBoxOptionVanilla.Checked = false;
                 checkBoxOptionVanilla.CheckedChanged += checkBoxOptionVanilla_CheckedChanged;
+            }
+        }
+
+        private void checkBoxOptionSkipScan_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBoxOptionSkipScan.Checked)
+            {
+                if (MessageBox.Show("This option is for advanced users !\n\n" +
+                    "Disabling the scan of the game files may leads to various potential issues.\n\n" +
+                    "If you are not sure press 'Cancel'", "Warning !", MessageBoxButtons.OKCancel) == DialogResult.Cancel)
+                {
+                    checkBoxOptionSkipScan.CheckedChanged -= checkBoxOptionSkipScan_CheckedChanged;
+                    checkBoxOptionSkipScan.Checked = false;
+                    checkBoxOptionSkipScan.CheckedChanged += checkBoxOptionSkipScan_CheckedChanged;
+                }
+            }
+            else
+            {
+                checkBoxOptionSkipScan.CheckedChanged -= checkBoxOptionSkipScan_CheckedChanged;
+                checkBoxOptionSkipScan.Checked = false;
+                checkBoxOptionSkipScan.CheckedChanged += checkBoxOptionSkipScan_CheckedChanged;
             }
         }
     }

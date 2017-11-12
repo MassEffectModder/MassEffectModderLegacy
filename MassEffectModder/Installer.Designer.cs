@@ -104,6 +104,7 @@
             this.buttonUnpackDLC = new System.Windows.Forms.Button();
             this.checkBoxOptionFaster = new System.Windows.Forms.CheckBox();
             this.checkBoxOptionVanilla = new System.Windows.Forms.CheckBox();
+            this.checkBoxOptionSkipScan = new System.Windows.Forms.CheckBox();
             this.groupBoxPreInstallCheck.SuspendLayout();
             this.groupBoxInstaller.SuspendLayout();
             this.groupBoxOptions.SuspendLayout();
@@ -663,6 +664,7 @@
             // 
             // groupBoxOptions
             // 
+            this.groupBoxOptions.Controls.Add(this.checkBoxOptionSkipScan);
             this.groupBoxOptions.Controls.Add(this.buttonUnpackDLC);
             this.groupBoxOptions.Controls.Add(this.checkBoxOptionFaster);
             this.groupBoxOptions.Controls.Add(this.checkBoxOptionVanilla);
@@ -688,7 +690,7 @@
             // checkBoxOptionFaster
             // 
             this.checkBoxOptionFaster.AutoSize = true;
-            this.checkBoxOptionFaster.Location = new System.Drawing.Point(167, 42);
+            this.checkBoxOptionFaster.Location = new System.Drawing.Point(286, 19);
             this.checkBoxOptionFaster.Name = "checkBoxOptionFaster";
             this.checkBoxOptionFaster.Size = new System.Drawing.Size(153, 17);
             this.checkBoxOptionFaster.TabIndex = 39;
@@ -708,6 +710,18 @@
             this.checkBoxOptionVanilla.Text = "Skip vanilla check";
             this.checkBoxOptionVanilla.UseVisualStyleBackColor = true;
             this.checkBoxOptionVanilla.CheckedChanged += new System.EventHandler(this.checkBoxOptionVanilla_CheckedChanged);
+            // 
+            // checkBoxOptionSkipScan
+            // 
+            this.checkBoxOptionSkipScan.AutoSize = true;
+            this.checkBoxOptionSkipScan.Location = new System.Drawing.Point(167, 42);
+            this.checkBoxOptionSkipScan.Name = "checkBoxOptionSkipScan";
+            this.checkBoxOptionSkipScan.Size = new System.Drawing.Size(73, 17);
+            this.checkBoxOptionSkipScan.TabIndex = 52;
+            this.checkBoxOptionSkipScan.TabStop = false;
+            this.checkBoxOptionSkipScan.Text = "Skip scan";
+            this.checkBoxOptionSkipScan.UseVisualStyleBackColor = true;
+            this.checkBoxOptionSkipScan.CheckedChanged += new System.EventHandler(this.checkBoxOptionSkipScan_CheckedChanged);
             // 
             // Installer
             // 
@@ -790,5 +804,6 @@
         private System.Windows.Forms.CheckBox checkBoxOptionVanilla;
         private System.Windows.Forms.CheckBox checkBoxOptionFaster;
         private System.Windows.Forms.Button buttonUnpackDLC;
+        private System.Windows.Forms.CheckBox checkBoxOptionSkipScan;
     }
 }
