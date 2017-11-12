@@ -101,10 +101,10 @@
             this.checkBoxPreEnableRepack = new System.Windows.Forms.CheckBox();
             this.checkBoxPreEnablePack = new System.Windows.Forms.CheckBox();
             this.groupBoxOptions = new System.Windows.Forms.GroupBox();
+            this.checkBoxOptionSkipScan = new System.Windows.Forms.CheckBox();
             this.buttonUnpackDLC = new System.Windows.Forms.Button();
             this.checkBoxOptionFaster = new System.Windows.Forms.CheckBox();
             this.checkBoxOptionVanilla = new System.Windows.Forms.CheckBox();
-            this.checkBoxOptionSkipScan = new System.Windows.Forms.CheckBox();
             this.groupBoxPreInstallCheck.SuspendLayout();
             this.groupBoxInstaller.SuspendLayout();
             this.groupBoxOptions.SuspendLayout();
@@ -677,6 +677,18 @@
             this.groupBoxOptions.TabStop = false;
             this.groupBoxOptions.Text = "Options";
             // 
+            // checkBoxOptionSkipScan
+            // 
+            this.checkBoxOptionSkipScan.AutoSize = true;
+            this.checkBoxOptionSkipScan.Location = new System.Drawing.Point(167, 42);
+            this.checkBoxOptionSkipScan.Name = "checkBoxOptionSkipScan";
+            this.checkBoxOptionSkipScan.Size = new System.Drawing.Size(137, 17);
+            this.checkBoxOptionSkipScan.TabIndex = 52;
+            this.checkBoxOptionSkipScan.TabStop = false;
+            this.checkBoxOptionSkipScan.Text = "Skip scan/remove mips";
+            this.checkBoxOptionSkipScan.UseVisualStyleBackColor = true;
+            this.checkBoxOptionSkipScan.CheckedChanged += new System.EventHandler(this.checkBoxOptionSkipScan_CheckedChanged);
+            // 
             // buttonUnpackDLC
             // 
             this.buttonUnpackDLC.Location = new System.Drawing.Point(445, 28);
@@ -710,18 +722,6 @@
             this.checkBoxOptionVanilla.Text = "Skip vanilla check";
             this.checkBoxOptionVanilla.UseVisualStyleBackColor = true;
             this.checkBoxOptionVanilla.CheckedChanged += new System.EventHandler(this.checkBoxOptionVanilla_CheckedChanged);
-            // 
-            // checkBoxOptionSkipScan
-            // 
-            this.checkBoxOptionSkipScan.AutoSize = true;
-            this.checkBoxOptionSkipScan.Location = new System.Drawing.Point(167, 42);
-            this.checkBoxOptionSkipScan.Name = "checkBoxOptionSkipScan";
-            this.checkBoxOptionSkipScan.Size = new System.Drawing.Size(73, 17);
-            this.checkBoxOptionSkipScan.TabIndex = 52;
-            this.checkBoxOptionSkipScan.TabStop = false;
-            this.checkBoxOptionSkipScan.Text = "Skip scan";
-            this.checkBoxOptionSkipScan.UseVisualStyleBackColor = true;
-            this.checkBoxOptionSkipScan.CheckedChanged += new System.EventHandler(this.checkBoxOptionSkipScan_CheckedChanged);
             // 
             // Installer
             // 

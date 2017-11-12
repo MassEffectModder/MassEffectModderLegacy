@@ -433,15 +433,23 @@ namespace MassEffectModder
             {
                 updateMode = true;
                 checkBoxOptionVanilla.Visible = false;
-                checkBoxOptionVanilla.Checked = false;
+                checkBoxOptionVanilla.CheckedChanged -= checkBoxOptionVanilla_CheckedChanged;
+                checkBoxOptionVanilla.Checked = true;
+                checkBoxOptionVanilla.CheckedChanged += checkBoxOptionVanilla_CheckedChanged;
                 checkBoxOptionSkipScan.Visible = false;
+                buttonUnpackDLC.Visible = false;
+                checkBoxPreEnableRepack.Visible = false;
+                checkBoxPreEnableRepack.Checked = false;
             }
             if (updateMode || checkBoxOptionSkipScan.Checked)
             {
+                checkBoxOptionVanilla.CheckedChanged -= checkBoxOptionVanilla_CheckedChanged;
+                checkBoxOptionVanilla.Checked = true;
+                checkBoxOptionVanilla.CheckedChanged += checkBoxOptionVanilla_CheckedChanged;
                 string mapPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                         Assembly.GetExecutingAssembly().GetName().Name);
                 string mapFile = Path.Combine(mapPath, "me" + gameId + "map.bin");
-                if (!loadTexturesMap(mapPath))
+                if (!loadTexturesMap(mapFile))
                 {
                     labelPreVanilla.Text = "Detected modded game ! Please reinstall ME" + gameId + " and restart.";
                     labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.Red);
@@ -451,7 +459,7 @@ namespace MassEffectModder
                     return;
                 }
 
-                if (!checkBoxOptionSkipScan.Checked)
+                if (updateMode)
                 {
                     List<string> ignoredMods = new List<string>();
                     for (int i = 0; i < 10; i++)
@@ -464,8 +472,8 @@ namespace MassEffectModder
                     {
                         if (memFiles.Exists(s => s.Contains(ignoredMods[i])))
                         {
-                            memFiles.RemoveAt(i);
-                            i--;
+                            string mod = memFiles.Find(s => s.Contains(ignoredMods[i]));
+                            memFiles.Remove(mod);
                         }
                     }
                 }
@@ -536,9 +544,10 @@ namespace MassEffectModder
             buttonSTART.Enabled = true;
         }
 
-        private bool loadTexturesMap(string path)
+        private bool loadTexturesMap(string mapPath)
         {
-            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+            textures = new List<FoundTexture>();
+            using (FileStream fs = new FileStream(mapPath, FileMode.Open, FileAccess.Read))
             {
                 uint tag = fs.ReadUInt32();
                 uint version = fs.ReadUInt32();
@@ -755,14 +764,15 @@ namespace MassEffectModder
             {
                 checkBoxOptionVanilla.Enabled = false;
                 checkBoxOptionSkipScan.Enabled = false;
+                buttonUnpackDLC.Enabled = false;
             }
             else
             {
                 checkBoxOptionVanilla.Enabled = enabled;
                 checkBoxOptionSkipScan.Enabled = enabled;
+                buttonUnpackDLC.Enabled = enabled;
             }
             checkBoxOptionFaster.Enabled = enabled;
-            buttonUnpackDLC.Enabled = enabled;
             Application.DoEvents();
         }
 
@@ -777,7 +787,7 @@ namespace MassEffectModder
             log = "";
             Misc.startTimer();
 
-            if (!updateMode)
+            if (!updateMode && !checkBoxOptionSkipScan.Checked)
             {
                 log += "Prepare game data started..." + Environment.NewLine;
                 updateStatusPrepare("In progress...");
@@ -832,8 +842,8 @@ namespace MassEffectModder
                 updateStatusPrepare("Skipped");
                 log += "Prepare game data skipped" + Environment.NewLine + Environment.NewLine;
 
-                checkBoxPrepare.Checked = true;
-                updateStatusPrepare("Skipped");
+                checkBoxScan.Checked = true;
+                updateStatusScan("Skipped");
                 log += "Scan textures skipped" + Environment.NewLine + Environment.NewLine;
             }
 
@@ -905,7 +915,7 @@ namespace MassEffectModder
                 else
                 {
                     checkBoxMipMaps.Checked = true;
-                    updateStatusMipMaps("");
+                    updateStatusMipMaps("Skipped");
                     log += "Remove mipmaps skipped" + Environment.NewLine + Environment.NewLine;
                 }
             }
@@ -924,9 +934,9 @@ namespace MassEffectModder
             log += "Updating LODs and other settings finished" + Environment.NewLine + Environment.NewLine;
 
 
-            if (!updateMode && !checkBoxOptionSkipScan.Checked)
+            if (checkBoxPreEnableRepack.Checked)
             {
-                if (checkBoxPreEnableRepack.Checked)
+                if (!updateMode && !checkBoxOptionSkipScan.Checked)
                 {
                     log += "Repack started..." + Environment.NewLine;
                     for (int i = 0; i < GameData.packageFiles.Count; i++)
@@ -944,12 +954,12 @@ namespace MassEffectModder
                     updateStatusRepackZlib("");
                     log += "Repack finished" + Environment.NewLine + Environment.NewLine;
                 }
-            }
-            else
-            {
-                checkBoxRepackZlib.Checked = true;
-                updateStatusRepackZlib("Skipped");
-                log += "Repack skipped" + Environment.NewLine + Environment.NewLine;
+                else
+                {
+                    checkBoxRepackZlib.Checked = true;
+                    updateStatusRepackZlib("Skipped");
+                    log += "Repack skipped" + Environment.NewLine + Environment.NewLine;
+                }
             }
 
 
@@ -1115,12 +1125,21 @@ namespace MassEffectModder
                     checkBoxOptionSkipScan.Checked = false;
                     checkBoxOptionSkipScan.CheckedChanged += checkBoxOptionSkipScan_CheckedChanged;
                 }
+                else
+                {
+                    checkBoxOptionVanilla.CheckedChanged -= checkBoxOptionVanilla_CheckedChanged;
+                    checkBoxOptionVanilla.Checked = true;
+                    checkBoxOptionVanilla.CheckedChanged += checkBoxOptionVanilla_CheckedChanged;
+                }
             }
             else
             {
                 checkBoxOptionSkipScan.CheckedChanged -= checkBoxOptionSkipScan_CheckedChanged;
                 checkBoxOptionSkipScan.Checked = false;
                 checkBoxOptionSkipScan.CheckedChanged += checkBoxOptionSkipScan_CheckedChanged;
+                checkBoxOptionVanilla.CheckedChanged -= checkBoxOptionVanilla_CheckedChanged;
+                checkBoxOptionVanilla.Checked = false;
+                checkBoxOptionVanilla.CheckedChanged += checkBoxOptionVanilla_CheckedChanged;
             }
         }
     }
