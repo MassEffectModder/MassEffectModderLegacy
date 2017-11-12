@@ -552,7 +552,11 @@ namespace MassEffectModder
                 uint tag = fs.ReadUInt32();
                 uint version = fs.ReadUInt32();
                 if (tag != TexExplorer.textureMapBinTag || version != TexExplorer.textureMapBinVersion)
+                {
+                    errors += "Detected wrong or old version of textures scan file!" + Environment.NewLine;
+                    log += "Detected wrong or old version of textures scan file!" + Environment.NewLine;
                     return false;
+                }
 
                 uint countTexture = fs.ReadUInt32();
                 for (int i = 0; i < countTexture; i++)
@@ -573,6 +577,34 @@ namespace MassEffectModder
                         texture.list.Add(matched);
                     }
                     textures.Add(texture);
+                }
+
+                List<string> packages = new List<string>();
+                int numPackages = fs.ReadInt32();
+                for (int i = 0; i < numPackages; i++)
+                {
+                    int len = fs.ReadInt32();
+                    string pkgPath = fs.ReadStringASCII(len);
+                    pkgPath = GameData.GamePath + pkgPath;
+                    packages.Add(pkgPath);
+                }
+                for (int i = 0; i < packages.Count; i++)
+                {
+                    if (GameData.packageFiles.Find(s => s.Equals(packages[i], StringComparison.OrdinalIgnoreCase)) == null)
+                    {
+                        errors += "Detected removal of game files since last game data scan." + Environment.NewLine + Environment.NewLine;
+                        log += "Detected removal of game files since last game data scan." + Environment.NewLine + Environment.NewLine;
+                        return false;
+                    }
+                }
+                for (int i = 0; i < GameData.packageFiles.Count; i++)
+                {
+                    if (packages.Find(s => s.Equals(GameData.packageFiles[i], StringComparison.OrdinalIgnoreCase)) == null)
+                    {
+                        errors += "Detected additional game files not present in latest game data scan." + Environment.NewLine + Environment.NewLine;
+                        log += "Detected additional game files not present in latest game data scan." + Environment.NewLine + Environment.NewLine;
+                        return false;
+                    }
                 }
             }
 
