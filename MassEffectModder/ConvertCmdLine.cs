@@ -34,12 +34,11 @@ namespace MassEffectModder
     {
         static List<FoundTexture> textures;
 
-        static private bool loadTexturesMap(string path, List<FoundTexture> textures)
+        static private bool loadTexturesMap(string path, List<FoundTexture> textures, bool useInternalMap = true)
         {
-            bool useInternalMap = false;
             Stream fs;
 
-            if (!File.Exists(path))
+            if (useInternalMap || !File.Exists(path))
             {
                 useInternalMap = true;
             }
