@@ -80,6 +80,7 @@ namespace MassEffectModder
                 Text += " ME" + gameId;
             if (runAsAdmin)
                 Text += " (run as Administrator)";
+
             configIni = new ConfIni();
 
             labelStatusPrepare.Text = "";
@@ -443,6 +444,22 @@ namespace MassEffectModder
                     buttonPreInstallCheck.Enabled = true;
                     buttonsEnable(true);
                     return;
+                }
+
+                List<string> ignoredMods = new List<string>();
+                for (int i = 0; i < 10; i++)
+                {
+                    string ignoredMod = installerIni.Read("Mod" + i, "IgnoreForUpdateMods");
+                    if (ignoredMod != "")
+                        ignoredMods.Add(ignoredMod);
+                }
+                for (int i = 0; i < ignoredMods.Count; i++)
+                {
+                    if (memFiles.Exists(s => s.Contains(ignoredMods[i])))
+                    {
+                        memFiles.RemoveAt(i);
+                        i--;
+                    }
                 }
             }
             else
