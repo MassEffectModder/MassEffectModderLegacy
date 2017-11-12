@@ -264,7 +264,6 @@ namespace MassEffectModder
                                 string basePkgName = slaveTexture.basePackageName;
                                 if (basePkgName == Path.GetFileNameWithoutExtension(slaveTexture.path).ToUpperInvariant())
                                     throw new Exception();
-                                bool found = false;
                                 for (int j = 0; j < textures[k].list.Count; j++)
                                 {
                                     if (!textures[k].list[j].weakSlave &&
@@ -272,12 +271,9 @@ namespace MassEffectModder
                                     {
                                         slaveTexture.linkToMaster = j;
                                         textures[k].list[t] = slaveTexture;
-                                        found = true;
                                         break;
                                     }
                                 }
-                                if (!found)
-                                    throw new Exception();
                             }
                         }
                     }
