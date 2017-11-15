@@ -172,7 +172,7 @@ namespace MassEffectModder
                 }
                 else
                 {
-                    Console.WriteLine("File: " + Path.GetFileName(file) + Environment.NewLine);
+                    Console.WriteLine("File: " + Path.GetFileName(file));
                 }
                 log += "File: " + Path.GetFileName(file) + Environment.NewLine;
 
