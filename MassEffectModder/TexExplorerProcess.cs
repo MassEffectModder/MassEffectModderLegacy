@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Media.Imaging;
@@ -69,6 +70,130 @@ namespace MassEffectModder
         private string processTextureMod(string filenameMod, int previewIndex, bool extract, bool replace, bool verify, string outDir, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer, ref string log)
         {
             string errors = "";
+
+            if (filenameMod.EndsWith(".tpf", StringComparison.OrdinalIgnoreCase))
+            {
+                if (!replace && !extract)
+                    throw new Exception();
+
+                int result;
+                string fileName = "";
+                ulong dstLen = 0;
+                string[] ddsList = null;
+                ulong numEntries = 0;
+                IntPtr handle = IntPtr.Zero;
+                ZlibHelper.Zip zip = new ZlibHelper.Zip();
+                try
+                {
+                    int indexTpf = -1;
+                    byte[] buffer = File.ReadAllBytes(filenameMod);
+                    handle = zip.Open(buffer, ref numEntries, 1);
+                    for (ulong i = 0; i < numEntries; i++)
+                    {
+                        result = zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
+                        fileName = fileName.Trim();
+                        if (result != 0)
+                            throw new Exception();
+                        if (Path.GetExtension(fileName).ToLowerInvariant() == ".def" ||
+                            Path.GetExtension(fileName).ToLowerInvariant() == ".log")
+                        {
+                            indexTpf = (int)i;
+                            break;
+                        }
+                        result = zip.GoToNextFile(handle);
+                        if (result != 0)
+                            throw new Exception();
+                    }
+                    byte[] listText = new byte[dstLen];
+                    result = zip.ReadCurrentFile(handle, listText, dstLen);
+                    if (result != 0)
+                        throw new Exception();
+                    ddsList = Encoding.ASCII.GetString(listText).Trim('\0').Replace("\r", "").TrimEnd('\n').Split('\n');
+
+                    result = zip.GoToFirstFile(handle);
+                    if (result != 0)
+                        throw new Exception();
+
+                    for (uint i = 0; i < numEntries; i++)
+                    {
+                        if (i == indexTpf)
+                        {
+                            result = zip.GoToNextFile(handle);
+                            continue;
+                        }
+                        try
+                        {
+                            uint crc = 0;
+                            result = zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
+                            if (result != 0)
+                                throw new Exception();
+                            fileName = fileName.Trim();
+                            foreach (string dds in ddsList)
+                            {
+                                string ddsFile = dds.Split('|')[1];
+                                if (ddsFile.ToLowerInvariant().Trim() != fileName.ToLowerInvariant())
+                                    continue;
+                                crc = uint.Parse(dds.Split('|')[0].Substring(2), System.Globalization.NumberStyles.HexNumber);
+                                break;
+                            }
+                            string filename = Path.GetFileName(fileName);
+                            if (crc == 0)
+                            {
+                                errors += "Skipping file: " + filename + " not found in definition file, entry: " + (i + 1) + " - mod: " + filenameMod + Environment.NewLine;
+                                zip.GoToNextFile(handle);
+                                continue;
+                            }
+
+                            FoundTexture foundTexture = textures.Find(s => s.crc == crc);
+                            if (foundTexture.crc != 0)
+                            {
+                                byte[] data = new byte[dstLen];
+                                result = zip.ReadCurrentFile(handle, data, dstLen);
+                                if (result != 0)
+                                {
+                                    errors += "Error in texture: " + foundTexture.name + string.Format("_0x{0:X8}", crc) + ", skipping texture, entry: " + (i + 1) + " - mod: " + filenameMod + Environment.NewLine;
+                                    zip.GoToNextFile(handle);
+                                    continue;
+                                }
+                                if (extract)
+                                {
+                                    string name = foundTexture.name + "_" + string.Format("0x{0:X8}", crc) + Path.GetExtension(fileName);
+                                    using (FileStream output = new FileStream(Path.Combine(outDir, name), FileMode.Create, FileAccess.Write))
+                                    {
+                                        output.Write(data, 0, (int)dstLen);
+                                    }
+                                }
+                                else
+                                {
+                                    Image image = new Image(data, Path.GetExtension(filename));
+                                    errors += replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc, verify);
+                                }
+                            }
+                            else
+                            {
+                                errors += "Texture skipped. File " + filename + string.Format(" - 0x{0:X8}", crc) + " is not present in your game setup - mod: " + filenameMod + Environment.NewLine;
+                                zip.GoToNextFile(handle);
+                                continue;
+                            }
+                        }
+                        catch
+                        {
+                            errors += "Skipping not compatible content, entry: " + (i + 1) + " file: " + fileName + " - mod: " + filenameMod + Environment.NewLine;
+                        }
+                        result = zip.GoToNextFile(handle);
+                    }
+                    zip.Close(handle);
+                    handle = IntPtr.Zero;
+                }
+                catch
+                {
+                    errors += "Mod is not compatible: " + filenameMod + Environment.NewLine;
+                    if (handle != IntPtr.Zero)
+                        zip.Close(handle);
+                    handle = IntPtr.Zero;
+                }
+                return errors;
+            }
 
             using (FileStream fs = new FileStream(filenameMod, FileMode.Open, FileAccess.Read))
             {

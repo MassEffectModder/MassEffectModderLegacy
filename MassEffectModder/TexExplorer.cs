@@ -539,7 +539,7 @@ namespace MassEffectModder
             using (OpenFileDialog modFile = new OpenFileDialog())
             {
                 modFile.Title = "Please select Mod file";
-                modFile.Filter = "MOD file | *.mem";
+                modFile.Filter = "MOD file | *.mem;*.tpf";
                 modFile.Multiselect = true;
                 modFile.InitialDirectory = GameData.lastLoadMODPath;
                 if (modFile.ShowDialog() != DialogResult.OK)
@@ -557,20 +557,103 @@ namespace MassEffectModder
                 foreach (string file in files)
                 {
                     _mainWindow.updateStatusLabel("MOD: " + Path.GetFileNameWithoutExtension(file) + " loading...");
-                    using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
+                    if (file.EndsWith(".mem", StringComparison.OrdinalIgnoreCase))
                     {
-                        uint tag = fs.ReadUInt32();
-                        uint version = fs.ReadUInt32();
-                        if (tag != TextureModTag || version != TextureModVersion)
+                        using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
                         {
-                            if (version != TextureModVersion)
-                                MessageBox.Show("File " + file + " was made with an older version of MEM, skipping...");
-                            else
-                                MessageBox.Show("File " + file + " is not a valid MEM mod, skipping...");
-                            continue;
+                            uint tag = fs.ReadUInt32();
+                            uint version = fs.ReadUInt32();
+                            if (tag != TextureModTag || version != TextureModVersion)
+                            {
+                                if (version != TextureModVersion)
+                                    MessageBox.Show("File " + file + " was made with an older version of MEM, skipping...");
+                                else
+                                    MessageBox.Show("File " + file + " is not a valid MEM mod, skipping...");
+                                continue;
+                            }
                         }
                     }
+                    else if (file.EndsWith(".tpf", StringComparison.OrdinalIgnoreCase))
+                    {
+                        int result;
+                        string fileName = "";
+                        ulong dstLen = 0;
+                        string[] ddsList = null;
+                        ulong numEntries = 0;
+
+                        IntPtr handle = IntPtr.Zero;
+                        ZlibHelper.Zip zip = new ZlibHelper.Zip();
+                        try
+                        {
+                            int indexTpf = -1;
+                            byte[] buffer = File.ReadAllBytes(file);
+                            handle = zip.Open(buffer, ref numEntries, 1);
+                            for (ulong i = 0; i < numEntries; i++)
+                            {
+                                result = zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
+                                fileName = fileName.Trim();
+                                if (result != 0)
+                                    throw new Exception();
+                                if (Path.GetExtension(fileName).ToLowerInvariant() == ".def" ||
+                                    Path.GetExtension(fileName).ToLowerInvariant() == ".log")
+                                {
+                                    indexTpf = (int)i;
+                                    break;
+                                }
+                                result = zip.GoToNextFile(handle);
+                                if (result != 0)
+                                    throw new Exception();
+                            }
+                            byte[] listText = new byte[dstLen];
+                            result = zip.ReadCurrentFile(handle, listText, dstLen);
+                            if (result != 0)
+                                throw new Exception();
+                            ddsList = Encoding.ASCII.GetString(listText).Trim('\0').Replace("\r", "").TrimEnd('\n').Split('\n');
+
+                            result = zip.GoToFirstFile(handle);
+                            if (result != 0)
+                                throw new Exception();
+
+                            for (uint i = 0; i < numEntries; i++)
+                            {
+                                if (i == indexTpf)
+                                {
+                                    result = zip.GoToNextFile(handle);
+                                    continue;
+                                }
+                                uint crc = 0;
+                                result = zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
+                                if (result != 0)
+                                    throw new Exception();
+                                fileName = fileName.Trim();
+                                foreach (string dds in ddsList)
+                                {
+                                    string ddsFile = dds.Split('|')[1];
+                                    if (ddsFile.ToLowerInvariant().Trim() != fileName.ToLowerInvariant())
+                                        continue;
+                                    crc = uint.Parse(dds.Split('|')[0].Substring(2), System.Globalization.NumberStyles.HexNumber);
+                                    break;
+                                }
+                                string filename = Path.GetFileName(fileName);
+                                if (crc == 0)
+                                {
+                                    zip.GoToNextFile(handle);
+                                    continue;
+                                }
+                                result = zip.GoToNextFile(handle);
+                            }
+                        }
+                        catch
+                        {
+                            MessageBox.Show("File " + fileName + " is not a valid TPF mod, skipping...");
+                        }
+                        if (handle != IntPtr.Zero)
+                            zip.Close(handle);
+                        handle = IntPtr.Zero;
+                    }
                     string desc = Path.GetFileNameWithoutExtension(file);
+                    if (file.EndsWith(".tpf", StringComparison.OrdinalIgnoreCase))
+                        desc = Path.GetFileNameWithoutExtension(file) + " (TPF)";
                     ListViewItem item = new ListViewItem(desc);
                     item.Name = file;
                     listViewMods.Items.Add(item);
@@ -718,6 +801,8 @@ namespace MassEffectModder
                 return;
 
             string log = "";
+            if (listViewMods.SelectedItems[0].Name.EndsWith(".tpf", StringComparison.OrdinalIgnoreCase))
+                return;
             richTextBoxInfo.Text = mipMaps.listTextureMod(listViewMods.SelectedItems[0].Name, _textures, cachePackageMgr, this, ref log);
             _mainWindow.updateStatusLabel("Done.");
             _mainWindow.updateStatusLabel2("");
