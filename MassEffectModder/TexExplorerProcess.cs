@@ -139,6 +139,7 @@ namespace MassEffectModder
                             string filename = Path.GetFileName(fileName);
                             if (crc == 0)
                             {
+                                log += "Skipping file: " + filename + " not found in definition file, entry: " + (i + 1) + " - mod: " + filenameMod + Environment.NewLine;
                                 errors += "Skipping file: " + filename + " not found in definition file, entry: " + (i + 1) + " - mod: " + filenameMod + Environment.NewLine;
                                 zip.GoToNextFile(handle);
                                 continue;
@@ -151,9 +152,15 @@ namespace MassEffectModder
                                 result = zip.ReadCurrentFile(handle, data, dstLen);
                                 if (result != 0)
                                 {
+                                    log += "Error in texture: " + foundTexture.name + string.Format("_0x{0:X8}", crc) + ", skipping texture, entry: " + (i + 1) + " - mod: " + filenameMod + Environment.NewLine;
                                     errors += "Error in texture: " + foundTexture.name + string.Format("_0x{0:X8}", crc) + ", skipping texture, entry: " + (i + 1) + " - mod: " + filenameMod + Environment.NewLine;
                                     zip.GoToNextFile(handle);
                                     continue;
+                                }
+                                if (texExplorer != null)
+                                {
+                                    texExplorer._mainWindow.updateStatusLabel("Processing MOD " + Path.GetFileName(filenameMod) +
+                                        " - File " + (i + 1) + " of " + numEntries + " - " + foundTexture.name);
                                 }
                                 if (extract)
                                 {
@@ -171,13 +178,14 @@ namespace MassEffectModder
                             }
                             else
                             {
-                                errors += "Texture skipped. File " + filename + string.Format(" - 0x{0:X8}", crc) + " is not present in your game setup - mod: " + filenameMod + Environment.NewLine;
+                                log += "Texture skipped. File " + filename + string.Format(" - 0x{0:X8}", crc) + " is not present in your game setup - mod: " + filenameMod + Environment.NewLine;
                                 zip.GoToNextFile(handle);
                                 continue;
                             }
                         }
                         catch
                         {
+                            log += "Skipping not compatible content, entry: " + (i + 1) + " file: " + fileName + " - mod: " + filenameMod + Environment.NewLine;
                             errors += "Skipping not compatible content, entry: " + (i + 1) + " file: " + fileName + " - mod: " + filenameMod + Environment.NewLine;
                         }
                         result = zip.GoToNextFile(handle);
@@ -187,6 +195,7 @@ namespace MassEffectModder
                 }
                 catch
                 {
+                    log += "Mod is not compatible: " + filenameMod + Environment.NewLine;
                     errors += "Mod is not compatible: " + filenameMod + Environment.NewLine;
                     if (handle != IntPtr.Zero)
                         zip.Close(handle);
