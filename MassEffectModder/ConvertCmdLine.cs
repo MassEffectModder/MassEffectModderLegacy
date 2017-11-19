@@ -34,55 +34,35 @@ namespace MassEffectModder
     {
         static List<FoundTexture> textures;
 
-        static private bool loadTexturesMap(string path, List<FoundTexture> textures, bool useInternalMap = true)
+        static private void loadTexturesMap()
         {
             Stream fs;
+            List<FoundTexture> textures = new List<FoundTexture>();
+            byte[] buffer = null;
 
-            if (useInternalMap || !File.Exists(path))
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            string[] resources = assembly.GetManifestResourceNames();
+            for (int l = 0; l < resources.Length; l++)
             {
-                useInternalMap = true;
-            }
-            else
-            {
-                fs = new FileStream(path, FileMode.Open, FileAccess.Read);
-                uint tag = fs.ReadUInt32();
-                uint version = fs.ReadUInt32();
-                if (tag != TexExplorer.textureMapBinTag || version != TexExplorer.textureMapBinVersion)
-                    useInternalMap = true;
-                fs.Close();
-            }
-
-            if (useInternalMap)
-            {
-                byte[] buffer = null;
-                Assembly assembly = Assembly.GetExecutingAssembly();
-                string[] resources = assembly.GetManifestResourceNames();
-                for (int l = 0; l < resources.Length; l++)
+                if (resources[l].Contains("me" + (int)GameData.gameType + "map.bin"))
                 {
-                    if (resources[l].Contains("me" + (int)GameData.gameType + "map.bin"))
+                    using (Stream s = Assembly.GetEntryAssembly().GetManifestResourceStream(resources[l]))
                     {
-                        using (Stream s = Assembly.GetEntryAssembly().GetManifestResourceStream(resources[l]))
-                        {
-                            buffer = s.ReadToBuffer(s.Length);
-                            break;
-                        }
+                        buffer = s.ReadToBuffer(s.Length);
+                        break;
                     }
                 }
-                if (buffer == null)
-                    throw new Exception();
-                MemoryStream tmp = new MemoryStream(buffer);
-                if (tmp.ReadUInt32() != 0x504D5443)
-                    throw new Exception();
-                byte[] decompressed = new byte[tmp.ReadInt32()];
-                byte[] compressed = tmp.ReadToBuffer((uint)tmp.Length - 8);
-                if (new ZlibHelper.Zlib().Decompress(compressed, (uint)compressed.Length, decompressed) == 0)
-                    throw new Exception();
-                fs = new MemoryStream(decompressed);
             }
-            else
-            {
-                fs = new FileStream(path, FileMode.Open, FileAccess.Read);
-            }
+            if (buffer == null)
+                throw new Exception();
+            MemoryStream tmp = new MemoryStream(buffer);
+            if (tmp.ReadUInt32() != 0x504D5443)
+                throw new Exception();
+            byte[] decompressed = new byte[tmp.ReadInt32()];
+            byte[] compressed = tmp.ReadToBuffer((uint)tmp.Length - 8);
+            if (new ZlibHelper.Zlib().Decompress(compressed, (uint)compressed.Length, decompressed) == 0)
+                throw new Exception();
+            fs = new MemoryStream(decompressed);
 
             fs.Skip(8);
             uint countTexture = fs.ReadUInt32();
@@ -92,6 +72,10 @@ namespace MassEffectModder
                 int len = fs.ReadInt32();
                 texture.name = fs.ReadStringASCII(len);
                 texture.crc = fs.ReadUInt32();
+                texture.width = fs.ReadInt32();
+                texture.height = fs.ReadInt32();
+                texture.pixfmt = (PixelFormat)fs.ReadInt32();
+                texture.alphadxt1 = fs.ReadInt32() != 0;
                 uint countPackages = fs.ReadUInt32();
                 texture.list = new List<MatchedTexture>();
                 for (int k = 0; k < countPackages; k++)
@@ -105,15 +89,54 @@ namespace MassEffectModder
                 }
                 textures.Add(texture);
             }
+        }
+
+        static private bool loadTexturesMapFile(string path)
+        {
+            List<FoundTexture> textures = new List<FoundTexture>();
+
+            if (!File.Exists(path))
+                return false;
+
+            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+            {
+                uint tag = fs.ReadUInt32();
+                uint version = fs.ReadUInt32();
+                if (tag != TexExplorer.textureMapBinTag || version != TexExplorer.textureMapBinVersion)
+                    return false;
+
+                uint countTexture = fs.ReadUInt32();
+                for (int i = 0; i < countTexture; i++)
+                {
+                    FoundTexture texture = new FoundTexture();
+                    int len = fs.ReadInt32();
+                    texture.name = fs.ReadStringASCII(len);
+                    texture.crc = fs.ReadUInt32();
+                    uint countPackages = fs.ReadUInt32();
+                    texture.list = new List<MatchedTexture>();
+                    for (int k = 0; k < countPackages; k++)
+                    {
+                        MatchedTexture matched = new MatchedTexture();
+                        matched.exportID = fs.ReadInt32();
+                        matched.linkToMaster = fs.ReadInt32();
+                        len = fs.ReadInt32();
+                        matched.path = fs.ReadStringASCII(len);
+                        texture.list.Add(matched);
+                    }
+                    textures.Add(texture);
+                }
+            }
 
             return true;
         }
 
-        static public string convertDataModtoMem(string inputDir, string memFilePath, List<FoundTexture> textures,
+        static public string convertDataModtoMem(string inputDir, string memFilePath,
             MainWindow mainWindow, bool onlyIndividual = false)
         {
             string errors = "";
             string[] files = null;
+
+            loadTexturesMap();
 
             if (mainWindow == null)
             {
@@ -814,22 +837,9 @@ namespace MassEffectModder
 
         static public bool ConvertToMEM(int gameId, string inputDir, string memFile)
         {
-            textures = new List<FoundTexture>();
-            ConfIni configIni = new ConfIni();
-            GameData gameData = new GameData((MeType)gameId, configIni);
-            if (GameData.GamePath == null || !Directory.Exists(GameData.GamePath) || !gameData.getPackages(false, true))
-            {
-                Console.WriteLine("Error: Could not found the game!");
-                return false;
-            }
+            loadTexturesMap();
 
-            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    Assembly.GetExecutingAssembly().GetName().Name);
-            string mapFile = Path.Combine(path, "me" + gameId + "map.bin");
-            if (!loadTexturesMap(mapFile, textures))
-                return false;
-
-            string errors = convertDataModtoMem(inputDir, memFile, textures, null);
+            string errors = convertDataModtoMem(inputDir, memFile, null);
             if (errors != "")
             {
                 Console.WriteLine("Error: Some errors have occured");
@@ -920,20 +930,7 @@ namespace MassEffectModder
 
         static public bool convertGameImage(int gameId, string inputFile, string outputFile)
         {
-            textures = new List<FoundTexture>();
-            ConfIni configIni = new ConfIni();
-            GameData gameData = new GameData((MeType)gameId, configIni);
-            if (GameData.GamePath == null || !Directory.Exists(GameData.GamePath) || !gameData.getPackages(false, true))
-            {
-                Console.WriteLine("Error: Could not found the game!");
-                return false;
-            }
-
-            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    Assembly.GetExecutingAssembly().GetName().Name);
-            string mapFile = Path.Combine(path, "me" + gameId + "map.bin");
-            if (!loadTexturesMap(mapFile, textures))
-                return false;
+            loadTexturesMap();
 
             bool status = convertGameTexture(inputFile, outputFile);
             if (!status)
@@ -946,20 +943,7 @@ namespace MassEffectModder
 
         static public bool convertGameImages(int gameId, string inputDir, string outputDir)
         {
-            textures = new List<FoundTexture>();
-            ConfIni configIni = new ConfIni();
-            GameData gameData = new GameData((MeType)gameId, configIni);
-            if (GameData.GamePath == null || !Directory.Exists(GameData.GamePath))
-            {
-                Console.WriteLine("Error: Could not found the game!");
-                return false;
-            }
-
-            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    Assembly.GetExecutingAssembly().GetName().Name);
-            string mapFile = Path.Combine(path, "me" + gameId + "map.bin");
-            if (!loadTexturesMap(mapFile, textures))
-                return false;
+            loadTexturesMap();
 
             List<string> list = Directory.GetFiles(inputDir, "*.dds").Where(item => item.EndsWith(".dds", StringComparison.OrdinalIgnoreCase)).ToList();
             list.AddRange(Directory.GetFiles(inputDir, "*.png").Where(item => item.EndsWith(".png", StringComparison.OrdinalIgnoreCase)));
@@ -1131,20 +1115,7 @@ namespace MassEffectModder
 
         static public bool extractMOD(int gameId, string inputDir, string outputDir)
         {
-            textures = new List<FoundTexture>();
-            ConfIni configIni = new ConfIni();
-            GameData gameData = new GameData((MeType)gameId, configIni);
-            if (GameData.GamePath == null || !Directory.Exists(GameData.GamePath))
-            {
-                Console.WriteLine("Error: Could not found the game!");
-                return false;
-            }
-
-            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    Assembly.GetExecutingAssembly().GetName().Name);
-            string mapFile = Path.Combine(path, "me" + gameId + "map.bin");
-            if (!loadTexturesMap(mapFile, textures))
-                return false;
+            loadTexturesMap();
 
             Console.WriteLine("Extract MOD files started...");
 
@@ -1190,6 +1161,7 @@ namespace MassEffectModder
                             if (desc.Contains("Binary Replacement"))
                             {
                                 int exportId = -1;
+                                string path = "";
                                 string package = "";
                                 try
                                 {
@@ -1272,20 +1244,7 @@ namespace MassEffectModder
 
         static public bool extractAllTextures(int gameId, string outputDir, bool png, string textureTfcFilter)
         {
-            textures = new List<FoundTexture>();
-            ConfIni configIni = new ConfIni();
-            GameData gameData = new GameData((MeType)gameId, configIni);
-            if (GameData.GamePath == null || !Directory.Exists(GameData.GamePath))
-            {
-                Console.WriteLine("Error: Could not found the game!");
-                return false;
-            }
-
-            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    Assembly.GetExecutingAssembly().GetName().Name);
-            string mapFile = Path.Combine(path, "me" + gameId + "map.bin");
-            if (!loadTexturesMap(mapFile, textures))
-                return false;
+            loadTexturesMap();
 
             Console.WriteLine("Extracting textures started...");
 
@@ -1357,7 +1316,7 @@ namespace MassEffectModder
             string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                     Assembly.GetExecutingAssembly().GetName().Name);
             string mapFile = Path.Combine(path, "me" + 3 + "map.bin");
-            if (!loadTexturesMap(mapFile, textures))
+            if (!loadTexturesMapFile(mapFile))
                 return false;
 
             gameData.getPackages(true, true);

@@ -31,6 +31,7 @@ namespace MassEffectModder
     public partial class TreeScan
     {
         public List<FoundTexture> treeScan = null;
+        private bool generateBuiltinMapFiles = false; // change to true to enable map files generation
 
         public string PrepareListOfTextures(TexExplorer texEplorer, CachePackageMgr cachePackageMgr, MainWindow mainWindow, Installer installer, ref string log, bool force = false)
         {
@@ -282,43 +283,66 @@ namespace MassEffectModder
 
             using (FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
             {
-                fs.WriteUInt32(TexExplorer.textureMapBinTag);
-                fs.WriteUInt32(TexExplorer.textureMapBinVersion);
-                fs.WriteInt32(textures.Count);
+                MemoryStream mem = new MemoryStream();
+                mem.WriteUInt32(TexExplorer.textureMapBinTag);
+                mem.WriteUInt32(TexExplorer.textureMapBinVersion);
+                mem.WriteInt32(textures.Count);
                 for (int i = 0; i < textures.Count; i++)
                 {
-                    fs.WriteInt32(textures[i].name.Length);
-                    fs.WriteStringASCII(textures[i].name);
-                    fs.WriteUInt32(textures[i].crc);
-                    fs.WriteInt32(textures[i].list.Count);
+                    mem.WriteInt32(textures[i].name.Length);
+                    mem.WriteStringASCII(textures[i].name);
+                    mem.WriteUInt32(textures[i].crc);
+                    if (generateBuiltinMapFiles)
+                    {
+                        mem.WriteInt32(textures[i].width);
+                        mem.WriteInt32(textures[i].height);
+                        mem.WriteInt32((int)textures[i].pixfmt);
+                        mem.WriteInt32(textures[i].alphadxt1 ? 1 : 0);
+                    }
+                    mem.WriteInt32(textures[i].list.Count);
                     for (int k = 0; k < textures[i].list.Count; k++)
                     {
-                        fs.WriteInt32(textures[i].list[k].exportID);
-                        fs.WriteInt32(textures[i].list[k].linkToMaster);
-                        fs.WriteInt32(textures[i].list[k].path.Length);
-                        fs.WriteStringASCII(textures[i].list[k].path);
+                        mem.WriteInt32(textures[i].list[k].exportID);
+                        mem.WriteInt32(textures[i].list[k].linkToMaster);
+                        mem.WriteInt32(textures[i].list[k].path.Length);
+                        mem.WriteStringASCII(textures[i].list[k].path);
                     }
                 }
-                fs.WriteInt32(GameData.packageFiles.Count);
-                for (int i = 0; i < GameData.packageFiles.Count; i++)
+                if (!generateBuiltinMapFiles)
                 {
-                    string s = GameData.RelativeGameData(GameData.packageFiles[i]);
-                    fs.WriteInt32(s.Length);
-                    fs.WriteStringASCII(s);
+                    mem.WriteInt32(GameData.packageFiles.Count);
+                    for (int i = 0; i < GameData.packageFiles.Count; i++)
+                    {
+                        string s = GameData.RelativeGameData(GameData.packageFiles[i]);
+                        mem.WriteInt32(s.Length);
+                        mem.WriteStringASCII(s);
+                    }
+                }
+                mem.SeekBegin();
+
+                if (generateBuiltinMapFiles)
+                {
+                    fs.WriteUInt32(0x504D5443);
+                    fs.WriteUInt32((uint)mem.Length);
+                    byte[] compressed = new ZlibHelper.Zlib().Compress(mem.ToArray(), 9);
+                    fs.WriteUInt32((uint)compressed.Length);
                 }
             }
 
             if (mainWindow != null)
             {
-                MipMaps mipmaps = new MipMaps();
-                if (GameData.gameType == MeType.ME1_TYPE)
+                if (!generateBuiltinMapFiles)
                 {
-                    errors += mipmaps.removeMipMapsME1(1, textures, null, mainWindow, null);
-                    errors += mipmaps.removeMipMapsME1(2, textures, null, mainWindow, null);
-                }
-                else
-                {
-                    errors += mipmaps.removeMipMapsME2ME3(textures, null, mainWindow, null);
+                    MipMaps mipmaps = new MipMaps();
+                    if (GameData.gameType == MeType.ME1_TYPE)
+                    {
+                        errors += mipmaps.removeMipMapsME1(1, textures, null, mainWindow, null);
+                        errors += mipmaps.removeMipMapsME1(2, textures, null, mainWindow, null);
+                    }
+                    else
+                    {
+                        errors += mipmaps.removeMipMapsME2ME3(textures, null, mainWindow, null);
+                    }
                 }
 
                 var time = Misc.stopTimer();
@@ -413,6 +437,18 @@ namespace MassEffectModder
                         foundTex.list.Add(matchTexture);
                         foundTex.name = name;
                         foundTex.crc = crc;
+                        if (generateBuiltinMapFiles)
+                        {
+                            foundTex.width = texture.getTopMipmap().width;
+                            foundTex.height = texture.getTopMipmap().height;
+                            foundTex.pixfmt = Image.getEngineFormatType(texture.properties.getProperty("Format").valueName);
+                            if (foundTex.pixfmt == PixelFormat.DXT1 &&
+                                texture.properties.exists("CompressionSettings") &&
+                                texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
+                            {
+                                foundTex.alphadxt1 = true;
+                            }
+                        }
                         textures.Add(foundTex);
                     }
                 }
