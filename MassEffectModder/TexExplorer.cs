@@ -894,10 +894,9 @@ namespace MassEffectModder
                         Misc.startTimer();
                         _mainWindow.updateStatusLabel("MEM packing...");
                         _mainWindow.updateStatusLabel2("");
-                        string log = "";
                         richTextBoxInfo.Text = CmdLineConverter.convertDataModtoMem(modFile.SelectedPath,
                             Path.Combine(Path.GetDirectoryName(modFile.SelectedPath), Path.GetFileName(modFile.SelectedPath)) + ".mem",
-                            _textures, _mainWindow, ref log, true);
+                            _textures, _mainWindow, true);
                         var time = Misc.stopTimer();
                         if (richTextBoxInfo.Text != "")
                         {
@@ -956,14 +955,13 @@ namespace MassEffectModder
                         Misc.startTimer();
                         _mainWindow.updateStatusLabel("MEMs packing...");
                         _mainWindow.updateStatusLabel2("");
-                        string log = "";
                         richTextBoxInfo.Text = "";
                         richTextBoxInfo.Show();
                         pictureBoxPreview.Hide();
                         for (int i = 0; i < listDirs.Count; i++)
                         {
                             richTextBoxInfo.Text += CmdLineConverter.convertDataModtoMem(listDirs[i], Path.Combine(Path.GetDirectoryName(listDirs[i]), Path.GetFileName(listDirs[i])) + ".mem",
-                                _textures, _mainWindow, ref log, true);
+                                _textures, _mainWindow, true);
                         }
                         var time = Misc.stopTimer();
                         if (richTextBoxInfo.Text != "")
