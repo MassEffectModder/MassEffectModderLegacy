@@ -326,6 +326,7 @@ namespace MassEffectModder
                     fs.WriteUInt32((uint)mem.Length);
                     byte[] compressed = new ZlibHelper.Zlib().Compress(mem.ToArray(), 9);
                     fs.WriteUInt32((uint)compressed.Length);
+                    fs.WriteFromBuffer(compressed);
                 }
                 else
                 {
