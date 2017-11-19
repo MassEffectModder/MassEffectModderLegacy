@@ -1218,7 +1218,7 @@ namespace MassEffectModder
                                         errors += "Skipping not compatible content, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                         continue;
                                     }
-                                    mod.packagePath = GameData.RelativeGameData(Path.Combine(path, package));
+                                    mod.packagePath = Path.Combine(path, package);
                                     mod.binaryMod = true;
                                     len = fs.ReadInt32();
                                     mod.data = fs.ReadToBuffer(len);

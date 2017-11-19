@@ -273,7 +273,7 @@ namespace MassEffectModder
                                         Console.WriteLine("Skipping not compatible content, entry: " + (i + 1) + " - mod: " + file);
                                         continue;
                                     }
-                                    mod.packagePath = GameData.RelativeGameData(Path.Combine(path, package));
+                                    mod.packagePath = Path.Combine(path, package);
                                     mod.binaryMod = true;
                                     len = fs.ReadInt32();
                                     mod.data = fs.ReadToBuffer(len);
@@ -1205,7 +1205,7 @@ namespace MassEffectModder
                                     status = false;
                                     continue;
                                 }
-                                path = GameData.RelativeGameData(Path.Combine(path, package));
+                                path = Path.Combine(path, package);
                                 len = fs.ReadInt32();
                                 string newFilename;
                                 if (path.Contains("\\DLC\\"))
