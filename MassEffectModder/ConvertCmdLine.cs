@@ -34,7 +34,7 @@ namespace MassEffectModder
     {
         static List<FoundTexture> textures;
 
-        static private void loadTexturesMap()
+        static private void loadTexturesMap(MeType gameId)
         {
             Stream fs;
             List<FoundTexture> textures = new List<FoundTexture>();
@@ -44,7 +44,7 @@ namespace MassEffectModder
             string[] resources = assembly.GetManifestResourceNames();
             for (int l = 0; l < resources.Length; l++)
             {
-                if (resources[l].Contains("me" + (int)GameData.gameType + "map.bin"))
+                if (resources[l].Contains("me" + (int)gameId + "map.bin"))
                 {
                     using (Stream s = Assembly.GetEntryAssembly().GetManifestResourceStream(resources[l]))
                     {
@@ -131,12 +131,12 @@ namespace MassEffectModder
         }
 
         static public string convertDataModtoMem(string inputDir, string memFilePath,
-            MainWindow mainWindow, bool onlyIndividual = false)
+            MeType gameId, MainWindow mainWindow, bool onlyIndividual = false)
         {
             string errors = "";
             string[] files = null;
 
-            loadTexturesMap();
+            loadTexturesMap(gameId);
 
             if (mainWindow == null)
             {
@@ -220,7 +220,7 @@ namespace MassEffectModder
                             uint gameType = 0;
                             fs.JumpTo(fs.ReadInt64());
                             gameType = fs.ReadUInt32();
-                            if ((MeType)gameType != GameData.gameType)
+                            if ((MeType)gameType != gameId)
                             {
                                 errors += "File " + file + " is not a MEM mod valid for this game" + Environment.NewLine;
                                 Console.WriteLine("File " + file + " is not a MEM mod valid for this game");
@@ -325,22 +325,12 @@ namespace MassEffectModder
                                     mod.binaryMod = false;
                                     len = fs.ReadInt32();
                                     mod.data = fs.ReadToBuffer(len);
-                                    Package pkg = null;
-                                    try
-                                    {
-                                        pkg = new Package(GameData.GamePath + f.list[0].path);
-                                    }
-                                    catch
-                                    {
-                                        Console.WriteLine("Missing package file: " + f.list[0].path + " - Skipping, entry: " + (i + 1) + " file: " + fileName + " - mod: " + file);
-                                        continue;
-                                    }
-                                    Texture texture = new Texture(pkg, f.list[0].exportID, pkg.getExportData(f.list[0].exportID));
-                                    string fmt = texture.properties.getProperty("Format").valueName;
-                                    PixelFormat pixelFormat = Image.getEngineFormatType(fmt);
+
+                                    PixelFormat pixelFormat = f.pixfmt;
                                     Image image = new Image(mod.data, Image.ImageFormat.DDS);
+
                                     if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
-                                        texture.mipMapsList[0].width / texture.mipMapsList[0].height)
+                                        f.width / f.height)
                                     {
                                         errors += "Error in texture: " + textureName + string.Format("_0x{0:X8}", f.crc) + " This texture has wrong aspect ratio, skipping texture, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                         Console.WriteLine("Error in texture: " + textureName + string.Format("_0x{0:X8}", f.crc) + " This texture has wrong aspect ratio, skipping texture, entry: " + (i + 1) + " - mod: " + file);
@@ -348,13 +338,12 @@ namespace MassEffectModder
                                     }
 
                                     if (!image.checkDDSHaveAllMipmaps() ||
-                                        (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1) ||
+                                        image.mipMaps.Count() <= 1 ||
                                         image.pixelFormat != pixelFormat)
                                     {
                                         bool dxt1HasAlpha = false;
                                         byte dxt1Threshold = 128;
-                                        if (texture.properties.exists("CompressionSettings") &&
-                                            texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
+                                        if (f.alphadxt1)
                                         {
                                             dxt1HasAlpha = true;
                                             if (image.pixelFormat == PixelFormat.ARGB ||
@@ -413,12 +402,22 @@ namespace MassEffectModder
                             throw new Exception();
                         string tmpExp = filename.Substring(posStr);
                         mod.exportId = int.Parse(tmpExp.Substring(0));
-                        string path;
                         if (dlcName != "")
-                            path = GameData.packageFiles.Find(s => s.Contains("\\" + dlcName + "\\") && Path.GetFileName(s).Equals(pkgName, StringComparison.OrdinalIgnoreCase));
+                        {
+                            if (gameId == MeType.ME1_TYPE)
+                                mod.packagePath = @"DLC\" + dlcName + @"\CookedPC\" + pkgName;
+                            else if (gameId == MeType.ME2_TYPE)
+                                mod.packagePath = @"BioGame\DLC\" + dlcName + @"\CookedPC\" + pkgName;
+                            else
+                                mod.packagePath = @"BIOGame\DLC\" + dlcName + @"\CookedPCConsole\" + pkgName;
+                        }
                         else
-                            path = GameData.packageFiles.Find(s => !s.Contains("\\DLC\\") && Path.GetFileName(s).Equals(pkgName, StringComparison.OrdinalIgnoreCase));
-                        mod.packagePath = GameData.RelativeGameData(path);
+                        {
+                            if (gameId == MeType.ME1_TYPE || gameId == MeType.ME2_TYPE)
+                                mod.packagePath = @"BioGame\CookedPC\" + pkgName;
+                            else
+                                mod.packagePath = @"BIOGame\CookedPCConsole\" + pkgName;
+                        }
                         mod.binaryMod = true;
                         mod.data = File.ReadAllBytes(file);
                         mods.Add(mod);
@@ -522,23 +521,11 @@ namespace MassEffectModder
                                     continue;
                                 }
 
-                                Package pkg = null;
-                                try
-                                {
-                                    pkg = new Package(GameData.GamePath + foundCrcList[0].list[0].path);
-                                }
-                                catch
-                                {
-                                    Console.WriteLine("Missing package file: " + foundCrcList[0].list[0].path + " - Skipping, entry: " + (i + 1) + " file: " + fileName + " - mod: " + file);
-                                    continue;
-                                }
-                                Texture texture = new Texture(pkg, foundCrcList[0].list[0].exportID, pkg.getExportData(foundCrcList[0].list[0].exportID));
-                                string fmt = texture.properties.getProperty("Format").valueName;
-                                PixelFormat pixelFormat = Image.getEngineFormatType(fmt);
-
+                                PixelFormat pixelFormat = foundCrcList[0].pixfmt;
                                 Image image = new Image(mod.data, Path.GetExtension(filename));
+
                                 if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
-                                    texture.mipMapsList[0].width / texture.mipMapsList[0].height)
+                                    foundCrcList[0].width / foundCrcList[0].height)
                                 {
                                     errors += "Error in texture: " + textureName + string.Format("_0x{0:X8}", crc) + " This texture has wrong aspect ratio, skipping texture, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                     Console.WriteLine("Error in texture: " + textureName + string.Format("_0x{0:X8}", crc) + " This texture has wrong aspect ratio, skipping texture, entry: " + (i + 1) + " - mod: " + file);
@@ -547,13 +534,12 @@ namespace MassEffectModder
                                 }
 
                                 if (!image.checkDDSHaveAllMipmaps() ||
-                                    (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1) ||
+                                    image.mipMaps.Count() <= 1 ||
                                     image.pixelFormat != pixelFormat)
                                 {
                                     bool dxt1HasAlpha = false;
                                     byte dxt1Threshold = 128;
-                                    if (texture.properties.exists("CompressionSettings") &&
-                                        texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
+                                    if (foundCrcList[0].alphadxt1)
                                     {
                                         dxt1HasAlpha = true;
                                         if (image.pixelFormat == PixelFormat.ARGB ||
@@ -627,24 +613,13 @@ namespace MassEffectModder
 
                     using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
                     {
-                        Package pkg = null;
-                        try
-                        {
-                            pkg = new Package(GameData.GamePath + foundCrcList[0].list[0].path);
-                        }
-                        catch
-                        {
-                            Console.WriteLine("Missing package file: " + foundCrcList[0].list[0].path + " - Skipping, file: " + Path.GetFileName(file));
-                            continue;
-                        }
-                        Texture texture = new Texture(pkg, foundCrcList[0].list[0].exportID, pkg.getExportData(foundCrcList[0].list[0].exportID));
-                        string fmt = texture.properties.getProperty("Format").valueName;
-                        PixelFormat pixelFormat = Image.getEngineFormatType(fmt);
+                        PixelFormat pixelFormat = foundCrcList[0].pixfmt;
+
                         mod.data = fs.ReadToBuffer((int)fs.Length);
                         Image image = new Image(mod.data, Image.ImageFormat.DDS);
 
                         if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
-                            texture.mipMapsList[0].width / texture.mipMapsList[0].height)
+                            foundCrcList[0].width / foundCrcList[0].height)
                         {
                             errors += "Error in texture: " + Path.GetFileName(file) + " This texture has wrong aspect ratio, skipping texture..." + Environment.NewLine;
                             Console.WriteLine("Error in texture: " + Path.GetFileName(file) + " This texture has wrong aspect ratio, skipping texture...");
@@ -652,13 +627,12 @@ namespace MassEffectModder
                         }
 
                         if (!image.checkDDSHaveAllMipmaps() ||
-                            (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1) ||
+                            image.mipMaps.Count() <= 1 ||
                             image.pixelFormat != pixelFormat)
                         {
                             bool dxt1HasAlpha = false;
                             byte dxt1Threshold = 128;
-                            if (texture.properties.exists("CompressionSettings") &&
-                                texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
+                            if (foundCrcList[0].alphadxt1)
                             {
                                 dxt1HasAlpha = true;
                                 if (image.pixelFormat == PixelFormat.ARGB ||
@@ -720,23 +694,11 @@ namespace MassEffectModder
                         continue;
                     }
 
-                    Package pkg = null;
-                    try
-                    {
-                        pkg = new Package(GameData.GamePath + foundCrcList[0].list[0].path);
-                    }
-                    catch
-                    {
-                        Console.WriteLine("Missing package file: " + foundCrcList[0].list[0].path + " - Skipping, file: " + Path.GetFileName(file));
-                        continue;
-                    }
-                    Texture texture = new Texture(pkg, foundCrcList[0].list[0].exportID, pkg.getExportData(foundCrcList[0].list[0].exportID));
-                    string fmt = texture.properties.getProperty("Format").valueName;
-                    PixelFormat pixelFormat = Image.getEngineFormatType(fmt);
-
+                    PixelFormat pixelFormat = foundCrcList[0].pixfmt;
                     Image image = new Image(file, Image.ImageFormat.Unknown).convertToARGB();
-                    if (image.mipMaps[0].width / image.mipMaps[0].height !=
-                        texture.mipMapsList[0].width / texture.mipMapsList[0].height)
+
+                    if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
+                        foundCrcList[0].width / foundCrcList[0].height)
                     {
                         errors += "Error in texture: " + Path.GetFileName(file) + " This texture has wrong aspect ratio, skipping texture..." + Environment.NewLine;
                         Console.WriteLine("Error in texture: " + Path.GetFileName(file) + " This texture has wrong aspect ratio, skipping texture...");
@@ -745,8 +707,7 @@ namespace MassEffectModder
 
                     bool dxt1HasAlpha = false;
                     byte dxt1Threshold = 128;
-                    if (texture.properties.exists("CompressionSettings") &&
-                        texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
+                    if (foundCrcList[0].alphadxt1)
                     {
                         dxt1HasAlpha = true;
                         if (image.pixelFormat == PixelFormat.ARGB ||
@@ -818,7 +779,7 @@ namespace MassEffectModder
             outFs.WriteUInt32(TexExplorer.TextureModVersion);
             outFs.WriteInt64(pos);
             outFs.JumpTo(pos);
-            outFs.WriteUInt32((uint)GameData.gameType);
+            outFs.WriteUInt32((uint)gameId);
             outFs.WriteInt32(modFiles.Count);
             for (int i = 0; i < modFiles.Count; i++)
             {
@@ -835,11 +796,11 @@ namespace MassEffectModder
             return errors;
         }
 
-        static public bool ConvertToMEM(int gameId, string inputDir, string memFile)
+        static public bool ConvertToMEM(MeType gameId, string inputDir, string memFile)
         {
-            loadTexturesMap();
+            loadTexturesMap(gameId);
 
-            string errors = convertDataModtoMem(inputDir, memFile, null);
+            string errors = convertDataModtoMem(inputDir, memFile, gameId, null);
             if (errors != "")
             {
                 Console.WriteLine("Error: Some errors have occured");
@@ -882,23 +843,11 @@ namespace MassEffectModder
                 return false;
             }
 
-            Package pkg = null;
-            try
-            {
-                pkg = new Package(GameData.GamePath + foundCrcList[0].list[0].path);
-            }
-            catch
-            {
-                Console.WriteLine("Missing package file: " + foundCrcList[0].list[0].path + " - Skipping, file: " + Path.GetFileName(inputFile));
-                return false;
-            }
-            Texture texture = new Texture(pkg, foundCrcList[0].list[0].exportID, pkg.getExportData(foundCrcList[0].list[0].exportID));
-            string fmt = texture.properties.getProperty("Format").valueName;
-            PixelFormat pixelFormat = Image.getEngineFormatType(fmt);
+            PixelFormat pixelFormat = foundCrcList[0].pixfmt;
             Image image = new Image(inputFile);
 
             if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
-                texture.mipMapsList[0].width / texture.mipMapsList[0].height)
+                foundCrcList[0].width / foundCrcList[0].height)
             {
                 Console.WriteLine("Error in texture: " + Path.GetFileName(inputFile) + " This texture has wrong aspect ratio, skipping texture...");
                 return false;
@@ -906,8 +855,7 @@ namespace MassEffectModder
 
             bool dxt1HasAlpha = false;
             byte dxt1Threshold = 128;
-            if (texture.properties.exists("CompressionSettings") &&
-                texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
+            if (foundCrcList[0].alphadxt1)
             {
                 dxt1HasAlpha = true;
                 if (image.pixelFormat == PixelFormat.ARGB ||
@@ -928,9 +876,9 @@ namespace MassEffectModder
             return true;
         }
 
-        static public bool convertGameImage(int gameId, string inputFile, string outputFile)
+        static public bool convertGameImage(MeType gameId, string inputFile, string outputFile)
         {
-            loadTexturesMap();
+            loadTexturesMap(gameId);
 
             bool status = convertGameTexture(inputFile, outputFile);
             if (!status)
@@ -941,9 +889,9 @@ namespace MassEffectModder
             return status;
         }
 
-        static public bool convertGameImages(int gameId, string inputDir, string outputDir)
+        static public bool convertGameImages(MeType gameId, string inputDir, string outputDir)
         {
-            loadTexturesMap();
+            loadTexturesMap(gameId);
 
             List<string> list = Directory.GetFiles(inputDir, "*.dds").Where(item => item.EndsWith(".dds", StringComparison.OrdinalIgnoreCase)).ToList();
             list.AddRange(Directory.GetFiles(inputDir, "*.png").Where(item => item.EndsWith(".png", StringComparison.OrdinalIgnoreCase)));
@@ -1113,9 +1061,9 @@ namespace MassEffectModder
             return status;
         }
 
-        static public bool extractMOD(int gameId, string inputDir, string outputDir)
+        static public bool extractMOD(MeType gameId, string inputDir, string outputDir)
         {
-            loadTexturesMap();
+            loadTexturesMap(gameId);
 
             Console.WriteLine("Extract MOD files started...");
 
@@ -1242,9 +1190,21 @@ namespace MassEffectModder
             return status;
         }
 
-        static public bool extractAllTextures(int gameId, string outputDir, bool png, string textureTfcFilter)
+        static public bool extractAllTextures(MeType gameId, string outputDir, bool png, string textureTfcFilter)
         {
-            loadTexturesMap();
+            ConfIni configIni = new ConfIni();
+            GameData gameData = new GameData(gameId, configIni);
+            if (GameData.GamePath == null || !Directory.Exists(GameData.GamePath))
+            {
+                Console.WriteLine("Error: Could not found the game!");
+                    return false;
+            }
+
+            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                Assembly.GetExecutingAssembly().GetName().Name);
+            string mapFile = Path.Combine(path, "me" + gameId + "map.bin");
+            if (!loadTexturesMapFile(mapFile))
+                return false;
 
             Console.WriteLine("Extracting textures started...");
 

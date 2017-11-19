@@ -420,7 +420,7 @@ namespace MassEffectModder
             string outputDir;
             string inputFile;
             string outputFile;
-            int gameId = 0;
+            MeType gameId = 0;
 
             if (args.Length > 0)
             {
@@ -563,13 +563,13 @@ namespace MassEffectModder
                 game = args[1];
                 try
                 {
-                    gameId = int.Parse(game);
+                    gameId = (MeType)int.Parse(game);
                 }
                 catch
                 {
                     gameId = 0;
                 }
-                if (gameId != 1 && gameId != 2 && gameId != 3)
+                if (gameId != MeType.ME1_TYPE && gameId != MeType.ME2_TYPE && gameId != MeType.ME3_TYPE)
                 {
                     Console.WriteLine("Error: wrong game id!");
                     DisplayHelp();
@@ -748,13 +748,13 @@ namespace MassEffectModder
                 game = args[1];
                 try
                 {
-                    gameId = int.Parse(game);
+                    gameId = (MeType)int.Parse(game);
                 }
                 catch
                 {
                     gameId = 0;
                 }
-                if (gameId != 1 && gameId != 2 && gameId != 3)
+                if (gameId != MeType.ME1_TYPE && gameId != MeType.ME2_TYPE && gameId != MeType.ME3_TYPE)
                 {
                     Console.WriteLine("Error: wrong game id!");
                     DisplayHelp();
