@@ -591,7 +591,7 @@ namespace MassEffectModder
                     match = parts.Match(script);
                     if (match.Success)
                     {
-                        path = @"BioGame\CookedPCConsole";
+                        path = @"\BioGame\CookedPCConsole";
                         return;
                     }
                     else
@@ -600,7 +600,7 @@ namespace MassEffectModder
                         match = parts.Match(script);
                         if (match.Success)
                         {
-                            path = @"BioGame";
+                            path = @"\BioGame";
                             return;
                         }
                         else
@@ -609,7 +609,7 @@ namespace MassEffectModder
                             match = parts.Match(script);
                             if (match.Success)
                             {
-                                path = Path.GetDirectoryName(@"BioGame\" + match.ToString().Split('\"')[1]);
+                                path = Path.GetDirectoryName(@"\BioGame\" + match.ToString().Split('\"')[1]);
                                 return;
                             }
                         }

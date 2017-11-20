@@ -407,18 +407,18 @@ namespace MassEffectModder
                         if (dlcName != "")
                         {
                             if (gameId == MeType.ME1_TYPE)
-                                mod.packagePath = @"DLC\" + dlcName + @"\CookedPC\" + pkgName;
+                                mod.packagePath = @"\DLC\" + dlcName + @"\CookedPC\" + pkgName;
                             else if (gameId == MeType.ME2_TYPE)
-                                mod.packagePath = @"BioGame\DLC\" + dlcName + @"\CookedPC\" + pkgName;
+                                mod.packagePath = @"\BioGame\DLC\" + dlcName + @"\CookedPC\" + pkgName;
                             else
-                                mod.packagePath = @"BIOGame\DLC\" + dlcName + @"\CookedPCConsole\" + pkgName;
+                                mod.packagePath = @"\BIOGame\DLC\" + dlcName + @"\CookedPCConsole\" + pkgName;
                         }
                         else
                         {
                             if (gameId == MeType.ME1_TYPE || gameId == MeType.ME2_TYPE)
-                                mod.packagePath = @"BioGame\CookedPC\" + pkgName;
+                                mod.packagePath = @"\BioGame\CookedPC\" + pkgName;
                             else
-                                mod.packagePath = @"BIOGame\CookedPCConsole\" + pkgName;
+                                mod.packagePath = @"\BIOGame\CookedPCConsole\" + pkgName;
                         }
                         mod.binaryMod = true;
                         mod.data = File.ReadAllBytes(file);

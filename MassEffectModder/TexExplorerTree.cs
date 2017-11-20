@@ -31,7 +31,7 @@ namespace MassEffectModder
     public partial class TreeScan
     {
         public List<FoundTexture> treeScan = null;
-        private bool generateBuiltinMapFiles = true; // change to true to enable map files generation
+        private bool generateBuiltinMapFiles = false; // change to true to enable map files generation
 
         public string PrepareListOfTextures(TexExplorer texEplorer, CachePackageMgr cachePackageMgr, MainWindow mainWindow, Installer installer, ref string log, bool force = false)
         {
