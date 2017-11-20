@@ -37,7 +37,7 @@ namespace MassEffectModder
         static private void loadTexturesMap(MeType gameId)
         {
             Stream fs;
-            List<FoundTexture> textures = new List<FoundTexture>();
+            textures = new List<FoundTexture>();
             byte[] buffer = null;
 
             Assembly assembly = Assembly.GetExecutingAssembly();
@@ -58,8 +58,8 @@ namespace MassEffectModder
             MemoryStream tmp = new MemoryStream(buffer);
             if (tmp.ReadUInt32() != 0x504D5443)
                 throw new Exception();
-            byte[] decompressed = new byte[tmp.ReadInt32()];
-            byte[] compressed = tmp.ReadToBuffer((uint)tmp.Length - 8);
+            byte[] decompressed = new byte[tmp.ReadUInt32()];
+            byte[] compressed = tmp.ReadToBuffer(tmp.ReadUInt32());
             if (new ZlibHelper.Zlib().Decompress(compressed, (uint)compressed.Length, decompressed) == 0)
                 throw new Exception();
             fs = new MemoryStream(decompressed);
@@ -76,6 +76,7 @@ namespace MassEffectModder
                 texture.height = fs.ReadInt32();
                 texture.pixfmt = (PixelFormat)fs.ReadInt32();
                 texture.alphadxt1 = fs.ReadInt32() != 0;
+                texture.numMips = fs.ReadInt32();
                 uint countPackages = fs.ReadUInt32();
                 texture.list = new List<MatchedTexture>();
                 for (int k = 0; k < countPackages; k++)
@@ -338,9 +339,10 @@ namespace MassEffectModder
                                     }
 
                                     if (!image.checkDDSHaveAllMipmaps() ||
-                                        image.mipMaps.Count() <= 1 ||
+                                        (f.numMips != 1 && image.mipMaps.Count() == 1) ||
                                         image.pixelFormat != pixelFormat)
                                     {
+                                        Console.WriteLine("Converting/correcting texture: " + textureName);
                                         bool dxt1HasAlpha = false;
                                         byte dxt1Threshold = 128;
                                         if (f.alphadxt1)
@@ -534,13 +536,14 @@ namespace MassEffectModder
                                 }
 
                                 if (!image.checkDDSHaveAllMipmaps() ||
-                                    image.mipMaps.Count() <= 1 ||
+                                   (foundCrcList[0].numMips != 1 && image.mipMaps.Count() == 1) ||
                                     image.pixelFormat != pixelFormat)
                                 {
                                     bool dxt1HasAlpha = false;
                                     byte dxt1Threshold = 128;
                                     if (foundCrcList[0].alphadxt1)
                                     {
+                                        Console.WriteLine("Converting/correcting texture: " + textureName);
                                         dxt1HasAlpha = true;
                                         if (image.pixelFormat == PixelFormat.ARGB ||
                                             image.pixelFormat == PixelFormat.DXT3 ||
@@ -627,9 +630,10 @@ namespace MassEffectModder
                         }
 
                         if (!image.checkDDSHaveAllMipmaps() ||
-                            image.mipMaps.Count() <= 1 ||
+                           (foundCrcList[0].numMips != 1 && image.mipMaps.Count() == 1) ||
                             image.pixelFormat != pixelFormat)
                         {
+                            Console.WriteLine("Converting/correcting texture: " + Path.GetFileName(file));
                             bool dxt1HasAlpha = false;
                             byte dxt1Threshold = 128;
                             if (foundCrcList[0].alphadxt1)
@@ -717,6 +721,7 @@ namespace MassEffectModder
                             Console.WriteLine("Warning for texture: " + Path.GetFileName(file) + ". This texture converted from full alpha to binary alpha.");
                         }
                     }
+                    Console.WriteLine("Converting/correcting texture: " + Path.GetFileName(file));
                     image.correctMips(pixelFormat, dxt1HasAlpha, dxt1Threshold);
                     mod.data = image.StoreImageToDDS();
                     mod.textureName = foundCrcList[0].name;

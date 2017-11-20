@@ -31,7 +31,7 @@ namespace MassEffectModder
     public partial class TreeScan
     {
         public List<FoundTexture> treeScan = null;
-        private bool generateBuiltinMapFiles = false; // change to true to enable map files generation
+        private bool generateBuiltinMapFiles = true; // change to true to enable map files generation
 
         public string PrepareListOfTextures(TexExplorer texEplorer, CachePackageMgr cachePackageMgr, MainWindow mainWindow, Installer installer, ref string log, bool force = false)
         {
@@ -298,6 +298,7 @@ namespace MassEffectModder
                         mem.WriteInt32(textures[i].height);
                         mem.WriteInt32((int)textures[i].pixfmt);
                         mem.WriteInt32(textures[i].alphadxt1 ? 1 : 0);
+                        mem.WriteInt32(textures[i].numMips);
                     }
                     mem.WriteInt32(textures[i].list.Count);
                     for (int k = 0; k < textures[i].list.Count; k++)

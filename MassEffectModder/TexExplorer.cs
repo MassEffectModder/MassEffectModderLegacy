@@ -65,6 +65,7 @@ namespace MassEffectModder
         public PixelFormat pixfmt;
         public bool alphadxt1;
         public int width, height;
+        public int numMips;
     }
 
     public partial class TexExplorer : Form
