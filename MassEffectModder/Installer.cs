@@ -525,11 +525,10 @@ namespace MassEffectModder
                     message += "CookedPC";
                 message += " directory.\n" +
                     "  Both lists should be identical.\n\n" +
-                    "  If you are not sure what you installed,\n" +
+                    "- If you are not sure what you installed,\n" +
                     "  it is recommended that you revert your game to vanilla\n" +
-                    "  and run this check again, to make sure the files are indeed vanilla.\n" +
-                    "  If it passes then you can install content mods (PCC, DLC mods),\n" +
-                    "  and continue installation.\n\n";
+                    "  and optionaly install content mods (PCC, DLC mods),\n" +
+                    "  then restart installation this mod.\n\n";
                 MessageBox.Show(message, "Warning !");
             }
             else
