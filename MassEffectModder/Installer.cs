@@ -425,7 +425,7 @@ namespace MassEffectModder
             {
                 ME3DLC.unpackAllDLC(null, this);
                 gameData.getPackages(true, true);
-                updateStatusPackDLC("");
+                updateStatusPrepare("");
             }
 
             List<string> mods = Misc.detectBrokenMod((MeType)gameId);
@@ -552,14 +552,9 @@ namespace MassEffectModder
                                 "- If you have properly installed content mods before this mod,\n" +
                                 "  this result is normal and you can continue the installation.\n" +
                                 "  It's advised to verify if all items in the list are supposed to be modded.\n" +
-                                "  To verify : compare the list of files that failed the check against\n" +
+                                "  To verify: compare the list of files that failed the check against\n" +
                                 "  the list of files you copied\n" +
-                                "  from your content mods to the ";
-                            if (gameId == 3)
-                                message += "CookedPCConsole";
-                            else
-                                message += "CookedPC";
-                            message += " directory.\n" +
+                                "  from your content mods to the CookedPCConsole directory.\n" +
                                 "  Both lists should be identical.\n\n" +
                                 "- If you are not sure what you installed,\n" +
                                 "  it is recommended that you revert your game to vanilla\n" +
@@ -1092,7 +1087,7 @@ namespace MassEffectModder
 
         public void updateStatusPrepare(string text)
         {
-            labelStatusPrepare.Text = text;
+            labelPreVanilla.Text = text;
             Application.DoEvents();
         }
 
@@ -1134,7 +1129,7 @@ namespace MassEffectModder
 
         public void updateStatusPackDLC(string text)
         {
-            labelPreVanilla.Text = text;
+            labelStatusPrepare.Text = text;
             Application.DoEvents();
         }
 
