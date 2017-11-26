@@ -698,6 +698,8 @@ namespace MassEffectModder
 
             for (int l = 0; l < badMOD.Count(); l++)
             {
+                if (!File.Exists(GameData.GamePath + badMOD[l].path))
+                    continue;
                 byte[] md5 = calculateMD5(GameData.GamePath + badMOD[l].path);
                 if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, badMOD[l].md5))
                 {

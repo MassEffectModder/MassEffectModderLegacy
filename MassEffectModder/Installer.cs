@@ -98,6 +98,7 @@ namespace MassEffectModder
             checkBoxOptionFaster.Checked = false;
             buttonUnpackDLC.Enabled = false;
             checkBoxOptionSkipScan.Checked = false;
+            buttonUnpackDLC.Visible = false;
 
             clearPreCheckStatus();
 
@@ -419,6 +420,14 @@ namespace MassEffectModder
             labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
             labelPreVanilla.Text = "Checking...";
             Application.DoEvents();
+
+            if (GameData.gameType == MeType.ME3_TYPE)
+            {
+                ME3DLC.unpackAllDLC(null, this);
+                gameData.getPackages(true, true);
+                updateStatusPackDLC("");
+            }
+
             List<string> mods = Misc.detectBrokenMod((MeType)gameId);
             if (mods.Count != 0)
             {
@@ -459,6 +468,8 @@ namespace MassEffectModder
                 checkBoxPreEnableRepack.Visible = false;
                 checkBoxPreEnableRepack.Checked = false;
             }
+
+            bool allowInstall = true;
             if (updateMode || checkBoxOptionSkipScan.Checked)
             {
                 checkBoxOptionVanilla.CheckedChanged -= checkBoxOptionVanilla_CheckedChanged;
@@ -516,7 +527,10 @@ namespace MassEffectModder
                             fs.WriteStringASCII("------------------------------" + Environment.NewLine + Environment.NewLine);
                         }
 
-                        if (!vanilla)
+                        if (!vanilla && gameId != 3)
+                            allowInstall = false;
+
+                        if (!vanilla && allowInstall)
                         {
                             fs.WriteStringASCII("=========================================================" + Environment.NewLine);
                             fs.WriteStringASCII("WARNING: looks like the following file(s) are not vanilla" + Environment.NewLine);
@@ -527,17 +541,11 @@ namespace MassEffectModder
                             labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.Red);
                             labelFinalStatus.Text = "Preliminary check detected potential issue...";
                             string message = "The installer detected that the following game files\n" +
-                                "are not unmodded (vanilla) game files\n" +
+                                "are not unmodded (vanilla) or not recognized game files\n" +
                                 "You can find the list of files in the window that just opened.\n\n" +
                                 "The correct installation order is as follows:\n" +
                                 "1. Content mods (PCC, DLC mods)\n";
-                            if (gameId == 1)
-                            {
-                                message += "2. MEUITM\n";
-                                message += "2a. ALOT Addon\n";
-                            }
-                            else
-                                message += "2. ALOT & ALOT Addon\n";
+                            message += "2. ALOT & ALOT Addon\n";
                             message += "3. Texture and meshes mods (TPF, DDS, MOD)\n\n" +
                                 "- If you have installed texture mods already, revert your game to vanilla,\n" +
                                 "  then follow the correct installation order.\n\n" +
@@ -559,6 +567,10 @@ namespace MassEffectModder
                                 "  then restart installation this mod.\n\n";
                             MessageBox.Show(message, "Warning !");
                         }
+                        if (!vanilla && !allowInstall)
+                        {
+                            labelPreVanilla.Text = "Game files are not vanilla!";
+                        }
                         else
                         {
                             labelPreVanilla.Text = "";
@@ -578,8 +590,11 @@ namespace MassEffectModder
 
             buttonPreInstallCheck.Enabled = true;
             buttonsEnable(true);
-            labelFinalStatus.Text = "Ready to go. Press START button!";
-            buttonSTART.Enabled = true;
+            if (allowInstall)
+            {
+                labelFinalStatus.Text = "Ready to go. Press START button!";
+                buttonSTART.Enabled = true;
+            }
         }
 
         private bool loadTexturesMap(string mapPath)
@@ -864,12 +879,6 @@ namespace MassEffectModder
                 if (GameData.gameType == MeType.ME1_TYPE)
                     Misc.VerifyME1Exe(gameData, false);
 
-                if (GameData.gameType == MeType.ME3_TYPE)
-                {
-                    ME3DLC.unpackAllDLC(null, this);
-                    gameData.getPackages(true, true);
-                }
-
                 if (GameData.gameType != MeType.ME1_TYPE)
                     gameData.getTfcTextures();
 
@@ -1125,7 +1134,7 @@ namespace MassEffectModder
 
         public void updateStatusPackDLC(string text)
         {
-            labelStatusPackDLC.Text = text;
+            labelPreVanilla.Text = text;
             Application.DoEvents();
         }
 
