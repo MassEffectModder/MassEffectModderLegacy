@@ -156,13 +156,19 @@ namespace MassEffectModder
             if (File.Exists(filename))
                 File.Delete(filename);
 
-            if (Misc.detectBrokenMod(GameData.gameType))
+            if (mainWindow != null)
             {
-                if (mainWindow != null)
+                List<string> badMods = Misc.detectBrokenMod(GameData.gameType);
+                if (badMods.Count != 0)
                 {
-                    MessageBox.Show("Detected mod compatible mod.");
+                    errors = "";
+                    for (int l = 0; l < badMods.Count; l++)
+                    {
+                        errors += badMods[l] + Environment.NewLine;
+                    }
+                    MessageBox.Show("Detected not compatible mods: \n\n" + errors);
+                    return "";
                 }
-                return "";
             }
 
             if (MipMaps.checkGameDataModded(cachePackageMgr))

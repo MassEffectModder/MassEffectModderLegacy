@@ -419,8 +419,25 @@ namespace MassEffectModder
             labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
             labelPreVanilla.Text = "Checking...";
             Application.DoEvents();
-            if (Misc.detectBrokenMod((MeType)gameId))
+            List<string> mods = Misc.detectBrokenMod((MeType)gameId);
+            if (mods.Count != 0)
             {
+                errors = Environment.NewLine + "------- Detected not compatible mods --------" + Environment.NewLine + Environment.NewLine;
+                for (int l = 0; l < mods.Count; l++)
+                {
+                    errors += mods[l] + Environment.NewLine;
+                }
+                errors += "---------------------------------------------" + Environment.NewLine + Environment.NewLine;
+                errors += Environment.NewLine + Environment.NewLine;
+
+                if (File.Exists(filename))
+                    File.Delete(filename);
+                using (FileStream fs = new FileStream(filename, FileMode.CreateNew))
+                {
+                    fs.WriteStringASCII(errors);
+                }
+                Process.Start(filename);
+
                 labelPreVanilla.Text = "Detected not compatible mod!";
                 labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.Red);
                 labelFinalStatus.Text = "Preliminary check detected issue...";
@@ -482,68 +499,86 @@ namespace MassEffectModder
             else
             {
                 if (!checkBoxOptionVanilla.Checked)
-                    errors = Misc.checkGameFiles((MeType)gameId, null, this);
-            }
-            if (errors != "")
-            {
-                using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate))
                 {
-                    fs.SeekEnd();
-                    fs.WriteStringASCII("=========================================================" + Environment.NewLine);
-                    fs.WriteStringASCII("WARNING: looks like the following file(s) are not vanilla" + Environment.NewLine);
-                    fs.WriteStringASCII("=========================================================" + Environment.NewLine + Environment.NewLine);
-                    fs.WriteStringASCII(errors);
+                    List<string> modList = new List<string>();
+                    bool vanilla = Misc.checkGameFiles((MeType)gameId, ref errors, ref modList, null, this);
+                    using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate))
+                    {
+                        fs.SeekEnd();
+
+                        if (modList.Count != 0)
+                        {
+                            fs.WriteStringASCII(Environment.NewLine + "------- Detected mods --------" + Environment.NewLine);
+                            for (int l = 0; l < modList.Count; l++)
+                            {
+                                fs.WriteStringASCII(modList[l] + Environment.NewLine);
+                            }
+                            fs.WriteStringASCII("------------------------------" + Environment.NewLine + Environment.NewLine);
+                        }
+
+                        if (!vanilla)
+                        {
+                            fs.WriteStringASCII("=========================================================" + Environment.NewLine);
+                            fs.WriteStringASCII("WARNING: looks like the following file(s) are not vanilla" + Environment.NewLine);
+                            fs.WriteStringASCII("=========================================================" + Environment.NewLine + Environment.NewLine);
+                            fs.WriteStringASCII(errors);
+                            Process.Start(filename);
+                            labelPreVanilla.Text = "Game files are not vanilla!";
+                            labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.Red);
+                            labelFinalStatus.Text = "Preliminary check detected potential issue...";
+                            string message = "The installer detected that the following game files\n" +
+                                "are not unmodded (vanilla) game files\n" +
+                                "You can find the list of files in the window that just opened.\n\n" +
+                                "The correct installation order is as follows:\n" +
+                                "1. Content mods (PCC, DLC mods)\n";
+                            if (gameId == 1)
+                            {
+                                message += "2. MEUITM\n";
+                                message += "2a. ALOT Addon\n";
+                            }
+                            else
+                                message += "2. ALOT & ALOT Addon\n";
+                            message += "3. Texture and meshes mods (TPF, DDS, MOD)\n\n" +
+                                "- If you have installed texture mods already, revert your game to vanilla,\n" +
+                                "  then follow the correct installation order.\n\n" +
+                                "- If you have properly installed content mods before this mod,\n" +
+                                "  this result is normal and you can continue the installation.\n" +
+                                "  It's advised to verify if all items in the list are supposed to be modded.\n" +
+                                "  To verify : compare the list of files that failed the check against\n" +
+                                "  the list of files you copied\n" +
+                                "  from your content mods to the ";
+                            if (gameId == 3)
+                                message += "CookedPCConsole";
+                            else
+                                message += "CookedPC";
+                            message += " directory.\n" +
+                                "  Both lists should be identical.\n\n" +
+                                "- If you are not sure what you installed,\n" +
+                                "  it is recommended that you revert your game to vanilla\n" +
+                                "  and optionaly install content mods (PCC, DLC mods),\n" +
+                                "  then restart installation this mod.\n\n";
+                            MessageBox.Show(message, "Warning !");
+                        }
+                        else
+                        {
+                            labelPreVanilla.Text = "";
+                        }
+                    }
                 }
-                Process.Start(filename);
-                labelPreVanilla.Text = "Game files are not vanilla!";
-                labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.Red);
-                labelFinalStatus.Text = "Preliminary check detected potential issue...";
-                string message = "The installer detected that the following game files\n" +
-                    "are not unmodded (vanilla) game files\n" +
-                    "You can find the list of files in the window that just opened.\n\n" +
-                    "The correct installation order is as follows:\n" +
-                    "1. Content mods (PCC, DLC mods)\n";
-                if (gameId == 1)
+                else
                 {
-                    message += "2. MEUITM\n";
-                    message += "2a. ALOT Addon\n";
+                    labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
+                    if (updateMode)
+                        labelPreVanilla.Text = "Skipped";
+                    else
+                        labelPreVanilla.Text = "";
                 }
-                else
-                    message += "2. ALOT & ALOT Addon\n";
-                message += "3. Texture and meshes mods (TPF, DDS, MOD)\n\n" +
-                    "- If you have installed texture mods already, revert your game to vanilla,\n" +
-                    "  then follow the correct installation order.\n\n" +
-                    "- If you have properly installed content mods before this mod,\n" +
-                    "  this result is normal and you can continue the installation.\n" +
-                    "  It's advised to verify if all items in the list are supposed to be modded.\n" +
-                    "  To verify : compare the list of files that failed the check against\n" +
-                    "  the list of files you copied\n" +
-                    "  from your content mods to the ";
-                if (gameId == 3)
-                    message += "CookedPCConsole";
-                else
-                    message += "CookedPC";
-                message += " directory.\n" +
-                    "  Both lists should be identical.\n\n" +
-                    "- If you are not sure what you installed,\n" +
-                    "  it is recommended that you revert your game to vanilla\n" +
-                    "  and optionaly install content mods (PCC, DLC mods),\n" +
-                    "  then restart installation this mod.\n\n";
-                MessageBox.Show(message, "Warning !");
-            }
-            else
-            {
-                labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
-                if (updateMode)
-                    labelPreVanilla.Text = "Skipped";
-                else
-                    labelPreVanilla.Text = "";
-                labelFinalStatus.Text = "Ready to go. Press START button!";
             }
             checkBoxPreVanilla.Checked = true;
 
             buttonPreInstallCheck.Enabled = true;
             buttonsEnable(true);
+            labelFinalStatus.Text = "Ready to go. Press START button!";
             buttonSTART.Enabled = true;
         }
 

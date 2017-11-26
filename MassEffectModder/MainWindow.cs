@@ -385,23 +385,35 @@ namespace MassEffectModder
                 string filename = "errors.txt";
                 if (File.Exists(filename))
                     File.Delete(filename);
-                string errors = Misc.checkGameFiles(gameType, this);
+                string errors = "";
+                List<string> mods = new List<string>();
+                bool vanilla = Misc.checkGameFiles(gameType, ref errors, ref mods, this);
                 updateStatusLabel("");
-                if (errors != "")
+                using (FileStream fs = new FileStream(filename, FileMode.CreateNew))
                 {
-                    using (FileStream fs = new FileStream(filename, FileMode.CreateNew))
+                    if (mods.Count != 0)
+                    {
+                        fs.WriteStringASCII(Environment.NewLine + "------- Detected mods --------" + Environment.NewLine);
+                        for (int l = 0; l < mods.Count; l++)
+                        {
+                            fs.WriteStringASCII(mods[l] + Environment.NewLine);
+                        }
+                        fs.WriteStringASCII("------------------------------" + Environment.NewLine + Environment.NewLine);
+                    }
+
+                    if (!vanilla)
                     {
                         fs.WriteStringASCII("=========================================================" + Environment.NewLine);
                         fs.WriteStringASCII("WARNING: looks like the following file(s) are not vanilla" + Environment.NewLine);
                         fs.WriteStringASCII("=========================================================" + Environment.NewLine + Environment.NewLine);
                         fs.WriteStringASCII(errors);
+                        MessageBox.Show("Finished checking game files.\n\nWARNING: Some errors have occured!");
+                        Process.Start(filename);
                     }
-                    MessageBox.Show("Finished checking game files.\n\nWARNING: Some errors have occured!");
-                    Process.Start(filename);
-                }
-                else
-                {
-                    MessageBox.Show("Finished checking game files.");
+                    else
+                    {
+                        MessageBox.Show("Finished checking game files.");
+                    }
                 }
             }
             else
