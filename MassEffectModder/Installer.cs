@@ -516,14 +516,17 @@ namespace MassEffectModder
                     "- If you have properly installed content mods before this mod,\n" +
                     "  this result is normal and you can continue the installation.\n" +
                     "  It's advised to verify if all items in the list are supposed to be modded.\n" +
-                    "  To verify : compare the list of files that failed the check against the list of files you copied\n" +
+                    "  To verify : compare the list of files that failed the check against\n" +
+                    "  the list of files you copied\n" +
                     "  from your content mods to the ";
                 if (gameId == 3)
                     message += "CookedPCConsole";
                 else
                     message += "CookedPC";
-                message += " directory. Both lists should be identical.\n\n" +
-                    "  If you are not sure what you installed it is recommended that you revert your game to vanilla\n" +
+                message += " directory.\n" +
+                    "  Both lists should be identical.\n\n" +
+                    "  If you are not sure what you installed,\n" +
+                    "  it is recommended that you revert your game to vanilla\n" +
                     "  and run this check again, to make sure the files are indeed vanilla.\n" +
                     "  If it passes then you can install content mods (PCC, DLC mods),\n" +
                     "  and continue installation.\n\n";
