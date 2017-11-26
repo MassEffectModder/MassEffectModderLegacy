@@ -48,6 +48,7 @@ namespace MassEffectModder
         bool updateMode;
         string errors = "";
         string log = "";
+        string sourceDir;
 
         public Installer()
         {
@@ -80,6 +81,10 @@ namespace MassEffectModder
                 Text += " ME" + gameId;
             if (runAsAdmin)
                 Text += " (run as Administrator)";
+
+            sourceDir = installerIni.Read("SourceDir", "Main");
+            if (sourceDir == "")
+                sourceDir = ".";
 
             configIni = new ConfIni();
 
@@ -194,7 +199,7 @@ namespace MassEffectModder
             labelPreMods.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
             labelPreMods.Text = "Checking...";
             Application.DoEvents();
-            memFiles = Directory.GetFiles(".", "*.mem", SearchOption.AllDirectories).Where(item => item.EndsWith(".mem", StringComparison.OrdinalIgnoreCase)).ToList();
+            memFiles = Directory.GetFiles(sourceDir, "*.mem", SearchOption.AllDirectories).Where(item => item.EndsWith(".mem", StringComparison.OrdinalIgnoreCase)).ToList();
             memFiles.Sort();
             if (memFiles.Count == 0)
             {
