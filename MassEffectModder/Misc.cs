@@ -375,7 +375,7 @@ namespace MassEffectModder
 
     static partial class Misc
     {
-        const bool generateMd5Entries = false;
+        public static bool generateModsMd5Entries = false;
 
         public struct MD5FileEntry
         {
@@ -711,7 +711,8 @@ namespace MassEffectModder
             return mods;
         }
 
-        static public bool checkGameFiles(MeType gameType, ref string errors, ref List<string> mods, MainWindow mainWindow = null, Installer installer = null)
+        static public bool checkGameFiles(MeType gameType, ref string errors, ref List<string> mods,
+            MainWindow mainWindow = null, Installer installer = null, bool generateMd5Entries = false)
         {
             bool vanilla = true;
             List<string> packageMainFiles = null;
@@ -781,7 +782,7 @@ namespace MassEffectModder
                 tfcFiles.Sort();
 
             mods.Clear();
-            FileStream fs;
+            FileStream fs = null;
             if (generateMd5Entries)
                 fs = new FileStream("MD5ModFileEntry" + (int)gameType + ".cs", FileMode.Create, FileAccess.Write);
 

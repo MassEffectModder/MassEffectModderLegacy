@@ -517,7 +517,7 @@ namespace MassEffectModder
                 if (!checkBoxOptionVanilla.Checked)
                 {
                     List<string> modList = new List<string>();
-                    bool vanilla = Misc.checkGameFiles((MeType)gameId, ref errors, ref modList, null, this);
+                    bool vanilla = Misc.checkGameFiles((MeType)gameId, ref errors, ref modList, null, this, Misc.generateModsMd5Entries);
                     using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate))
                     {
                         fs.SeekEnd();
