@@ -93,6 +93,7 @@ namespace MassEffectModder
 
             buttonsDefault(gameId);
 
+            checkBoxOptionVanilla.Visible = false;
             checkBoxOptionVanilla.Checked = false;
             checkBoxOptionFaster.Checked = false;
             buttonUnpackDLC.Enabled = false;
@@ -451,7 +452,7 @@ namespace MassEffectModder
                 string mapFile = Path.Combine(mapPath, "me" + gameId + "map.bin");
                 if (!loadTexturesMap(mapFile))
                 {
-                    labelPreVanilla.Text = "Detected modded game ! Please reinstall ME" + gameId + " and restart.";
+                    labelPreVanilla.Text = "Game inconsistent from previous scan! Reinstall ME" + gameId + " and restart.";
                     labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.Red);
                     labelFinalStatus.Text = "Preliminary check detected issue...";
                     buttonPreInstallCheck.Enabled = true;
@@ -1029,7 +1030,7 @@ namespace MassEffectModder
                     fs.WriteStringASCII("If that is your case, you can safely ignore the errors below. " + Environment.NewLine);
                     fs.WriteStringASCII("If you have all DLCs but still see these errors, " + Environment.NewLine);
                     fs.WriteStringASCII("you should redownload your game and install your mods again." + Environment.NewLine);
-                    fs.WriteStringASCII("=========================================================-======================" + Environment.NewLine + Environment.NewLine);
+                    fs.WriteStringASCII("================================================================================" + Environment.NewLine + Environment.NewLine);
                     fs.WriteStringASCII(errors);
                 }
                 MessageBox.Show("WARNING: Some errors have occured!");
