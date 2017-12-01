@@ -535,6 +535,10 @@ namespace MassEffectModder
                         }
                     }
                 }
+                if (updateMode)
+                    labelPreVanilla.Text = "Skipped";
+                else
+                    labelPreVanilla.Text = "";
             }
             else
             {
