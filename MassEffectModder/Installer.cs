@@ -507,9 +507,30 @@ namespace MassEffectModder
                 string mapPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                         Assembly.GetExecutingAssembly().GetName().Name);
                 string mapFile = Path.Combine(mapPath, "me" + gameId + "map.bin");
+
+                if (!File.Exists(mapFile))
+                {
+                    labelPreVanilla.Text = "Game was not scanned for textures, can not continue.";
+                    labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.Red);
+                    labelFinalStatus.Text = "Preliminary check detected issue...";
+                    buttonPreInstallCheck.Enabled = true;
+                    buttonsEnable(true);
+                    return;
+                }
+
                 if (!loadTexturesMap(mapFile))
                 {
                     labelPreVanilla.Text = "Game inconsistent from previous scan! Reinstall ME" + gameId + " and restart.";
+                    labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.Red);
+                    labelFinalStatus.Text = "Preliminary check detected issue...";
+                    buttonPreInstallCheck.Enabled = true;
+                    buttonsEnable(true);
+                    return;
+                }
+
+                if (!MipMaps.verifyGameDataEmptyMipMapsRemoval())
+                {
+                    labelPreVanilla.Text = "Game doesn't have empty mips removed, can not continue.";
                     labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.Red);
                     labelFinalStatus.Text = "Preliminary check detected issue...";
                     buttonPreInstallCheck.Enabled = true;
@@ -535,10 +556,7 @@ namespace MassEffectModder
                         }
                     }
                 }
-                if (updateMode)
-                    labelPreVanilla.Text = "Skipped";
-                else
-                    labelPreVanilla.Text = "";
+                labelPreVanilla.Text = "Skipped";
             }
             else
             {
