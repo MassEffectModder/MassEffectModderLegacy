@@ -640,6 +640,7 @@ namespace MassEffectModder
             {
                 labelFinalStatus.Text = "Ready to go. Press START button!";
                 buttonSTART.Enabled = true;
+                checkBoxOptionVanilla.Enabled = false;
             }
             else
             {
