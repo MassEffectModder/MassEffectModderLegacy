@@ -624,6 +624,10 @@ namespace MassEffectModder
         private bool loadTexturesMap(string mapPath)
         {
             textures = new List<FoundTexture>();
+
+            if (!File.Exists(mapPath))
+                return false;
+
             using (FileStream fs = new FileStream(mapPath, FileMode.Open, FileAccess.Read))
             {
                 uint tag = fs.ReadUInt32();
