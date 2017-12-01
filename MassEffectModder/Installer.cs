@@ -619,6 +619,10 @@ namespace MassEffectModder
                 labelFinalStatus.Text = "Ready to go. Press START button!";
                 buttonSTART.Enabled = true;
             }
+            else
+            {
+                labelFinalStatus.Text = "Preliminary check detected issue...";
+            }
         }
 
         private bool loadTexturesMap(string mapPath)
