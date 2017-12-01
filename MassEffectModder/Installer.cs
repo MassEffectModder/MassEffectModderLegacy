@@ -124,6 +124,7 @@ namespace MassEffectModder
             buttonUnpackDLC.Enabled = false;
             checkBoxOptionSkipScan.Checked = false;
             buttonUnpackDLC.Visible = false;
+            buttonPreChangePath.Visible = false;
 
             clearPreCheckStatus();
 
