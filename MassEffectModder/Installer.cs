@@ -49,6 +49,8 @@ namespace MassEffectModder
         string errors = "";
         string log = "";
         string sourceDir;
+        int AlotVer;
+        int MeuitmVer;
 
         public Installer()
         {
@@ -85,6 +87,24 @@ namespace MassEffectModder
             sourceDir = installerIni.Read("SourceDir", "Main");
             if (sourceDir == "")
                 sourceDir = ".";
+
+            try
+            {
+                AlotVer = int.Parse(installerIni.Read("AlotVersion", "Main"));
+            }
+            catch (Exception)
+            {
+                AlotVer = 0;
+            }
+
+            try
+            {
+                MeuitmVer = int.Parse(installerIni.Read("MeuitmVersion", "Main"));
+            }
+            catch (Exception)
+            {
+                MeuitmVer = 0;
+            }
 
             configIni = new ConfIni();
 
@@ -178,6 +198,9 @@ namespace MassEffectModder
                 using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Write))
                 {
                     fs.SeekEnd();
+                    fs.WriteInt32(MeuitmVer);
+                    fs.WriteInt32(AlotVer);
+                    fs.WriteInt32(int.Parse(Application.ProductVersion));
                     fs.WriteUInt32(MEMI_TAG);
                 }
             }
