@@ -564,79 +564,83 @@ namespace MassEffectModder
                 {
                     List<string> modList = new List<string>();
                     bool vanilla = Misc.checkGameFiles((MeType)gameId, ref errors, ref modList, null, this, Misc.generateModsMd5Entries);
-                    using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate))
+                    if (modList.Count != 0)
                     {
+                        FileStream fs = new FileStream(filename, FileMode.OpenOrCreate);
                         fs.SeekEnd();
+                        fs.WriteStringASCII(Environment.NewLine + "------- Detected mods --------" + Environment.NewLine);
+                        for (int l = 0; l < modList.Count; l++)
+                        {
+                            fs.WriteStringASCII(modList[l] + Environment.NewLine);
+                        }
+                        fs.WriteStringASCII("------------------------------" + Environment.NewLine + Environment.NewLine);
+                        fs.Close();
+                    }
 
-                        if (modList.Count != 0)
-                        {
-                            fs.WriteStringASCII(Environment.NewLine + "------- Detected mods --------" + Environment.NewLine);
-                            for (int l = 0; l < modList.Count; l++)
-                            {
-                                fs.WriteStringASCII(modList[l] + Environment.NewLine);
-                            }
-                            fs.WriteStringASCII("------------------------------" + Environment.NewLine + Environment.NewLine);
-                        }
+                    if (!vanilla && gameId != 3)
+                        allowInstall = false;
 
-                        if (!vanilla && gameId != 3)
-                            allowInstall = false;
-
-                        if (!vanilla && allowInstall)
-                        {
-                            fs.WriteStringASCII("===========================================================================" + Environment.NewLine);
-                            fs.WriteStringASCII("WARNING: looks like the following file(s) are not vanilla or not recognized" + Environment.NewLine);
-                            fs.WriteStringASCII("===========================================================================" + Environment.NewLine + Environment.NewLine);
-                            fs.WriteStringASCII(errors);
-                            Process.Start(filename);
-                            labelPreVanilla.Text = "Game files are not vanilla or not recognized!";
-                            labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.Red);
-                            labelFinalStatus.Text = "Preliminary check detected potential issue...";
-                            string message = "The installer detected that the following game files\n" +
-                                "are modded (not vanilla) or not recognized by the installer.\n" +
-                                "You can find the list of files in the window that just opened.\n\n" +
-                                "The correct installation order is as follows:\n" +
-                                "1. Content mods (PCC, DLC mods)\n";
-                            message += "2. ALOT & ALOT Addon\n";
-                            message += "3. Texture and meshes mods (TPF, DDS, MOD)\n\n" +
-                                "- If you have properly installed content mods before this mod,\n" +
-                                "  this result is normal and you can continue the installation.\n" +
-                                "  It's advised to verify if all items in the list are supposed to be modded.\n" +
-                                "  To verify: compare the list of files that failed the check against\n" +
-                                "  the list of files you copied\n" +
-                                "  from your content mods to the CookedPCConsole directory.\n" +
-                                "  Both lists should be identical.\n\n" +
-                                "- If you are not sure what you installed,\n" +
-                                "  it is recommended that you revert your game to vanilla\n" +
-                                "  and optionally install the content mods (PCC, DLC mods) you want,\n" +
-                                "  then restart the installation of this mod.\n\n" +
-                            MessageBox.Show(message, "Warning !");
-                        }
-                        if (!vanilla && !allowInstall)
-                        {
-                            fs.WriteStringASCII("===========================================================================" + Environment.NewLine);
-                            fs.WriteStringASCII("WARNING: looks like the following file(s) are not vanilla or not recognized" + Environment.NewLine);
-                            fs.WriteStringASCII("===========================================================================" + Environment.NewLine + Environment.NewLine);
-                            fs.WriteStringASCII(errors);
-                            Process.Start(filename);
-                            labelPreVanilla.Text = "Game files are not vanilla or not recognized!";
-                            labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.Red);
-                            labelFinalStatus.Text = "Preliminary check detected potential issue...";
-                            string message = "The installer detected that the following game files\n" +
-                                "are modded (not vanilla) or not recognized by the installer.\n" +
-                                "You can find the list of files in the window that just opened.\n\n" +
-                                "- If you are not sure what you installed,\n" +
-                                "  it is recommended that you revert your game to vanilla\n" +
-                                "  and optionally install the content mods (PCC, DLC mods) you want,\n" +
-                                "  then restart the installation of this mod.\n\n" +
-                                "- If the installer still reports this issue,\n" +
-                                "  do not install unrecognized mod files\n" +
-                                "  and submit a report to add those files to the list of supported mods.\n\n";
-                            MessageBox.Show(message, "Warning !");
-                        }
-                        else
-                        {
-                            labelPreVanilla.Text = "";
-                        }
+                    if (!vanilla && allowInstall)
+                    {
+                        FileStream fs = new FileStream(filename, FileMode.OpenOrCreate);
+                        fs.SeekEnd();
+                        fs.WriteStringASCII("===========================================================================" + Environment.NewLine);
+                        fs.WriteStringASCII("WARNING: looks like the following file(s) are not vanilla or not recognized" + Environment.NewLine);
+                        fs.WriteStringASCII("===========================================================================" + Environment.NewLine + Environment.NewLine);
+                        fs.WriteStringASCII(errors);
+                        fs.Close();
+                        Process.Start(filename);
+                        labelPreVanilla.Text = "Game files are not vanilla or not recognized!";
+                        labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.Red);
+                        labelFinalStatus.Text = "Preliminary check detected potential issue...";
+                        string message = "The installer detected that the following game files\n" +
+                            "are modded (not vanilla) or not recognized by the installer.\n" +
+                            "You can find the list of files in the window that just opened.\n\n" +
+                            "The correct installation order is as follows:\n" +
+                            "1. Content mods (PCC, DLC mods)\n";
+                        message += "2. ALOT & ALOT Addon\n";
+                        message += "3. Texture and meshes mods (TPF, DDS, MOD)\n\n" +
+                            "- If you have properly installed content mods before this mod,\n" +
+                            "  this result is normal and you can continue the installation.\n" +
+                            "  It's advised to verify if all items in the list are supposed to be modded.\n" +
+                            "  To verify: compare the list of files that failed the check against\n" +
+                            "  the list of files you copied\n" +
+                            "  from your content mods to the CookedPCConsole directory.\n" +
+                            "  Both lists should be identical.\n\n" +
+                            "- If you are not sure what you installed,\n" +
+                            "  it is recommended that you revert your game to vanilla\n" +
+                            "  and optionally install the content mods (PCC, DLC mods) you want,\n" +
+                            "  then restart the installation of this mod.\n\n" +
+                        MessageBox.Show(message, "Warning !");
+                    }
+                    if (!vanilla && !allowInstall)
+                    {
+                        FileStream fs = new FileStream(filename, FileMode.OpenOrCreate);
+                        fs.SeekEnd();
+                        fs.WriteStringASCII("===========================================================================" + Environment.NewLine);
+                        fs.WriteStringASCII("WARNING: looks like the following file(s) are not vanilla or not recognized" + Environment.NewLine);
+                        fs.WriteStringASCII("===========================================================================" + Environment.NewLine + Environment.NewLine);
+                        fs.WriteStringASCII(errors);
+                        fs.Close();
+                        Process.Start(filename);
+                        labelPreVanilla.Text = "Game files are not vanilla or not recognized!";
+                        labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.Red);
+                        labelFinalStatus.Text = "Preliminary check detected potential issue...";
+                        string message = "The installer detected that the following game files\n" +
+                            "are modded (not vanilla) or not recognized by the installer.\n" +
+                            "You can find the list of files in the window that just opened.\n\n" +
+                            "- If you are not sure what you installed,\n" +
+                            "  it is recommended that you revert your game to vanilla\n" +
+                            "  and optionally install the content mods (PCC, DLC mods) you want,\n" +
+                            "  then restart the installation of this mod.\n\n" +
+                            "- If the installer still reports this issue,\n" +
+                            "  do not install unrecognized mod files\n" +
+                            "  and submit a report to add those files to the list of supported mods.\n\n";
+                        MessageBox.Show(message, "Warning !");
+                    }
+                    else
+                    {
+                        labelPreVanilla.Text = "";
                     }
                 }
                 else
