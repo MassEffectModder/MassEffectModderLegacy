@@ -243,7 +243,7 @@ namespace MassEffectModder
                 throw new Exception();
             if (GameData.gameType == MeType.ME3_TYPE)
             {
-                Buffer.BlockCopy(BitConverter.GetBytes(package.getNameId(valueName)), 8, texProperty.valueRaw, 8, sizeof(int));
+                Buffer.BlockCopy(BitConverter.GetBytes(package.getNameId(valueName)), 0, texProperty.valueRaw, 8, sizeof(int));
                 Buffer.BlockCopy(BitConverter.GetBytes(valueInt), 0, texProperty.valueRaw, 12, sizeof(int));
             }
             else
@@ -270,7 +270,7 @@ namespace MassEffectModder
                 throw new Exception("Not able to add property: " + name);
             if (GameData.gameType == MeType.ME3_TYPE)
             {
-                Buffer.BlockCopy(BitConverter.GetBytes(package.getNameId(valueName)), 8, texProperty.valueRaw, 8, sizeof(int));
+                Buffer.BlockCopy(BitConverter.GetBytes(package.getNameId(valueName)), 0, texProperty.valueRaw, 8, sizeof(int));
                 Buffer.BlockCopy(BitConverter.GetBytes(valueInt), 0, texProperty.valueRaw, 12, sizeof(int));
             }
             else
