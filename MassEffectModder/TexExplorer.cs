@@ -44,6 +44,12 @@ namespace MassEffectModder
         public string name;
     }
 
+    struct TextureGroup
+    {
+        public string name;
+        public int value;
+    }
+
     public struct MatchedTexture
     {
         public int exportID;

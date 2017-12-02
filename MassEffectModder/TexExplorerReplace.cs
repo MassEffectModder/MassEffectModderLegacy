@@ -70,6 +70,55 @@ namespace MassEffectModder
             },
         };
 
+        TextureGroup[] textureGroups = new TextureGroup[]
+        {
+            new TextureGroup
+            {
+                name = "TEXTUREGROUP_Character",
+                value = 1025
+            },
+            new TextureGroup
+            {
+                name = "TEXTUREGROUP_Character_Diff",
+                value = 0
+            },
+            new TextureGroup
+            {
+                name = "TEXTUREGROUP_World",
+                value = 0
+            },
+            new TextureGroup
+            {
+                name = "TEXTUREGROUP_Promotional",
+                value = 0
+            },
+            new TextureGroup
+            {
+                name = "TEXTUREGROUP_Environment",
+                value = 1025
+            },
+            new TextureGroup
+            {
+                name = "TEXTUREGROUP_WorldNormalMap",
+                value = 0
+            },
+            new TextureGroup
+            {
+                name = "TEXTUREGROUP_LightAndShadowMap",
+                value = 0
+            },
+            new TextureGroup
+            {
+                name = "TEXTUREGROUP_Character_Spec",
+                value = 0
+            },
+            new TextureGroup
+            {
+                name = "TEXTUREGROUP_RenderTarget",
+                value = 0
+            },
+        };
+
         public string replaceTexture(Image image, List<MatchedTexture> list, CachePackageMgr cachePackageMgr, string textureName, uint crc, bool verify)
         {
             var masterTextures = new Dictionary<Texture, int>();
@@ -158,6 +207,26 @@ namespace MassEffectModder
                     continue;
 
                 package.DisposeCache();
+
+                if (!texture.properties.exists("LODGroup"))
+                {
+                    if (package.existsNameId("LODGroup"))
+                    {
+                        TextureGroup newGroup = new TextureGroup();
+                        foreach (TextureGroup group in textureGroups)
+                        {
+                            if (package.existsNameId(group.name))
+                            {
+                                newGroup = group;
+                                break;
+                            }
+                        }
+                        if (newGroup.name != null)
+                        {
+                            texture.properties.addByteValue("LODGroup", newGroup.name, newGroup.value);
+                        }
+                    }
+                }
 
                 bool triggerCacheArc = false, triggerCacheCpr = false;
                 string archiveFile = "";
