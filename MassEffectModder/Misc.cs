@@ -38,7 +38,6 @@ namespace MassEffectModder
         {
             if (gameId == MeType.ME1_TYPE)
             {
-                log += "TEXTUREGROUP_RenderTarget=" + engineConf.Read("TEXTUREGROUP_RenderTarget", "TextureLODSettings") + Environment.NewLine;
                 log += "TEXTUREGROUP_World=" + engineConf.Read("TEXTUREGROUP_World", "TextureLODSettings") + Environment.NewLine;
                 log += "TEXTUREGROUP_WorldNormalMap=" + engineConf.Read("TEXTUREGROUP_WorldNormalMap", "TextureLODSettings") + Environment.NewLine;
                 log += "TEXTUREGROUP_AmbientLightMap=" + engineConf.Read("TEXTUREGROUP_AmbientLightMap", "TextureLODSettings") + Environment.NewLine;
@@ -66,7 +65,6 @@ namespace MassEffectModder
             }
             else if (gameId == MeType.ME2_TYPE)
             {
-                log += "TEXTUREGROUP_RenderTarget=" + engineConf.Read("TEXTUREGROUP_RenderTarget", "SystemSettings") + Environment.NewLine;
                 log += "TEXTUREGROUP_World=" + engineConf.Read("TEXTUREGROUP_World", "SystemSettings") + Environment.NewLine;
                 log += "TEXTUREGROUP_WorldNormalMap=" + engineConf.Read("TEXTUREGROUP_WorldNormalMap", "SystemSettings") + Environment.NewLine;
                 log += "TEXTUREGROUP_AmbientLightMap=" + engineConf.Read("TEXTUREGROUP_AmbientLightMap", "SystemSettings") + Environment.NewLine;
@@ -95,7 +93,6 @@ namespace MassEffectModder
             }
             else if (gameId == MeType.ME3_TYPE)
             {
-                log += "TEXTUREGROUP_RenderTarget=" + engineConf.Read("TEXTUREGROUP_RenderTarget", "SystemSettings") + Environment.NewLine;
                 log += "TEXTUREGROUP_World=" + engineConf.Read("TEXTUREGROUP_World", "SystemSettings") + Environment.NewLine;
                 log += "TEXTUREGROUP_WorldSpecular=" + engineConf.Read("TEXTUREGROUP_WorldSpecular", "SystemSettings") + Environment.NewLine;
                 log += "TEXTUREGROUP_WorldNormalMap=" + engineConf.Read("TEXTUREGROUP_WorldNormalMap", "SystemSettings") + Environment.NewLine;
@@ -133,7 +130,6 @@ namespace MassEffectModder
         {
             if (gameId == MeType.ME1_TYPE)
             {
-                engineConf.Write("TEXTUREGROUP_RenderTarget", "(MinLODSize=4096,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
                 engineConf.Write("TEXTUREGROUP_World", "(MinLODSize=4096,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
                 engineConf.Write("TEXTUREGROUP_WorldNormalMap", "(MinLODSize=4096,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
                 engineConf.Write("TEXTUREGROUP_AmbientLightMap", "(MinLODSize=4096,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
@@ -161,7 +157,6 @@ namespace MassEffectModder
             }
             else if (gameId == MeType.ME2_TYPE)
             {
-                engineConf.Write("TEXTUREGROUP_RenderTarget", "(MinLODSize=1,MaxLODSize=4096,LODBias=0)", "SystemSettings");
                 engineConf.Write("TEXTUREGROUP_World", "(MinLODSize=256,MaxLODSize=4096,LODBias=0)", "SystemSettings");
                 engineConf.Write("TEXTUREGROUP_WorldNormalMap", "(MinLODSize=256,MaxLODSize=4096,LODBias=0)", "SystemSettings");
                 engineConf.Write("TEXTUREGROUP_AmbientLightMap", "(MinLODSize=32,MaxLODSize=4096,LODBias=0)", "SystemSettings");
@@ -190,7 +185,6 @@ namespace MassEffectModder
             }
             else if (gameId == MeType.ME3_TYPE)
             {
-                engineConf.Write("TEXTUREGROUP_RenderTarget", "(MinLODSize=1,MaxLODSize=4096,LODBias=0)", "SystemSettings");
                 engineConf.Write("TEXTUREGROUP_World", "(MinLODSize=256,MaxLODSize=4096,LODBias=0)", "SystemSettings");
                 engineConf.Write("TEXTUREGROUP_WorldSpecular", "(MinLODSize=256,MaxLODSize=4096,LODBias=0)", "SystemSettings");
                 engineConf.Write("TEXTUREGROUP_WorldNormalMap", "(MinLODSize=256,MaxLODSize=4096,LODBias=0)", "SystemSettings");
@@ -228,7 +222,6 @@ namespace MassEffectModder
         {
             if (gameId == MeType.ME1_TYPE)
             {
-                engineConf.DeleteKey("TEXTUREGROUP_RenderTarget", "TextureLODSettings");
                 engineConf.DeleteKey("TEXTUREGROUP_World", "TextureLODSettings");
                 engineConf.DeleteKey("TEXTUREGROUP_WorldNormalMap", "TextureLODSettings");
                 engineConf.DeleteKey("TEXTUREGROUP_AmbientLightMap", "TextureLODSettings");
@@ -256,7 +249,6 @@ namespace MassEffectModder
             }
             else if (gameId == MeType.ME2_TYPE)
             {
-                engineConf.DeleteKey("TEXTUREGROUP_RenderTarget", "SystemSettings");
                 engineConf.DeleteKey("TEXTUREGROUP_World", "SystemSettings");
                 engineConf.DeleteKey("TEXTUREGROUP_WorldNormalMap", "SystemSettings");
                 engineConf.DeleteKey("TEXTUREGROUP_AmbientLightMap", "SystemSettings");
@@ -285,7 +277,6 @@ namespace MassEffectModder
             }
             else if (gameId == MeType.ME3_TYPE)
             {
-                engineConf.DeleteKey("TEXTUREGROUP_RenderTarget", "SystemSettings");
                 engineConf.DeleteKey("TEXTUREGROUP_World", "SystemSettings");
                 engineConf.DeleteKey("TEXTUREGROUP_WorldSpecular", "SystemSettings");
                 engineConf.DeleteKey("TEXTUREGROUP_WorldNormalMap", "SystemSettings");
