@@ -583,23 +583,21 @@ namespace MassEffectModder
 
                         if (!vanilla && allowInstall)
                         {
-                            fs.WriteStringASCII("=========================================================" + Environment.NewLine);
-                            fs.WriteStringASCII("WARNING: looks like the following file(s) are not vanilla" + Environment.NewLine);
-                            fs.WriteStringASCII("=========================================================" + Environment.NewLine + Environment.NewLine);
+                            fs.WriteStringASCII("===========================================================================" + Environment.NewLine);
+                            fs.WriteStringASCII("WARNING: looks like the following file(s) are not vanilla or not recognized" + Environment.NewLine);
+                            fs.WriteStringASCII("===========================================================================" + Environment.NewLine + Environment.NewLine);
                             fs.WriteStringASCII(errors);
                             Process.Start(filename);
-                            labelPreVanilla.Text = "Game files are not vanilla!";
+                            labelPreVanilla.Text = "Game files are not vanilla or not recognized!";
                             labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.Red);
                             labelFinalStatus.Text = "Preliminary check detected potential issue...";
                             string message = "The installer detected that the following game files\n" +
-                                "are not unmodded (vanilla) or not recognized game files\n" +
+                                "are not unmodded (vanilla) or not recognized by installer.\n" +
                                 "You can find the list of files in the window that just opened.\n\n" +
                                 "The correct installation order is as follows:\n" +
                                 "1. Content mods (PCC, DLC mods)\n";
                             message += "2. ALOT & ALOT Addon\n";
                             message += "3. Texture and meshes mods (TPF, DDS, MOD)\n\n" +
-                                "- If you have installed texture mods already, revert your game to vanilla,\n" +
-                                "  then follow the correct installation order.\n\n" +
                                 "- If you have properly installed content mods before this mod,\n" +
                                 "  this result is normal and you can continue the installation.\n" +
                                 "  It's advised to verify if all items in the list are supposed to be modded.\n" +
@@ -615,7 +613,25 @@ namespace MassEffectModder
                         }
                         if (!vanilla && !allowInstall)
                         {
-                            labelPreVanilla.Text = "Game files are not vanilla!";
+                            fs.WriteStringASCII("===========================================================================" + Environment.NewLine);
+                            fs.WriteStringASCII("WARNING: looks like the following file(s) are not vanilla or not recognized" + Environment.NewLine);
+                            fs.WriteStringASCII("===========================================================================" + Environment.NewLine + Environment.NewLine);
+                            fs.WriteStringASCII(errors);
+                            Process.Start(filename);
+                            labelPreVanilla.Text = "Game files are not vanilla or not recognized!";
+                            labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.Red);
+                            labelFinalStatus.Text = "Preliminary check detected potential issue...";
+                            string message = "The installer detected that the following game files\n" +
+                                "are not unmodded (vanilla) or not recognized by installer.\n" +
+                                "You can find the list of files in the window that just opened.\n\n" +
+                                "- If you are not sure what you installed,\n" +
+                                "  it is recommended that you revert your game to vanilla\n" +
+                                "  and optionaly install content mods (PCC, DLC mods),\n" +
+                                "  then restart installation this mod.\n\n" +
+                                "- If installer still report this issue,\n" +
+                                "  do not install unrecognized mod files\n" +
+                                "  and submit report to add to supported list mods.\n\n";
+                            MessageBox.Show(message, "Warning !");
                         }
                         else
                         {
