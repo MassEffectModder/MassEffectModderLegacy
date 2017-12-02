@@ -403,9 +403,9 @@ namespace MassEffectModder
 
                     if (!vanilla)
                     {
-                        fs.WriteStringASCII("=========================================================" + Environment.NewLine);
-                        fs.WriteStringASCII("WARNING: looks like the following file(s) are not vanilla" + Environment.NewLine);
-                        fs.WriteStringASCII("=========================================================" + Environment.NewLine + Environment.NewLine);
+                        fs.WriteStringASCII("===========================================================================" + Environment.NewLine);
+                        fs.WriteStringASCII("WARNING: looks like the following file(s) are not vanilla or not recognized" + Environment.NewLine);
+                        fs.WriteStringASCII("===========================================================================" + Environment.NewLine + Environment.NewLine);
                         fs.WriteStringASCII(errors);
                         MessageBox.Show("Finished checking game files.\n\nWARNING: Some errors have occured!");
                         Process.Start(filename);
