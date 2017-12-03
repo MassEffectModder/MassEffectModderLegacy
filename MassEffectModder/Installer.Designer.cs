@@ -99,7 +99,7 @@
             this.groupBoxOptions = new System.Windows.Forms.GroupBox();
             this.checkBoxOptionSkipScan = new System.Windows.Forms.CheckBox();
             this.buttonUnpackDLC = new System.Windows.Forms.Button();
-            this.checkBoxOptionFaster = new System.Windows.Forms.CheckBox();
+            this.checkBoxOptionLimit2K = new System.Windows.Forms.CheckBox();
             this.checkBoxOptionVanilla = new System.Windows.Forms.CheckBox();
             this.groupBoxPreInstallCheck.SuspendLayout();
             this.groupBoxInstaller.SuspendLayout();
@@ -617,7 +617,7 @@
             // groupBoxOptions
             // 
             this.groupBoxOptions.Controls.Add(this.checkBoxOptionSkipScan);
-            this.groupBoxOptions.Controls.Add(this.checkBoxOptionFaster);
+            this.groupBoxOptions.Controls.Add(this.checkBoxOptionLimit2K);
             this.groupBoxOptions.Controls.Add(this.checkBoxOptionVanilla);
             this.groupBoxOptions.Controls.Add(this.checkBoxPreEnableRepack);
             this.groupBoxOptions.Location = new System.Drawing.Point(12, 214);
@@ -649,17 +649,17 @@
             this.buttonUnpackDLC.UseVisualStyleBackColor = true;
             this.buttonUnpackDLC.Click += new System.EventHandler(this.buttonUnpackDLC_Click);
             // 
-            // checkBoxOptionFaster
+            // checkBoxOptionLimit2K
             // 
-            this.checkBoxOptionFaster.AutoSize = true;
-            this.checkBoxOptionFaster.Location = new System.Drawing.Point(18, 42);
-            this.checkBoxOptionFaster.Name = "checkBoxOptionFaster";
-            this.checkBoxOptionFaster.Size = new System.Drawing.Size(153, 17);
-            this.checkBoxOptionFaster.TabIndex = 39;
-            this.checkBoxOptionFaster.TabStop = false;
-            this.checkBoxOptionFaster.Text = "Faster (8GB RAM required)";
-            this.checkBoxOptionFaster.UseVisualStyleBackColor = true;
-            this.checkBoxOptionFaster.Visible = false;
+            this.checkBoxOptionLimit2K.AutoSize = true;
+            this.checkBoxOptionLimit2K.Location = new System.Drawing.Point(18, 42);
+            this.checkBoxOptionLimit2K.Name = "checkBoxOptionLimit2K";
+            this.checkBoxOptionLimit2K.Size = new System.Drawing.Size(115, 17);
+            this.checkBoxOptionLimit2K.TabIndex = 39;
+            this.checkBoxOptionLimit2K.TabStop = false;
+            this.checkBoxOptionLimit2K.Text = "Limit textures to 2K";
+            this.checkBoxOptionLimit2K.UseVisualStyleBackColor = true;
+            this.checkBoxOptionLimit2K.Visible = false;
             // 
             // checkBoxOptionVanilla
             // 
@@ -748,7 +748,7 @@
         private System.Windows.Forms.CheckBox checkBoxPreSpace;
         private System.Windows.Forms.GroupBox groupBoxOptions;
         private System.Windows.Forms.CheckBox checkBoxOptionVanilla;
-        private System.Windows.Forms.CheckBox checkBoxOptionFaster;
+        private System.Windows.Forms.CheckBox checkBoxOptionLimit2K;
         private System.Windows.Forms.Button buttonUnpackDLC;
         private System.Windows.Forms.CheckBox checkBoxOptionSkipScan;
     }

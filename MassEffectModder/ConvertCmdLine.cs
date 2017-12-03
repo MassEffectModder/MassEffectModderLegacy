@@ -1295,8 +1295,9 @@ namespace MassEffectModder
             return true;
         }
 
-        static public void applyMEMs(List<string> memFiles, bool special = false, string tfcName = "", byte[] guid = null)
+        static public bool applyMEMs(List<string> memFiles, bool special = false, string tfcName = "", byte[] guid = null)
         {
+            bool status = true;
             CachePackageMgr cachePackageMgr = new CachePackageMgr(null, null);
 
             for (int i = 0; i < memFiles.Count; i++)
@@ -1316,6 +1317,7 @@ namespace MassEffectModder
                         {
                             Console.WriteLine("File " + memFiles[i] + " is not a valid MEM mod, skipping..." + Environment.NewLine);
                         }
+                        status = false;
                         continue;
                     }
                     else
@@ -1326,6 +1328,7 @@ namespace MassEffectModder
                         if ((MeType)gameType != GameData.gameType)
                         {
                             Console.WriteLine("File " + memFiles[i] + " is not a MEM mod valid for this game, skipping..." + Environment.NewLine);
+                            status = false;
                             continue;
                         }
                     }
@@ -1376,13 +1379,14 @@ namespace MassEffectModder
                                 if (!image.checkDDSHaveAllMipmaps())
                                 {
                                     Console.WriteLine("Error in texture: " + name + string.Format("_0x{0:X8}", crc) + " Texture skipped. This texture has not all the required mipmaps" + Environment.NewLine);
+                                    status = false;
                                     continue;
                                 }
                                 string errors = "";
                                 if (special)
                                     errors = replaceTextureSpecialME3Mod(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc, tfcName, guid);
                                 else
-                                    errors = new MipMaps().replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc, false);
+                                    errors = new MipMaps().replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc, false, false, false);
                                 if (errors != "")
                                     Console.WriteLine(errors);
                             }
@@ -1405,12 +1409,15 @@ namespace MassEffectModder
                         else
                         {
                             Console.WriteLine("Unknown tag for file: " + name + Environment.NewLine);
+                            status = false;
                         }
                     }
                 }
             }
 
             cachePackageMgr.CloseAllWithSave();
+
+            return status;
         }
 
         static public string replaceTextureSpecialME3Mod(Image image, List<MatchedTexture> list, CachePackageMgr cachePackageMgr, string textureName, uint crc, string tfcName, byte[] guid)

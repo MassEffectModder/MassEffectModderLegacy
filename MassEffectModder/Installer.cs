@@ -51,6 +51,7 @@ namespace MassEffectModder
         string sourceDir;
         int AlotVer;
         int MeuitmVer;
+        bool allowToSkipScan;
 
         public Installer()
         {
@@ -111,6 +112,10 @@ namespace MassEffectModder
             if (skip == "true")
                 allowToSkip = true;
 
+            skip = installerIni.Read("AllowSkipScan", "Main").ToLowerInvariant();
+            if (skip == "true")
+                allowToSkipScan = true;
+
             configIni = new ConfIni();
 
             labelStatusPrepare.Text = "";
@@ -127,8 +132,12 @@ namespace MassEffectModder
                 checkBoxOptionVanilla.Visible = true;
             else
                 checkBoxOptionVanilla.Visible = false;
+            if (allowToSkipScan)
+                checkBoxOptionSkipScan.Visible = false;
+            else
+                checkBoxOptionSkipScan.Visible = false;
             checkBoxOptionVanilla.Checked = false;
-            checkBoxOptionFaster.Checked = false;
+            checkBoxOptionLimit2K.Checked = false;
             buttonUnpackDLC.Enabled = false;
             checkBoxOptionSkipScan.Checked = false;
             buttonUnpackDLC.Visible = false;
@@ -831,7 +840,7 @@ namespace MassEffectModder
                                     log += "Error in texture: " + name + string.Format("_0x{0:X8}", crc) + " Texture skipped. This texture has not all the required mipmaps" + Environment.NewLine;
                                     continue;
                                 }
-                                errors += mipMaps.replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc, false);
+                                errors += mipMaps.replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc, checkBoxOptionLimit2K.Checked, true, false);
                             }
                             else
                             {
@@ -875,6 +884,10 @@ namespace MassEffectModder
                 checkBoxRepackZlib.Visible = false;
                 labelStatusRepackZlib.Visible = false;
             }
+            if (gameId == 1)
+                checkBoxOptionLimit2K.Visible = true;
+            else
+                checkBoxOptionLimit2K.Visible = false;
 
             Application.DoEvents();
         }
@@ -925,7 +938,7 @@ namespace MassEffectModder
                 checkBoxOptionSkipScan.Enabled = enabled;
                 buttonUnpackDLC.Enabled = enabled;
             }
-            checkBoxOptionFaster.Enabled = enabled;
+            checkBoxOptionLimit2K.Enabled = enabled;
             Application.DoEvents();
         }
 
@@ -971,10 +984,7 @@ namespace MassEffectModder
 
                 log += "Scan textures started..." + Environment.NewLine;
                 updateStatusScan("In progress...");
-                if (checkBoxOptionFaster.Checked)
-                    errors += treeScan.PrepareListOfTextures(null, cachePackageMgr, null, this, ref log, true);
-                else
-                    errors += treeScan.PrepareListOfTextures(null, null, null, this, ref log, true);
+                errors += treeScan.PrepareListOfTextures(null, null, null, this, ref log, true);
                 textures = treeScan.treeScan;
                 checkBoxScan.Checked = true;
                 updateStatusScan("");
@@ -994,33 +1004,6 @@ namespace MassEffectModder
                 log += "Scan textures skipped" + Environment.NewLine + Environment.NewLine;
             }
 
-            if (checkBoxOptionFaster.Checked)
-            {
-                if (!updateMode && !checkBoxOptionSkipScan.Checked)
-                {
-                    if (GameData.gameType == MeType.ME1_TYPE)
-                    {
-                        log += "Remove mipmaps started..." + Environment.NewLine;
-                        updateStatusMipMaps("In progress...");
-                        errors += mipMaps.removeMipMapsME1(1, textures, cachePackageMgr, null, this, checkBoxPreEnableRepack.Checked);
-                        errors += mipMaps.removeMipMapsME1(2, textures, cachePackageMgr, null, this, checkBoxPreEnableRepack.Checked);
-                        checkBoxMipMaps.Checked = true;
-                        updateStatusMipMaps("");
-                        log += "Remove mipmaps finished" + Environment.NewLine + Environment.NewLine;
-                    }
-                    else
-                    {
-                        log += "Remove mipmaps started..." + Environment.NewLine;
-                        updateStatusMipMaps("In progress...");
-                        errors += mipMaps.removeMipMapsME2ME3(textures, cachePackageMgr, null, this, checkBoxPreEnableRepack.Checked);
-                        checkBoxMipMaps.Checked = true;
-                        updateStatusMipMaps("");
-                        log += "Remove mipmaps finished" + Environment.NewLine + Environment.NewLine;
-                    }
-                }
-            }
-
-
             log += "Process textures started..." + Environment.NewLine;
             updateStatusTextures("In progress...");
             applyModules();
@@ -1035,36 +1018,33 @@ namespace MassEffectModder
             updateStatusStore("");
 
 
-            if (!checkBoxOptionFaster.Checked)
+            if (!updateMode && !checkBoxOptionSkipScan.Checked)
             {
-                if (!updateMode && !checkBoxOptionSkipScan.Checked)
+                if (GameData.gameType == MeType.ME1_TYPE)
                 {
-                    if (GameData.gameType == MeType.ME1_TYPE)
-                    {
-                        log += "Remove mipmaps started..." + Environment.NewLine;
-                        updateStatusMipMaps("In progress...");
-                        errors += mipMaps.removeMipMapsME1(1, textures, null, null, this, checkBoxPreEnableRepack.Checked);
-                        errors += mipMaps.removeMipMapsME1(2, textures, null, null, this, checkBoxPreEnableRepack.Checked);
-                        checkBoxMipMaps.Checked = true;
-                        updateStatusMipMaps("");
-                        log += "Remove mipmaps finished" + Environment.NewLine + Environment.NewLine;
-                    }
-                    else
-                    {
-                        log += "Remove mipmaps started..." + Environment.NewLine;
-                        updateStatusMipMaps("In progress...");
-                        errors += mipMaps.removeMipMapsME2ME3(textures, null, null, this, checkBoxPreEnableRepack.Checked);
-                        checkBoxMipMaps.Checked = true;
-                        updateStatusMipMaps("");
-                        log += "Remove mipmaps finished" + Environment.NewLine + Environment.NewLine;
-                    }
+                    log += "Remove mipmaps started..." + Environment.NewLine;
+                    updateStatusMipMaps("In progress...");
+                    errors += mipMaps.removeMipMapsME1(1, textures, null, null, this, checkBoxPreEnableRepack.Checked);
+                    errors += mipMaps.removeMipMapsME1(2, textures, null, null, this, checkBoxPreEnableRepack.Checked);
+                    checkBoxMipMaps.Checked = true;
+                    updateStatusMipMaps("");
+                    log += "Remove mipmaps finished" + Environment.NewLine + Environment.NewLine;
                 }
                 else
                 {
+                    log += "Remove mipmaps started..." + Environment.NewLine;
+                    updateStatusMipMaps("In progress...");
+                    errors += mipMaps.removeMipMapsME2ME3(textures, null, null, this, checkBoxPreEnableRepack.Checked);
                     checkBoxMipMaps.Checked = true;
-                    updateStatusMipMaps("Skipped");
-                    log += "Remove mipmaps skipped" + Environment.NewLine + Environment.NewLine;
+                    updateStatusMipMaps("");
+                    log += "Remove mipmaps finished" + Environment.NewLine + Environment.NewLine;
                 }
+            }
+            else
+            {
+                checkBoxMipMaps.Checked = true;
+                updateStatusMipMaps("Skipped");
+                log += "Remove mipmaps skipped" + Environment.NewLine + Environment.NewLine;
             }
 
             log += "Updating LODs and other settings started..." + Environment.NewLine;

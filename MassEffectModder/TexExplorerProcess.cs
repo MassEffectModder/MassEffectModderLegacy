@@ -173,7 +173,7 @@ namespace MassEffectModder
                                 else
                                 {
                                     Image image = new Image(data, Path.GetExtension(filename));
-                                    errors += replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc, verify);
+                                    errors += replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc, false, false, verify);
                                 }
                             }
                             else
@@ -383,7 +383,7 @@ namespace MassEffectModder
                             if (foundTexture.crc != 0)
                             {
                                 Image image = new Image(dst, Image.ImageFormat.DDS);
-                                errors += replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc, verify);
+                                errors += replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc, false, false, verify);
                             }
                             else
                             {

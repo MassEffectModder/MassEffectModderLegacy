@@ -119,7 +119,7 @@ namespace MassEffectModder
             },
         };
 
-        public string replaceTexture(Image image, List<MatchedTexture> list, CachePackageMgr cachePackageMgr, string textureName, uint crc, bool verify)
+        public string replaceTexture(Image image, List<MatchedTexture> list, CachePackageMgr cachePackageMgr, string textureName, uint crc, bool limitTo2K, bool limitME1NormsTo2K, bool verify)
         {
             var masterTextures = new Dictionary<Texture, int>();
             Texture arcTexture = null, cprTexture = null;
@@ -143,6 +143,22 @@ namespace MassEffectModder
                 {
                     errors += "Error in texture: " + textureName + " This texture has wrong aspect ratio, skipping texture..." + Environment.NewLine;
                     break;
+                }
+
+                if (limitTo2K &&
+                    image.mipMaps[0].origWidth > 2048 &&
+                    image.mipMaps[0].origHeight > 2048)
+                {
+                    image.mipMaps.RemoveAt(0);
+                }
+
+                if (limitME1NormsTo2K &&
+                    (pixelFormat == PixelFormat.ATI2 ||
+                     pixelFormat == PixelFormat.V8U8) &&
+                    image.mipMaps[0].origWidth > 2048 &&
+                    image.mipMaps[0].origHeight > 2048)
+                {
+                    image.mipMaps.RemoveAt(0);
                 }
 
                 if (!image.checkDDSHaveAllMipmaps() ||
@@ -548,7 +564,7 @@ namespace MassEffectModder
 
                 string errors = "";
                 MipMaps mipMaps = new MipMaps();
-                errors = mipMaps.replaceTexture(image, node.textures[index].list, cachePackageMgr,  node.textures[index].name, node.textures[index].crc, true);
+                errors = mipMaps.replaceTexture(image, node.textures[index].list, cachePackageMgr,  node.textures[index].name, node.textures[index].crc, false, false, true);
 
                 cachePackageMgr.CloseAllWithSave();
 
