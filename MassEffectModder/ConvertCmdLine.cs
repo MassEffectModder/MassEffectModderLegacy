@@ -222,8 +222,8 @@ namespace MassEffectModder
                 Console.WriteLine("File: " + Path.GetFileName(file));
                 if (ipc)
                 {
-                    Console.WriteLine("[IPC]PROCCESSING_FILE " + Path.GetFileName(file));
-                    Console.WriteLine("[IPC]OVERALL_PROGRESS " + ((n + 1) * 100) / files.Count());
+                    Console.WriteLine("[IPC]PROCESSING_FILE " + Path.GetFileName(file));
+                    Console.WriteLine("[IPC]OVERALL_PROGRESS " + (n * 100) / files.Count());
                     Console.Out.Flush();
                 }
 
@@ -834,8 +834,6 @@ namespace MassEffectModder
 
         static public bool ConvertToMEM(MeType gameId, string inputDir, string memFile, bool ipc)
         {
-            loadTexturesMap(gameId);
-
             string errors = "";
             bool status = convertDataModtoMem(inputDir, memFile, gameId, null, ref errors, false, ipc);
             if (errors != "")
@@ -1296,6 +1294,27 @@ namespace MassEffectModder
             return true;
         }
 
+        static bool CheckGameData(MeType gameId)
+        {
+            return true;
+        }
+
+        static bool DetectBadMods(MeType gameId)
+        {
+            List<string> badMods = Misc.detectBrokenMod(gameId);
+            if (badMods.Count != 0)
+            {
+                Console.WriteLine("Error: Detected not compatible mods: \n\n");
+                for (int l = 0; l < badMods.Count; l++)
+                {
+                    Console.WriteLine(badMods[l] + Environment.NewLine);
+                }
+                return true;
+            }
+
+            return true;
+        }
+
         static public bool InstallMEMs(MeType gameId, string inputDir)
         {
             textures = new List<FoundTexture>();
@@ -1304,18 +1323,6 @@ namespace MassEffectModder
             if (GameData.GamePath == null || !Directory.Exists(GameData.GamePath))
             {
                 Console.WriteLine("Error: Could not found the game!");
-                return false;
-            }
-
-            List<string> badMods = Misc.detectBrokenMod(GameData.gameType);
-            if (badMods.Count != 0)
-            {
-                Console.WriteLine("Error: Detected not compatible mods: \n\n");
-                for (int l = 0; l < badMods.Count; l++)
-                {
-                    Console.WriteLine(badMods[l] + Environment.NewLine);
-                }
-
                 return false;
             }
 

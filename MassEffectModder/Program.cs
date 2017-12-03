@@ -323,7 +323,7 @@ namespace MassEffectModder
             Console.WriteLine("  -download-update");
             Console.WriteLine("     Download and install MEM update.");
             Console.WriteLine("");
-            Console.WriteLine("  -convert-to-mem <game id> <input dir> <output file> [ipc]\n");
+            Console.WriteLine("  -convert-to-mem <game id> <input dir> <output file> [-ipc]\n");
             Console.WriteLine("     game id: 1 for ME1, 2 for ME2, 3 for ME3");
             Console.WriteLine("     input dir: directory to be converted, containing following file extension(s):");
             Console.WriteLine("        MEM, MOD, TPF");
@@ -559,7 +559,7 @@ namespace MassEffectModder
                 {
                     if (args.Length == 5)
                     {
-                        if (args[4].ToLowerInvariant() == "--ipc")
+                        if (args[4].ToLowerInvariant() == "-ipc")
                             ipc = true;
                     }
                     else if (args.Length != 4 && args.Length != 5)
