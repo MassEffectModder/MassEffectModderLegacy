@@ -216,6 +216,12 @@ namespace MassEffectModder
             return texPropertyList.Exists(s => s.name == name);
         }
 
+        public void removeProperty(string name)
+        {
+            if (exists(name))
+                texPropertyList.RemoveAt(texPropertyList.FindIndex(s => s.name == name));
+        }
+
         public void setIntValue(string name, int value)
         {
             TexPropertyEntry texProperty = texPropertyList.Find(s => s.name == name);
