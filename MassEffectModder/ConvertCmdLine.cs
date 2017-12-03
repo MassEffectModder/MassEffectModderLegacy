@@ -132,17 +132,14 @@ namespace MassEffectModder
         }
 
         static public string convertDataModtoMem(string inputDir, string memFilePath,
-            MeType gameId, MainWindow mainWindow, bool onlyIndividual = false)
+            MeType gameId, MainWindow mainWindow, bool onlyIndividual = false, bool ipc = false)
         {
             string errors = "";
             string[] files = null;
 
             loadTexturesMap(gameId);
 
-            if (mainWindow == null)
-            {
-                Console.WriteLine("Mods conversion started...");
-            }
+            Console.WriteLine("Mods conversion started...");
 
             List<string> list;
             List<string> list2;
@@ -195,6 +192,11 @@ namespace MassEffectModder
                     mainWindow.updateStatusLabel2("File " + (n + 1) + " of " + files.Count() + ", " + Path.GetFileName(file));
                 }
                 Console.WriteLine("File: " + Path.GetFileName(file));
+                if (ipc)
+                {
+                    Console.WriteLine("[IPC]PROCCESSING_FILE " + Path.GetFileName(file));
+                    Console.WriteLine("[IPC]OVERALL_PROGRESS " + ((n + 1) * 100) / files.Count());
+                }
 
                 if (file.EndsWith(".mem", StringComparison.OrdinalIgnoreCase))
                 {
@@ -801,11 +803,11 @@ namespace MassEffectModder
             return errors;
         }
 
-        static public bool ConvertToMEM(MeType gameId, string inputDir, string memFile)
+        static public bool ConvertToMEM(MeType gameId, string inputDir, string memFile, bool ipc)
         {
             loadTexturesMap(gameId);
 
-            string errors = convertDataModtoMem(inputDir, memFile, gameId, null);
+            string errors = convertDataModtoMem(inputDir, memFile, gameId, null, ipc);
             if (errors != "")
             {
                 Console.WriteLine("Error: Some errors have occured");
