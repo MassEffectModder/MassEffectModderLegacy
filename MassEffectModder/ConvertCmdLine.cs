@@ -160,10 +160,9 @@ namespace MassEffectModder
             return true;
         }
 
-        static public string convertDataModtoMem(string inputDir, string memFilePath,
-            MeType gameId, MainWindow mainWindow, bool onlyIndividual = false, bool ipc = false)
+        static public bool convertDataModtoMem(string inputDir, string memFilePath,
+            MeType gameId, MainWindow mainWindow, ref string errors, bool onlyIndividual = false, bool ipc = false)
         {
-            string errors = "";
             string[] files = null;
 
             loadTexturesMap(gameId);
@@ -257,7 +256,7 @@ namespace MassEffectModder
                             {
                                 errors += "File " + file + " is not a MEM mod valid for this game" + Environment.NewLine;
                                 Console.WriteLine("File " + file + " is not a MEM mod valid for this game");
-                                return errors;
+                                continue;
                             }
                         }
                         int numFiles = fs.ReadInt32();
@@ -807,7 +806,7 @@ namespace MassEffectModder
                     File.Delete(memFilePath);
                 if (mainWindow == null)
                     Console.WriteLine("Mods conversion failed - nothing converted!");
-                return errors;
+                return false;
             }
 
             long pos = outFs.Position;
@@ -830,21 +829,19 @@ namespace MassEffectModder
             if (mainWindow == null)
                 Console.WriteLine("Mods conversion process completed");
 
-            return errors;
+            return true;
         }
 
         static public bool ConvertToMEM(MeType gameId, string inputDir, string memFile, bool ipc)
         {
             loadTexturesMap(gameId);
 
-            string errors = convertDataModtoMem(inputDir, memFile, gameId, null, ipc);
+            string errors = "";
+            bool status = convertDataModtoMem(inputDir, memFile, gameId, null, ref errors, false, ipc);
             if (errors != "")
-            {
                 Console.WriteLine("Error: Some errors have occured");
-                return false;
-            }
 
-            return true;
+            return status;
         }
 
         static public bool convertGameTexture(string inputFile, string outputFile)
@@ -1332,10 +1329,7 @@ namespace MassEffectModder
             gameData.getTfcTextures();
 
             List<string> memFiles = Directory.GetFiles(inputDir, "*.mem").Where(item => item.EndsWith(".mem", StringComparison.OrdinalIgnoreCase)).ToList();
-
-            applyMEMs(memFiles);
-
-            return true;
+            return applyMEMs(memFiles);
         }
 
         static public bool applyMEMSpecialModME3(string memFile, string tfcName, byte[] guid)
