@@ -1382,7 +1382,6 @@ namespace MassEffectModder
                         {
                             Console.WriteLine("File " + memFiles[i] + " is not a valid MEM mod, skipping..." + Environment.NewLine);
                         }
-                        status = false;
                         continue;
                     }
                     else
@@ -1393,7 +1392,6 @@ namespace MassEffectModder
                         if ((MeType)gameType != GameData.gameType)
                         {
                             Console.WriteLine("File " + memFiles[i] + " is not a MEM mod valid for this game, skipping..." + Environment.NewLine);
-                            status = false;
                             continue;
                         }
                     }
@@ -1444,7 +1442,6 @@ namespace MassEffectModder
                                 if (!image.checkDDSHaveAllMipmaps())
                                 {
                                     Console.WriteLine("Error in texture: " + name + string.Format("_0x{0:X8}", crc) + " Texture skipped. This texture has not all the required mipmaps" + Environment.NewLine);
-                                    status = false;
                                     continue;
                                 }
                                 string errors = "";
@@ -1474,7 +1471,6 @@ namespace MassEffectModder
                         else
                         {
                             Console.WriteLine("Unknown tag for file: " + name + Environment.NewLine);
-                            status = false;
                         }
                     }
                 }
