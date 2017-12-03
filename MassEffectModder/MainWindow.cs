@@ -98,7 +98,12 @@ namespace MassEffectModder
 
         private void updateME1ConfigToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            updateMEConfig(MeType.ME1_TYPE);
+            updateMEConfig(MeType.ME1_TYPE, false);
+        }
+
+        private void updateME1Config2KToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            updateMEConfig(MeType.ME1_TYPE, true);
         }
 
         public bool GetPackages(GameData gameData)
@@ -214,7 +219,7 @@ namespace MassEffectModder
             enableGameDataMenu(true);
         }
 
-        void updateMEConfig(MeType gameId)
+        void updateMEConfig(MeType gameId, bool limitME1Lods = false)
         {
             enableGameDataMenu(false);
             string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
@@ -234,7 +239,7 @@ namespace MassEffectModder
             if (!exist)
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
             ConfIni engineConf = new ConfIni(path);
-            LODSettings.updateLOD(gameId, engineConf);
+            LODSettings.updateLOD(gameId, engineConf, limitME1Lods);
             MessageBox.Show("Game configuration file at " + path + " updated.");
             enableGameDataMenu(true);
         }

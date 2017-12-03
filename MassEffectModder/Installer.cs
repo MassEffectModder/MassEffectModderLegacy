@@ -1054,7 +1054,7 @@ namespace MassEffectModder
             if (!exist)
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
             ConfIni engineConf = new ConfIni(path);
-            LODSettings.updateLOD((MeType)gameId, engineConf);
+            LODSettings.updateLOD((MeType)gameId, engineConf, checkBoxOptionLimit2K.Checked);
             LODSettings.updateGFXSettings((MeType)gameId, engineConf);
             checkBoxLOD.Checked = true;
             updateStatusLOD("");
