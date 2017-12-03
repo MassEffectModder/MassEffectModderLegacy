@@ -373,6 +373,11 @@ namespace MassEffectModder
                                         (f.numMips != 1 && image.mipMaps.Count() == 1) ||
                                         image.pixelFormat != pixelFormat)
                                     {
+                                        if (ipc)
+                                        {
+                                            Console.WriteLine("[IPC]PROCESSING_FILE Converting " + textureName);
+                                            Console.Out.Flush();
+                                        }
                                         Console.WriteLine("Converting/correcting texture: " + textureName);
                                         bool dxt1HasAlpha = false;
                                         byte dxt1Threshold = 128;
@@ -574,6 +579,11 @@ namespace MassEffectModder
                                     byte dxt1Threshold = 128;
                                     if (foundCrcList[0].alphadxt1)
                                     {
+                                        if (ipc)
+                                        {
+                                            Console.WriteLine("[IPC]PROCESSING_FILE Converting " + textureName);
+                                            Console.Out.Flush();
+                                        }
                                         Console.WriteLine("Converting/correcting texture: " + textureName);
                                         dxt1HasAlpha = true;
                                         if (image.pixelFormat == PixelFormat.ARGB ||
@@ -664,6 +674,11 @@ namespace MassEffectModder
                            (foundCrcList[0].numMips != 1 && image.mipMaps.Count() == 1) ||
                             image.pixelFormat != pixelFormat)
                         {
+                            if (ipc)
+                            {
+                                Console.WriteLine("[IPC]PROCESSING_FILE Converting " + Path.GetFileName(file));
+                                Console.Out.Flush();
+                            }
                             Console.WriteLine("Converting/correcting texture: " + Path.GetFileName(file));
                             bool dxt1HasAlpha = false;
                             byte dxt1Threshold = 128;
@@ -751,6 +766,11 @@ namespace MassEffectModder
                         {
                             Console.WriteLine("Warning for texture: " + Path.GetFileName(file) + ". This texture converted from full alpha to binary alpha.");
                         }
+                    }
+                    if (ipc)
+                    {
+                        Console.WriteLine("[IPC]PROCESSING_FILE Converting " + Path.GetFileName(file));
+                        Console.Out.Flush();
                     }
                     Console.WriteLine("Converting/correcting texture: " + Path.GetFileName(file));
                     image.correctMips(pixelFormat, dxt1HasAlpha, dxt1Threshold);
