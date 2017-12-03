@@ -196,7 +196,7 @@ namespace MassEffectModder
             return false;
         }
 
-        bool applyModTag(int gameId)
+        static public bool applyModTag(int gameId, int MeuitmV, int AlotV)
         {
             string path = "";
             if (gameId == (int)MeType.ME1_TYPE)
@@ -216,8 +216,8 @@ namespace MassEffectModder
                 using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Write))
                 {
                     fs.SeekEnd();
-                    fs.WriteInt32(MeuitmVer);
-                    fs.WriteInt32(AlotVer);
+                    fs.WriteInt32(MeuitmV);
+                    fs.WriteInt32(AlotV);
                     fs.WriteInt32(int.Parse(Application.ProductVersion));
                     fs.WriteUInt32(MEMI_TAG);
                 }
@@ -554,24 +554,6 @@ namespace MassEffectModder
                     return;
                 }
 
-                if (updateMode)
-                {
-                    List<string> ignoredMods = new List<string>();
-                    for (int i = 0; i < 10; i++)
-                    {
-                        string ignoredMod = installerIni.Read("Mod" + i, "IgnoreForUpdateMods");
-                        if (ignoredMod != "")
-                            ignoredMods.Add(ignoredMod);
-                    }
-                    for (int i = 0; i < ignoredMods.Count; i++)
-                    {
-                        if (memFiles.Exists(s => s.Contains(ignoredMods[i])))
-                        {
-                            string mod = memFiles.Find(s => s.Contains(ignoredMods[i]));
-                            memFiles.Remove(mod);
-                        }
-                    }
-                }
                 labelPreVanilla.Text = "Skipped";
                 checkBoxOptionSkipScan.Enabled = false;
                 labelFinalStatus.Text = "Ready to go. Press START button!";
@@ -582,7 +564,7 @@ namespace MassEffectModder
                 if (!checkBoxOptionVanilla.Checked)
                 {
                     List<string> modList = new List<string>();
-                    bool vanilla = Misc.checkGameFiles((MeType)gameId, ref errors, ref modList, null, this, Misc.generateModsMd5Entries);
+                    bool vanilla = Misc.checkGameFiles((MeType)gameId, ref errors, ref modList, null, this, false, false, Misc.generateModsMd5Entries);
                     if (modList.Count != 0)
                     {
                         FileStream fs = new FileStream(filename, FileMode.OpenOrCreate);
@@ -1077,7 +1059,7 @@ namespace MassEffectModder
             }
 
 
-            if (!applyModTag(gameId))
+            if (!applyModTag(gameId, MeuitmVer, AlotVer))
                 errors += "Failed applying stamp for installation!\n";
 
             var time = Misc.stopTimer();

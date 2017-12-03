@@ -1314,13 +1314,213 @@ namespace MassEffectModder
             return true;
         }
 
+        static bool ApplyModTag(MeType gameId, int meuitmV, int alotV)
+        {
+            ConfIni configIni = new ConfIni();
+            GameData gameData = new GameData(gameId, configIni);
+            if (GameData.GamePath == null || !Directory.Exists(GameData.GamePath))
+            {
+                Console.WriteLine("Error: Could not found the game!");
+                return false;
+            }
+
+            return Installer.applyModTag((int)gameId, meuitmV, alotV);
+        }
+
+        static bool ApplyME1LAAPatch(MeType gameId)
+        {
+            ConfIni configIni = new ConfIni();
+            GameData gameData = new GameData(gameId, configIni);
+            if (GameData.GamePath == null || !Directory.Exists(GameData.GamePath))
+            {
+                Console.WriteLine("Error: Could not found the game!");
+                return false;
+            }
+
+            return Misc.VerifyME1Exe(gameData, false);
+        }
+
+        static bool ApplyLODAndGfxSettings(MeType gameId, bool Limit2K = false)
+        {
+            ConfIni configIni = new ConfIni();
+            GameData gameData = new GameData(gameId, configIni);
+            if (GameData.GamePath == null || !Directory.Exists(GameData.GamePath))
+            {
+                Console.WriteLine("Error: Could not found the game!");
+                return false;
+            }
+
+            string path = gameData.EngineConfigIniPath;
+            bool exist = File.Exists(path);
+            if (!exist)
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+            ConfIni engineConf = new ConfIni(path);
+            LODSettings.updateLOD((MeType)gameId, engineConf, Limit2K);
+            LODSettings.updateGFXSettings(gameId, engineConf);
+
+            return true;
+        }
+
+        static bool RemoveLODSettings(MeType gameId, bool Limit2K = false)
+        {
+            ConfIni configIni = new ConfIni();
+            GameData gameData = new GameData(gameId, configIni);
+            if (GameData.GamePath == null || !Directory.Exists(GameData.GamePath))
+            {
+                Console.WriteLine("Error: Could not found the game!");
+                return false;
+            }
+
+            string path = gameData.EngineConfigIniPath;
+            bool exist = File.Exists(path);
+            if (!exist)
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+            ConfIni engineConf = new ConfIni(path);
+            LODSettings.removeLOD(gameId, engineConf);
+
+            return true;
+        }
+
+        static bool PrintLODSettings(MeType gameId, bool Limit2K = false)
+        {
+            ConfIni configIni = new ConfIni();
+            GameData gameData = new GameData(gameId, configIni);
+            if (GameData.GamePath == null || !Directory.Exists(GameData.GamePath))
+            {
+                Console.WriteLine("Error: Could not found the game!");
+                return false;
+            }
+
+            string path = gameData.EngineConfigIniPath;
+            bool exist = File.Exists(path);
+            if (!exist)
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+            ConfIni engineConf = new ConfIni(path);
+            string log = "";
+            LODSettings.readLOD(gameId, engineConf, ref log);
+            Console.WriteLine(log);
+
+            return true;
+        }
+
+        static bool ScanAndMipMapsRemoval(MeType gameId, bool repack = false)
+        {
+            string errors = "";
+            string log = "";
+
+            ConfIni configIni = new ConfIni();
+            GameData gameData = new GameData(gameId, configIni);
+            if (GameData.GamePath == null || !Directory.Exists(GameData.GamePath))
+            {
+                Console.WriteLine("Error: Could not found the game!");
+                return false;
+            }
+
+            gameData.getPackages(true, true);
+            if (gameId != MeType.ME1_TYPE)
+                gameData.getTfcTextures();
+
+            TreeScan treeScan = new TreeScan();
+            errors += treeScan.PrepareListOfTextures(null, null, null, null, ref log, true);
+            textures = treeScan.treeScan;
+
+            MipMaps mipMaps = new MipMaps();
+            Console.WriteLine("Remove mipmaps started..." + Environment.NewLine);
+            if (GameData.gameType == MeType.ME1_TYPE)
+            {
+                errors += mipMaps.removeMipMapsME1(1, textures, null, null, null, repack);
+                errors += mipMaps.removeMipMapsME1(2, textures, null, null, null, repack);
+            }
+            else
+            {
+                errors += mipMaps.removeMipMapsME2ME3(textures, null, null, null, repack);
+            }
+            Console.WriteLine("Remove mipmaps finished" + Environment.NewLine + Environment.NewLine);
+
+            return true;
+        }
+
+        static bool UnpackDLCs(MeType gameId)
+        {
+            ConfIni configIni = new ConfIni();
+            GameData gameData = new GameData(gameId, configIni);
+            if (GameData.GamePath == null || !Directory.Exists(GameData.GamePath))
+            {
+                Console.WriteLine("Error: Could not found the game!");
+                return false;
+            }
+
+            ME3DLC.unpackAllDLC(null, null);
+
+            return true;
+        }
+
+        static bool RepackGameData(MeType gameId)
+        {
+            ConfIni configIni = new ConfIni();
+            GameData gameData = new GameData(gameId, configIni);
+            if (GameData.GamePath == null || !Directory.Exists(GameData.GamePath))
+            {
+                Console.WriteLine("Error: Could not found the game!");
+                return false;
+            }
+
+            gameData.getPackages(true, true);
+
+            for (int i = 0; i < GameData.packageFiles.Count; i++)
+            {
+                //updateStatusRepackZlib("Repacking PCC files... " + ((i + 1) * 100 / GameData.packageFiles.Count) + " %");
+                Package package = new Package(GameData.packageFiles[i], true, true);
+                if (package.compressed && package.compressionType != Package.CompressionType.Zlib)
+                {
+                    package.Dispose();
+                    package = new Package(GameData.packageFiles[i]);
+                    package.SaveToFile(true);
+                }
+            }
+
+            return true;
+        }
+
+        static bool VerifyGameDataEmptyMipMapsRemoval(MeType gameId)
+        {
+            ConfIni configIni = new ConfIni();
+            GameData gameData = new GameData(gameId, configIni);
+            if (GameData.GamePath == null || !Directory.Exists(GameData.GamePath))
+            {
+                Console.WriteLine("Error: Could not found the game!");
+                return false;
+            }
+
+            return MipMaps.verifyGameDataEmptyMipMapsRemoval();
+        }
+
         static bool CheckGameData(MeType gameId)
         {
-            return true;
+            ConfIni configIni = new ConfIni();
+            GameData gameData = new GameData(gameId, configIni);
+            if (GameData.GamePath == null || !Directory.Exists(GameData.GamePath))
+            {
+                Console.WriteLine("Error: Could not found the game!");
+                return false;
+            }
+            string errors = "";
+            List<string> modList = new List<string>();
+            bool vanilla = Misc.checkGameFiles((MeType)gameId, ref errors, ref modList, null, null, false, false, Misc.generateModsMd5Entries);
+
+            return vanilla;
         }
 
         static bool DetectBadMods(MeType gameId)
         {
+            ConfIni configIni = new ConfIni();
+            GameData gameData = new GameData(gameId, configIni);
+            if (GameData.GamePath == null || !Directory.Exists(GameData.GamePath))
+            {
+                Console.WriteLine("Error: Could not found the game!");
+                return false;
+            }
+
             List<string> badMods = Misc.detectBrokenMod(gameId);
             if (badMods.Count != 0)
             {
@@ -1335,7 +1535,7 @@ namespace MassEffectModder
             return true;
         }
 
-        static public bool InstallMEMs(MeType gameId, string inputDir)
+        static public bool InstallMEMs(MeType gameId, string inputDir, bool repack = false)
         {
             textures = new List<FoundTexture>();
             ConfIni configIni = new ConfIni();
@@ -1353,10 +1553,12 @@ namespace MassEffectModder
                 return false;
 
             gameData.getPackages(true, true);
-            gameData.getTfcTextures();
+            if (gameId != MeType.ME1_TYPE)
+                gameData.getTfcTextures();
 
             List<string> memFiles = Directory.GetFiles(inputDir, "*.mem").Where(item => item.EndsWith(".mem", StringComparison.OrdinalIgnoreCase)).ToList();
-            return applyMEMs(memFiles);
+            bool status = applyMEMs(memFiles, repack);
+            return status;
         }
 
         static public bool applyMEMSpecialModME3(string memFile, string tfcName, byte[] guid)
@@ -1382,12 +1584,12 @@ namespace MassEffectModder
             List<string> memFiles = new List<string>();
             memFiles.Add(memFile);
 
-            applyMEMs(memFiles, true, tfcName, guid);
+            applyMEMs(memFiles, false, true, tfcName, guid);
 
             return true;
         }
 
-        static public bool applyMEMs(List<string> memFiles, bool special = false, string tfcName = "", byte[] guid = null)
+        static public bool applyMEMs(List<string> memFiles, bool repack = false, bool special = false, string tfcName = "", byte[] guid = null)
         {
             bool status = true;
             CachePackageMgr cachePackageMgr = new CachePackageMgr(null, null);
@@ -1503,7 +1705,7 @@ namespace MassEffectModder
                 }
             }
 
-            cachePackageMgr.CloseAllWithSave();
+            cachePackageMgr.CloseAllWithSave(repack);
 
             return status;
         }

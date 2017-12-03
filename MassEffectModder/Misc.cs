@@ -401,7 +401,7 @@ namespace MassEffectModder
             public string modName;
         }
 
-        static public void VerifyME1Exe(GameData gameData, bool gui = true)
+        static public bool VerifyME1Exe(GameData gameData, bool gui = true)
         {
             if (File.Exists(GameData.GameExePath))
             {
@@ -419,8 +419,11 @@ namespace MassEffectModder
                         fs.Skip(-2);
                         fs.WriteUInt16(flag); // write LAA flag
                     }
+                    return true;
                 }
             }
+
+            return false;
         }
 
         static public bool checkWriteAccessDir(string path)
@@ -723,7 +726,7 @@ namespace MassEffectModder
         }
 
         static public bool checkGameFiles(MeType gameType, ref string errors, ref List<string> mods,
-            MainWindow mainWindow = null, Installer installer = null, bool generateMd5Entries = false)
+            MainWindow mainWindow = null, Installer installer = null, bool withoutSfars = false, bool onlyVanilla = false, bool generateMd5Entries = false)
         {
             bool vanilla = true;
             List<string> packageMainFiles = null;
@@ -820,31 +823,34 @@ namespace MassEffectModder
                 if (found)
                     continue;
 
-                found = false;
-                for (int p = 0; p < modsEntries.Count(); p++)
+                if (!onlyVanilla)
                 {
-                    if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, modsEntries[p].md5))
+                    found = false;
+                    for (int p = 0; p < modsEntries.Count(); p++)
                     {
-                        found = true;
-                        if (!mods.Exists(s => s == modsEntries[p].modName))
-                            mods.Add(modsEntries[p].modName);
-                        break;
+                        if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, modsEntries[p].md5))
+                        {
+                            found = true;
+                            if (!mods.Exists(s => s == modsEntries[p].modName))
+                                mods.Add(modsEntries[p].modName);
+                            break;
+                        }
                     }
-                }
-                if (found)
-                    continue;
+                    if (found)
+                        continue;
 
-                found = false;
-                for (int p = 0; p < badMOD.Count(); p++)
-                {
-                    if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, badMOD[p].md5))
+                    found = false;
+                    for (int p = 0; p < badMOD.Count(); p++)
                     {
-                        found = true;
-                        break;
+                        if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, badMOD[p].md5))
+                        {
+                            found = true;
+                            break;
+                        }
                     }
+                    if (found)
+                        continue;
                 }
-                if (found)
-                    continue;
 
                 int index = -1;
                 for (int p = 0; p < entries.Count(); p++)
@@ -908,31 +914,34 @@ namespace MassEffectModder
                     if (found)
                         continue;
 
-                    found = false;
-                    for (int p = 0; p < modsEntries.Count(); p++)
+                    if (!onlyVanilla)
                     {
-                        if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, modsEntries[p].md5))
+                        found = false;
+                        for (int p = 0; p < modsEntries.Count(); p++)
                         {
-                            found = true;
-                            if (!mods.Exists(s => s == modsEntries[p].modName))
-                                mods.Add(modsEntries[p].modName);
-                            break;
+                            if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, modsEntries[p].md5))
+                            {
+                                found = true;
+                                if (!mods.Exists(s => s == modsEntries[p].modName))
+                                    mods.Add(modsEntries[p].modName);
+                                break;
+                            }
                         }
-                    }
-                    if (found)
-                        continue;
+                        if (found)
+                            continue;
 
-                    found = false;
-                    for (int p = 0; p < badMOD.Count(); p++)
-                    {
-                        if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, badMOD[p].md5))
+                        found = false;
+                        for (int p = 0; p < badMOD.Count(); p++)
                         {
-                            found = true;
-                            break;
+                            if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, badMOD[p].md5))
+                            {
+                                found = true;
+                                break;
+                            }
                         }
+                        if (found)
+                            continue;
                     }
-                    if (found)
-                        continue;
 
                     int index = -1;
                     for (int p = 0; p < entries.Count(); p++)
@@ -972,7 +981,7 @@ namespace MassEffectModder
                 }
             }
 
-            if (sfarFiles != null)
+            if (sfarFiles != null && !withoutSfars)
             {
                 for (int l = 0; l < sfarFiles.Count; l++)
                 {

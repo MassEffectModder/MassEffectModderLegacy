@@ -392,7 +392,7 @@ namespace MassEffectModder
                     File.Delete(filename);
                 string errors = "";
                 List<string> mods = new List<string>();
-                bool vanilla = Misc.checkGameFiles(gameType, ref errors, ref mods, this, null, Misc.generateModsMd5Entries);
+                bool vanilla = Misc.checkGameFiles(gameType, ref errors, ref mods, this, null, false, false, Misc.generateModsMd5Entries);
                 updateStatusLabel("");
                 using (FileStream fs = new FileStream(filename, FileMode.CreateNew))
                 {
