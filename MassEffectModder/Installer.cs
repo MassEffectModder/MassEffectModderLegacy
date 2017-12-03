@@ -863,11 +863,6 @@ namespace MassEffectModder
         {
             if (gameId != 3)
             {
-                checkBoxPreEnablePack.Visible = false;
-                labelME3DLCPack.Visible = false;
-                checkBoxPackDLC.Visible = false;
-                labelStatusPackDLC.Visible = false;
-
                 labelMERepackZlib.Visible = false;
                 checkBoxRepackZlib.Visible = false;
                 labelStatusRepackZlib.Visible = false;
@@ -877,13 +872,8 @@ namespace MassEffectModder
             {
                 checkBoxPreEnableRepack.Visible = false;
                 labelMERepackZlib.Visible = false;
-                labelME3DLCPack.Visible = false;
                 checkBoxRepackZlib.Visible = false;
                 labelStatusRepackZlib.Visible = false;
-
-                labelME3DLCPack.Visible = false;
-                checkBoxPackDLC.Visible = false;
-                labelStatusPackDLC.Visible = false;
             }
 
             Application.DoEvents();
@@ -898,7 +888,6 @@ namespace MassEffectModder
             labelPreSpace.Text = "";
             labelPreVanilla.Text = "";
             labelStatusRepackZlib.Text = "";
-            labelStatusPackDLC.Text = "";
 
             checkBoxPreMods.Checked = false;
             checkBoxPrePath.Checked = false;
@@ -924,7 +913,6 @@ namespace MassEffectModder
             buttonNormal.Enabled = enabled;
             buttonPreChangePath.Enabled = enabled;
             checkBoxPreEnableRepack.Enabled = enabled;
-            checkBoxPreEnablePack.Enabled = enabled;
             if (updateMode)
             {
                 checkBoxOptionVanilla.Enabled = false;
@@ -1234,13 +1222,6 @@ namespace MassEffectModder
             labelMERepackZlib.Visible = checkBoxPreEnableRepack.Checked;
             checkBoxRepackZlib.Visible = checkBoxPreEnableRepack.Checked;
             labelStatusRepackZlib.Visible = checkBoxPreEnableRepack.Checked;
-        }
-
-        private void checkBoxPreEnablePack_CheckedChanged(object sender, EventArgs e)
-        {
-            labelME3DLCPack.Visible = false;//checkBoxPreEnablePack.Checked;
-            checkBoxPackDLC.Visible = checkBoxPreEnablePack.Checked;
-            labelStatusPackDLC.Visible = checkBoxPreEnablePack.Checked;
         }
 
         private void buttonUnpackDLC_Click(object sender, EventArgs e)

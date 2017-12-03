@@ -89,17 +89,13 @@
             this.label1 = new System.Windows.Forms.Label();
             this.buttonPreInstallCheck = new System.Windows.Forms.Button();
             this.groupBoxInstaller = new System.Windows.Forms.GroupBox();
-            this.checkBoxPackDLC = new System.Windows.Forms.CheckBox();
             this.checkBoxRepackZlib = new System.Windows.Forms.CheckBox();
-            this.labelStatusPackDLC = new System.Windows.Forms.Label();
-            this.labelME3DLCPack = new System.Windows.Forms.Label();
             this.labelStatusRepackZlib = new System.Windows.Forms.Label();
             this.labelMERepackZlib = new System.Windows.Forms.Label();
             this.buttonExit = new System.Windows.Forms.Button();
             this.buttonNormal = new System.Windows.Forms.Button();
             this.labelFinalStatus = new System.Windows.Forms.Label();
             this.checkBoxPreEnableRepack = new System.Windows.Forms.CheckBox();
-            this.checkBoxPreEnablePack = new System.Windows.Forms.CheckBox();
             this.groupBoxOptions = new System.Windows.Forms.GroupBox();
             this.checkBoxOptionSkipScan = new System.Windows.Forms.CheckBox();
             this.buttonUnpackDLC = new System.Windows.Forms.Button();
@@ -330,6 +326,7 @@
             // groupBoxPreInstallCheck
             // 
             this.groupBoxPreInstallCheck.Controls.Add(this.checkBoxPreVanilla);
+            this.groupBoxPreInstallCheck.Controls.Add(this.buttonUnpackDLC);
             this.groupBoxPreInstallCheck.Controls.Add(this.checkBoxPreSpace);
             this.groupBoxPreInstallCheck.Controls.Add(this.checkBoxPreAccess);
             this.groupBoxPreInstallCheck.Controls.Add(this.checkBoxPrePath);
@@ -512,10 +509,7 @@
             // 
             // groupBoxInstaller
             // 
-            this.groupBoxInstaller.Controls.Add(this.checkBoxPackDLC);
             this.groupBoxInstaller.Controls.Add(this.checkBoxRepackZlib);
-            this.groupBoxInstaller.Controls.Add(this.labelStatusPackDLC);
-            this.groupBoxInstaller.Controls.Add(this.labelME3DLCPack);
             this.groupBoxInstaller.Controls.Add(this.labelStatusRepackZlib);
             this.groupBoxInstaller.Controls.Add(this.labelMERepackZlib);
             this.groupBoxInstaller.Controls.Add(this.buttonSTART);
@@ -544,16 +538,6 @@
             this.groupBoxInstaller.TabStop = false;
             this.groupBoxInstaller.Text = "Installer";
             // 
-            // checkBoxPackDLC
-            // 
-            this.checkBoxPackDLC.AutoSize = true;
-            this.checkBoxPackDLC.Enabled = false;
-            this.checkBoxPackDLC.Location = new System.Drawing.Point(166, 210);
-            this.checkBoxPackDLC.Name = "checkBoxPackDLC";
-            this.checkBoxPackDLC.Size = new System.Drawing.Size(15, 14);
-            this.checkBoxPackDLC.TabIndex = 30;
-            this.checkBoxPackDLC.UseVisualStyleBackColor = true;
-            // 
             // checkBoxRepackZlib
             // 
             this.checkBoxRepackZlib.AutoSize = true;
@@ -563,25 +547,6 @@
             this.checkBoxRepackZlib.Size = new System.Drawing.Size(15, 14);
             this.checkBoxRepackZlib.TabIndex = 29;
             this.checkBoxRepackZlib.UseVisualStyleBackColor = true;
-            // 
-            // labelStatusPackDLC
-            // 
-            this.labelStatusPackDLC.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.labelStatusPackDLC.ForeColor = System.Drawing.Color.LimeGreen;
-            this.labelStatusPackDLC.Location = new System.Drawing.Point(187, 211);
-            this.labelStatusPackDLC.Name = "labelStatusPackDLC";
-            this.labelStatusPackDLC.Size = new System.Drawing.Size(252, 13);
-            this.labelStatusPackDLC.TabIndex = 27;
-            this.labelStatusPackDLC.Text = "label";
-            // 
-            // labelME3DLCPack
-            // 
-            this.labelME3DLCPack.AutoSize = true;
-            this.labelME3DLCPack.Location = new System.Drawing.Point(13, 211);
-            this.labelME3DLCPack.Name = "labelME3DLCPack";
-            this.labelME3DLCPack.Size = new System.Drawing.Size(74, 13);
-            this.labelME3DLCPack.TabIndex = 28;
-            this.labelME3DLCPack.Text = "Repack DLCs";
             // 
             // labelStatusRepackZlib
             // 
@@ -649,27 +614,12 @@
             this.checkBoxPreEnableRepack.UseVisualStyleBackColor = true;
             this.checkBoxPreEnableRepack.CheckedChanged += new System.EventHandler(this.checkBoxPreEnableRepack_CheckedChanged);
             // 
-            // checkBoxPreEnablePack
-            // 
-            this.checkBoxPreEnablePack.AutoSize = true;
-            this.checkBoxPreEnablePack.Location = new System.Drawing.Point(18, 42);
-            this.checkBoxPreEnablePack.Name = "checkBoxPreEnablePack";
-            this.checkBoxPreEnablePack.Size = new System.Drawing.Size(125, 17);
-            this.checkBoxPreEnablePack.TabIndex = 37;
-            this.checkBoxPreEnablePack.TabStop = false;
-            this.checkBoxPreEnablePack.Text = "Repack DLCs (Slow)";
-            this.checkBoxPreEnablePack.UseVisualStyleBackColor = true;
-            this.checkBoxPreEnablePack.Visible = false;
-            this.checkBoxPreEnablePack.CheckedChanged += new System.EventHandler(this.checkBoxPreEnablePack_CheckedChanged);
-            // 
             // groupBoxOptions
             // 
             this.groupBoxOptions.Controls.Add(this.checkBoxOptionSkipScan);
-            this.groupBoxOptions.Controls.Add(this.buttonUnpackDLC);
             this.groupBoxOptions.Controls.Add(this.checkBoxOptionFaster);
             this.groupBoxOptions.Controls.Add(this.checkBoxOptionVanilla);
             this.groupBoxOptions.Controls.Add(this.checkBoxPreEnableRepack);
-            this.groupBoxOptions.Controls.Add(this.checkBoxPreEnablePack);
             this.groupBoxOptions.Location = new System.Drawing.Point(12, 214);
             this.groupBoxOptions.Name = "groupBoxOptions";
             this.groupBoxOptions.Size = new System.Drawing.Size(569, 72);
@@ -691,7 +641,7 @@
             // 
             // buttonUnpackDLC
             // 
-            this.buttonUnpackDLC.Location = new System.Drawing.Point(445, 28);
+            this.buttonUnpackDLC.Location = new System.Drawing.Point(445, 121);
             this.buttonUnpackDLC.Name = "buttonUnpackDLC";
             this.buttonUnpackDLC.Size = new System.Drawing.Size(111, 23);
             this.buttonUnpackDLC.TabIndex = 51;
@@ -702,7 +652,7 @@
             // checkBoxOptionFaster
             // 
             this.checkBoxOptionFaster.AutoSize = true;
-            this.checkBoxOptionFaster.Location = new System.Drawing.Point(286, 19);
+            this.checkBoxOptionFaster.Location = new System.Drawing.Point(18, 42);
             this.checkBoxOptionFaster.Name = "checkBoxOptionFaster";
             this.checkBoxOptionFaster.Size = new System.Drawing.Size(153, 17);
             this.checkBoxOptionFaster.TabIndex = 39;
@@ -784,7 +734,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.CheckBox checkBoxPreEnableRepack;
         private System.Windows.Forms.Label labelPrePath;
-        private System.Windows.Forms.CheckBox checkBoxPreEnablePack;
         private System.Windows.Forms.Label labelPreVanilla;
         private System.Windows.Forms.Label labelPreSpace;
         private System.Windows.Forms.Label labelPreAccess;
@@ -792,10 +741,7 @@
         private System.Windows.Forms.Label labelPreMods;
         private System.Windows.Forms.Label labelStatusRepackZlib;
         private System.Windows.Forms.Label labelMERepackZlib;
-        private System.Windows.Forms.Label labelStatusPackDLC;
-        private System.Windows.Forms.Label labelME3DLCPack;
         private System.Windows.Forms.CheckBox checkBoxRepackZlib;
-        private System.Windows.Forms.CheckBox checkBoxPackDLC;
         private System.Windows.Forms.CheckBox checkBoxPrePath;
         private System.Windows.Forms.CheckBox checkBoxPreAccess;
         private System.Windows.Forms.CheckBox checkBoxPreVanilla;
