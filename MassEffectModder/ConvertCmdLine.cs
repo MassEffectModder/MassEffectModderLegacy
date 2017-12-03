@@ -104,7 +104,10 @@ namespace MassEffectModder
                 uint tag = fs.ReadUInt32();
                 uint version = fs.ReadUInt32();
                 if (tag != TexExplorer.textureMapBinTag || version != TexExplorer.textureMapBinVersion)
+                {
+                    Console.WriteLine("Detected wrong or old version of textures scan file!" + Environment.NewLine);
                     return false;
+                }
 
                 uint countTexture = fs.ReadUInt32();
                 for (int i = 0; i < countTexture; i++)
@@ -125,6 +128,32 @@ namespace MassEffectModder
                         texture.list.Add(matched);
                     }
                     textures.Add(texture);
+                }
+
+                List<string> packages = new List<string>();
+                int numPackages = fs.ReadInt32();
+                for (int i = 0; i < numPackages; i++)
+                {
+                    int len = fs.ReadInt32();
+                    string pkgPath = fs.ReadStringASCII(len);
+                    pkgPath = GameData.GamePath + pkgPath;
+                    packages.Add(pkgPath);
+                }
+                for (int i = 0; i < packages.Count; i++)
+                {
+                    if (GameData.packageFiles.Find(s => s.Equals(packages[i], StringComparison.OrdinalIgnoreCase)) == null)
+                    {
+                        Console.WriteLine("Detected removal of game files since last game data scan." + Environment.NewLine + Environment.NewLine);
+                        return false;
+                    }
+                }
+                for (int i = 0; i < GameData.packageFiles.Count; i++)
+                {
+                    if (packages.Find(s => s.Equals(GameData.packageFiles[i], StringComparison.OrdinalIgnoreCase)) == null)
+                    {
+                        Console.WriteLine("Detected additional game files not present in latest game data scan." + Environment.NewLine + Environment.NewLine);
+                        return false;
+                    }
                 }
             }
 
@@ -196,6 +225,7 @@ namespace MassEffectModder
                 {
                     Console.WriteLine("[IPC]PROCCESSING_FILE " + Path.GetFileName(file));
                     Console.WriteLine("[IPC]OVERALL_PROGRESS " + ((n + 1) * 100) / files.Count());
+                    Console.Out.Flush();
                 }
 
                 if (file.EndsWith(".mem", StringComparison.OrdinalIgnoreCase))
@@ -1266,6 +1296,45 @@ namespace MassEffectModder
             }
 
             Console.WriteLine("Extracting textures completed.");
+            return true;
+        }
+
+        static public bool InstallMEMs(MeType gameId, string inputDir)
+        {
+            textures = new List<FoundTexture>();
+            ConfIni configIni = new ConfIni();
+            GameData gameData = new GameData(gameId, configIni);
+            if (GameData.GamePath == null || !Directory.Exists(GameData.GamePath))
+            {
+                Console.WriteLine("Error: Could not found the game!");
+                return false;
+            }
+
+            List<string> badMods = Misc.detectBrokenMod(GameData.gameType);
+            if (badMods.Count != 0)
+            {
+                Console.WriteLine("Error: Detected not compatible mods: \n\n");
+                for (int l = 0; l < badMods.Count; l++)
+                {
+                    Console.WriteLine(badMods[l] + Environment.NewLine);
+                }
+
+                return false;
+            }
+
+            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    Assembly.GetExecutingAssembly().GetName().Name);
+            string mapFile = Path.Combine(path, "me" + gameId + "map.bin");
+            if (!loadTexturesMapFile(mapFile))
+                return false;
+
+            gameData.getPackages(true, true);
+            gameData.getTfcTextures();
+
+            List<string> memFiles = Directory.GetFiles(inputDir, "*.mem").Where(item => item.EndsWith(".mem", StringComparison.OrdinalIgnoreCase)).ToList();
+
+            applyMEMs(memFiles);
+
             return true;
         }
 
