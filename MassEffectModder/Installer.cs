@@ -106,6 +106,11 @@ namespace MassEffectModder
                 MeuitmVer = 0;
             }
 
+            bool allowToSkip = false;
+            string skip = installerIni.Read("AllowSkipCheck", "Main").ToLowerInvariant();
+            if (skip == "true")
+                allowToSkip = true;
+
             configIni = new ConfIni();
 
             labelStatusPrepare.Text = "";
@@ -118,7 +123,10 @@ namespace MassEffectModder
 
             buttonsDefault(gameId);
 
-            checkBoxOptionVanilla.Visible = false;
+            if (allowToSkip)
+                checkBoxOptionVanilla.Visible = true;
+            else
+                checkBoxOptionVanilla.Visible = false;
             checkBoxOptionVanilla.Checked = false;
             checkBoxOptionFaster.Checked = false;
             buttonUnpackDLC.Enabled = false;
@@ -646,10 +654,7 @@ namespace MassEffectModder
                 else
                 {
                     labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
-                    if (updateMode)
-                        labelPreVanilla.Text = "Skipped";
-                    else
-                        labelPreVanilla.Text = "";
+                    labelPreVanilla.Text = "Skipped";
                 }
             }
             checkBoxPreVanilla.Checked = true;
