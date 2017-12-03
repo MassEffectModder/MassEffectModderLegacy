@@ -840,7 +840,7 @@ namespace MassEffectModder
                                     log += "Error in texture: " + name + string.Format("_0x{0:X8}", crc) + " Texture skipped. This texture has not all the required mipmaps" + Environment.NewLine;
                                     continue;
                                 }
-                                errors += mipMaps.replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc, checkBoxOptionLimit2K.Checked, true, false);
+                                errors += mipMaps.replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc, false);
                             }
                             else
                             {
