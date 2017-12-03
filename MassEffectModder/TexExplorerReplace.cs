@@ -145,6 +145,12 @@ namespace MassEffectModder
                     break;
                 }
 
+                if (GameData.gameType == MeType.ME1_TYPE && texture.mipMapsList.Count < 6)
+                {
+                    for (int i = texture.mipMapsList.Count - 1; i != 0; i--)
+                        texture.mipMapsList.RemoveAt(i);
+                }
+
                 if (!image.checkDDSHaveAllMipmaps() ||
                     (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1) ||
                     image.pixelFormat != pixelFormat)
@@ -324,12 +330,7 @@ namespace MassEffectModder
                                     mipmap.storageType == Texture.StorageTypes.pccLZO ||
                                     mipmap.storageType == Texture.StorageTypes.pccZlib)
                                 {
-                                    if (texture.mipMapsList.Count < 6)
-                                    {
-                                        mipmap.storageType = Texture.StorageTypes.pccLZO;
-                                    }
-                                    else
-                                        mipmap.storageType = Texture.StorageTypes.extLZO;
+                                    mipmap.storageType = Texture.StorageTypes.extLZO;
                                 }
                             }
                             else if (GameData.gameType == MeType.ME2_TYPE || GameData.gameType == MeType.ME3_TYPE)
