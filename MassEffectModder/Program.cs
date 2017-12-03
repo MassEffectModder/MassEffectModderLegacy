@@ -559,7 +559,7 @@ namespace MassEffectModder
                 {
                     if (args.Length == 5)
                     {
-                        if (args[4].ToLowerInvariant() == "ipc")
+                        if (args[4].ToLowerInvariant() == "--ipc")
                             ipc = true;
                     }
                     else if (args.Length != 4 && args.Length != 5)
