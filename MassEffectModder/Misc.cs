@@ -726,7 +726,8 @@ namespace MassEffectModder
         }
 
         static public bool checkGameFiles(MeType gameType, ref string errors, ref List<string> mods,
-            MainWindow mainWindow = null, Installer installer = null, bool withoutSfars = false, bool onlyVanilla = false, bool generateMd5Entries = false)
+            MainWindow mainWindow = null, Installer installer = null, bool ipc = false, bool withoutSfars = false,
+            bool onlyVanilla = false, bool backupMode = false, bool generateMd5Entries = false)
         {
             bool vanilla = true;
             List<string> packageMainFiles = null;
@@ -780,6 +781,7 @@ namespace MassEffectModder
                         if (File.Exists(Path.Combine(Path.GetDirectoryName(sfarFiles[i]), "Mount.dlc")))
                             sfarFiles.RemoveAt(i--);
                     }
+                    sfarFiles.Add(GameData.bioGamePath + "\\Patches\\PCConsole\\Patch_001.sfar");
                     packageDLCFiles.RemoveAll(s => s.ToLowerInvariant().Contains("guidcache"));
                     tfcFiles.AddRange(Directory.GetFiles(GameData.DLCData, "*.tfc", SearchOption.AllDirectories).Where(item => item.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase)).ToList());
                 }
@@ -788,12 +790,23 @@ namespace MassEffectModder
             }
 
             packageMainFiles.Sort();
+            int allFilesCount = packageMainFiles.Count();
+            int progress = 0;
             if (packageDLCFiles != null)
+            {
                 packageDLCFiles.Sort();
-            if (sfarFiles != null)
+                allFilesCount += packageDLCFiles.Count();
+            }
+            if (sfarFiles != null && !withoutSfars)
+            {
                 sfarFiles.Sort();
+                allFilesCount += sfarFiles.Count();
+            }
             if (tfcFiles != null)
+            {
                 tfcFiles.Sort();
+                allFilesCount += tfcFiles.Count();
+            }
 
             mods.Clear();
             FileStream fs = null;
@@ -809,6 +822,12 @@ namespace MassEffectModder
                 if (installer != null)
                 {
                     installer.updateLabelPreVanilla("Progress (PCC) ... " + (l * 100 / packageMainFiles.Count) + "%");
+                }
+                if (ipc)
+                {
+                    Console.WriteLine("[IPC]PROCESSING_FILE " + packageMainFiles[l]);
+                    Console.WriteLine("[IPC]OVERALL_PROGRESS " + ((l + progress) * 100 / allFilesCount));
+                    Console.Out.Flush();
                 }
                 byte[] md5 = calculateMD5(packageMainFiles[l]);
                 bool found = false;
@@ -861,7 +880,7 @@ namespace MassEffectModder
                         break;
                     }
                 }
-                if (index == -1)
+                if (index == -1 && !backupMode)
                     continue;
 
                 vanilla = false;
@@ -876,18 +895,31 @@ namespace MassEffectModder
                     fs.WriteStringASCII("},\nmodName = \"\",\n},\n");
                 }
 
-                errors += "File " + packageMainFiles[l] + " has wrong MD5 checksum: ";
+                if (!backupMode)
+                    errors += "File " + packageMainFiles[l] + " has wrong MD5 checksum: ";
+                else
+                    errors += "File " + packageMainFiles[l] + " not found in database, MD5 checksum: ";
                 for (int i = 0; i < md5.Count(); i++)
                 {
                     errors += string.Format("{0:x2}", md5[i]);
                 }
-                errors += "\n, expected: ";
-                for (int i = 0; i < entries[index].md5.Count(); i++)
+                if (!backupMode)
                 {
-                    errors += string.Format("{0:x2}", entries[index].md5[i]);
+                    errors += "\n, expected: ";
+                    for (int i = 0; i < entries[index].md5.Count(); i++)
+                    {
+                        errors += string.Format("{0:x2}", entries[index].md5[i]);
+                    }
                 }
                 errors += Environment.NewLine;
+
+                if (ipc)
+                {
+                    Console.WriteLine("[IPC]ERROR " + packageMainFiles[l]);
+                    Console.Out.Flush();
+                }
             }
+            progress += packageMainFiles.Count();
 
             if (packageDLCFiles != null)
             {
@@ -900,6 +932,12 @@ namespace MassEffectModder
                     if (installer != null)
                     {
                         installer.updateLabelPreVanilla("Progress (DLC PCC) ... " + (l * 100 / packageDLCFiles.Count) + "%");
+                    }
+                    if (ipc)
+                    {
+                        Console.WriteLine("[IPC]PROCESSING_FILE " + packageDLCFiles[l]);
+                        Console.WriteLine("[IPC]OVERALL_PROGRESS " + ((l + progress) * 100 / allFilesCount));
+                        Console.Out.Flush();
                     }
                     byte[] md5 = calculateMD5(packageDLCFiles[l]);
                     bool found = false;
@@ -952,7 +990,7 @@ namespace MassEffectModder
                             break;
                         }
                     }
-                    if (index == -1)
+                    if (index == -1 && !backupMode)
                         continue;
 
                     vanilla = false;
@@ -967,18 +1005,31 @@ namespace MassEffectModder
                         fs.WriteStringASCII("},\nmodName = \"\",\n},\n");
                     }
 
-                    errors += "File " + packageDLCFiles[l] + " has wrong MD5 checksum: ";
+                    if (!backupMode)
+                        errors += "File " + packageDLCFiles[l] + " has wrong MD5 checksum: ";
+                    else
+                        errors += "File " + packageDLCFiles[l] + " not found in database, MD5 checksum: ";
                     for (int i = 0; i < md5.Count(); i++)
                     {
                         errors += string.Format("{0:x2}", md5[i]);
                     }
-                    errors += "\n, expected: ";
-                    for (int i = 0; i < entries[index].md5.Count(); i++)
+                    if (!backupMode)
                     {
-                        errors += string.Format("{0:x2}", entries[index].md5[i]);
+                        errors += "\n, expected: ";
+                        for (int i = 0; i < entries[index].md5.Count(); i++)
+                        {
+                            errors += string.Format("{0:x2}", entries[index].md5[i]);
+                        }
                     }
                     errors += Environment.NewLine;
+
+                    if (ipc)
+                    {
+                        Console.WriteLine("[IPC]ERROR " + packageDLCFiles[l]);
+                        Console.Out.Flush();
+                    }
                 }
+                progress += packageDLCFiles.Count();
             }
 
             if (sfarFiles != null && !withoutSfars)
@@ -992,6 +1043,12 @@ namespace MassEffectModder
                     if (installer != null)
                     {
                         installer.updateLabelPreVanilla("Progress (DLC Archives) ... " + (l * 100 / sfarFiles.Count) + "%");
+                    }
+                    if (ipc)
+                    {
+                        Console.WriteLine("[IPC]PROCESSING_FILE " + sfarFiles[l]);
+                        Console.WriteLine("[IPC]OVERALL_PROGRESS " + ((l + progress) * 100 / allFilesCount));
+                        Console.Out.Flush();
                     }
                     byte[] md5 = calculateMD5(sfarFiles[l]);
                     bool found = false;
@@ -1014,23 +1071,36 @@ namespace MassEffectModder
                             break;
                         }
                     }
-                    if (index == -1)
+                    if (index == -1 && !backupMode)
                         continue;
 
                     vanilla = false;
 
-                    errors += "File " + sfarFiles[l] + " has wrong MD5 checksum: ";
+                    if (!backupMode)
+                        errors += "File " + sfarFiles[l] + " has wrong MD5 checksum: ";
+                    else
+                        errors += "File " + sfarFiles[l] + " not found in database, MD5 checksum: ";
                     for (int i = 0; i < md5.Count(); i++)
                     {
                         errors += string.Format("{0:x2}", md5[i]);
                     }
-                    errors += "\n, expected: ";
-                    for (int i = 0; i < entries[index].md5.Count(); i++)
+                    if (!backupMode)
                     {
-                        errors += string.Format("{0:x2}", entries[index].md5[i]);
+                        errors += "\n, expected: ";
+                        for (int i = 0; i < entries[index].md5.Count(); i++)
+                        {
+                            errors += string.Format("{0:x2}", entries[index].md5[i]);
+                        }
                     }
                     errors += Environment.NewLine;
+
+                    if (ipc)
+                    {
+                        Console.WriteLine("[IPC]ERROR " + sfarFiles[l]);
+                        Console.Out.Flush();
+                    }
                 }
+                progress += sfarFiles.Count();
             }
 
             if (tfcFiles != null)
@@ -1044,6 +1114,12 @@ namespace MassEffectModder
                     if (installer != null)
                     {
                         installer.updateLabelPreVanilla("Progress (TFC Archives) ... " + (l * 100 / tfcFiles.Count) + "%");
+                    }
+                    if (ipc)
+                    {
+                        Console.WriteLine("[IPC]PROCESSING_FILE " + tfcFiles[l]);
+                        Console.WriteLine("[IPC]OVERALL_PROGRESS " + ((l + progress) * 100 / allFilesCount));
+                        Console.Out.Flush();
                     }
                     byte[] md5 = calculateMD5(tfcFiles[l]);
                     bool found = false;
@@ -1066,23 +1142,36 @@ namespace MassEffectModder
                             break;
                         }
                     }
-                    if (index == -1)
+                    if (index == -1 && !backupMode)
                         continue;
 
                     vanilla = false;
 
-                    errors += "File " + tfcFiles[l] + " has wrong MD5 checksum: ";
+                    if (!backupMode)
+                        errors += "File " + tfcFiles[l] + " has wrong MD5 checksum: ";
+                    else
+                        errors += "File " + tfcFiles[l] + " not found in database, MD5 checksum: ";
                     for (int i = 0; i < md5.Count(); i++)
                     {
                         errors += string.Format("{0:x2}", md5[i]);
                     }
-                    errors += "\n, expected: ";
-                    for (int i = 0; i < entries[index].md5.Count(); i++)
+                    if (!backupMode)
                     {
-                        errors += string.Format("{0:x2}", entries[index].md5[i]);
+                        errors += "\n, expected: ";
+                        for (int i = 0; i < entries[index].md5.Count(); i++)
+                        {
+                            errors += string.Format("{0:x2}", entries[index].md5[i]);
+                        }
                     }
                     errors += Environment.NewLine;
+
+                    if (ipc)
+                    {
+                        Console.WriteLine("[IPC]ERROR " + tfcFiles[l]);
+                        Console.Out.Flush();
+                    }
                 }
+                progress += tfcFiles.Count();
             }
             if (generateMd5Entries)
                 fs.Close();

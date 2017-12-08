@@ -323,6 +323,20 @@ namespace MassEffectModder
             Console.WriteLine("  -download-update");
             Console.WriteLine("     Download and install MEM update.");
             Console.WriteLine("");
+            Console.WriteLine("  -check-game-data <game id>  [-ipc]\n");
+            Console.WriteLine("     Check game data with md5 database.\n");
+            Console.WriteLine("     Scan detect mods");
+            Console.WriteLine("");
+            Console.WriteLine("  -check-game-data-without-sfars <game id> [-ipc]\n");
+            Console.WriteLine("     Check game data with md5 database, but skipping sfar files.\n");
+            Console.WriteLine("     Scan detect mods");
+            Console.WriteLine("");
+            Console.WriteLine("  -check-game-data-only-vanilla <game id> [-ipc]\n");
+            Console.WriteLine("     Check game data with md5 database.\n");
+            Console.WriteLine("");
+            Console.WriteLine("  -check-game-data-for-backup <game id> [-ipc]\n");
+            Console.WriteLine("     Check game data with md5 database for backup purpose.\n");
+            Console.WriteLine("");
             Console.WriteLine("  -convert-to-mem <game id> <input dir> <output file> [-ipc]\n");
             Console.WriteLine("     game id: 1 for ME1, 2 for ME2, 3 for ME3");
             Console.WriteLine("     input dir: directory to be converted, containing following file extension(s):");
@@ -612,6 +626,170 @@ namespace MassEffectModder
                     {
                         goto fail;
                     }
+                }
+            }
+            else if (cmd.Equals("-check-game-data", StringComparison.OrdinalIgnoreCase))
+            {
+                if (args.Length != 2 && args.Length != 3)
+                {
+                    Console.WriteLine("Error: wrong arguments!");
+                    DisplayHelp();
+                    goto fail;
+                }
+
+                if (args.Length == 3)
+                {
+                    if (args[2].ToLowerInvariant() == "-ipc")
+                        ipc = true;
+                }
+
+                game = args[1];
+                try
+                {
+                    gameId = (MeType)int.Parse(game);
+                }
+                catch
+                {
+                    gameId = 0;
+                }
+                if (gameId != MeType.ME1_TYPE && gameId != MeType.ME2_TYPE && gameId != MeType.ME3_TYPE)
+                {
+                    Console.WriteLine("Error: wrong game id!");
+                    DisplayHelp();
+                    goto fail;
+                }
+
+                Console.WriteLine(Environment.NewLine + Environment.NewLine +
+                     "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
+
+                loadMD5Tables();
+
+                if (!CmdLineConverter.CheckGameData(gameId, false, false, false, ipc))
+                {
+                    goto fail;
+                }
+            }
+            else if (cmd.Equals("-check-game-data-without-sfars", StringComparison.OrdinalIgnoreCase))
+            {
+                if (args.Length != 2 && args.Length != 3)
+                {
+                    Console.WriteLine("Error: wrong arguments!");
+                    DisplayHelp();
+                    goto fail;
+                }
+
+                if (args.Length == 3)
+                {
+                    if (args[2].ToLowerInvariant() == "-ipc")
+                        ipc = true;
+                }
+
+                game = args[1];
+                try
+                {
+                    gameId = (MeType)int.Parse(game);
+                }
+                catch
+                {
+                    gameId = 0;
+                }
+                if (gameId != MeType.ME1_TYPE && gameId != MeType.ME2_TYPE && gameId != MeType.ME3_TYPE)
+                {
+                    Console.WriteLine("Error: wrong game id!");
+                    DisplayHelp();
+                    goto fail;
+                }
+
+                loadMD5Tables();
+
+                Console.WriteLine(Environment.NewLine + Environment.NewLine +
+                     "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
+
+                loadMD5Tables();
+
+                if (!CmdLineConverter.CheckGameData(gameId, true, false, false, ipc))
+                {
+                    goto fail;
+                }
+            }
+            else if (cmd.Equals("-check-game-data-only-vanilla", StringComparison.OrdinalIgnoreCase))
+            {
+                if (args.Length != 2 && args.Length != 3)
+                {
+                    Console.WriteLine("Error: wrong arguments!");
+                    DisplayHelp();
+                    goto fail;
+                }
+
+                if (args.Length == 3)
+                {
+                    if (args[2].ToLowerInvariant() == "-ipc")
+                        ipc = true;
+                }
+
+                game = args[1];
+                try
+                {
+                    gameId = (MeType)int.Parse(game);
+                }
+                catch
+                {
+                    gameId = 0;
+                }
+                if (gameId != MeType.ME1_TYPE && gameId != MeType.ME2_TYPE && gameId != MeType.ME3_TYPE)
+                {
+                    Console.WriteLine("Error: wrong game id!");
+                    DisplayHelp();
+                    goto fail;
+                }
+
+                loadMD5Tables();
+
+                Console.WriteLine(Environment.NewLine + Environment.NewLine +
+                     "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
+                if (!CmdLineConverter.CheckGameData(gameId, false, true, false, ipc))
+                {
+                    goto fail;
+                }
+            }
+            else if (cmd.Equals("-check-game-data-for-backup", StringComparison.OrdinalIgnoreCase))
+            {
+                if (args.Length != 2 && args.Length != 3)
+                {
+                    Console.WriteLine("Error: wrong arguments!");
+                    DisplayHelp();
+                    goto fail;
+                }
+
+                if (args.Length == 3)
+                {
+                    if (args[2].ToLowerInvariant() == "-ipc")
+                        ipc = true;
+                }
+
+                game = args[1];
+                try
+                {
+                    gameId = (MeType)int.Parse(game);
+                }
+                catch
+                {
+                    gameId = 0;
+                }
+                if (gameId != MeType.ME1_TYPE && gameId != MeType.ME2_TYPE && gameId != MeType.ME3_TYPE)
+                {
+                    Console.WriteLine("Error: wrong game id!");
+                    DisplayHelp();
+                    goto fail;
+                }
+
+                loadMD5Tables();
+
+                Console.WriteLine(Environment.NewLine + Environment.NewLine +
+                     "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
+                if (!CmdLineConverter.CheckGameData(gameId, false, true, true, ipc))
+                {
+                    goto fail;
                 }
             }
             else if (cmd.Equals("-extract-mod", StringComparison.OrdinalIgnoreCase))

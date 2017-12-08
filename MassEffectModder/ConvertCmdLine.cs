@@ -1314,7 +1314,7 @@ namespace MassEffectModder
             return true;
         }
 
-        static bool ApplyModTag(MeType gameId, int meuitmV, int alotV)
+        public static bool ApplyModTag(MeType gameId, int meuitmV, int alotV)
         {
             ConfIni configIni = new ConfIni();
             GameData gameData = new GameData(gameId, configIni);
@@ -1327,7 +1327,7 @@ namespace MassEffectModder
             return Installer.applyModTag((int)gameId, meuitmV, alotV);
         }
 
-        static bool ApplyME1LAAPatch(MeType gameId)
+        public static bool ApplyME1LAAPatch(MeType gameId)
         {
             ConfIni configIni = new ConfIni();
             GameData gameData = new GameData(gameId, configIni);
@@ -1340,7 +1340,7 @@ namespace MassEffectModder
             return Misc.VerifyME1Exe(gameData, false);
         }
 
-        static bool ApplyLODAndGfxSettings(MeType gameId, bool Limit2K = false)
+        public static bool ApplyLODAndGfxSettings(MeType gameId, bool Limit2K = false)
         {
             ConfIni configIni = new ConfIni();
             GameData gameData = new GameData(gameId, configIni);
@@ -1361,7 +1361,7 @@ namespace MassEffectModder
             return true;
         }
 
-        static bool RemoveLODSettings(MeType gameId, bool Limit2K = false)
+        public static bool RemoveLODSettings(MeType gameId, bool Limit2K = false)
         {
             ConfIni configIni = new ConfIni();
             GameData gameData = new GameData(gameId, configIni);
@@ -1381,7 +1381,7 @@ namespace MassEffectModder
             return true;
         }
 
-        static bool PrintLODSettings(MeType gameId, bool Limit2K = false)
+        public static bool PrintLODSettings(MeType gameId, bool Limit2K = false)
         {
             ConfIni configIni = new ConfIni();
             GameData gameData = new GameData(gameId, configIni);
@@ -1403,7 +1403,7 @@ namespace MassEffectModder
             return true;
         }
 
-        static bool ScanAndMipMapsRemoval(MeType gameId, bool repack = false)
+        public static bool ScanAndMipMapsRemoval(MeType gameId, bool repack = false)
         {
             string errors = "";
             string log = "";
@@ -1440,7 +1440,7 @@ namespace MassEffectModder
             return true;
         }
 
-        static bool UnpackDLCs(MeType gameId)
+        public static bool UnpackDLCs(MeType gameId)
         {
             ConfIni configIni = new ConfIni();
             GameData gameData = new GameData(gameId, configIni);
@@ -1455,7 +1455,7 @@ namespace MassEffectModder
             return true;
         }
 
-        static bool RepackGameData(MeType gameId)
+        public static bool RepackGameData(MeType gameId)
         {
             ConfIni configIni = new ConfIni();
             GameData gameData = new GameData(gameId, configIni);
@@ -1482,7 +1482,7 @@ namespace MassEffectModder
             return true;
         }
 
-        static bool VerifyGameDataEmptyMipMapsRemoval(MeType gameId)
+        public static bool VerifyGameDataEmptyMipMapsRemoval(MeType gameId)
         {
             ConfIni configIni = new ConfIni();
             GameData gameData = new GameData(gameId, configIni);
@@ -1495,7 +1495,32 @@ namespace MassEffectModder
             return MipMaps.verifyGameDataEmptyMipMapsRemoval();
         }
 
-        static bool CheckGameData(MeType gameId)
+        public static List<string> getStandardDLCFolders()
+        {
+            List<string> foldernames = new List<string>();
+            foldernames.Add("DLC_CON_MP1");
+            foldernames.Add("DLC_CON_MP2");
+            foldernames.Add("DLC_CON_MP3");
+            foldernames.Add("DLC_CON_MP4");
+            foldernames.Add("DLC_CON_MP5");
+            foldernames.Add("DLC_UPD_Patch01");
+            foldernames.Add("DLC_UPD_Patch02");
+            foldernames.Add("DLC_HEN_PR");
+            foldernames.Add("DLC_CON_END");
+            foldernames.Add("DLC_EXP_Pack001");
+            foldernames.Add("DLC_EXP_Pack002");
+            foldernames.Add("DLC_EXP_Pack003");
+            foldernames.Add("DLC_EXP_Pack003_Base");
+            foldernames.Add("DLC_CON_APP01");
+            foldernames.Add("DLC_CON_GUN01");
+            foldernames.Add("DLC_CON_GUN02");
+            foldernames.Add("DLC_CON_DH1");
+            foldernames.Add("DLC_OnlinePassHidCE");
+            foldernames.Add("__metadata"); //don't delete
+            return foldernames;
+        }
+
+        public static bool CheckGameData(MeType gameId, bool wihtoutSfars, bool onlyVanilla, bool backupMode, bool ipc)
         {
             ConfIni configIni = new ConfIni();
             GameData gameData = new GameData(gameId, configIni);
@@ -1506,12 +1531,31 @@ namespace MassEffectModder
             }
             string errors = "";
             List<string> modList = new List<string>();
-            bool vanilla = Misc.checkGameFiles((MeType)gameId, ref errors, ref modList, null, null, false, false, Misc.generateModsMd5Entries);
+            bool vanilla = Misc.checkGameFiles(gameId, ref errors, ref modList, null, null, ipc,
+                wihtoutSfars, onlyVanilla, backupMode, Misc.generateModsMd5Entries);
+            Console.WriteLine(errors);
+            if (modList.Count != 0)
+            {
+                Console.WriteLine(Environment.NewLine + "------- Detected mods --------" + Environment.NewLine);
+                for (int l = 0; l < modList.Count; l++)
+                {
+                    Console.WriteLine(modList[l] + Environment.NewLine);
+                }
+                Console.WriteLine("------------------------------" + Environment.NewLine + Environment.NewLine);
+            }
+
+            if (!vanilla)
+            {
+                Console.WriteLine("===========================================================================" + Environment.NewLine);
+                Console.WriteLine("WARNING: looks like the following file(s) are not vanilla or not recognized" + Environment.NewLine);
+                Console.WriteLine("===========================================================================" + Environment.NewLine + Environment.NewLine);
+                Console.WriteLine(errors);
+            }
 
             return vanilla;
         }
 
-        static bool DetectBadMods(MeType gameId)
+        public static bool DetectBadMods(MeType gameId)
         {
             ConfIni configIni = new ConfIni();
             GameData gameData = new GameData(gameId, configIni);
@@ -1535,7 +1579,7 @@ namespace MassEffectModder
             return true;
         }
 
-        static public bool InstallMEMs(MeType gameId, string inputDir, bool repack = false)
+        public static bool InstallMEMs(MeType gameId, string inputDir, bool repack = false)
         {
             textures = new List<FoundTexture>();
             ConfIni configIni = new ConfIni();
