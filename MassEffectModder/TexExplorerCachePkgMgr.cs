@@ -70,7 +70,7 @@ namespace MassEffectModder
             packages.Clear();
         }
 
-        public void CloseAllWithSave(bool forceZlib = false)
+        public void CloseAllWithSave(bool ipc = false, bool forceZlib = false)
         {
             for (int i = 0; i < packages.Count; i++)
             {
@@ -79,6 +79,12 @@ namespace MassEffectModder
                     mainWindow.updateStatusLabel2("Saving package " + (i + 1) + " of " + packages.Count);
                 if (_installer != null)
                     _installer.updateStatusStore("Progress... " + (i * 100 / packages.Count) + " % ");
+                if (ipc)
+                {
+                    Console.WriteLine("[IPC]PROCESSING_FILE " + packages[i]);
+                    Console.WriteLine("[IPC]OVERALL_PROGRESS " + (i * 100 / packages.Count));
+                    Console.Out.Flush();
+                }
                 pkg.SaveToFile(forceZlib);
                 pkg.Dispose();
             }

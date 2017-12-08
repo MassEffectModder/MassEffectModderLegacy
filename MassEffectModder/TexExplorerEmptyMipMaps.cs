@@ -37,7 +37,8 @@ namespace MassEffectModder
             public uint crc;
         }
 
-        public string removeMipMapsME1(int phase, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, MainWindow mainWindow, Installer installer, bool forceZlib = false)
+        public string removeMipMapsME1(int phase, List<FoundTexture> textures, CachePackageMgr cachePackageMgr,
+            MainWindow mainWindow, Installer installer, bool ipc, bool forceZlib = false)
         {
             string errors = "";
 
@@ -183,7 +184,8 @@ skip:
             return errors;
         }
 
-        public string removeMipMapsME2ME3(List<FoundTexture> textures, CachePackageMgr cachePackageMgr, MainWindow mainWindow, Installer installer, bool forceZlib = false)
+        public string removeMipMapsME2ME3(List<FoundTexture> textures, CachePackageMgr cachePackageMgr,
+            MainWindow mainWindow, Installer installer, bool ipc, bool forceZlib = false)
         {
             string errors = "";
 

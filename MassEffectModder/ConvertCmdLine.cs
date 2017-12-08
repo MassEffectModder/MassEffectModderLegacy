@@ -1314,7 +1314,7 @@ namespace MassEffectModder
             return true;
         }
 
-        public static bool ApplyModTag(MeType gameId, int meuitmV, int alotV)
+        public static bool ApplyModTag(MeType gameId, int alotV, int meuitmV)
         {
             ConfIni configIni = new ConfIni();
             GameData gameData = new GameData(gameId, configIni);
@@ -1327,10 +1327,10 @@ namespace MassEffectModder
             return Installer.applyModTag((int)gameId, meuitmV, alotV);
         }
 
-        public static bool ApplyME1LAAPatch(MeType gameId)
+        public static bool ApplyME1LAAPatch()
         {
             ConfIni configIni = new ConfIni();
-            GameData gameData = new GameData(gameId, configIni);
+            GameData gameData = new GameData(MeType.ME1_TYPE, configIni);
             if (GameData.GamePath == null || !Directory.Exists(GameData.GamePath))
             {
                 Console.WriteLine("Error: Could not found the game!");
@@ -1355,13 +1355,13 @@ namespace MassEffectModder
             if (!exist)
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
             ConfIni engineConf = new ConfIni(path);
-            LODSettings.updateLOD((MeType)gameId, engineConf, Limit2K);
+            LODSettings.updateLOD(gameId, engineConf, Limit2K);
             LODSettings.updateGFXSettings(gameId, engineConf);
 
             return true;
         }
 
-        public static bool RemoveLODSettings(MeType gameId, bool Limit2K = false)
+        public static bool RemoveLODSettings(MeType gameId)
         {
             ConfIni configIni = new ConfIni();
             GameData gameData = new GameData(gameId, configIni);
@@ -1381,7 +1381,7 @@ namespace MassEffectModder
             return true;
         }
 
-        public static bool PrintLODSettings(MeType gameId, bool Limit2K = false)
+        public static bool PrintLODSettings(MeType gameId)
         {
             ConfIni configIni = new ConfIni();
             GameData gameData = new GameData(gameId, configIni);
@@ -1403,7 +1403,7 @@ namespace MassEffectModder
             return true;
         }
 
-        public static bool ScanAndMipMapsRemoval(MeType gameId, bool repack = false)
+        public static bool ScanAndMipMapsRemoval(MeType gameId, bool ipc, bool repack = false)
         {
             string errors = "";
             string log = "";
@@ -1421,41 +1421,41 @@ namespace MassEffectModder
                 gameData.getTfcTextures();
 
             TreeScan treeScan = new TreeScan();
-            errors += treeScan.PrepareListOfTextures(null, null, null, null, ref log, true);
+            errors += treeScan.PrepareListOfTextures(null, null, null, null, ipc, ref log, true);
             textures = treeScan.treeScan;
 
             MipMaps mipMaps = new MipMaps();
             Console.WriteLine("Remove mipmaps started..." + Environment.NewLine);
             if (GameData.gameType == MeType.ME1_TYPE)
             {
-                errors += mipMaps.removeMipMapsME1(1, textures, null, null, null, repack);
-                errors += mipMaps.removeMipMapsME1(2, textures, null, null, null, repack);
+                errors += mipMaps.removeMipMapsME1(1, textures, null, null, null, ipc, repack);
+                errors += mipMaps.removeMipMapsME1(2, textures, null, null, null, ipc, repack);
             }
             else
             {
-                errors += mipMaps.removeMipMapsME2ME3(textures, null, null, null, repack);
+                errors += mipMaps.removeMipMapsME2ME3(textures, null, null, null, ipc, repack);
             }
             Console.WriteLine("Remove mipmaps finished" + Environment.NewLine + Environment.NewLine);
 
             return true;
         }
 
-        public static bool UnpackDLCs(MeType gameId)
+        public static bool UnpackDLCs(bool ipc)
         {
             ConfIni configIni = new ConfIni();
-            GameData gameData = new GameData(gameId, configIni);
+            GameData gameData = new GameData(MeType.ME3_TYPE, configIni);
             if (GameData.GamePath == null || !Directory.Exists(GameData.GamePath))
             {
                 Console.WriteLine("Error: Could not found the game!");
                 return false;
             }
 
-            ME3DLC.unpackAllDLC(null, null);
+            ME3DLC.unpackAllDLC(null, null, ipc);
 
             return true;
         }
 
-        public static bool RepackGameData(MeType gameId)
+        public static bool RepackGameData(MeType gameId, bool ipc)
         {
             ConfIni configIni = new ConfIni();
             GameData gameData = new GameData(gameId, configIni);
@@ -1469,7 +1469,12 @@ namespace MassEffectModder
 
             for (int i = 0; i < GameData.packageFiles.Count; i++)
             {
-                //updateStatusRepackZlib("Repacking PCC files... " + ((i + 1) * 100 / GameData.packageFiles.Count) + " %");
+                if (ipc)
+                {
+                    Console.WriteLine("[IPC]PROCESSING_FILE " + GameData.packageFiles[i]);
+                    Console.WriteLine("[IPC]OVERALL_PROGRESS " + (i * 100 / GameData.packageFiles.Count));
+                    Console.Out.Flush();
+                }
                 Package package = new Package(GameData.packageFiles[i], true, true);
                 if (package.compressed && package.compressionType != Package.CompressionType.Zlib)
                 {
@@ -1482,7 +1487,7 @@ namespace MassEffectModder
             return true;
         }
 
-        public static bool VerifyGameDataEmptyMipMapsRemoval(MeType gameId)
+        public static bool VerifyGameDataEmptyMipMapsRemoval(MeType gameId, bool ipc)
         {
             ConfIni configIni = new ConfIni();
             GameData gameData = new GameData(gameId, configIni);
@@ -1492,7 +1497,14 @@ namespace MassEffectModder
                 return false;
             }
 
-            return MipMaps.verifyGameDataEmptyMipMapsRemoval();
+            bool status = MipMaps.verifyGameDataEmptyMipMapsRemoval();
+            if (!status && ipc)
+            {
+                Console.WriteLine("[IPC]ERROR Empty mipmaps not removed!");
+                Console.Out.Flush();
+            }
+
+            return true;
         }
 
         public static List<string> getStandardDLCFolders()
@@ -1516,7 +1528,7 @@ namespace MassEffectModder
             foldernames.Add("DLC_CON_GUN02");
             foldernames.Add("DLC_CON_DH1");
             foldernames.Add("DLC_OnlinePassHidCE");
-            foldernames.Add("__metadata"); //don't delete
+            foldernames.Add("__metadata");
             return foldernames;
         }
 
@@ -1555,7 +1567,7 @@ namespace MassEffectModder
             return vanilla;
         }
 
-        public static bool DetectBadMods(MeType gameId)
+        public static bool DetectBadMods(MeType gameId, bool ipc)
         {
             ConfIni configIni = new ConfIni();
             GameData gameData = new GameData(gameId, configIni);
@@ -1572,14 +1584,18 @@ namespace MassEffectModder
                 for (int l = 0; l < badMods.Count; l++)
                 {
                     Console.WriteLine(badMods[l] + Environment.NewLine);
+                    if (ipc)
+                    {
+                        Console.WriteLine("[IPC]ERROR " + badMods[l]);
+                        Console.Out.Flush();
+                    }
                 }
-                return true;
             }
 
             return true;
         }
 
-        public static bool InstallMEMs(MeType gameId, string inputDir, bool repack = false)
+        public static bool InstallMEMs(MeType gameId, string inputDir, bool ipc, bool repack = false)
         {
             textures = new List<FoundTexture>();
             ConfIni configIni = new ConfIni();
@@ -1601,7 +1617,7 @@ namespace MassEffectModder
                 gameData.getTfcTextures();
 
             List<string> memFiles = Directory.GetFiles(inputDir, "*.mem").Where(item => item.EndsWith(".mem", StringComparison.OrdinalIgnoreCase)).ToList();
-            bool status = applyMEMs(memFiles, repack);
+            bool status = applyMEMs(memFiles, repack, ipc);
             return status;
         }
 
@@ -1628,12 +1644,12 @@ namespace MassEffectModder
             List<string> memFiles = new List<string>();
             memFiles.Add(memFile);
 
-            applyMEMs(memFiles, false, true, tfcName, guid);
+            applyMEMs(memFiles, false, false, true, tfcName, guid);
 
             return true;
         }
 
-        static public bool applyMEMs(List<string> memFiles, bool repack = false, bool special = false, string tfcName = "", byte[] guid = null)
+        static public bool applyMEMs(List<string> memFiles, bool ipc, bool repack = false, bool special = false, string tfcName = "", byte[] guid = null)
         {
             bool status = true;
             CachePackageMgr cachePackageMgr = new CachePackageMgr(null, null);
@@ -1641,6 +1657,12 @@ namespace MassEffectModder
             for (int i = 0; i < memFiles.Count; i++)
             {
                 Console.WriteLine("Mod: " + (i + 1) + " of " + memFiles.Count + " started: " + Path.GetFileName(memFiles[i]) + Environment.NewLine);
+                if (ipc)
+                {
+                    Console.WriteLine("[IPC]PROCESSING_FILE " + memFiles[i]);
+                    Console.WriteLine("[IPC]OVERALL_PROGRESS " + (i * 100 / memFiles.Count));
+                    Console.Out.Flush();
+                }
                 using (FileStream fs = new FileStream(memFiles[i], FileMode.Open, FileAccess.Read))
                 {
                     uint tag = fs.ReadUInt32();
@@ -1655,6 +1677,11 @@ namespace MassEffectModder
                         {
                             Console.WriteLine("File " + memFiles[i] + " is not a valid MEM mod, skipping..." + Environment.NewLine);
                         }
+                        if (ipc)
+                        {
+                            Console.WriteLine("[IPC]ERROR Bad MEM mod " + memFiles[i]);
+                            Console.Out.Flush();
+                        }
                         continue;
                     }
                     else
@@ -1665,6 +1692,11 @@ namespace MassEffectModder
                         if ((MeType)gameType != GameData.gameType)
                         {
                             Console.WriteLine("File " + memFiles[i] + " is not a MEM mod valid for this game, skipping..." + Environment.NewLine);
+                            if (ipc)
+                            {
+                                Console.WriteLine("[IPC]ERROR Bad MEM mod " + memFiles[i]);
+                                Console.Out.Flush();
+                            }
                             continue;
                         }
                     }
@@ -1723,7 +1755,14 @@ namespace MassEffectModder
                                 else
                                     errors = new MipMaps().replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc, false);
                                 if (errors != "")
+                                {
+                                    if (ipc)
+                                    {
+                                        Console.WriteLine("[IPC]ERROR Error while replacing texture " + foundTexture.name);
+                                        Console.Out.Flush();
+                                    }
                                     Console.WriteLine(errors);
+                                }
                             }
                             else
                             {
@@ -1749,7 +1788,7 @@ namespace MassEffectModder
                 }
             }
 
-            cachePackageMgr.CloseAllWithSave(repack);
+            cachePackageMgr.CloseAllWithSave(repack, ipc);
 
             return status;
         }

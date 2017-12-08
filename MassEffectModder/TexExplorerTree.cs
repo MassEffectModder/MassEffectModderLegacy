@@ -33,7 +33,8 @@ namespace MassEffectModder
         public List<FoundTexture> treeScan = null;
         private bool generateBuiltinMapFiles = false; // change to true to enable map files generation
 
-        public string PrepareListOfTextures(TexExplorer texEplorer, CachePackageMgr cachePackageMgr, MainWindow mainWindow, Installer installer, ref string log, bool force = false)
+        public string PrepareListOfTextures(TexExplorer texEplorer, CachePackageMgr cachePackageMgr,
+            MainWindow mainWindow, Installer installer, bool ipc, ref string log, bool force = false)
         {
             string errors = "";
             treeScan = null;
@@ -211,8 +212,22 @@ namespace MassEffectModder
                     mainWindow.updateStatusLabel("Finding textures in package " + (i + 1) + " of " + GameData.packageFiles.Count + " - " + GameData.packageFiles[i]);
                 }
                 if (installer != null)
+                {
                     installer.updateStatusScan("Progress... " + (i * 100 / GameData.packageFiles.Count) + " % ");
-                errors += FindTextures(textures, GameData.packageFiles[i], cachePackageMgr, ref log);
+                }
+                if (ipc)
+                {
+                    Console.WriteLine("[IPC]PROCESSING_FILE " + GameData.packageFiles[i]);
+                    Console.WriteLine("[IPC]OVERALL_PROGRESS " + (i * 100 / GameData.packageFiles.Count));
+                    Console.Out.Flush();
+                }
+                string error = FindTextures(textures, GameData.packageFiles[i], cachePackageMgr, ref log);
+                errors += error;
+                if (ipc && error != "")
+                {
+                    Console.WriteLine("[IPC]ERROR Error in file " + GameData.packageFiles[i]);
+                    Console.Out.Flush();
+                }
             }
 
             if (GameData.gameType == MeType.ME1_TYPE)
@@ -348,12 +363,12 @@ namespace MassEffectModder
                     MipMaps mipmaps = new MipMaps();
                     if (GameData.gameType == MeType.ME1_TYPE)
                     {
-                        errors += mipmaps.removeMipMapsME1(1, textures, null, mainWindow, null);
-                        errors += mipmaps.removeMipMapsME1(2, textures, null, mainWindow, null);
+                        errors += mipmaps.removeMipMapsME1(1, textures, null, mainWindow, null, ipc);
+                        errors += mipmaps.removeMipMapsME1(2, textures, null, mainWindow, null, ipc);
                     }
                     else
                     {
-                        errors += mipmaps.removeMipMapsME2ME3(textures, null, mainWindow, null);
+                        errors += mipmaps.removeMipMapsME2ME3(textures, null, mainWindow, null, ipc);
                     }
                 }
 

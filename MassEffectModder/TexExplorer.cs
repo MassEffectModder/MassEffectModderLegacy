@@ -210,7 +210,7 @@ namespace MassEffectModder
                 string log = "";
                 _mainWindow.updateStatusLabel("");
                 _mainWindow.updateStatusLabel("Preparing tree...");
-                errors += treeScan.PrepareListOfTextures(this, null, _mainWindow, null, ref log);
+                errors += treeScan.PrepareListOfTextures(this, null, _mainWindow, null, false, ref log);
                 _textures = treeScan.treeScan;
                 if (errors != "")
                 {
@@ -1621,12 +1621,12 @@ namespace MassEffectModder
             MipMaps mipmaps = new MipMaps();
             if (GameData.gameType == MeType.ME1_TYPE)
             {
-                errors += mipmaps.removeMipMapsME1(1, _textures, null, _mainWindow, null);
-                errors += mipmaps.removeMipMapsME1(2, _textures, null, _mainWindow, null);
+                errors += mipmaps.removeMipMapsME1(1, _textures, null, _mainWindow, null, false);
+                errors += mipmaps.removeMipMapsME1(2, _textures, null, _mainWindow, null, false);
             }
             else
             {
-                errors += mipmaps.removeMipMapsME2ME3(_textures, null, _mainWindow, null);
+                errors += mipmaps.removeMipMapsME2ME3(_textures, null, _mainWindow, null, false);
             }
             var time = Misc.stopTimer();
 

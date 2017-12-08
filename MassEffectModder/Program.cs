@@ -337,6 +337,39 @@ namespace MassEffectModder
             Console.WriteLine("  -check-game-data-for-backup <game id> [-ipc]\n");
             Console.WriteLine("     Check game data with md5 database for backup purpose.\n");
             Console.WriteLine("");
+            Console.WriteLine("  -install-mems <game id> <input dir> [-repack] [-ipc]\n");
+            Console.WriteLine("     Install MEM mods from input directory.\n");
+            Console.WriteLine("");
+            Console.WriteLine("  -unpack-dlcs [-ipc]\n");
+            Console.WriteLine("     Unpack ME3 DLCs.\n");
+            Console.WriteLine("");
+            Console.WriteLine("  -apply-me1-laa\n");
+            Console.WriteLine("     Apply LAA patch to ME1 executable.\n");
+            Console.WriteLine("");
+            Console.WriteLine("  -repack <game id> [-ipc]\n");
+            Console.WriteLine("     Recompress ME1/ME1 package files to ZLib.\n");
+            Console.WriteLine("");
+            Console.WriteLine("  -scan-with-remove <game id> [-ipc]\n");
+            Console.WriteLine("     Scan textures and remove empty mipmaps.\n");
+            Console.WriteLine("");
+            Console.WriteLine("  -apply-mod-tag <game id> <alot version> <meuitm version>\n");
+            Console.WriteLine("     Apply stamp that mod was installed.\n");
+            Console.WriteLine("");
+            Console.WriteLine("  -detect-empty-mipmaps <game id> [-ipc]>\n");
+            Console.WriteLine("     Detect if empty mipmaps were removed.\n");
+            Console.WriteLine("");
+            Console.WriteLine("  -apply-lods-gfx <game id>\n");
+            Console.WriteLine("     Update LODs and GFX settings.\n");
+            Console.WriteLine("");
+            Console.WriteLine("  -apply-lods-gfx <game id> [-limit2k]\n");
+            Console.WriteLine("     Update LODs and GFX settings.\n");
+            Console.WriteLine("");
+            Console.WriteLine("  -remove-lods <game id>\n");
+            Console.WriteLine("     Remove LODs settings.\n");
+            Console.WriteLine("");
+            Console.WriteLine("  --print-lods <game id>\n");
+            Console.WriteLine("     Print LODs settings.\n");
+            Console.WriteLine("");
             Console.WriteLine("  -convert-to-mem <game id> <input dir> <output file> [-ipc]\n");
             Console.WriteLine("     game id: 1 for ME1, 2 for ME2, 3 for ME3");
             Console.WriteLine("     input dir: directory to be converted, containing following file extension(s):");
@@ -626,6 +659,432 @@ namespace MassEffectModder
                     {
                         goto fail;
                     }
+                }
+            }
+            else if (cmd.Equals("-install-mems", StringComparison.OrdinalIgnoreCase))
+            {
+                if (args.Length != 2 && args.Length != 3 && args.Length != 4 && args.Length != 5)
+                {
+                    Console.WriteLine("Error: wrong arguments!");
+                    DisplayHelp();
+                    goto fail;
+                }
+
+                bool repack = false;
+                if (args.Length == 4)
+                {
+                    if (args[3].ToLowerInvariant() == "-ipc")
+                        ipc = true;
+                    if (args[3].ToLowerInvariant() == "-repack")
+                        repack = true;
+                }
+
+                if (args.Length == 5)
+                {
+                    if (args[3].ToLowerInvariant() == "-ipc")
+                        ipc = true;
+                    if (args[3].ToLowerInvariant() == "-repack")
+                        repack = true;
+                }
+
+                game = args[1];
+                try
+                {
+                    gameId = (MeType)int.Parse(game);
+                }
+                catch
+                {
+                    gameId = 0;
+                }
+                if (gameId != MeType.ME1_TYPE && gameId != MeType.ME2_TYPE && gameId != MeType.ME3_TYPE)
+                {
+                    Console.WriteLine("Error: wrong game id!");
+                    DisplayHelp();
+                    goto fail;
+                }
+
+                inputDir = args[2];
+                if (!Directory.Exists(inputDir))
+                {
+                    Console.WriteLine("Error: input dir not exists: " + inputDir);
+                    goto fail;
+                }
+
+                Console.WriteLine(Environment.NewLine + Environment.NewLine +
+                     "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
+
+                if (!CmdLineConverter.InstallMEMs(gameId, inputDir, ipc, repack))
+                {
+                    goto fail;
+                }
+            }
+            else if (cmd.Equals("-unpack-dlcs", StringComparison.OrdinalIgnoreCase))
+            {
+                if (args.Length != 1 && args.Length != 2)
+                {
+                    Console.WriteLine("Error: wrong arguments!");
+                    DisplayHelp();
+                    goto fail;
+                }
+
+                if (args.Length == 2)
+                {
+                    if (args[2].ToLowerInvariant() == "-ipc")
+                        ipc = true;
+                }
+
+                Console.WriteLine(Environment.NewLine + Environment.NewLine +
+                     "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
+
+                if (!CmdLineConverter.UnpackDLCs(ipc))
+                {
+                    goto fail;
+                }
+            }
+            else if (cmd.Equals("-apply-me1-laa", StringComparison.OrdinalIgnoreCase))
+            {
+                if (args.Length != 1)
+                {
+                    Console.WriteLine("Error: wrong arguments!");
+                    DisplayHelp();
+                    goto fail;
+                }
+
+                Console.WriteLine(Environment.NewLine + Environment.NewLine +
+                     "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
+
+                if (!CmdLineConverter.ApplyME1LAAPatch())
+                {
+                    goto fail;
+                }
+            }
+            else if (cmd.Equals("-repack", StringComparison.OrdinalIgnoreCase))
+            {
+                if (args.Length != 2 && args.Length != 3)
+                {
+                    Console.WriteLine("Error: wrong arguments!");
+                    DisplayHelp();
+                    goto fail;
+                }
+
+                if (args.Length == 3)
+                {
+                    if (args[2].ToLowerInvariant() == "-ipc")
+                        ipc = true;
+                }
+
+                game = args[1];
+                try
+                {
+                    gameId = (MeType)int.Parse(game);
+                }
+                catch
+                {
+                    gameId = 0;
+                }
+                if (gameId != MeType.ME1_TYPE && gameId != MeType.ME2_TYPE && gameId != MeType.ME3_TYPE)
+                {
+                    Console.WriteLine("Error: wrong game id!");
+                    DisplayHelp();
+                    goto fail;
+                }
+
+                Console.WriteLine(Environment.NewLine + Environment.NewLine +
+                     "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
+
+                if (!CmdLineConverter.RepackGameData(gameId, ipc))
+                {
+                    goto fail;
+                }
+            }
+            else if (cmd.Equals("-scan-with-remove", StringComparison.OrdinalIgnoreCase))
+            {
+                if (args.Length != 2 && args.Length != 3 && args.Length != 4)
+                {
+                    Console.WriteLine("Error: wrong arguments!");
+                    DisplayHelp();
+                    goto fail;
+                }
+
+                bool repack = false;
+                if (args.Length == 3)
+                {
+                    if (args[2].ToLowerInvariant() == "-repack")
+                        repack = true;
+                    if (args[2].ToLowerInvariant() == "-ipc")
+                        ipc = true;
+                }
+                if (args.Length == 4)
+                {
+                    if (args[3].ToLowerInvariant() == "-repack")
+                        repack = true;
+                    if (args[3].ToLowerInvariant() == "-ipc")
+                        ipc = true;
+                }
+
+                game = args[1];
+                try
+                {
+                    gameId = (MeType)int.Parse(game);
+                }
+                catch
+                {
+                    gameId = 0;
+                }
+                if (gameId != MeType.ME1_TYPE && gameId != MeType.ME2_TYPE && gameId != MeType.ME3_TYPE)
+                {
+                    Console.WriteLine("Error: wrong game id!");
+                    DisplayHelp();
+                    goto fail;
+                }
+
+                Console.WriteLine(Environment.NewLine + Environment.NewLine +
+                     "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
+
+                if (!CmdLineConverter.ScanAndMipMapsRemoval(gameId, ipc, repack))
+                {
+                    goto fail;
+                }
+            }
+            else if (cmd.Equals("-apply-mod-tag", StringComparison.OrdinalIgnoreCase))
+            {
+                if (args.Length != 2 && args.Length != 3 && args.Length != 4)
+                {
+                    Console.WriteLine("Error: wrong arguments!");
+                    DisplayHelp();
+                    goto fail;
+                }
+
+                int alotV = 0;
+                try
+                {
+                    alotV = int.Parse(args[2]);
+                }
+                catch
+                {
+                    Console.WriteLine("Error: wrong arguments!");
+                    DisplayHelp();
+                    goto fail;
+                }
+
+                int meuitmV = 0;
+                try
+                {
+                    meuitmV = int.Parse(args[3]);
+                }
+                catch
+                {
+                    Console.WriteLine("Error: wrong arguments!");
+                    DisplayHelp();
+                    goto fail;
+                }
+
+                game = args[1];
+                try
+                {
+                    gameId = (MeType)int.Parse(game);
+                }
+                catch
+                {
+                    gameId = 0;
+                }
+                if (gameId != MeType.ME1_TYPE && gameId != MeType.ME2_TYPE && gameId != MeType.ME3_TYPE)
+                {
+                    Console.WriteLine("Error: wrong game id!");
+                    DisplayHelp();
+                    goto fail;
+                }
+
+                Console.WriteLine(Environment.NewLine + Environment.NewLine +
+                     "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
+
+                if (!CmdLineConverter.ApplyModTag(gameId, alotV, meuitmV))
+                {
+                    goto fail;
+                }
+            }
+            else if (cmd.Equals("-detect-empty-mipmaps", StringComparison.OrdinalIgnoreCase))
+            {
+                if (args.Length != 2 && args.Length != 3)
+                {
+                    Console.WriteLine("Error: wrong arguments!");
+                    DisplayHelp();
+                    goto fail;
+                }
+
+                if (args.Length == 3)
+                {
+                    if (args[2].ToLowerInvariant() == "-ipc")
+                        ipc = true;
+                }
+
+                game = args[1];
+                try
+                {
+                    gameId = (MeType)int.Parse(game);
+                }
+                catch
+                {
+                    gameId = 0;
+                }
+                if (gameId != MeType.ME1_TYPE && gameId != MeType.ME2_TYPE && gameId != MeType.ME3_TYPE)
+                {
+                    Console.WriteLine("Error: wrong game id!");
+                    DisplayHelp();
+                    goto fail;
+                }
+
+                Console.WriteLine(Environment.NewLine + Environment.NewLine +
+                     "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
+
+                if (!CmdLineConverter.VerifyGameDataEmptyMipMapsRemoval(gameId, ipc))
+                {
+                    goto fail;
+                }
+            }
+            else if (cmd.Equals("-detect-empty-mipmaps", StringComparison.OrdinalIgnoreCase))
+            {
+                if (args.Length != 2 && args.Length != 3)
+                {
+                    Console.WriteLine("Error: wrong arguments!");
+                    DisplayHelp();
+                    goto fail;
+                }
+
+                if (args.Length == 3)
+                {
+                    if (args[2].ToLowerInvariant() == "-ipc")
+                        ipc = true;
+                }
+
+                game = args[1];
+                try
+                {
+                    gameId = (MeType)int.Parse(game);
+                }
+                catch
+                {
+                    gameId = 0;
+                }
+                if (gameId != MeType.ME1_TYPE && gameId != MeType.ME2_TYPE && gameId != MeType.ME3_TYPE)
+                {
+                    Console.WriteLine("Error: wrong game id!");
+                    DisplayHelp();
+                    goto fail;
+                }
+
+                Console.WriteLine(Environment.NewLine + Environment.NewLine +
+                     "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
+
+                if (!CmdLineConverter.VerifyGameDataEmptyMipMapsRemoval(gameId, ipc))
+                {
+                    goto fail;
+                }
+            }
+            else if (cmd.Equals("-apply-lods-gfx", StringComparison.OrdinalIgnoreCase))
+            {
+                if (args.Length != 2 && args.Length != 3)
+                {
+                    Console.WriteLine("Error: wrong arguments!");
+                    DisplayHelp();
+                    goto fail;
+                }
+
+                bool limit2k = false;
+                if (args.Length == 3)
+                {
+                    if (args[2].ToLowerInvariant() == "-limit2k")
+                        limit2k = true;
+                }
+
+                game = args[1];
+                try
+                {
+                    gameId = (MeType)int.Parse(game);
+                }
+                catch
+                {
+                    gameId = 0;
+                }
+                if (gameId != MeType.ME1_TYPE && gameId != MeType.ME2_TYPE && gameId != MeType.ME3_TYPE)
+                {
+                    Console.WriteLine("Error: wrong game id!");
+                    DisplayHelp();
+                    goto fail;
+                }
+
+                Console.WriteLine(Environment.NewLine + Environment.NewLine +
+                     "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
+
+                if (!CmdLineConverter.ApplyLODAndGfxSettings(gameId, limit2k))
+                {
+                    goto fail;
+                }
+            }
+            else if (cmd.Equals("-remove-lods", StringComparison.OrdinalIgnoreCase))
+            {
+                if (args.Length != 2)
+                {
+                    Console.WriteLine("Error: wrong arguments!");
+                    DisplayHelp();
+                    goto fail;
+                }
+
+                game = args[1];
+                try
+                {
+                    gameId = (MeType)int.Parse(game);
+                }
+                catch
+                {
+                    gameId = 0;
+                }
+                if (gameId != MeType.ME1_TYPE && gameId != MeType.ME2_TYPE && gameId != MeType.ME3_TYPE)
+                {
+                    Console.WriteLine("Error: wrong game id!");
+                    DisplayHelp();
+                    goto fail;
+                }
+
+                Console.WriteLine(Environment.NewLine + Environment.NewLine +
+                     "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
+
+                if (!CmdLineConverter.RemoveLODSettings(gameId))
+                {
+                    goto fail;
+                }
+            }
+            else if (cmd.Equals("-print-lods", StringComparison.OrdinalIgnoreCase))
+            {
+                if (args.Length != 2)
+                {
+                    Console.WriteLine("Error: wrong arguments!");
+                    DisplayHelp();
+                    goto fail;
+                }
+
+                game = args[1];
+                try
+                {
+                    gameId = (MeType)int.Parse(game);
+                }
+                catch
+                {
+                    gameId = 0;
+                }
+                if (gameId != MeType.ME1_TYPE && gameId != MeType.ME2_TYPE && gameId != MeType.ME3_TYPE)
+                {
+                    Console.WriteLine("Error: wrong game id!");
+                    DisplayHelp();
+                    goto fail;
+                }
+
+                Console.WriteLine(Environment.NewLine + Environment.NewLine +
+                     "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
+
+                if (!CmdLineConverter.PrintLODSettings(gameId))
+                {
+                    goto fail;
                 }
             }
             else if (cmd.Equals("-check-game-data", StringComparison.OrdinalIgnoreCase))

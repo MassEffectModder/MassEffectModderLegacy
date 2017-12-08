@@ -954,7 +954,7 @@ namespace MassEffectModder
 
                 log += "Scan textures started..." + Environment.NewLine;
                 updateStatusScan("In progress...");
-                errors += treeScan.PrepareListOfTextures(null, null, null, this, ref log, true);
+                errors += treeScan.PrepareListOfTextures(null, null, null, this, false, ref log, true);
                 textures = treeScan.treeScan;
                 checkBoxScan.Checked = true;
                 updateStatusScan("");
