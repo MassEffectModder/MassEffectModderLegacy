@@ -133,7 +133,7 @@ namespace MassEffectModder
             else
                 checkBoxOptionVanilla.Visible = false;
             if (allowToSkipScan)
-                checkBoxOptionSkipScan.Visible = false;
+                checkBoxOptionSkipScan.Visible = true;
             else
                 checkBoxOptionSkipScan.Visible = false;
             checkBoxOptionVanilla.Checked = false;
