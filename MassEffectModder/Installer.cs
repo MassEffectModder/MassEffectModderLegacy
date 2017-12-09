@@ -564,8 +564,7 @@ namespace MassEffectModder
                 if (!checkBoxOptionVanilla.Checked)
                 {
                     List<string> modList = new List<string>();
-                    bool vanilla = Misc.checkGameFiles((MeType)gameId, ref errors, ref modList, null, this, false,
-                        false, false, false, Misc.generateModsMd5Entries);
+                    bool vanilla = Misc.checkGameFiles((MeType)gameId, ref errors, ref modList, null, this, Misc.generateModsMd5Entries);
                     if (modList.Count != 0)
                     {
                         FileStream fs = new FileStream(filename, FileMode.OpenOrCreate);
@@ -955,7 +954,7 @@ namespace MassEffectModder
 
                 log += "Scan textures started..." + Environment.NewLine;
                 updateStatusScan("In progress...");
-                errors += treeScan.PrepareListOfTextures(null, null, null, this, false, ref log, true);
+                errors += treeScan.PrepareListOfTextures(null, null, null, this, ref log, true);
                 textures = treeScan.treeScan;
                 checkBoxScan.Checked = true;
                 updateStatusScan("");

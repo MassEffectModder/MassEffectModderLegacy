@@ -161,7 +161,7 @@ namespace MassEffectModder
         }
 
         static public bool convertDataModtoMem(string inputDir, string memFilePath,
-            MeType gameId, MainWindow mainWindow, ref string errors, bool onlyIndividual = false, bool ipc = false)
+            MeType gameId, MainWindow mainWindow, ref string errors, bool onlyIndividual = false)
         {
             string[] files = null;
 
@@ -220,12 +220,6 @@ namespace MassEffectModder
                     mainWindow.updateStatusLabel2("File " + (n + 1) + " of " + files.Count() + ", " + Path.GetFileName(file));
                 }
                 Console.WriteLine("File: " + Path.GetFileName(file));
-                if (ipc)
-                {
-                    Console.WriteLine("[IPC]PROCESSING_FILE " + Path.GetFileName(file));
-                    Console.WriteLine("[IPC]OVERALL_PROGRESS " + (n * 100) / files.Count());
-                    Console.Out.Flush();
-                }
 
                 if (file.EndsWith(".mem", StringComparison.OrdinalIgnoreCase))
                 {
@@ -373,11 +367,6 @@ namespace MassEffectModder
                                         (f.numMips != 1 && image.mipMaps.Count() == 1) ||
                                         image.pixelFormat != pixelFormat)
                                     {
-                                        if (ipc)
-                                        {
-                                            Console.WriteLine("[IPC]PROCESSING_FILE Converting " + textureName);
-                                            Console.Out.Flush();
-                                        }
                                         Console.WriteLine("Converting/correcting texture: " + textureName);
                                         bool dxt1HasAlpha = false;
                                         byte dxt1Threshold = 128;
@@ -579,11 +568,6 @@ namespace MassEffectModder
                                     byte dxt1Threshold = 128;
                                     if (foundCrcList[0].alphadxt1)
                                     {
-                                        if (ipc)
-                                        {
-                                            Console.WriteLine("[IPC]PROCESSING_FILE Converting " + textureName);
-                                            Console.Out.Flush();
-                                        }
                                         Console.WriteLine("Converting/correcting texture: " + textureName);
                                         dxt1HasAlpha = true;
                                         if (image.pixelFormat == PixelFormat.ARGB ||
@@ -674,11 +658,6 @@ namespace MassEffectModder
                            (foundCrcList[0].numMips != 1 && image.mipMaps.Count() == 1) ||
                             image.pixelFormat != pixelFormat)
                         {
-                            if (ipc)
-                            {
-                                Console.WriteLine("[IPC]PROCESSING_FILE Converting " + Path.GetFileName(file));
-                                Console.Out.Flush();
-                            }
                             Console.WriteLine("Converting/correcting texture: " + Path.GetFileName(file));
                             bool dxt1HasAlpha = false;
                             byte dxt1Threshold = 128;
@@ -767,11 +746,6 @@ namespace MassEffectModder
                             Console.WriteLine("Warning for texture: " + Path.GetFileName(file) + ". This texture converted from full alpha to binary alpha.");
                         }
                     }
-                    if (ipc)
-                    {
-                        Console.WriteLine("[IPC]PROCESSING_FILE Converting " + Path.GetFileName(file));
-                        Console.Out.Flush();
-                    }
                     Console.WriteLine("Converting/correcting texture: " + Path.GetFileName(file));
                     image.correctMips(pixelFormat, dxt1HasAlpha, dxt1Threshold);
                     mod.data = image.StoreImageToDDS();
@@ -852,10 +826,10 @@ namespace MassEffectModder
             return true;
         }
 
-        static public bool ConvertToMEM(MeType gameId, string inputDir, string memFile, bool ipc)
+        static public bool ConvertToMEM(MeType gameId, string inputDir, string memFile)
         {
             string errors = "";
-            bool status = convertDataModtoMem(inputDir, memFile, gameId, null, ref errors, false, ipc);
+            bool status = convertDataModtoMem(inputDir, memFile, gameId, null, ref errors, false);
             if (errors != "")
                 Console.WriteLine("Error: Some errors have occured");
 
@@ -1337,12 +1311,12 @@ namespace MassEffectModder
             List<string> memFiles = new List<string>();
             memFiles.Add(memFile);
 
-            applyMEMs(memFiles, false, false, true, tfcName, guid);
+            applyMEMs(memFiles, tfcName, guid);
 
             return true;
         }
 
-        static public bool applyMEMs(List<string> memFiles, bool ipc, bool repack = false, bool special = false, string tfcName = "", byte[] guid = null)
+        static public bool applyMEMs(List<string> memFiles, string tfcName = "", byte[] guid = null)
         {
             bool status = true;
             CachePackageMgr cachePackageMgr = new CachePackageMgr(null, null);
@@ -1350,12 +1324,6 @@ namespace MassEffectModder
             for (int i = 0; i < memFiles.Count; i++)
             {
                 Console.WriteLine("Mod: " + (i + 1) + " of " + memFiles.Count + " started: " + Path.GetFileName(memFiles[i]) + Environment.NewLine);
-                if (ipc)
-                {
-                    Console.WriteLine("[IPC]PROCESSING_FILE " + memFiles[i]);
-                    Console.WriteLine("[IPC]OVERALL_PROGRESS " + (i * 100 / memFiles.Count));
-                    Console.Out.Flush();
-                }
                 using (FileStream fs = new FileStream(memFiles[i], FileMode.Open, FileAccess.Read))
                 {
                     uint tag = fs.ReadUInt32();
@@ -1370,11 +1338,6 @@ namespace MassEffectModder
                         {
                             Console.WriteLine("File " + memFiles[i] + " is not a valid MEM mod, skipping..." + Environment.NewLine);
                         }
-                        if (ipc)
-                        {
-                            Console.WriteLine("[IPC]ERROR Bad MEM mod " + memFiles[i]);
-                            Console.Out.Flush();
-                        }
                         continue;
                     }
                     else
@@ -1385,11 +1348,6 @@ namespace MassEffectModder
                         if ((MeType)gameType != GameData.gameType)
                         {
                             Console.WriteLine("File " + memFiles[i] + " is not a MEM mod valid for this game, skipping..." + Environment.NewLine);
-                            if (ipc)
-                            {
-                                Console.WriteLine("[IPC]ERROR Bad MEM mod " + memFiles[i]);
-                                Console.Out.Flush();
-                            }
                             continue;
                         }
                     }
@@ -1443,17 +1401,9 @@ namespace MassEffectModder
                                     continue;
                                 }
                                 string errors = "";
-                                if (special)
-                                    errors = replaceTextureSpecialME3Mod(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc, tfcName, guid);
-                                else
-                                    errors = new MipMaps().replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc, false);
+                                errors = replaceTextureSpecialME3Mod(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc, tfcName, guid);
                                 if (errors != "")
                                 {
-                                    if (ipc)
-                                    {
-                                        Console.WriteLine("[IPC]ERROR Error while replacing texture " + foundTexture.name);
-                                        Console.Out.Flush();
-                                    }
                                     Console.WriteLine(errors);
                                 }
                             }
@@ -1481,7 +1431,7 @@ namespace MassEffectModder
                 }
             }
 
-            cachePackageMgr.CloseAllWithSave(repack, ipc);
+            cachePackageMgr.CloseAllWithSave();
 
             return status;
         }

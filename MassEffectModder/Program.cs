@@ -317,7 +317,7 @@ namespace MassEffectModder
             Console.WriteLine("     bit 1 - ME2");
             Console.WriteLine("     bit 2 - ME3");
             Console.WriteLine("");
-            Console.WriteLine("  -convert-to-mem <game id> <input dir> <output file> [-ipc]\n");
+            Console.WriteLine("  -convert-to-mem <game id> <input dir> <output file>\n");
             Console.WriteLine("     game id: 1 for ME1, 2 for ME2, 3 for ME3");
             Console.WriteLine("     input dir: directory to be converted, containing following file extension(s):");
             Console.WriteLine("        MEM, MOD, TPF");
@@ -336,7 +336,6 @@ namespace MassEffectModder
             Console.WriteLine("           input format supported for BMP images:");
             Console.WriteLine("              uncompressed RGBA/RGB/RGBX");
             Console.WriteLine("           Image filename must include texture CRC (0xhhhhhhhh)");
-            Console.WriteLine("     ipc: turn on IPC traces");
             Console.WriteLine("");
             Console.WriteLine("  -convert-game-image <game id> <input image> <output image>\n");
             Console.WriteLine("     game id: 1 for ME1, 2 for ME2, 3 for ME3");
@@ -416,7 +415,6 @@ namespace MassEffectModder
             string inputFile;
             string outputFile;
             MeType gameId = 0;
-            bool ipc = false;
 
             if (args.Length > 0)
             {
@@ -497,23 +495,7 @@ namespace MassEffectModder
                 cmd.Equals("-convert-game-images", StringComparison.OrdinalIgnoreCase) ||
                 cmd.Equals("-extract-mod", StringComparison.OrdinalIgnoreCase))
             {
-                if (cmd.Equals("-convert-to-mem", StringComparison.OrdinalIgnoreCase))
-                {
-                    if (args.Length == 5)
-                    {
-                        if (args[4].ToLowerInvariant() == "-ipc")
-                            ipc = true;
-                    }
-                    else if (args.Length != 4 && args.Length != 5)
-                    {
-                        {
-                            Console.WriteLine("Error: wrong arguments!");
-                            DisplayHelp();
-                            goto fail;
-                        }
-                    }
-                }
-                else if (args.Length != 4)
+                if (args.Length != 4)
                 {
                     Console.WriteLine("Error: wrong arguments!");
                     DisplayHelp();
@@ -550,7 +532,7 @@ namespace MassEffectModder
                 {
                     Console.WriteLine(Environment.NewLine + Environment.NewLine +
                         "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
-                    if (!CmdLineConverter.ConvertToMEM(gameId, inputDir, outputFile, ipc))
+                    if (!CmdLineConverter.ConvertToMEM(gameId, inputDir, outputFile))
                     {
                         goto fail;
                     }

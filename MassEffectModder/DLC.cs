@@ -310,7 +310,7 @@ namespace MassEffectModder
             sfarFile = null;
         }
 
-        static public void unpackAllDLC(MainWindow mainWindow, Installer installer, bool ipc = false)
+        static public void unpackAllDLC(MainWindow mainWindow, Installer installer)
         {
             if (!Directory.Exists(GameData.DLCData))
             {
@@ -343,8 +343,6 @@ namespace MassEffectModder
             {
                 if (mainWindow != null)
                     MessageBox.Show("You have not enough disk space remaining. You need about " + Misc.getBytesFormat(diskUsage) + " free.");
-                if (!ipc)
-                    return;
             }
 
             string tmpDlcDir = Path.Combine(GameData.GamePath, "BIOGame", "DLCTemp");
@@ -367,12 +365,6 @@ namespace MassEffectModder
                 if (installer != null)
                 {
                     installer.updateStatusPrepare("Extracting DLC ... " + (i + 1) + " of " + sfarFiles.Count);
-                }
-                if (ipc)
-                {
-                    Console.WriteLine("[IPC]PROCESSING_FILE " + sfarFiles[i]);
-                    Console.WriteLine("[IPC]OVERALL_PROGRESS " + (i * 100 / sfarFiles.Count));
-                    Console.Out.Flush();
                 }
                 dlc.extract(sfarFiles[i], outPath);
             }
@@ -420,11 +412,6 @@ namespace MassEffectModder
                     {
                         MessageBox.Show("Unable move temporary DLC directory: " + tmpDlcDir + " !");
                         success = false;
-                    }
-                    if (ipc)
-                    {
-                        Console.WriteLine("[IPC]ERROR Failed move DLCTemp!");
-                        Console.Out.Flush();
                     }
                 }
             }
