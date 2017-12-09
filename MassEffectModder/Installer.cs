@@ -644,6 +644,7 @@ namespace MassEffectModder
                     labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
                     labelPreVanilla.Text = "Skipped";
                     labelFinalStatus.Text = "Ready to go. Press START button!";
+                    buttonSTART.Enabled = true;
                 }
             }
 
