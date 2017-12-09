@@ -271,8 +271,38 @@ namespace MassEffectModder
                                 throw new Exception("");
                         }
                     }
+
+                    // dry run to test if texture fit in old space
+                    bool oldSpace = true;
+                    for (int m = 0; m < image.mipMaps.Count(); m++)
+                    {
+                        Texture.MipMap mipmap = new Texture.MipMap();
+                        mipmap.width = image.mipMaps[m].origWidth;
+                        mipmap.height = image.mipMaps[m].origHeight;
+                        if (texture.existMipmap(mipmap.width, mipmap.height))
+                            mipmap.storageType = texture.getMipmap(mipmap.width, mipmap.height).storageType;
+                        else
+                        {
+                            oldSpace = false;
+                            break;
+                        }
+
+                        if (mipmap.storageType == Texture.StorageTypes.extZlib ||
+                            mipmap.storageType == Texture.StorageTypes.extLZO)
+                        {
+                            Texture.MipMap oldMipmap = texture.getMipmap(mipmap.width, mipmap.height);
+                            if (cacheCprMipmaps[m].Length > oldMipmap.compressedSize)
+                            {
+                                oldSpace = false;
+                                break;
+                            }
+                        }
+                        if (texture.mipMapsList.Count() == 1)
+                            break;
+                    }
+
                     long fileLength = new FileInfo(archiveFile).Length;
-                    if (fileLength + 0x5000000 > 0x80000000)
+                    if (!oldSpace && fileLength + 0x5000000 > 0x80000000)
                     {
                         archiveFile = "";
                         foreach (TFCTexture newGuid in guids)
