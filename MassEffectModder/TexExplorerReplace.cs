@@ -118,6 +118,7 @@ namespace MassEffectModder
         {
             var masterTextures = new Dictionary<Texture, int>();
             Texture arcTexture = null, cprTexture = null;
+            List<byte[]> cacheCprMipmaps = null;
             string errors = "";
 
             for (int n = 0; n < list.Count; n++)
@@ -226,6 +227,15 @@ namespace MassEffectModder
                         {
                             texture.properties.addByteValue("LODGroup", newGroup.name, newGroup.value);
                         }
+                    }
+                }
+
+                if (cacheCprMipmaps == null)
+                {
+                    cacheCprMipmaps = new List<byte[]>();
+                    for (int m = 0; m < image.mipMaps.Count(); m++)
+                    {
+                        cacheCprMipmaps.Add(texture.compressTexture(image.mipMaps[m].data, Texture.StorageTypes.extZlib));
                     }
                 }
 
@@ -367,7 +377,7 @@ namespace MassEffectModder
                             mipmap.storageType == Texture.StorageTypes.pccZlib)
                         {
                             if (nodeTexture.linkToMaster == -1)
-                                mipmap.newData = texture.compressTexture(image.mipMaps[m].data, mipmap.storageType);
+                                mipmap.newData = cacheCprMipmaps[m];
                             else
                                 mipmap.newData = masterTextures.First(s => s.Value == nodeTexture.linkToMaster).Key.mipMapsList[m].newData;
                             mipmap.compressedSize = mipmap.newData.Length;
@@ -391,7 +401,7 @@ namespace MassEffectModder
                         {
                             if (cprTexture == null || (cprTexture != null && mipmap.storageType != cprTexture.mipMapsList[m].storageType))
                             {
-                                mipmap.newData = texture.compressTexture(image.mipMaps[m].data, mipmap.storageType);
+                                mipmap.newData = cacheCprMipmaps[m];
                                 triggerCacheCpr = true;
                             }
                             else
