@@ -359,13 +359,11 @@ namespace MassEffectModder
             if (args.Length > 0)
             {
                 cmd = args[0];
-                loadEmbeddedDlls();
             }
 
             if (cmd.Equals("-help", StringComparison.OrdinalIgnoreCase))
             {
                 DisplayHelp();
-                unloadEmbeddedDlls();
                 Environment.Exit(0);
             }
             if (cmd.Equals("-version", StringComparison.OrdinalIgnoreCase))
@@ -373,7 +371,6 @@ namespace MassEffectModder
                 cleanupPreviousUpdate();
                 Console.WriteLine(Environment.NewLine + Environment.NewLine +
                     "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
-                unloadEmbeddedDlls();
                 Environment.Exit(0);
             }
 
@@ -391,7 +388,6 @@ namespace MassEffectModder
                 if (GameData.GamePath != null && Directory.Exists(GameData.GamePath) && gameData.getPackages(true, true))
                     gameMask |= 4;
 
-                unloadEmbeddedDlls();
                 Environment.Exit(gameMask);
             }
 
@@ -420,13 +416,12 @@ namespace MassEffectModder
                     if (!process.Start())
                         throw new Exception();
 
-                    unloadEmbeddedDlls();
                     Environment.Exit(0);
                 }
                 catch
                 {
                     MessageBox.Show("Failed update MEM!");
-                    goto fail;
+                    Environment.Exit(1);
                 }
             }
 
@@ -436,7 +431,7 @@ namespace MassEffectModder
                 {
                     Console.WriteLine("Error: wrong arguments!");
                     DisplayHelp();
-                    goto fail;
+                    Environment.Exit(1);
                 }
 
                 game = args[1];
@@ -452,7 +447,7 @@ namespace MassEffectModder
                 {
                     Console.WriteLine("Error: wrong game id!");
                     DisplayHelp();
-                    goto fail;
+                    Environment.Exit(1);
                 }
 
                 inputDir = args[2];
@@ -460,15 +455,18 @@ namespace MassEffectModder
                 if (!Directory.Exists(inputDir))
                 {
                     Console.WriteLine("Error: input path not exists: " + inputDir);
-                    goto fail;
+                    Environment.Exit(1);
                 }
                 else
                 {
+                    loadEmbeddedDlls();
+
                     Console.WriteLine(Environment.NewLine + Environment.NewLine +
                         "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
                     if (!CmdLineConverter.ConvertToMEM(gameId, inputDir, outputFile))
                     {
-                        goto fail;
+                        unloadEmbeddedDlls();
+                        Environment.Exit(1);
                     }
                 }
             }
@@ -478,7 +476,7 @@ namespace MassEffectModder
                 {
                     Console.WriteLine("Error: wrong arguments!");
                     DisplayHelp();
-                    goto fail;
+                    Environment.Exit(1);
                 }
 
                 inputDir = args[1];
@@ -486,22 +484,24 @@ namespace MassEffectModder
                 if (!Directory.Exists(inputDir))
                 {
                     Console.WriteLine("Error: input dir not exists: " + inputDir);
-                    goto fail;
+                    Environment.Exit(1);
                 }
                 else
                 {
+                    loadEmbeddedDlls();
+
                     Console.WriteLine(Environment.NewLine + Environment.NewLine +
                         "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
                     if (!CmdLineConverter.extractTPF(inputDir, outputDir))
                     {
-                        goto fail;
+                        unloadEmbeddedDlls();
+                        Environment.Exit(1);
                     }
                 }
             }
             else if (args.Length > 0)
             {
                 DisplayHelp();
-                unloadEmbeddedDlls();
                 Environment.Exit(0);
             }
 
@@ -556,10 +556,6 @@ namespace MassEffectModder
 
             unloadEmbeddedDlls();
             Environment.Exit(0);
-fail:
-            unloadEmbeddedDlls();
-            Environment.Exit(1);
         }
-
     }
 }
