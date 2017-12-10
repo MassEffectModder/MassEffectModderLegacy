@@ -41,12 +41,6 @@ namespace MassEffectModder
         [DllImport("kernel32", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
         private static extern int FreeLibrary(IntPtr hModule);
 
-        [DllImport("kernel32", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr GetConsoleWindow();
-
-        [DllImport("user32.dll")]
-        private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-
         private static List<string> dlls = new List<string>();
         public static string dllPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
@@ -183,7 +177,7 @@ namespace MassEffectModder
             }
         }
 
-        static private string prepareForUpdate(bool nogui = false, bool onlycheck = false)
+        static private string prepareForUpdate(bool onlycheck = false)
         {
             try
             {
@@ -200,35 +194,31 @@ namespace MassEffectModder
                     {
                         return parsed["assets"][0]["browser_download_url"];
                     }
-                    if (!nogui)
+                    if (MessageBox.Show("New version of MEM is available: " + githubVersion + "\nDo you want update to new version?", "Update", MessageBoxButtons.YesNo) != DialogResult.Yes)
                     {
-                        if (MessageBox.Show("New version of MEM is available: " + githubVersion + "\nDo you want update to new version?", "Update", MessageBoxButtons.YesNo) != DialogResult.Yes)
-                        {
-                            return "";
-                        }
-                        progressBar = new ProgressBar();
-                        progressBar.Size = new System.Drawing.Size(400, 40);
-                        progressBar.Style = ProgressBarStyle.Marquee;
-                        progressBar.MarqueeAnimationSpeed = 1;
-                        progressForm = new Form();
-                        progressForm.StartPosition = FormStartPosition.CenterScreen;
-                        progressForm.Size = new System.Drawing.Size(400, 60);
-                        progressForm.MinimumSize = new System.Drawing.Size(400, 60);
-                        progressForm.MaximumSize = new System.Drawing.Size(400, 60);
-                        progressForm.MinimizeBox = false;
-                        progressForm.MaximizeBox = false;
-                        progressForm.ControlBox = false;
-                        progressForm.Controls.Add(progressBar);
-                        progressForm.Show();
+                        return "";
                     }
+                    progressBar = new ProgressBar();
+                    progressBar.Size = new System.Drawing.Size(400, 40);
+                    progressBar.Style = ProgressBarStyle.Marquee;
+                    progressBar.MarqueeAnimationSpeed = 1;
+                    progressForm = new Form();
+                    progressForm.StartPosition = FormStartPosition.CenterScreen;
+                    progressForm.Size = new System.Drawing.Size(400, 60);
+                    progressForm.MinimumSize = new System.Drawing.Size(400, 60);
+                    progressForm.MaximumSize = new System.Drawing.Size(400, 60);
+                    progressForm.MinimizeBox = false;
+                    progressForm.MaximizeBox = false;
+                    progressForm.ControlBox = false;
+                    progressForm.Controls.Add(progressBar);
+                    progressForm.Show();
 
                     Uri url = new Uri(parsed["assets"][0]["browser_download_url"]);
                     string filename = parsed["assets"][0]["name"];
                     webClient.DownloadFileAsync(url, filename);
                     while (webClient.IsBusy) { Application.DoEvents(); Thread.Sleep(10); }
 
-                    if (!nogui)
-                        progressForm.Close();
+                    progressForm.Close();
                     return filename;
                 }
             }
@@ -300,100 +290,12 @@ namespace MassEffectModder
                 File.Delete(filePdb);
         }
 
-        static void DisplayHelp()
-        {
-            Console.WriteLine(Environment.NewLine + Environment.NewLine +
-                "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
-            Console.WriteLine("Help:\n");
-            Console.WriteLine("  -help\n");
-            Console.WriteLine("     This help");
-            Console.WriteLine("");
-            Console.WriteLine("  -version\n");
-            Console.WriteLine("     Display MEM version");
-            Console.WriteLine("");
-            Console.WriteLine("  -get-installed-games");
-            Console.WriteLine("     Return bitmask installed games");
-            Console.WriteLine("     bit 0 - ME1");
-            Console.WriteLine("     bit 1 - ME2");
-            Console.WriteLine("     bit 2 - ME3");
-            Console.WriteLine("");
-            Console.WriteLine("  -convert-to-mem <game id> <input dir> <output file>\n");
-            Console.WriteLine("     game id: 1 for ME1, 2 for ME2, 3 for ME3");
-            Console.WriteLine("     input dir: directory to be converted, containing following file extension(s):");
-            Console.WriteLine("        MEM, MOD, TPF");
-            Console.WriteLine("        BIN - package export raw data");
-            Console.WriteLine("           Naming pattern used for package in DLC:");
-            Console.WriteLine("             D<DLC dir length>-<DLC dir>-<pkg filename length>-<pkg filename>-E<pkg export id>.bin");
-            Console.WriteLine("             example: D10-DLC_HEN_PR-23-BioH_EDI_02_Explore.pcc-E6101.bin");
-            Console.WriteLine("           Naming pattern used for package in base directory:");
-            Console.WriteLine("             B<pkg filename length>-<pkg filename>-E<pkg export id>.bin");
-            Console.WriteLine("             example: B23-BioH_EDI_00_Explore.pcc-E5090.bin");
-            Console.WriteLine("        DDS, BMP, TGA, PNG, JPG, JPEG");
-            Console.WriteLine("           input format supported for DDS images:");
-            Console.WriteLine("              DXT1, DXT3, DTX5, ATI2, V8U8, G8, RGBA, RGB");
-            Console.WriteLine("           input format supported for TGA images:");
-            Console.WriteLine("              uncompressed RGBA/RGB, compressed RGBA/RGB");
-            Console.WriteLine("           input format supported for BMP images:");
-            Console.WriteLine("              uncompressed RGBA/RGB/RGBX");
-            Console.WriteLine("           Image filename must include texture CRC (0xhhhhhhhh)");
-            Console.WriteLine("");
-            Console.WriteLine("  -extract-tpf <input dir> <output dir>\n");
-            Console.WriteLine("     input dir: directory containing the TPF file(s) to be extracted");
-            Console.WriteLine("     Textures are extracted as they are in the TPF, no additional modifications are made.");
-            Console.WriteLine("");
-
-            Console.WriteLine("\n");
-        }
-
         [STAThread]
 
         static void Main(string[] args)
         {
-            string cmd = "";
-            string game;
-            string inputDir;
-            string outputDir;
-            string outputFile;
-            MeType gameId = 0;
-
-            if (args.Length > 0)
+            if (args.Length > 0 && args[0].Equals("-update-mem", StringComparison.OrdinalIgnoreCase))
             {
-                cmd = args[0];
-            }
-
-            if (cmd.Equals("-help", StringComparison.OrdinalIgnoreCase))
-            {
-                DisplayHelp();
-                Environment.Exit(0);
-            }
-            if (cmd.Equals("-version", StringComparison.OrdinalIgnoreCase))
-            {
-                cleanupPreviousUpdate();
-                Console.WriteLine(Environment.NewLine + Environment.NewLine +
-                    "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
-                Environment.Exit(0);
-            }
-
-            if (cmd.Equals("-get-installed-games", StringComparison.OrdinalIgnoreCase))
-            {
-                int gameMask = 0;
-                ConfIni configIni = new ConfIni();
-                GameData gameData = new GameData(MeType.ME1_TYPE, configIni, false, true);
-                if (GameData.GamePath != null && Directory.Exists(GameData.GamePath) && gameData.getPackages(true, true))
-                    gameMask |= 1;
-                gameData = new GameData(MeType.ME2_TYPE, configIni, false, true);
-                if (GameData.GamePath != null && Directory.Exists(GameData.GamePath) && gameData.getPackages(true, true))
-                    gameMask |= 2;
-                gameData = new GameData(MeType.ME3_TYPE, configIni, false, true);
-                if (GameData.GamePath != null && Directory.Exists(GameData.GamePath) && gameData.getPackages(true, true))
-                    gameMask |= 4;
-
-                Environment.Exit(gameMask);
-            }
-
-            if (cmd.Equals("-update-mem", StringComparison.OrdinalIgnoreCase))
-            {
-                ShowWindow(GetConsoleWindow(), 0);
                 Thread.Sleep(1000);
                 try
                 {
@@ -425,134 +327,50 @@ namespace MassEffectModder
                 }
             }
 
-            if (cmd.Equals("-convert-to-mem", StringComparison.OrdinalIgnoreCase))
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            bool runAsAdmin = false;
+
+            if (Misc.isRunAsAdministrator())
             {
-                if (args.Length < 4)
-                {
-                    Console.WriteLine("Error: wrong arguments!");
-                    DisplayHelp();
-                    Environment.Exit(1);
-                }
-
-                game = args[1];
-                try
-                {
-                    gameId = (MeType)int.Parse(game);
-                }
-                catch
-                {
-                    gameId = 0;
-                }
-                if (gameId != MeType.ME1_TYPE && gameId != MeType.ME2_TYPE && gameId != MeType.ME3_TYPE)
-                {
-                    Console.WriteLine("Error: wrong game id!");
-                    DisplayHelp();
-                    Environment.Exit(1);
-                }
-
-                inputDir = args[2];
-                outputFile = args[3];
-                if (!Directory.Exists(inputDir))
-                {
-                    Console.WriteLine("Error: input path not exists: " + inputDir);
-                    Environment.Exit(1);
-                }
-                else
-                {
-                    loadEmbeddedDlls();
-
-                    Console.WriteLine(Environment.NewLine + Environment.NewLine +
-                        "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
-                    if (!CmdLineConverter.ConvertToMEM(gameId, inputDir, outputFile))
-                    {
-                        unloadEmbeddedDlls();
-                        Environment.Exit(1);
-                    }
-                }
-            }
-            else if (cmd.Equals("-extract-tpf", StringComparison.OrdinalIgnoreCase))
-            {
-                if (args.Length != 3)
-                {
-                    Console.WriteLine("Error: wrong arguments!");
-                    DisplayHelp();
-                    Environment.Exit(1);
-                }
-
-                inputDir = args[1];
-                outputDir = args[2];
-                if (!Directory.Exists(inputDir))
-                {
-                    Console.WriteLine("Error: input dir not exists: " + inputDir);
-                    Environment.Exit(1);
-                }
-                else
-                {
-                    loadEmbeddedDlls();
-
-                    Console.WriteLine(Environment.NewLine + Environment.NewLine +
-                        "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
-                    if (!CmdLineConverter.extractTPF(inputDir, outputDir))
-                    {
-                        unloadEmbeddedDlls();
-                        Environment.Exit(1);
-                    }
-                }
-            }
-            else if (args.Length > 0)
-            {
-                DisplayHelp();
-                Environment.Exit(0);
+                runAsAdmin = true;
             }
 
-            if (args.Length == 0)
+            loadEmbeddedDlls();
+
+
+            cleanupPreviousUpdate();
+            string filename = prepareForUpdate();
+            if (filename != "")
+                filename = unpackUpdate(filename);
+            if (filename != "")
             {
-                ShowWindow(GetConsoleWindow(), 0);
-                Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault(false);
-                bool runAsAdmin = false;
-
-                if (Misc.isRunAsAdministrator())
+                Process process = new Process();
+                process.StartInfo.FileName = filename;
+                process.StartInfo.Arguments = "-update-mem " + filename;
+                process.StartInfo.CreateNoWindow = true;
+                process.StartInfo.UseShellExecute = false;
+                if (process.Start())
                 {
-                    runAsAdmin = true;
+                    unloadEmbeddedDlls();
+                    Environment.Exit(0);
                 }
+                MessageBox.Show("Failed start update MEM instance!");
+            }
 
-                loadEmbeddedDlls();
+            loadMD5Tables();
 
-
-                cleanupPreviousUpdate();
-                string filename = prepareForUpdate();
-                if (filename != "")
-                    filename = unpackUpdate(filename);
-                if (filename != "")
-                {
-                    Process process = new Process();
-                    process.StartInfo.FileName = filename;
-                    process.StartInfo.Arguments = "-update-mem " + filename;
-                    process.StartInfo.CreateNoWindow = true;
-                    process.StartInfo.UseShellExecute = false;
-                    if (process.Start())
-                    {
-                        unloadEmbeddedDlls();
-                        Environment.Exit(0);
-                    }
-                    MessageBox.Show("Failed start update MEM instance!");
-                }
-
-                loadMD5Tables();
-
-                string iniPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "installer.ini");
-                if (File.Exists(iniPath))
-                {
-                    Installer installer = new Installer();
-                    if (installer.Run(runAsAdmin))
-                        Application.Run(installer);
-                    if (installer.exitToModder)
-                        Application.Run(new MainWindow(runAsAdmin));
-                }
-                else
+            string iniPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "installer.ini");
+            if (File.Exists(iniPath))
+            {
+                Installer installer = new Installer();
+                if (installer.Run(runAsAdmin))
+                    Application.Run(installer);
+                if (installer.exitToModder)
                     Application.Run(new MainWindow(runAsAdmin));
             }
+            else
+                Application.Run(new MainWindow(runAsAdmin));
 
             unloadEmbeddedDlls();
             Environment.Exit(0);

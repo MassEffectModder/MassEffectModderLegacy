@@ -638,9 +638,6 @@ namespace MassEffectModder
         {
             string[] files = null;
 
-            if (textures == null)
-                textures = CmdLineConverter.loadTexturesMap(gameId);
-
             Console.WriteLine("Mods conversion started...");
 
             List<string> list;
