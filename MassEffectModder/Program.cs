@@ -427,7 +427,7 @@ namespace MassEffectModder
 
             if (cmd.Equals("-convert-to-mem", StringComparison.OrdinalIgnoreCase))
             {
-                if (args.Length != 4)
+                if (args.Length < 4)
                 {
                     Console.WriteLine("Error: wrong arguments!");
                     DisplayHelp();
