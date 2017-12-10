@@ -337,68 +337,9 @@ namespace MassEffectModder
             Console.WriteLine("              uncompressed RGBA/RGB/RGBX");
             Console.WriteLine("           Image filename must include texture CRC (0xhhhhhhhh)");
             Console.WriteLine("");
-            Console.WriteLine("  -convert-game-image <game id> <input image> <output image>\n");
-            Console.WriteLine("     game id: 1 for ME1, 2 for ME2, 3 for ME3");
-            Console.WriteLine("     Input file with following extension:");
-            Console.WriteLine("        DDS, BMP, TGA, PNG, JPG, JPEG");
-            Console.WriteLine("           input format supported for DDS images:");
-            Console.WriteLine("              DXT1, DXT3, DTX5, ATI2, V8U8, G8, RGBA, RGB");
-            Console.WriteLine("           input format supported for TGA images:");
-            Console.WriteLine("              uncompressed RGBA/RGB, compressed RGBA/RGB");
-            Console.WriteLine("           input format supported for BMP images:");
-            Console.WriteLine("              uncompressed RGBA/RGB/RGBX");
-            Console.WriteLine("           Image filename must include texture CRC (0xhhhhhhhh)");
-            Console.WriteLine("     Output file is DDS image");
-            Console.WriteLine("");
-            Console.WriteLine("  -convert-game-images <game id> <input dir> <output dir>\n");
-            Console.WriteLine("     game id: 1 for ME1, 2 for ME2, 3 for ME3");
-            Console.WriteLine("     input dir: directory to be converted, containing following file extension(s):");
-            Console.WriteLine("        Input files with following extension:");
-            Console.WriteLine("        DDS, BMP, TGA, PNG, JPEG");
-            Console.WriteLine("           input format supported for DDS images:");
-            Console.WriteLine("              DXT1, DXT3, DTX5, ATI2, V8U8, G8, RGBA, RGB");
-            Console.WriteLine("           input format supported for TGA images:");
-            Console.WriteLine("              uncompressed RGBA/RGB, compressed RGBA/RGB");
-            Console.WriteLine("           input pixel format supported for BMP images:");
-            Console.WriteLine("              uncompressed RGBA/RGB/RGBX");
-            Console.WriteLine("           Image filename must include texture CRC (0xhhhhhhhh)");
-            Console.WriteLine("     output dir: directory where textures converted to DDS are placed");
-            Console.WriteLine("");
-            Console.WriteLine("  -extract-mod <game id> <input dir> <output dir>\n");
-            Console.WriteLine("     game id: 1 for ME1, 2 for ME2, 3 for ME3");
-            Console.WriteLine("     input dir: directory of ME3Explorer MOD file(s)");
-            Console.WriteLine("     Can extract textures and package export raw data");
-            Console.WriteLine("     Naming pattern used for package in DLC:");
-            Console.WriteLine("        D<DLC dir length>-<DLC dir>-<pkg filename length>-<pkg filename>-E<pkg export id>.bin");
-            Console.WriteLine("        example: D10-DLC_HEN_PR-23-BioH_EDI_02_Explore.pcc-E6101.bin");
-            Console.WriteLine("     Naming pattern used for package in base directory:");
-            Console.WriteLine("        B<pkg filename length>-<pkg filename>-E<pkg export id>.bin");
-            Console.WriteLine("        example: B23-BioH_EDI_00_Explore.pcc-E5090.bin");
-            Console.WriteLine("");
             Console.WriteLine("  -extract-tpf <input dir> <output dir>\n");
             Console.WriteLine("     input dir: directory containing the TPF file(s) to be extracted");
             Console.WriteLine("     Textures are extracted as they are in the TPF, no additional modifications are made.");
-            Console.WriteLine("");
-            Console.WriteLine("  -convert-image <output pixel format> [dxt1 alpha threshold] <input image> <output image>\n");
-            Console.WriteLine("     input image file types: DDS, BMP, TGA, PNG, JPEG");
-            Console.WriteLine("     output image file type: DDS");
-            Console.WriteLine("     output pixel format: DXT1 (no alpha), DXT1a (alpha), DXT3, DXT5, ATI2, V8U8, G8, RGBA, RGB");
-            Console.WriteLine("     For DXT1a you have to set the alpha threshold (0-255). 128 is suggested as a default value.");
-            Console.WriteLine("");
-            Console.WriteLine("  -extract-all-dds <game id> <output dir> [TFC filter name]\n");
-            Console.WriteLine("     game id: 1 for ME1, 2 for ME2, 3 for ME3");
-            Console.WriteLine("     output dir: directory where textures converted to DDS are placed");
-            Console.WriteLine("     TFC filter name: it will filter only textures stored in specific TFC file.");
-            Console.WriteLine("     Textures are extracted as they are in game data, only DDS header is added.");
-            Console.WriteLine("");
-            Console.WriteLine("  -extract-all-png <game id> <output dir>\n");
-            Console.WriteLine("     game id: 1 for ME1, 2 for ME2, 3 for ME3");
-            Console.WriteLine("     output dir: directory where textures converted to PNG are placed");
-            Console.WriteLine("     Textures are extracted with only top mipmap.");
-            Console.WriteLine("");
-            Console.WriteLine("  -me3dlcmod-for-mgamerz <mem file> <tfc name> [<guid in 16 hex digits>]\n");
-            Console.WriteLine("     Replace textures from <mem file> and store in new <tfc name> file.");
-            Console.WriteLine("     New TFC name must be added earlier to PCC files.");
             Console.WriteLine("");
 
             Console.WriteLine("\n");
@@ -412,7 +353,6 @@ namespace MassEffectModder
             string game;
             string inputDir;
             string outputDir;
-            string inputFile;
             string outputFile;
             MeType gameId = 0;
 
@@ -490,10 +430,7 @@ namespace MassEffectModder
                 }
             }
 
-            if (cmd.Equals("-convert-to-mem", StringComparison.OrdinalIgnoreCase) ||
-                cmd.Equals("-convert-game-image", StringComparison.OrdinalIgnoreCase) ||
-                cmd.Equals("-convert-game-images", StringComparison.OrdinalIgnoreCase) ||
-                cmd.Equals("-extract-mod", StringComparison.OrdinalIgnoreCase))
+            if (cmd.Equals("-convert-to-mem", StringComparison.OrdinalIgnoreCase))
             {
                 if (args.Length != 4)
                 {
@@ -517,10 +454,7 @@ namespace MassEffectModder
                     DisplayHelp();
                     goto fail;
                 }
-            }
 
-            if (cmd.Equals("-convert-to-mem", StringComparison.OrdinalIgnoreCase))
-            {
                 inputDir = args[2];
                 outputFile = args[3];
                 if (!Directory.Exists(inputDir))
@@ -533,68 +467,6 @@ namespace MassEffectModder
                     Console.WriteLine(Environment.NewLine + Environment.NewLine +
                         "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
                     if (!CmdLineConverter.ConvertToMEM(gameId, inputDir, outputFile))
-                    {
-                        goto fail;
-                    }
-                }
-            }
-            else if (cmd.Equals("-extract-mod", StringComparison.OrdinalIgnoreCase))
-            {
-                inputDir = args[2];
-                outputDir = args[3];
-                if (!Directory.Exists(inputDir))
-                {
-                    Console.WriteLine("Error: input dir not exists: " + inputDir);
-                    goto fail;
-                }
-                else
-                {
-                    Console.WriteLine(Environment.NewLine + Environment.NewLine +
-                        "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
-                    if (!CmdLineConverter.extractMOD(gameId, inputDir, outputDir))
-                    {
-                        goto fail;
-                    }
-                }
-            }
-            else if (cmd.Equals("-convert-game-image", StringComparison.OrdinalIgnoreCase))
-            {
-                inputFile = args[2];
-                outputFile = args[3];
-                if (!File.Exists(inputFile))
-                {
-                    Console.WriteLine("Error: input file not exists: " + inputFile);
-                    goto fail;
-                }
-                else
-                {
-                    if (Path.GetExtension(outputFile).ToLowerInvariant() != ".dds")
-                    {
-                        Console.WriteLine("Error: output file is not dds: " + outputFile);
-                        goto fail;
-                    }
-                    Console.WriteLine(Environment.NewLine + Environment.NewLine +
-                        "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
-                    if (!CmdLineConverter.convertGameImage(gameId, inputFile, outputFile))
-                    {
-                        goto fail;
-                    }
-                }
-            }
-            else if (cmd.Equals("-convert-game-images", StringComparison.OrdinalIgnoreCase))
-            {
-                inputDir = args[2];
-                outputDir = args[3];
-                if (!Directory.Exists(inputDir))
-                {
-                    Console.WriteLine("Error: input dir not exists: " + inputDir);
-                    goto fail;
-                }
-                else
-                {
-                    Console.WriteLine(Environment.NewLine + Environment.NewLine +
-                        "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
-                    if (!CmdLineConverter.convertGameImages(gameId, inputDir, outputDir))
                     {
                         goto fail;
                     }
@@ -624,135 +496,6 @@ namespace MassEffectModder
                     {
                         goto fail;
                     }
-                }
-            }
-            else if (cmd.Equals("-convert-image", StringComparison.OrdinalIgnoreCase))
-            {
-                if (args.Length < 4)
-                {
-                    Console.WriteLine("Error: wrong arguments!");
-                    DisplayHelp();
-                    goto fail;
-                }
-
-                string format = args[1];
-                string threshold = "128";
-                if (format == "dxt1a")
-                {
-                    if (args.Length == 5)
-                    {
-                        threshold = args[2];
-                        inputFile = args[3];
-                        outputFile = args[4];
-                    }
-                    else
-                    {
-                        inputFile = args[2];
-                        outputFile = args[3];
-                    }
-                }
-                else
-                {
-                    inputFile = args[2];
-                    outputFile = args[3];
-                }
-
-                if (!File.Exists(inputFile))
-                {
-                    Console.WriteLine("Error: input file not exists: " + inputFile);
-                    goto fail;
-                }
-                else
-                {
-                    if (Path.GetExtension(outputFile).ToLowerInvariant() != ".dds")
-                    {
-                        Console.WriteLine("Error: output file is not dds: " + outputFile);
-                        goto fail;
-                    }
-                    Console.WriteLine(Environment.NewLine + Environment.NewLine +
-                        "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
-                    if (!CmdLineConverter.convertImage(inputFile, outputFile, format, threshold))
-                    {
-                        goto fail;
-                    }
-                }
-            }
-            else if (cmd.Equals("-extract-all-dds", StringComparison.OrdinalIgnoreCase) ||
-                     cmd.Equals("-extract-all-png", StringComparison.OrdinalIgnoreCase))
-            {
-                if (args.Length != 3 && args.Length != 4)
-                {
-                    Console.WriteLine("Error: wrong arguments!");
-                    DisplayHelp();
-                    goto fail;
-                }
-
-                game = args[1];
-                try
-                {
-                    gameId = (MeType)int.Parse(game);
-                }
-                catch
-                {
-                    gameId = 0;
-                }
-                if (gameId != MeType.ME1_TYPE && gameId != MeType.ME2_TYPE && gameId != MeType.ME3_TYPE)
-                {
-                    Console.WriteLine("Error: wrong game id!");
-                    DisplayHelp();
-                    goto fail;
-                }
-                outputDir = args[2];
-                string tfcFilter = "";
-                if (args.Length > 3)
-                    tfcFilter = args[3];
-
-                Console.WriteLine(Environment.NewLine + Environment.NewLine +
-                    "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
-                if (cmd.Equals("-extract-all-dds", StringComparison.OrdinalIgnoreCase))
-                    if (!CmdLineConverter.extractAllTextures(gameId, outputDir, false, tfcFilter))
-                    {
-                        goto fail;
-                    }
-                if (cmd.Equals("-extract-all-png", StringComparison.OrdinalIgnoreCase))
-                    if (!CmdLineConverter.extractAllTextures(gameId, outputDir, true, ""))
-                    {
-                        goto fail;
-                    }
-            }
-            else if (cmd.Equals("-me3dlcmod-for-mgamerz", StringComparison.OrdinalIgnoreCase))
-            {
-                if (args.Length != 3 && args.Length != 4)
-                {
-                    Console.WriteLine("Error: wrong arguments!");
-                    DisplayHelp();
-                    goto fail;
-                }
-
-                inputFile = args[1];
-                string tfcName = args[2];
-                byte[] guid;
-                if (args.Length == 4)
-                {
-                    if (args[3].Length != 32)
-                    {
-                        Console.WriteLine("Error: wrong guid!");
-                        DisplayHelp();
-                        goto fail;
-                    }
-                    guid = new byte[16];
-                    for (int i = 0; i < 32; i += 2)
-                        guid[i / 2] = Convert.ToByte(args[3].Substring(i, 2), 16);
-                }
-                else
-                {
-                    guid = Guid.NewGuid().ToByteArray();
-                }
-                Console.WriteLine(Environment.NewLine + Environment.NewLine +
-                        "--- MEM v" + Application.ProductVersion + " command line --- " + Environment.NewLine);
-                if (!CmdLineConverter.applyMEMSpecialModME3(inputFile, tfcName, guid))
-                {
-                    goto fail;
                 }
             }
             else if (args.Length > 0)

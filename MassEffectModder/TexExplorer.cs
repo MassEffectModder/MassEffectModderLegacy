@@ -905,9 +905,9 @@ namespace MassEffectModder
                         _mainWindow.updateStatusLabel("MEM packing...");
                         _mainWindow.updateStatusLabel2("");
                         string errors = "";
-                        CmdLineConverter.convertDataModtoMem(modFile.SelectedPath,
+                        Misc.convertDataModtoMem(modFile.SelectedPath,
                             Path.Combine(Path.GetDirectoryName(modFile.SelectedPath), Path.GetFileName(modFile.SelectedPath)) + ".mem",
-                            GameData.gameType, _mainWindow, ref errors, true);
+                            GameData.gameType, _mainWindow, _textures, ref errors, true);
                         var time = Misc.stopTimer();
                         richTextBoxInfo.Text = errors;
                         if (richTextBoxInfo.Text != "")
@@ -973,8 +973,8 @@ namespace MassEffectModder
                         string errors = "";
                         for (int i = 0; i < listDirs.Count; i++)
                         {
-                            CmdLineConverter.convertDataModtoMem(listDirs[i], Path.Combine(Path.GetDirectoryName(listDirs[i]), Path.GetFileName(listDirs[i])) + ".mem",
-                                GameData.gameType, _mainWindow, ref errors, true);
+                            Misc.convertDataModtoMem(listDirs[i], Path.Combine(Path.GetDirectoryName(listDirs[i]), Path.GetFileName(listDirs[i])) + ".mem",
+                                GameData.gameType, _mainWindow, _textures, ref errors, true);
                         }
                         var time = Misc.stopTimer();
                         richTextBoxInfo.Text = errors;
