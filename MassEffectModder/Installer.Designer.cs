@@ -51,13 +51,11 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Installer));
             this.checkBoxPreMods = new System.Windows.Forms.CheckBox();
-            this.checkBoxLOD = new System.Windows.Forms.CheckBox();
             this.buttonSTART = new System.Windows.Forms.Button();
             this.checkBoxScan = new System.Windows.Forms.CheckBox();
             this.checkBoxMipMaps = new System.Windows.Forms.CheckBox();
             this.checkBoxTextures = new System.Windows.Forms.CheckBox();
             this.checkBoxStore = new System.Windows.Forms.CheckBox();
-            this.labelStatusLOD = new System.Windows.Forms.Label();
             this.labelStatusScan = new System.Windows.Forms.Label();
             this.labelStatusMipMaps = new System.Windows.Forms.Label();
             this.labelStatusTextures = new System.Windows.Forms.Label();
@@ -68,10 +66,6 @@
             this.labelTextures = new System.Windows.Forms.Label();
             this.labelMipMaps = new System.Windows.Forms.Label();
             this.labelScan = new System.Windows.Forms.Label();
-            this.labelLOD = new System.Windows.Forms.Label();
-            this.labelPrepare = new System.Windows.Forms.Label();
-            this.labelStatusPrepare = new System.Windows.Forms.Label();
-            this.checkBoxPrepare = new System.Windows.Forms.CheckBox();
             this.groupBoxPreInstallCheck = new System.Windows.Forms.GroupBox();
             this.checkBoxPreVanilla = new System.Windows.Forms.CheckBox();
             this.checkBoxPreSpace = new System.Windows.Forms.CheckBox();
@@ -85,7 +79,6 @@
             this.labelPrePath = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.buttonPreChangePath = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.buttonPreInstallCheck = new System.Windows.Forms.Button();
             this.groupBoxInstaller = new System.Windows.Forms.GroupBox();
@@ -98,7 +91,6 @@
             this.checkBoxPreEnableRepack = new System.Windows.Forms.CheckBox();
             this.groupBoxOptions = new System.Windows.Forms.GroupBox();
             this.checkBoxOptionSkipScan = new System.Windows.Forms.CheckBox();
-            this.buttonUnpackDLC = new System.Windows.Forms.Button();
             this.checkBoxOptionLimit2K = new System.Windows.Forms.CheckBox();
             this.checkBoxOptionVanilla = new System.Windows.Forms.CheckBox();
             this.groupBoxPreInstallCheck.SuspendLayout();
@@ -118,16 +110,6 @@
             this.checkBoxPreMods.TabStop = false;
             this.checkBoxPreMods.UseVisualStyleBackColor = true;
             // 
-            // checkBoxLOD
-            // 
-            this.checkBoxLOD.AutoSize = true;
-            this.checkBoxLOD.Enabled = false;
-            this.checkBoxLOD.Location = new System.Drawing.Point(166, 164);
-            this.checkBoxLOD.Name = "checkBoxLOD";
-            this.checkBoxLOD.Size = new System.Drawing.Size(15, 14);
-            this.checkBoxLOD.TabIndex = 3;
-            this.checkBoxLOD.UseVisualStyleBackColor = true;
-            // 
             // buttonSTART
             // 
             this.buttonSTART.BackColor = System.Drawing.Color.LimeGreen;
@@ -144,7 +126,7 @@
             // 
             this.checkBoxScan.AutoSize = true;
             this.checkBoxScan.Enabled = false;
-            this.checkBoxScan.Location = new System.Drawing.Point(166, 74);
+            this.checkBoxScan.Location = new System.Drawing.Point(164, 55);
             this.checkBoxScan.Name = "checkBoxScan";
             this.checkBoxScan.Size = new System.Drawing.Size(15, 14);
             this.checkBoxScan.TabIndex = 5;
@@ -154,7 +136,7 @@
             // 
             this.checkBoxMipMaps.AutoSize = true;
             this.checkBoxMipMaps.Enabled = false;
-            this.checkBoxMipMaps.Location = new System.Drawing.Point(166, 141);
+            this.checkBoxMipMaps.Location = new System.Drawing.Point(164, 122);
             this.checkBoxMipMaps.Name = "checkBoxMipMaps";
             this.checkBoxMipMaps.Size = new System.Drawing.Size(15, 14);
             this.checkBoxMipMaps.TabIndex = 6;
@@ -164,7 +146,7 @@
             // 
             this.checkBoxTextures.AutoSize = true;
             this.checkBoxTextures.Enabled = false;
-            this.checkBoxTextures.Location = new System.Drawing.Point(166, 97);
+            this.checkBoxTextures.Location = new System.Drawing.Point(164, 78);
             this.checkBoxTextures.Name = "checkBoxTextures";
             this.checkBoxTextures.Size = new System.Drawing.Size(15, 14);
             this.checkBoxTextures.TabIndex = 7;
@@ -174,27 +156,17 @@
             // 
             this.checkBoxStore.AutoSize = true;
             this.checkBoxStore.Enabled = false;
-            this.checkBoxStore.Location = new System.Drawing.Point(166, 119);
+            this.checkBoxStore.Location = new System.Drawing.Point(164, 100);
             this.checkBoxStore.Name = "checkBoxStore";
             this.checkBoxStore.Size = new System.Drawing.Size(15, 14);
             this.checkBoxStore.TabIndex = 8;
             this.checkBoxStore.UseVisualStyleBackColor = true;
             // 
-            // labelStatusLOD
-            // 
-            this.labelStatusLOD.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.labelStatusLOD.ForeColor = System.Drawing.Color.LimeGreen;
-            this.labelStatusLOD.Location = new System.Drawing.Point(187, 165);
-            this.labelStatusLOD.Name = "labelStatusLOD";
-            this.labelStatusLOD.Size = new System.Drawing.Size(252, 13);
-            this.labelStatusLOD.TabIndex = 9;
-            this.labelStatusLOD.Text = "label";
-            // 
             // labelStatusScan
             // 
             this.labelStatusScan.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelStatusScan.ForeColor = System.Drawing.Color.LimeGreen;
-            this.labelStatusScan.Location = new System.Drawing.Point(187, 74);
+            this.labelStatusScan.Location = new System.Drawing.Point(185, 55);
             this.labelStatusScan.Name = "labelStatusScan";
             this.labelStatusScan.Size = new System.Drawing.Size(252, 13);
             this.labelStatusScan.TabIndex = 10;
@@ -204,7 +176,7 @@
             // 
             this.labelStatusMipMaps.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelStatusMipMaps.ForeColor = System.Drawing.Color.LimeGreen;
-            this.labelStatusMipMaps.Location = new System.Drawing.Point(187, 142);
+            this.labelStatusMipMaps.Location = new System.Drawing.Point(185, 123);
             this.labelStatusMipMaps.Name = "labelStatusMipMaps";
             this.labelStatusMipMaps.Size = new System.Drawing.Size(252, 13);
             this.labelStatusMipMaps.TabIndex = 11;
@@ -214,7 +186,7 @@
             // 
             this.labelStatusTextures.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelStatusTextures.ForeColor = System.Drawing.Color.LimeGreen;
-            this.labelStatusTextures.Location = new System.Drawing.Point(187, 97);
+            this.labelStatusTextures.Location = new System.Drawing.Point(185, 78);
             this.labelStatusTextures.Name = "labelStatusTextures";
             this.labelStatusTextures.Size = new System.Drawing.Size(252, 13);
             this.labelStatusTextures.TabIndex = 12;
@@ -224,7 +196,7 @@
             // 
             this.labelStatusStore.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelStatusStore.ForeColor = System.Drawing.Color.LimeGreen;
-            this.labelStatusStore.Location = new System.Drawing.Point(187, 119);
+            this.labelStatusStore.Location = new System.Drawing.Point(185, 100);
             this.labelStatusStore.Name = "labelStatusStore";
             this.labelStatusStore.Size = new System.Drawing.Size(252, 13);
             this.labelStatusStore.TabIndex = 13;
@@ -252,7 +224,7 @@
             // labelStore
             // 
             this.labelStore.AutoSize = true;
-            this.labelStore.Location = new System.Drawing.Point(13, 120);
+            this.labelStore.Location = new System.Drawing.Point(11, 101);
             this.labelStore.Name = "labelStore";
             this.labelStore.Size = new System.Drawing.Size(89, 13);
             this.labelStore.TabIndex = 20;
@@ -261,7 +233,7 @@
             // labelTextures
             // 
             this.labelTextures.AutoSize = true;
-            this.labelTextures.Location = new System.Drawing.Point(13, 97);
+            this.labelTextures.Location = new System.Drawing.Point(11, 78);
             this.labelTextures.Name = "labelTextures";
             this.labelTextures.Size = new System.Drawing.Size(103, 13);
             this.labelTextures.TabIndex = 19;
@@ -270,7 +242,7 @@
             // labelMipMaps
             // 
             this.labelMipMaps.AutoSize = true;
-            this.labelMipMaps.Location = new System.Drawing.Point(13, 142);
+            this.labelMipMaps.Location = new System.Drawing.Point(11, 123);
             this.labelMipMaps.Name = "labelMipMaps";
             this.labelMipMaps.Size = new System.Drawing.Size(124, 13);
             this.labelMipMaps.TabIndex = 18;
@@ -279,54 +251,15 @@
             // labelScan
             // 
             this.labelScan.AutoSize = true;
-            this.labelScan.Location = new System.Drawing.Point(13, 74);
+            this.labelScan.Location = new System.Drawing.Point(11, 55);
             this.labelScan.Name = "labelScan";
             this.labelScan.Size = new System.Drawing.Size(76, 13);
             this.labelScan.TabIndex = 17;
             this.labelScan.Text = "Scan Textures";
             // 
-            // labelLOD
-            // 
-            this.labelLOD.AutoSize = true;
-            this.labelLOD.Location = new System.Drawing.Point(13, 165);
-            this.labelLOD.Name = "labelLOD";
-            this.labelLOD.Size = new System.Drawing.Size(105, 13);
-            this.labelLOD.TabIndex = 16;
-            this.labelLOD.Text = "Apply Game Settings";
-            // 
-            // labelPrepare
-            // 
-            this.labelPrepare.AutoSize = true;
-            this.labelPrepare.Location = new System.Drawing.Point(13, 52);
-            this.labelPrepare.Name = "labelPrepare";
-            this.labelPrepare.Size = new System.Drawing.Size(101, 13);
-            this.labelPrepare.TabIndex = 24;
-            this.labelPrepare.Text = "Prepare Game Data";
-            // 
-            // labelStatusPrepare
-            // 
-            this.labelStatusPrepare.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.labelStatusPrepare.ForeColor = System.Drawing.Color.LimeGreen;
-            this.labelStatusPrepare.Location = new System.Drawing.Point(187, 52);
-            this.labelStatusPrepare.Name = "labelStatusPrepare";
-            this.labelStatusPrepare.Size = new System.Drawing.Size(252, 13);
-            this.labelStatusPrepare.TabIndex = 23;
-            this.labelStatusPrepare.Text = "label";
-            // 
-            // checkBoxPrepare
-            // 
-            this.checkBoxPrepare.AutoSize = true;
-            this.checkBoxPrepare.Enabled = false;
-            this.checkBoxPrepare.Location = new System.Drawing.Point(166, 52);
-            this.checkBoxPrepare.Name = "checkBoxPrepare";
-            this.checkBoxPrepare.Size = new System.Drawing.Size(15, 14);
-            this.checkBoxPrepare.TabIndex = 22;
-            this.checkBoxPrepare.UseVisualStyleBackColor = true;
-            // 
             // groupBoxPreInstallCheck
             // 
             this.groupBoxPreInstallCheck.Controls.Add(this.checkBoxPreVanilla);
-            this.groupBoxPreInstallCheck.Controls.Add(this.buttonUnpackDLC);
             this.groupBoxPreInstallCheck.Controls.Add(this.checkBoxPreSpace);
             this.groupBoxPreInstallCheck.Controls.Add(this.checkBoxPreAccess);
             this.groupBoxPreInstallCheck.Controls.Add(this.checkBoxPrePath);
@@ -339,7 +272,6 @@
             this.groupBoxPreInstallCheck.Controls.Add(this.labelPrePath);
             this.groupBoxPreInstallCheck.Controls.Add(this.label3);
             this.groupBoxPreInstallCheck.Controls.Add(this.label2);
-            this.groupBoxPreInstallCheck.Controls.Add(this.buttonPreChangePath);
             this.groupBoxPreInstallCheck.Controls.Add(this.label1);
             this.groupBoxPreInstallCheck.Controls.Add(this.buttonPreInstallCheck);
             this.groupBoxPreInstallCheck.Controls.Add(this.label0);
@@ -475,16 +407,6 @@
             this.label2.TabIndex = 30;
             this.label2.Text = "Drive Space";
             // 
-            // buttonPreChangePath
-            // 
-            this.buttonPreChangePath.Location = new System.Drawing.Point(445, 92);
-            this.buttonPreChangePath.Name = "buttonPreChangePath";
-            this.buttonPreChangePath.Size = new System.Drawing.Size(111, 23);
-            this.buttonPreChangePath.TabIndex = 1;
-            this.buttonPreChangePath.Text = "Change Path...";
-            this.buttonPreChangePath.UseVisualStyleBackColor = true;
-            this.buttonPreChangePath.Click += new System.EventHandler(this.buttonChangePath_Click);
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -513,27 +435,21 @@
             this.groupBoxInstaller.Controls.Add(this.labelStatusRepackZlib);
             this.groupBoxInstaller.Controls.Add(this.labelMERepackZlib);
             this.groupBoxInstaller.Controls.Add(this.buttonSTART);
-            this.groupBoxInstaller.Controls.Add(this.labelPrepare);
-            this.groupBoxInstaller.Controls.Add(this.checkBoxLOD);
-            this.groupBoxInstaller.Controls.Add(this.labelStatusPrepare);
             this.groupBoxInstaller.Controls.Add(this.checkBoxScan);
-            this.groupBoxInstaller.Controls.Add(this.checkBoxPrepare);
             this.groupBoxInstaller.Controls.Add(this.checkBoxMipMaps);
             this.groupBoxInstaller.Controls.Add(this.checkBoxTextures);
             this.groupBoxInstaller.Controls.Add(this.labelStore);
             this.groupBoxInstaller.Controls.Add(this.checkBoxStore);
             this.groupBoxInstaller.Controls.Add(this.labelTextures);
-            this.groupBoxInstaller.Controls.Add(this.labelStatusLOD);
             this.groupBoxInstaller.Controls.Add(this.labelMipMaps);
             this.groupBoxInstaller.Controls.Add(this.labelStatusScan);
             this.groupBoxInstaller.Controls.Add(this.labelScan);
             this.groupBoxInstaller.Controls.Add(this.labelStatusMipMaps);
-            this.groupBoxInstaller.Controls.Add(this.labelLOD);
             this.groupBoxInstaller.Controls.Add(this.labelStatusTextures);
             this.groupBoxInstaller.Controls.Add(this.labelStatusStore);
             this.groupBoxInstaller.Location = new System.Drawing.Point(12, 292);
             this.groupBoxInstaller.Name = "groupBoxInstaller";
-            this.groupBoxInstaller.Size = new System.Drawing.Size(569, 233);
+            this.groupBoxInstaller.Size = new System.Drawing.Size(569, 182);
             this.groupBoxInstaller.TabIndex = 26;
             this.groupBoxInstaller.TabStop = false;
             this.groupBoxInstaller.Text = "Installer";
@@ -542,7 +458,7 @@
             // 
             this.checkBoxRepackZlib.AutoSize = true;
             this.checkBoxRepackZlib.Enabled = false;
-            this.checkBoxRepackZlib.Location = new System.Drawing.Point(166, 187);
+            this.checkBoxRepackZlib.Location = new System.Drawing.Point(164, 145);
             this.checkBoxRepackZlib.Name = "checkBoxRepackZlib";
             this.checkBoxRepackZlib.Size = new System.Drawing.Size(15, 14);
             this.checkBoxRepackZlib.TabIndex = 29;
@@ -552,7 +468,7 @@
             // 
             this.labelStatusRepackZlib.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelStatusRepackZlib.ForeColor = System.Drawing.Color.LimeGreen;
-            this.labelStatusRepackZlib.Location = new System.Drawing.Point(187, 188);
+            this.labelStatusRepackZlib.Location = new System.Drawing.Point(185, 146);
             this.labelStatusRepackZlib.Name = "labelStatusRepackZlib";
             this.labelStatusRepackZlib.Size = new System.Drawing.Size(252, 13);
             this.labelStatusRepackZlib.TabIndex = 25;
@@ -561,7 +477,7 @@
             // labelMERepackZlib
             // 
             this.labelMERepackZlib.AutoSize = true;
-            this.labelMERepackZlib.Location = new System.Drawing.Point(13, 188);
+            this.labelMERepackZlib.Location = new System.Drawing.Point(11, 146);
             this.labelMERepackZlib.Name = "labelMERepackZlib";
             this.labelMERepackZlib.Size = new System.Drawing.Size(100, 13);
             this.labelMERepackZlib.TabIndex = 26;
@@ -572,7 +488,7 @@
             this.buttonExit.BackColor = System.Drawing.Color.DarkRed;
             this.buttonExit.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.buttonExit.ForeColor = System.Drawing.Color.White;
-            this.buttonExit.Location = new System.Drawing.Point(26, 535);
+            this.buttonExit.Location = new System.Drawing.Point(26, 480);
             this.buttonExit.Name = "buttonExit";
             this.buttonExit.Size = new System.Drawing.Size(75, 23);
             this.buttonExit.TabIndex = 3;
@@ -585,7 +501,7 @@
             this.buttonNormal.BackColor = System.Drawing.Color.DeepSkyBlue;
             this.buttonNormal.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.buttonNormal.ForeColor = System.Drawing.Color.Black;
-            this.buttonNormal.Location = new System.Drawing.Point(457, 535);
+            this.buttonNormal.Location = new System.Drawing.Point(457, 480);
             this.buttonNormal.Name = "buttonNormal";
             this.buttonNormal.Size = new System.Drawing.Size(111, 23);
             this.buttonNormal.TabIndex = 4;
@@ -596,7 +512,7 @@
             // labelFinalStatus
             // 
             this.labelFinalStatus.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.labelFinalStatus.Location = new System.Drawing.Point(176, 540);
+            this.labelFinalStatus.Location = new System.Drawing.Point(176, 485);
             this.labelFinalStatus.Name = "labelFinalStatus";
             this.labelFinalStatus.Size = new System.Drawing.Size(275, 13);
             this.labelFinalStatus.TabIndex = 25;
@@ -639,16 +555,6 @@
             this.checkBoxOptionSkipScan.UseVisualStyleBackColor = true;
             this.checkBoxOptionSkipScan.CheckedChanged += new System.EventHandler(this.checkBoxOptionSkipScan_CheckedChanged);
             // 
-            // buttonUnpackDLC
-            // 
-            this.buttonUnpackDLC.Location = new System.Drawing.Point(445, 121);
-            this.buttonUnpackDLC.Name = "buttonUnpackDLC";
-            this.buttonUnpackDLC.Size = new System.Drawing.Size(111, 23);
-            this.buttonUnpackDLC.TabIndex = 51;
-            this.buttonUnpackDLC.Text = "Unpack DLCs";
-            this.buttonUnpackDLC.UseVisualStyleBackColor = true;
-            this.buttonUnpackDLC.Click += new System.EventHandler(this.buttonUnpackDLC_Click);
-            // 
             // checkBoxOptionLimit2K
             // 
             this.checkBoxOptionLimit2K.AutoSize = true;
@@ -677,7 +583,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(595, 570);
+            this.ClientSize = new System.Drawing.Size(595, 511);
             this.Controls.Add(this.groupBoxOptions);
             this.Controls.Add(this.buttonNormal);
             this.Controls.Add(this.buttonExit);
@@ -685,8 +591,8 @@
             this.Controls.Add(this.groupBoxInstaller);
             this.Controls.Add(this.groupBoxPreInstallCheck);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximumSize = new System.Drawing.Size(611, 609);
-            this.MinimumSize = new System.Drawing.Size(611, 609);
+            this.MaximumSize = new System.Drawing.Size(611, 550);
+            this.MinimumSize = new System.Drawing.Size(611, 550);
             this.Name = "Installer";
             this.Text = "MEM Installer for ALOT";
             this.groupBoxPreInstallCheck.ResumeLayout(false);
@@ -701,13 +607,11 @@
 
         #endregion
         private System.Windows.Forms.CheckBox checkBoxPreMods;
-        private System.Windows.Forms.CheckBox checkBoxLOD;
         private System.Windows.Forms.Button buttonSTART;
         private System.Windows.Forms.CheckBox checkBoxScan;
         private System.Windows.Forms.CheckBox checkBoxMipMaps;
         private System.Windows.Forms.CheckBox checkBoxTextures;
         private System.Windows.Forms.CheckBox checkBoxStore;
-        private System.Windows.Forms.Label labelStatusLOD;
         private System.Windows.Forms.Label labelStatusScan;
         private System.Windows.Forms.Label labelStatusMipMaps;
         private System.Windows.Forms.Label labelStatusTextures;
@@ -718,10 +622,6 @@
         private System.Windows.Forms.Label labelTextures;
         private System.Windows.Forms.Label labelMipMaps;
         private System.Windows.Forms.Label labelScan;
-        private System.Windows.Forms.Label labelLOD;
-        private System.Windows.Forms.Label labelPrepare;
-        private System.Windows.Forms.Label labelStatusPrepare;
-        private System.Windows.Forms.CheckBox checkBoxPrepare;
         private System.Windows.Forms.GroupBox groupBoxPreInstallCheck;
         private System.Windows.Forms.GroupBox groupBoxInstaller;
         private System.Windows.Forms.Button buttonPreInstallCheck;
@@ -729,7 +629,6 @@
         private System.Windows.Forms.Button buttonNormal;
         private System.Windows.Forms.Label labelFinalStatus;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button buttonPreChangePath;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.CheckBox checkBoxPreEnableRepack;
@@ -749,7 +648,6 @@
         private System.Windows.Forms.GroupBox groupBoxOptions;
         private System.Windows.Forms.CheckBox checkBoxOptionVanilla;
         private System.Windows.Forms.CheckBox checkBoxOptionLimit2K;
-        private System.Windows.Forms.Button buttonUnpackDLC;
         private System.Windows.Forms.CheckBox checkBoxOptionSkipScan;
     }
 }

@@ -118,12 +118,10 @@ namespace MassEffectModder
 
             configIni = new ConfIni();
 
-            labelStatusPrepare.Text = "";
             labelStatusScan.Text = "";
             labelStatusTextures.Text = "";
             labelStatusStore.Text = "";
             labelStatusMipMaps.Text = "";
-            labelStatusLOD.Text = "";
             labelFinalStatus.Text = "Before beginning, press the CHECK button.";
 
             buttonsDefault(gameId);
@@ -138,14 +136,11 @@ namespace MassEffectModder
                 checkBoxOptionSkipScan.Visible = false;
             checkBoxOptionVanilla.Checked = false;
             checkBoxOptionLimit2K.Checked = false;
-            buttonUnpackDLC.Enabled = false;
             checkBoxOptionSkipScan.Checked = false;
-            buttonUnpackDLC.Visible = false;
-            buttonPreChangePath.Visible = false;
 
             clearPreCheckStatus();
 
-            buttonSTART.Enabled = false;
+            buttonSTART.Visible = false;
 
             ulong memorySize = ((new ComputerInfo().TotalPhysicalMemory / 1024 / 1024) + 1023) / 1024;
             if (memorySize < 4 && gameId == 3)
@@ -234,7 +229,7 @@ namespace MassEffectModder
         {
             clearPreCheckStatus();
 
-            buttonPreInstallCheck.Enabled = false;
+            buttonPreInstallCheck.Visible = false;
             buttonsEnable(false);
             labelFinalStatus.Text = "Checking...";
             labelPreMods.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
@@ -248,8 +243,7 @@ namespace MassEffectModder
                 labelPreMods.ForeColor = Color.FromKnownColor(KnownColor.Red);
                 labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
                 buttonsEnable(true);
-                buttonPreInstallCheck.Enabled = true;
-                buttonUnpackDLC.Enabled = false;
+                buttonPreInstallCheck.Visible = true;
                 return;
             }
             errors = "";
@@ -290,8 +284,7 @@ namespace MassEffectModder
                 labelPreMods.ForeColor = Color.FromKnownColor(KnownColor.Red);
                 labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
                 buttonsEnable(true);
-                buttonPreInstallCheck.Enabled = true;
-                buttonUnpackDLC.Enabled = false;
+                buttonPreInstallCheck.Visible = true;
 
                 if (File.Exists(filename))
                     File.Delete(filename);
@@ -318,8 +311,7 @@ namespace MassEffectModder
                 labelPreGamePath.ForeColor = Color.FromKnownColor(KnownColor.Red);
                 labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
                 buttonsEnable(true);
-                buttonPreInstallCheck.Enabled = true;
-                buttonUnpackDLC.Enabled = false;
+                buttonPreInstallCheck.Visible = true;
                 return;
             }
             if (!gameData.getPackages(true, true))
@@ -328,8 +320,7 @@ namespace MassEffectModder
                 labelPreGamePath.ForeColor = Color.FromKnownColor(KnownColor.Red);
                 labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
                 buttonsEnable(true);
-                buttonPreInstallCheck.Enabled = true;
-                buttonUnpackDLC.Enabled = false;
+                buttonPreInstallCheck.Visible = true;
                 return;
             }
             if (gameId == (int)MeType.ME1_TYPE)
@@ -340,8 +331,7 @@ namespace MassEffectModder
                     labelPreGamePath.ForeColor = Color.FromKnownColor(KnownColor.Red);
                     labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
                     buttonsEnable(true);
-                    buttonPreInstallCheck.Enabled = true;
-                    buttonUnpackDLC.Enabled = false;
+                    buttonPreInstallCheck.Visible = true;
                     return;
                 }
             }
@@ -353,8 +343,7 @@ namespace MassEffectModder
                     labelPreGamePath.ForeColor = Color.FromKnownColor(KnownColor.Red);
                     labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
                     buttonsEnable(true);
-                    buttonPreInstallCheck.Enabled = true;
-                    buttonUnpackDLC.Enabled = false;
+                    buttonPreInstallCheck.Visible = true;
                     return;
                 }
             }
@@ -366,8 +355,7 @@ namespace MassEffectModder
                     labelPreGamePath.ForeColor = Color.FromKnownColor(KnownColor.Red);
                     labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
                     buttonsEnable(true);
-                    buttonPreInstallCheck.Enabled = true;
-                    buttonUnpackDLC.Enabled = false;
+                    buttonPreInstallCheck.Visible = true;
                     return;
                 }
             }
@@ -408,8 +396,7 @@ namespace MassEffectModder
                 labelPreAccess.ForeColor = Color.FromKnownColor(KnownColor.Red);
                 labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
                 buttonsEnable(true);
-                buttonPreInstallCheck.Enabled = true;
-                buttonUnpackDLC.Enabled = false;
+                buttonPreInstallCheck.Visible = true;
                 return;
             }
             labelPreAccess.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
@@ -454,8 +441,7 @@ namespace MassEffectModder
                 labelPreSpace.ForeColor = Color.FromKnownColor(KnownColor.Red);
                 labelFinalStatus.Text = "Preliminary checking failed. Issue detected...";
                 buttonsEnable(true);
-                buttonPreInstallCheck.Enabled = true;
-                buttonUnpackDLC.Enabled = false;
+                buttonPreInstallCheck.Visible = true;
                 return;
             }
             labelPreSpace.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
@@ -496,7 +482,7 @@ namespace MassEffectModder
                 labelPreVanilla.Text = "Detected not compatible mod!";
                 labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.Red);
                 labelFinalStatus.Text = "Preliminary check detected issue...";
-                buttonPreInstallCheck.Enabled = true;
+                buttonPreInstallCheck.Visible = true;
                 buttonsEnable(true);
                 return;
             }
@@ -510,7 +496,6 @@ namespace MassEffectModder
                 checkBoxOptionVanilla.Checked = true;
                 checkBoxOptionVanilla.CheckedChanged += checkBoxOptionVanilla_CheckedChanged;
                 checkBoxOptionSkipScan.Visible = false;
-                buttonUnpackDLC.Visible = false;
                 checkBoxPreEnableRepack.Visible = false;
                 checkBoxPreEnableRepack.Checked = false;
             }
@@ -529,7 +514,7 @@ namespace MassEffectModder
                     labelPreVanilla.Text = "Game was not scanned for textures, can not continue.";
                     labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.Red);
                     labelFinalStatus.Text = "Preliminary check detected issue...";
-                    buttonPreInstallCheck.Enabled = true;
+                    buttonPreInstallCheck.Visible = true;
                     buttonsEnable(true);
                     return;
                 }
@@ -539,7 +524,7 @@ namespace MassEffectModder
                     labelPreVanilla.Text = "Game inconsistent from previous scan! Reinstall ME" + gameId + " and restart.";
                     labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.Red);
                     labelFinalStatus.Text = "Preliminary check detected issue...";
-                    buttonPreInstallCheck.Enabled = true;
+                    buttonPreInstallCheck.Visible = true;
                     buttonsEnable(true);
                     return;
                 }
@@ -549,7 +534,7 @@ namespace MassEffectModder
                     labelPreVanilla.Text = "Game doesn't have empty mips removed, can not continue.";
                     labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.Red);
                     labelFinalStatus.Text = "Preliminary check detected issue...";
-                    buttonPreInstallCheck.Enabled = true;
+                    buttonPreInstallCheck.Visible = true;
                     buttonsEnable(true);
                     return;
                 }
@@ -557,7 +542,7 @@ namespace MassEffectModder
                 labelPreVanilla.Text = "Skipped";
                 checkBoxOptionSkipScan.Enabled = false;
                 labelFinalStatus.Text = "Ready to go. Press START button!";
-                buttonSTART.Enabled = true;
+                buttonSTART.Visible = true;
             }
             else
             {
@@ -636,19 +621,19 @@ namespace MassEffectModder
                         labelFinalStatus.Text = "Ready to go. Press START button!";
                         labelPreVanilla.Text = "";
                     }
-                    buttonSTART.Enabled = true;
+                    buttonSTART.Visible = true;
                 }
                 else
                 {
                     labelPreVanilla.ForeColor = Color.FromKnownColor(KnownColor.LimeGreen);
                     labelPreVanilla.Text = "Skipped";
                     labelFinalStatus.Text = "Ready to go. Press START button!";
-                    buttonSTART.Enabled = true;
+                    buttonSTART.Visible = true;
                 }
             }
 
             checkBoxPreVanilla.Checked = true;
-            buttonPreInstallCheck.Enabled = true;
+            buttonPreInstallCheck.Visible = true;
             buttonsEnable(true);
         }
 
@@ -867,7 +852,6 @@ namespace MassEffectModder
                 labelMERepackZlib.Visible = false;
                 checkBoxRepackZlib.Visible = false;
                 labelStatusRepackZlib.Visible = false;
-                buttonUnpackDLC.Visible = false;
             }
             if (gameId == 3)
             {
@@ -903,32 +887,20 @@ namespace MassEffectModder
             Application.DoEvents();
         }
 
-        private void buttonChangePath_Click(object sender, EventArgs e)
-        {
-            gameData = new GameData((MeType)gameId, configIni, true);
-            clearPreCheckStatus();
-            labelPrePath.Text = GameData.GamePath;
-            buttonSTART.Enabled = false;
-            buttonUnpackDLC.Enabled = false;
-        }
-
         private void buttonsEnable(bool enabled)
         {
-            buttonExit.Enabled = enabled;
-            buttonNormal.Enabled = enabled;
-            buttonPreChangePath.Enabled = enabled;
+            buttonExit.Visible = enabled;
+            buttonNormal.Visible = enabled;
             checkBoxPreEnableRepack.Enabled = enabled;
             if (updateMode)
             {
                 checkBoxOptionVanilla.Enabled = false;
                 checkBoxOptionSkipScan.Enabled = false;
-                buttonUnpackDLC.Enabled = false;
             }
             else
             {
                 checkBoxOptionVanilla.Enabled = enabled;
                 checkBoxOptionSkipScan.Enabled = enabled;
-                buttonUnpackDLC.Enabled = enabled;
             }
             checkBoxOptionLimit2K.Enabled = enabled;
             Application.DoEvents();
@@ -937,8 +909,8 @@ namespace MassEffectModder
         private void buttonSTART_Click(object sender, EventArgs e)
         {
             buttonsEnable(false);
-            buttonPreInstallCheck.Enabled = false;
-            buttonSTART.Enabled = false;
+            buttonPreInstallCheck.Visible = false;
+            buttonSTART.Visible = false;
             labelFinalStatus.Text = "Process in progress...";
 
             errors = "";
@@ -955,7 +927,6 @@ namespace MassEffectModder
                 if (GameData.gameType != MeType.ME1_TYPE)
                     gameData.getTfcTextures();
 
-                checkBoxPrepare.Checked = true;
                 updateStatusPrepare("");
                 log += "Prepare game data finished" + Environment.NewLine + Environment.NewLine;
 
@@ -987,7 +958,6 @@ namespace MassEffectModder
                 if (GameData.gameType != MeType.ME1_TYPE)
                     gameData.getTfcTextures();
 
-                checkBoxPrepare.Checked = true;
                 updateStatusPrepare("Skipped");
                 log += "Prepare game data skipped" + Environment.NewLine + Environment.NewLine;
 
@@ -1040,7 +1010,6 @@ namespace MassEffectModder
             }
 
             log += "Updating LODs and other settings started..." + Environment.NewLine;
-            updateStatusLOD("In progress...");
             string path = gameData.EngineConfigIniPath;
             bool exist = File.Exists(path);
             if (!exist)
@@ -1048,8 +1017,6 @@ namespace MassEffectModder
             ConfIni engineConf = new ConfIni(path);
             LODSettings.updateLOD((MeType)gameId, engineConf, checkBoxOptionLimit2K.Checked);
             LODSettings.updateGFXSettings((MeType)gameId, engineConf);
-            checkBoxLOD.Checked = true;
-            updateStatusLOD("");
             log += "Updating LODs and other settings finished" + Environment.NewLine + Environment.NewLine;
 
 
@@ -1087,8 +1054,8 @@ namespace MassEffectModder
 
             var time = Misc.stopTimer();
             labelFinalStatus.Text = "Process finished. Process total time: " + Misc.getTimerFormat(time);
-            buttonExit.Enabled = true;
-            buttonNormal.Enabled = true;
+            buttonExit.Visible = true;
+            buttonNormal.Visible = true;
 
             log += "==========================================" + Environment.NewLine;
             log += "LOD settings:" + Environment.NewLine;
@@ -1160,21 +1127,9 @@ namespace MassEffectModder
             Application.DoEvents();
         }
 
-        public void updateStatusLOD(string text)
-        {
-            labelStatusLOD.Text = text;
-            Application.DoEvents();
-        }
-
         public void updateStatusRepackZlib(string text)
         {
             labelStatusRepackZlib.Text = text;
-            Application.DoEvents();
-        }
-
-        public void updateStatusPackDLC(string text)
-        {
-            labelStatusPrepare.Text = text;
             Application.DoEvents();
         }
 
@@ -1194,14 +1149,6 @@ namespace MassEffectModder
             labelMERepackZlib.Visible = checkBoxPreEnableRepack.Checked;
             checkBoxRepackZlib.Visible = checkBoxPreEnableRepack.Checked;
             labelStatusRepackZlib.Visible = checkBoxPreEnableRepack.Checked;
-        }
-
-        private void buttonUnpackDLC_Click(object sender, EventArgs e)
-        {
-            buttonsEnable(false);
-            ME3DLC.unpackAllDLC(null, this);
-            updateStatusPackDLC("");
-            buttonsEnable(true);
         }
 
         private void checkBoxOptionVanilla_CheckedChanged(object sender, EventArgs e)
