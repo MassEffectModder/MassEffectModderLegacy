@@ -36,6 +36,9 @@ typedef struct _IOMEMHANDLE
 	ZPOS64_T bufferPos;
 } IOMEMHANDLE;
 
+extern unsigned char tpfXorKey[2];
+extern int gXor;
+
 static uLong ZCALLBACK iomem_read_func(voidpf opaque, voidpf stream, voidpf buf, uLong size)
 {
 	IOMEMHANDLE* ioMemHandle = stream;
@@ -46,7 +49,20 @@ static uLong ZCALLBACK iomem_read_func(voidpf opaque, voidpf stream, voidpf buf,
 	if (ioMemHandle->bufferPos + size > ioMemHandle->bufferLen)
 		size = (uLong)(ioMemHandle->bufferLen - ioMemHandle->bufferPos);
 
-	memcpy(buf, (char*)ioMemHandle->buffer + ioMemHandle->bufferPos, size);
+	if (gXor)
+	{
+		unsigned char *src = ioMemHandle->buffer;
+		unsigned char *dst = buf;
+		unsigned long pos = 0;
+		if (ioMemHandle->bufferPos & 1)
+			dst[pos++] = src[ioMemHandle->bufferPos] ^ tpfXorKey[1];
+		for (unsigned long i = pos; i < size; i++)
+			dst[i] = src[ioMemHandle->bufferPos + i] ^ tpfXorKey[(i - pos) % 2];
+	}
+	else
+	{
+		memcpy(buf, (char *)ioMemHandle->buffer + ioMemHandle->bufferPos, size);
+	}
 	ioMemHandle->bufferPos += size;
 
 	return size;
@@ -68,7 +84,20 @@ static uLong ZCALLBACK iomem_write_func(voidpf opaque, voidpf stream, voidpc buf
 		ioMemHandle->bufferLen = ioMemHandle->bufferPos + size;
 	}
 
-	memcpy((char*)ioMemHandle->buffer + ioMemHandle->bufferPos, buf, size);
+	if (gXor)
+	{
+		unsigned char *dst = ioMemHandle->buffer;
+		unsigned char *src = (unsigned char *)buf;
+		unsigned long pos = (unsigned long)ioMemHandle->bufferPos;
+		if (pos & 1)
+			dst[pos++] = src[0] ^ tpfXorKey[1];
+		for (unsigned long i = pos; i < size; i++)
+			dst[ioMemHandle->bufferPos + i] = src[i] ^ tpfXorKey[(i - pos) % 2];
+	}
+	else
+	{
+		memcpy((char*)ioMemHandle->buffer + ioMemHandle->bufferPos, buf, size);
+	}
 	ioMemHandle->bufferPos += size;
 
 	return size;
@@ -138,7 +167,7 @@ static int ZCALLBACK iomem_error_func(voidpf opaque, voidpf stream)
 	return 0;
 }
 
-ZEXTERN voidpf create_iomem_from_buffer(zlib_filefunc64_def* ioMemApi, voidpf buffer, size_t bufferLen)
+ZEXTERN voidpf create_ioapi_from_buffer(zlib_filefunc64_def* ioMemApi, voidpf buffer, size_t bufferLen)
 {
 	ioMemApi->zopen64_file = Z_NULL;
 	ioMemApi->zread_file = iomem_read_func;

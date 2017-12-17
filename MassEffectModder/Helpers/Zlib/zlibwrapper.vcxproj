@@ -17,12 +17,15 @@
   <ItemGroup>
     <ClInclude Include="ioapi.h" />
     <ClInclude Include="iomemapi.h" />
+    <ClInclude Include="iowin32.h" />
     <ClInclude Include="unzip.h" />
     <ClInclude Include="zlib.h" />
     <ClInclude Include="zconf.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ioapi.c" />
     <ClCompile Include="iomemapi.c" />
+    <ClCompile Include="iowin32.c" />
     <ClCompile Include="unzip.c" />
     <ClCompile Include="unziphelper.c" />
     <ClCompile Include="zlibwrapper.c" />

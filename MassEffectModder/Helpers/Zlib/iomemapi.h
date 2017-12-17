@@ -36,7 +36,7 @@
 extern "C" {
 #endif
 
-ZEXTERN voidpf create_iomem_from_buffer(zlib_filefunc64_def* ioMemApi, voidpf buffer, size_t bufferLen);
+ZEXTERN voidpf create_ioapi_from_buffer(zlib_filefunc64_def* ioMemApi, voidpf buffer, size_t bufferLen);
 
 unzFile unzOpenIoMem(voidpf stream, zlib_filefunc64_def* pzlib_filefunc64_def, int is64bitOpenFunction);
 

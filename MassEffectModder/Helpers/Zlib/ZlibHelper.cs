@@ -63,7 +63,10 @@ namespace ZlibHelper
     public class Zip
     {
         [DllImport("zlibwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr ZipOpen([In] byte[] srcBuf, ulong srcLen, ref ulong numEntries, int tpf);
+        private static extern IntPtr ZipOpenFromMem([In] byte[] srcBuf, ulong srcLen, ref ulong numEntries, int tpf);
+
+        [DllImport("zlibwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr ZipOpenFromFile([In] byte[] path, ref ulong numEntries, int tpf);
 
         [DllImport("zlibwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
         private static extern int ZipGetCurrentFileInfo(IntPtr handle, [Out] byte[] fileName, ulong sizeOfFileName, ref ulong dstLen);
@@ -85,7 +88,12 @@ namespace ZlibHelper
 
         public IntPtr Open(byte[] srcBuf, ref ulong numEntries, int tpf)
         {
-            return ZipOpen(srcBuf, (ulong)srcBuf.Length, ref numEntries, tpf);
+            return ZipOpenFromMem(srcBuf, (ulong)srcBuf.Length, ref numEntries, tpf);
+        }
+
+        public IntPtr Open(string path, ref ulong numEntries, int tpf)
+        {
+            return ZipOpenFromFile(Encoding.Unicode.GetBytes(path), ref numEntries, tpf);
         }
 
         public int GetCurrentFileInfo(IntPtr handle, ref string fileName, ref ulong dstLen)

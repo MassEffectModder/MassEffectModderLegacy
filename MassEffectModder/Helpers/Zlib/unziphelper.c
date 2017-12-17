@@ -28,6 +28,7 @@
 #include <string.h>
 
 #include "iomemapi.h"
+#include "iowin32.h"
 #include "unzip.h"
 
 typedef struct
@@ -50,7 +51,8 @@ static const char tpfPassword[] =
 	0x46, 0x6F, '\0'
 };
 
-static const unsigned char tpfXorKey[2] = { 0xA4, 0x3F };
+const unsigned char tpfXorKey[2] = { 0xA4, 0x3F };
+int gXor = 0;
 
 #ifdef TEST_CODE
 #define ZLIB_EXPORT
@@ -58,24 +60,51 @@ static const unsigned char tpfXorKey[2] = { 0xA4, 0x3F };
 #define ZLIB_EXPORT __declspec(dllexport)
 #endif
 
-ZLIB_EXPORT void *ZipOpen(unsigned char *src, unsigned long srcLen, unsigned long *numEntries, int tpf)
+unzFile unzOpenIoFile(const void *path, zlib_filefunc64_def* pzlib_filefunc_def);
+
+ZLIB_EXPORT void *ZipOpenFromFile(const void *path, unsigned long *numEntries, int tpf)
 {
 	UnzipHandle *unzipHandle;
 	int result;
-
-	if (tpf)
-	{
-		for (unsigned long i = 0; i < srcLen; i++)
-			src[i] = (unsigned char)(tpfXorKey[i % 2] ^ src[i]);
-	}
 
 	unzipHandle = malloc(sizeof(UnzipHandle));
 	if (unzipHandle == Z_NULL || numEntries == Z_NULL)
 		return Z_NULL;
 
-	unzipHandle->tpfMode = tpf;
+	gXor = unzipHandle->tpfMode = tpf;
 
-	unzipHandle->handle = create_iomem_from_buffer(&unzipHandle->api, src, srcLen);
+	fill_win32_filefunc64W(&unzipHandle->api);
+	unzipHandle->file = unzOpenIoFile(path, &unzipHandle->api);
+	if (unzipHandle->file == Z_NULL)
+	{
+		free(unzipHandle);
+		return Z_NULL;
+	}
+	result = unzGetGlobalInfo(unzipHandle->file, &unzipHandle->globalInfo);
+	if (result != UNZ_OK)
+	{
+		unzClose(unzipHandle->file);
+		free(unzipHandle);
+		return Z_NULL;
+	}
+
+	*numEntries = unzipHandle->globalInfo.number_entry;
+
+	return (void *)unzipHandle;
+}
+
+ZLIB_EXPORT void *ZipOpenFromMem(unsigned char *src, unsigned long srcLen, unsigned long *numEntries, int tpf)
+{
+	UnzipHandle *unzipHandle;
+	int result;
+
+	unzipHandle = malloc(sizeof(UnzipHandle));
+	if (unzipHandle == Z_NULL || numEntries == Z_NULL)
+		return Z_NULL;
+
+	gXor = unzipHandle->tpfMode = tpf;
+
+	unzipHandle->handle = create_ioapi_from_buffer(&unzipHandle->api, src, srcLen);
 	if (unzipHandle->handle == Z_NULL)
 	{
 		free(unzipHandle);
@@ -214,40 +243,55 @@ int main(int argc, char** argv)
 {
 	FILE *file;
 	int result;
+	void *handle;
+	char fileName[256];
+	unsigned long fileSize = 0, numEntries = 0;
 
 	if (argc == 1)
 	{
 		printf("Missing file name argument!\n");
 		return -1;
 	}
-	fopen_s(&file, argv[1], "rb");
-	if (file == NULL)
-	{
-		printf("Can not open file: %s !\n", argv[1]);
-		return -1;
-	}
 
-	fseek(file, 0, SEEK_END);
-	size_t size = ftell(file);
-	fseek(file, 0, SEEK_SET);
-	unsigned char *buffer = malloc(size);
-	if (buffer == NULL)
+	if (argc == 2)
 	{
+		fopen_s(&file, argv[1], "rb");
+		if (file == NULL)
+		{
+			printf("Can not open file: %s !\n", argv[1]);
+			return -1;
+		}
+		fseek(file, 0, SEEK_END);
+		size_t size = ftell(file);
+		fseek(file, 0, SEEK_SET);
+		unsigned char *buffer = malloc(size);
+		if (buffer == NULL)
+		{
+			fclose(file);
+			return -1;
+		}
+		if (fread(buffer, 1, size, file) != size)
+		{
+			free(buffer);
+			fclose(file);
+			return -1;
+		}
 		fclose(file);
-		return -1;
+
+		handle = ZipOpenFromMem(buffer, (unsigned long)size, &numEntries, 1);
 	}
-	if (fread(buffer, 1, size, file) != size)
+	else if (argc == 3 && strcmp(argv[2], "filemode") == 0)
 	{
-		free(buffer);
-		fclose(file);
-		return -1;
+		int lenStr = strlen(argv[1]);
+		char *name = malloc(lenStr + 2);
+		memset(name, 0, lenStr * 2 + 2);
+		for (int i = 0; i < lenStr; i++)
+			name[i * 2] = argv[1][i];
+		handle = ZipOpenFromFile(name, &numEntries, 1);
 	}
-	fclose(file);
+	else
+		return -1;
 
-	char fileName[256];
-	unsigned long fileSize = 0, numEntries = 0;
-
-	void *handle = ZipOpen(buffer, size, &numEntries, 1);
 	result = ZipLocateFile(handle, "texmod.def");
 	if (result < 0)
 	{
