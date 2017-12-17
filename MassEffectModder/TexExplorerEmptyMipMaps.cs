@@ -52,7 +52,7 @@ namespace MassEffectModder
                 }
                 if (installer != null)
                 {
-                    installer.updateStatusMipMaps("Progress (" + phase + ") ... " + (i * 100 / GameData.packageFiles.Count) + " % ");
+                    installer.updateStatusMipMaps("Progress ... " + ((GameData.packageFiles.Count * (phase - 1) + i + 1) * 100 / (GameData.packageFiles.Count * 2)) + " % ");
                 }
                 Package package = null;
 
