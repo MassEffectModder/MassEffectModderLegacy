@@ -725,6 +725,28 @@ namespace MassEffectModder
 
         public void applyModules()
         {
+            int totalNumberOfMods = 0;
+            int currentNumberOfTotalMods = 1;
+
+            for (int i = 0; i < memFiles.Count; i++)
+            {
+                if (memFiles[i].EndsWith(".mem", StringComparison.OrdinalIgnoreCase))
+                {
+                    using (FileStream fs = new FileStream(memFiles[i], FileMode.Open, FileAccess.Read))
+                    {
+                        uint tag = fs.ReadUInt32();
+                        uint version = fs.ReadUInt32();
+                        if (tag != TexExplorer.TextureModTag || version != TexExplorer.TextureModVersion)
+                            continue;
+                        fs.JumpTo(fs.ReadInt64());
+                        fs.SkipInt32();
+                        totalNumberOfMods += fs.ReadInt32();
+                    }
+                }
+                else
+                    throw new Exception();
+            }
+
             for (int i = 0; i < memFiles.Count; i++)
             {
                 log += "Mod: " + (i + 1) + " of " + memFiles.Count + " started: " + Path.GetFileName(memFiles[i]) + Environment.NewLine;
@@ -770,7 +792,7 @@ namespace MassEffectModder
                         modFiles.Add(fileMod);
                     }
                     numFiles = modFiles.Count;
-                    for (int l = 0; l < numFiles; l++)
+                    for (int l = 0; l < numFiles; l++, currentNumberOfTotalMods++)
                     {
                         string name = "";
                         uint crc = 0;
@@ -795,7 +817,7 @@ namespace MassEffectModder
                         dst = MipMaps.decompressData(fs, size);
                         dstLen = dst.Length;
 
-                        updateStatusTextures("Mod: " + (i + 1) + " of " + memFiles.Count + " - in progress: " + ((l + 1) * 100 / numFiles) + " % ");
+                        updateStatusTextures("Progress: " + (currentNumberOfTotalMods * 100 / totalNumberOfMods) + " %");
 
                         if (modFiles[l].tag == MipMaps.FileTextureTag)
                         {

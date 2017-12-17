@@ -1454,6 +1454,24 @@ namespace MassEffectModder
             }
 
             packageMainFiles.Sort();
+            int allFilesCount = packageMainFiles.Count();
+            int progress = 0;
+            if (packageDLCFiles != null)
+            {
+                packageDLCFiles.Sort();
+                allFilesCount += packageDLCFiles.Count();
+            }
+            if (sfarFiles != null)
+            {
+                sfarFiles.Sort();
+                allFilesCount += sfarFiles.Count();
+            }
+            if (tfcFiles != null)
+            {
+                tfcFiles.Sort();
+                allFilesCount += tfcFiles.Count();
+            }
+
             mods.Clear();
             FileStream fs = null;
             if (generateMd5Entries)
@@ -1467,7 +1485,7 @@ namespace MassEffectModder
                 }
                 if (installer != null)
                 {
-                    installer.updateLabelPreVanilla("Progress (PCC) ... " + (l * 100 / packageMainFiles.Count) + "%");
+                    installer.updateLabelPreVanilla("Progress ... " + ((l + progress) * 100 / allFilesCount) + "%");
                 }
                 byte[] md5 = calculateMD5(packageMainFiles[l]);
                 bool found = false;
@@ -1543,8 +1561,8 @@ namespace MassEffectModder
                     errors += string.Format("{0:x2}", entries[index].md5[i]);
                 }
                 errors += Environment.NewLine;
-
             }
+            progress += packageMainFiles.Count();
 
             if (packageDLCFiles != null)
             {
@@ -1556,7 +1574,7 @@ namespace MassEffectModder
                     }
                     if (installer != null)
                     {
-                        installer.updateLabelPreVanilla("Progress (DLC PCC) ... " + (l * 100 / packageDLCFiles.Count) + "%");
+                        installer.updateLabelPreVanilla("Progress ... " + ((l + progress) * 100 / allFilesCount) + "%");
                     }
                     byte[] md5 = calculateMD5(packageDLCFiles[l]);
                     bool found = false;
@@ -1633,6 +1651,7 @@ namespace MassEffectModder
                     }
                     errors += Environment.NewLine;
                 }
+                progress += packageDLCFiles.Count();
             }
 
             if (sfarFiles != null)
@@ -1645,7 +1664,7 @@ namespace MassEffectModder
                     }
                     if (installer != null)
                     {
-                        installer.updateLabelPreVanilla("Progress (DLC Archives) ... " + (l * 100 / sfarFiles.Count) + "%");
+                        installer.updateLabelPreVanilla("Progress ... " + ((l + progress) * 100 / allFilesCount) + "%");
                     }
                     byte[] md5 = calculateMD5(sfarFiles[l]);
                     bool found = false;
@@ -1685,6 +1704,7 @@ namespace MassEffectModder
                     }
                     errors += Environment.NewLine;
                 }
+                progress += sfarFiles.Count();
             }
 
             if (tfcFiles != null)
@@ -1697,7 +1717,7 @@ namespace MassEffectModder
                     }
                     if (installer != null)
                     {
-                        installer.updateLabelPreVanilla("Progress (TFC Archives) ... " + (l * 100 / tfcFiles.Count) + "%");
+                        installer.updateLabelPreVanilla("Progress ... " + ((l + progress) * 100 / allFilesCount) + "%");
                     }
                     byte[] md5 = calculateMD5(tfcFiles[l]);
                     bool found = false;
@@ -1737,6 +1757,7 @@ namespace MassEffectModder
                     }
                     errors += Environment.NewLine;
                 }
+                progress += tfcFiles.Count();
             }
             if (generateMd5Entries)
                 fs.Close();
