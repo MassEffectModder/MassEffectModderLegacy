@@ -781,7 +781,7 @@ namespace MassEffectModder
                                 {
                                     try
                                     {
-                                        Misc.ParseME3xBinaryScriptMod(scriptLegacy, ref package, ref mod.exportId, ref path);
+                                        ParseME3xBinaryScriptMod(scriptLegacy, ref package, ref mod.exportId, ref path);
                                         if (mod.exportId == -1 || package == "" || path == "")
                                             throw new Exception();
                                     }
@@ -804,7 +804,7 @@ namespace MassEffectModder
                                     FoundTexture f;
                                     try
                                     {
-                                        f = Misc.ParseLegacyMe3xScriptMod(textures, scriptLegacy, textureName);
+                                        f = ParseLegacyMe3xScriptMod(textures, scriptLegacy, textureName);
                                         mod.textureCrc = f.crc;
                                         if (mod.textureCrc == 0)
                                             throw new Exception();

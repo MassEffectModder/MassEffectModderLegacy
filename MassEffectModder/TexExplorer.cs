@@ -549,7 +549,7 @@ namespace MassEffectModder
             using (OpenFileDialog modFile = new OpenFileDialog())
             {
                 modFile.Title = "Please select Mod file";
-                modFile.Filter = "MOD file | *.mem;*.tpf";
+                modFile.Filter = "MOD file | *.mem;*.tpf;*.mod";
                 modFile.Multiselect = true;
                 modFile.InitialDirectory = GameData.lastLoadMODPath;
                 if (modFile.ShowDialog() != DialogResult.OK)
@@ -581,6 +581,57 @@ namespace MassEffectModder
                                     MessageBox.Show("File " + file + " is not a valid MEM mod, skipping...");
                                 continue;
                             }
+                        }
+                    }
+                    else if (file.EndsWith(".mod", StringComparison.OrdinalIgnoreCase))
+                    {
+                        try
+                        {
+                            using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
+                            {
+                                string package = "";
+                                int len = fs.ReadInt32();
+                                string version = fs.ReadStringASCIINull();
+                                if (version.Length < 5) // legacy .mod
+                                    fs.SeekBegin();
+                                else
+                                {
+                                    fs.SeekBegin();
+                                    len = fs.ReadInt32();
+                                    version = fs.ReadStringASCII(len); // version
+                                }
+                                uint numEntries = fs.ReadUInt32();
+                                for (uint i = 0; i < numEntries; i++)
+                                {
+                                    BinaryMod mod = new BinaryMod();
+                                    len = fs.ReadInt32();
+                                    string desc2 = fs.ReadStringASCII(len); // description
+                                    len = fs.ReadInt32();
+                                    string scriptLegacy = fs.ReadStringASCII(len);
+                                    string path = "";
+                                    if (desc2.Contains("Binary Replacement"))
+                                    {
+                                        Misc.ParseME3xBinaryScriptMod(scriptLegacy, ref package, ref mod.exportId, ref path);
+                                        if (mod.exportId == -1 || package == "" || path == "")
+                                            throw new Exception();
+                                        len = fs.ReadInt32();
+                                        fs.Skip(len);
+                                    }
+                                    else
+                                    {
+                                        string textureName = desc2.Split(' ').Last();
+                                        FoundTexture f;
+                                        f = Misc.ParseLegacyMe3xScriptMod(_textures, scriptLegacy, textureName);
+                                        mod.textureCrc = f.crc;
+                                        if (mod.textureCrc == 0)
+                                            throw new Exception();
+                                    }
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            MessageBox.Show("File " + file + " is not a valid Mod file, skipping...");
                         }
                     }
                     else if (file.EndsWith(".tpf", StringComparison.OrdinalIgnoreCase))
@@ -655,7 +706,7 @@ namespace MassEffectModder
                         }
                         catch
                         {
-                            MessageBox.Show("File " + fileName + " is not a valid TPF mod, skipping...");
+                            MessageBox.Show("File " + file + " is not a valid TPF mod, skipping...");
                         }
                         if (handle != IntPtr.Zero)
                             zip.Close(handle);
@@ -812,6 +863,8 @@ namespace MassEffectModder
 
             string log = "";
             if (listViewMods.SelectedItems[0].Name.EndsWith(".tpf", StringComparison.OrdinalIgnoreCase))
+                return;
+            if (listViewMods.SelectedItems[0].Name.EndsWith(".mod", StringComparison.OrdinalIgnoreCase))
                 return;
             richTextBoxInfo.Text = mipMaps.listTextureMod(listViewMods.SelectedItems[0].Name, _textures, cachePackageMgr, this, ref log);
             _mainWindow.updateStatusLabel("Done.");

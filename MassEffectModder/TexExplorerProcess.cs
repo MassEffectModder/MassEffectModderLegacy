@@ -203,6 +203,99 @@ namespace MassEffectModder
                 }
                 return errors;
             }
+            else if (filenameMod.EndsWith(".mod", StringComparison.OrdinalIgnoreCase))
+            {
+                if (!replace && !extract)
+                    throw new Exception();
+
+                try
+                {
+                    using (FileStream fs = new FileStream(filenameMod, FileMode.Open, FileAccess.Read))
+                    {
+                        string package = "";
+                        int len = fs.ReadInt32();
+                        string version = fs.ReadStringASCIINull();
+                        if (version.Length < 5) // legacy .mod
+                            fs.SeekBegin();
+                        else
+                        {
+                            fs.SeekBegin();
+                            len = fs.ReadInt32();
+                            version = fs.ReadStringASCII(len); // version
+                        }
+                        uint numEntries = fs.ReadUInt32();
+                        for (uint i = 0; i < numEntries; i++)
+                        {
+                            TexExplorer.BinaryMod mod = new TexExplorer.BinaryMod();
+                            len = fs.ReadInt32();
+                            string desc = fs.ReadStringASCII(len); // description
+                            len = fs.ReadInt32();
+                            string scriptLegacy = fs.ReadStringASCII(len);
+                            string path = "";
+                            if (desc.Contains("Binary Replacement"))
+                            {
+                                try
+                                {
+                                    Misc.ParseME3xBinaryScriptMod(scriptLegacy, ref package, ref mod.exportId, ref path);
+                                    if (mod.exportId == -1 || package == "" || path == "")
+                                        throw new Exception();
+                                }
+                                catch
+                                {
+                                    len = fs.ReadInt32();
+                                    fs.Skip(len);
+                                    errors += "Skipping not compatible content, entry: " + (i + 1) + " - mod: " + filenameMod + Environment.NewLine;
+                                    continue;
+                                }
+                                mod.packagePath = Path.Combine(GameData.GamePath + path, package);
+                                len = fs.ReadInt32();
+                                mod.data = fs.ReadToBuffer(len);
+
+                                if (!File.Exists(mod.packagePath))
+                                {
+                                    errors += "Warning: File " + mod.packagePath + " not exists in your game setup." + Environment.NewLine;
+                                    log += "Warning: File " + mod.packagePath + " not exists in your game setup." + Environment.NewLine;
+                                    continue;
+                                }
+                                Package pkg = cachePackageMgr.OpenPackage(mod.packagePath);
+                                pkg.setExportData(mod.exportId, mod.data);
+                            }
+                            else
+                            {
+                                string textureName = desc.Split(' ').Last();
+                                FoundTexture f;
+                                try
+                                {
+                                    f = Misc.ParseLegacyMe3xScriptMod(textures, scriptLegacy, textureName);
+                                    mod.textureCrc = f.crc;
+                                    if (mod.textureCrc == 0)
+                                        throw new Exception();
+                                }
+                                catch
+                                {
+                                    len = fs.ReadInt32();
+                                    fs.Skip(len);
+                                    errors += "Skipping not compatible content, entry: " + (i + 1) + " - mod: " + filenameMod + Environment.NewLine;
+                                    continue;
+                                }
+                                textureName = f.name;
+                                mod.textureName = textureName;
+                                len = fs.ReadInt32();
+                                mod.data = fs.ReadToBuffer(len);
+
+                                PixelFormat pixelFormat = f.pixfmt;
+                                Image image = new Image(mod.data, Image.ImageFormat.DDS);
+                                errors += replaceTexture(image, f.list, cachePackageMgr, f.name, f.crc, verify);
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                    errors += "Mod is not compatible: " + filenameMod + Environment.NewLine;
+                }
+                return errors;
+            }
 
             using (FileStream fs = new FileStream(filenameMod, FileMode.Open, FileAccess.Read))
             {
