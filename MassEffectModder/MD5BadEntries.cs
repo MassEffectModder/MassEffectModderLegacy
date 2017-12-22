@@ -23,12 +23,25 @@ namespace MassEffectModder
 {
     static partial class Misc
     {
+        const string Bad_ME1UITM = "MEUITM";
         const string Bad_ME1Controller = "ME1 Controller v1.2.0 - MEUITM";
         const string Bad_ME1SameSexRomances = "ME1 Same-Sex Romances v2.0 - MEUITM";
         const string Bad_NoSharedCooldown = "ME2 No Shared Cooldown";
 
         static public MD5ModFileEntry[] badMOD = new MD5ModFileEntry[]
         {
+new MD5ModFileEntry
+{//45 15 c3 47 bb af d4 c6 09 d3 bc a9 fc a1 60 0a
+path = @"\BioGame\CookedPC\Maps\END\CIN\BIOA_END20_Bridge_CIN.SFM",
+md5 = new byte[] { 0x45, 0x15, 0xC3, 0x47, 0xBB, 0xAF, 0xD4, 0xC6, 0x09, 0xD3, 0xBC, 0xA9, 0xFC, 0xA1, 0x60, 0x0A, },
+modName = Bad_ME1UITM,
+},
+new MD5ModFileEntry
+{//5e 2e 64 63 98 26 07 b5 e8 1a c5 99 be 1f ed af
+path = @"\BioGame\CookedPC\Maps\JUG\DSG\BIOA_JUG20_00_DSG.SFM",
+md5 = new byte[] { 0x5E, 0x2E, 0x64, 0x63, 0x98, 0x26, 0x07, 0xB5, 0xE8, 0x1A, 0xC5, 0x99, 0xBE, 0x1F, 0xED, 0xAF, },
+modName = Bad_ME1UITM,
+},
 new MD5ModFileEntry
 {
 path = @"\BioGame\CookedPC\BIOC_Materials.u",
