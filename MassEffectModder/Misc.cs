@@ -233,30 +233,30 @@ namespace MassEffectModder
         {
             if (gameId == MeType.ME1_TYPE)
             {
-                engineConf.DeleteKey("TEXTUREGROUP_World", "TextureLODSettings");
-                engineConf.DeleteKey("TEXTUREGROUP_WorldNormalMap", "TextureLODSettings");
-                engineConf.DeleteKey("TEXTUREGROUP_AmbientLightMap", "TextureLODSettings");
-                engineConf.DeleteKey("TEXTUREGROUP_LightAndShadowMap", "TextureLODSettings");
-                engineConf.DeleteKey("TEXTUREGROUP_Environment_64", "TextureLODSettings");
-                engineConf.DeleteKey("TEXTUREGROUP_Environment_128", "TextureLODSettings");
-                engineConf.DeleteKey("TEXTUREGROUP_Environment_256", "TextureLODSettings");
-                engineConf.DeleteKey("TEXTUREGROUP_Environment_512", "TextureLODSettings");
-                engineConf.DeleteKey("TEXTUREGROUP_Environment_1024", "TextureLODSettings");
-                engineConf.DeleteKey("TEXTUREGROUP_VFX_64", "TextureLODSettings");
-                engineConf.DeleteKey("TEXTUREGROUP_VFX_128", "TextureLODSettings");
-                engineConf.DeleteKey("TEXTUREGROUP_VFX_256", "TextureLODSettings");
-                engineConf.DeleteKey("TEXTUREGROUP_VFX_512", "TextureLODSettings");
-                engineConf.DeleteKey("TEXTUREGROUP_VFX_1024", "TextureLODSettings");
-                engineConf.DeleteKey("TEXTUREGROUP_APL_128", "TextureLODSettings");
-                engineConf.DeleteKey("TEXTUREGROUP_APL_256", "TextureLODSettings");
-                engineConf.DeleteKey("TEXTUREGROUP_APL_512", "TextureLODSettings");
-                engineConf.DeleteKey("TEXTUREGROUP_APL_1024", "TextureLODSettings");
-                engineConf.DeleteKey("TEXTUREGROUP_GUI", "TextureLODSettings");
-                engineConf.DeleteKey("TEXTUREGROUP_Promotional", "TextureLODSettings");
-                engineConf.DeleteKey("TEXTUREGROUP_Character_1024", "TextureLODSettings");
-                engineConf.DeleteKey("TEXTUREGROUP_Character_Diff", "TextureLODSettings");
-                engineConf.DeleteKey("TEXTUREGROUP_Character_Norm", "TextureLODSettings");
-                engineConf.DeleteKey("TEXTUREGROUP_Character_Spec", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_World", "(MinLODSize=16,MaxLODSize=4096,LODBias=2)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_WorldNormalMap", "(MinLODSize=16,MaxLODSize=4096,LODBias=2)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_AmbientLightMap", "(MinLODSize=32,MaxLODSize=512,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_LightAndShadowMap", "(MinLODSize=256,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_Environment_64", "(MinLODSize=32,MaxLODSize=64,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_Environment_128", "(MinLODSize=32,MaxLODSize=128,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_Environment_256", "(MinLODSize=32,MaxLODSize=256,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_Environment_512", "(MinLODSize=32,MaxLODSize=512,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_Environment_1024", "(MinLODSize=32,MaxLODSize=1024,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_VFX_64", "(MinLODSize=8,MaxLODSize=64,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_VFX_128", "(MinLODSize=8,MaxLODSize=128,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_VFX_256", "(MinLODSize=8,MaxLODSize=256,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_VFX_512", "(MinLODSize=8,MaxLODSize=512,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_VFX_1024", "(MinLODSize=8,MaxLODSize=1024,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_APL_128", "(MinLODSize=32,MaxLODSize=128,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_APL_256", "(MinLODSize=32,MaxLODSize=256,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_APL_512", "(MinLODSize=32,MaxLODSize=512,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_APL_1024", "(MinLODSize=32,MaxLODSize=1024,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_GUI", "(MinLODSize=8,MaxLODSize=1024,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_Promotional", "(MinLODSize=32,MaxLODSize=2048,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_Character_1024", "(MinLODSize=32,MaxLODSize=1024,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_Character_Diff", "(MinLODSize=32,MaxLODSize=512,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_Character_Norm", "(MinLODSize=32,MaxLODSize=512,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_Character_Spec", "(MinLODSize=32,MaxLODSize=256,LODBias=0)", "TextureLODSettings");
             }
             else if (gameId == MeType.ME2_TYPE)
             {
