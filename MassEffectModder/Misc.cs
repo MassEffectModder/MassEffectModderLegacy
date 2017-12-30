@@ -1495,7 +1495,7 @@ namespace MassEffectModder
                 }
                 if (installer != null)
                 {
-                    installer.updateLabelPreVanilla("Progress ... " + ((l + progress) * 100 / allFilesCount) + "%");
+                    installer.updateLabelPreVanilla("Checking game files " + ((l + progress) * 100 / allFilesCount) + "%");
                 }
                 byte[] md5 = calculateMD5(packageMainFiles[l]);
                 bool found = false;
@@ -1584,7 +1584,7 @@ namespace MassEffectModder
                     }
                     if (installer != null)
                     {
-                        installer.updateLabelPreVanilla("Progress ... " + ((l + progress) * 100 / allFilesCount) + "%");
+                        installer.updateLabelPreVanilla("Checking game files " + ((l + progress) * 100 / allFilesCount) + "%");
                     }
                     byte[] md5 = calculateMD5(packageDLCFiles[l]);
                     bool found = false;
@@ -1674,7 +1674,7 @@ namespace MassEffectModder
                     }
                     if (installer != null)
                     {
-                        installer.updateLabelPreVanilla("Progress ... " + ((l + progress) * 100 / allFilesCount) + "%");
+                        installer.updateLabelPreVanilla("Checking game files " + ((l + progress) * 100 / allFilesCount) + "%");
                     }
                     byte[] md5 = calculateMD5(sfarFiles[l]);
                     bool found = false;
@@ -1727,7 +1727,7 @@ namespace MassEffectModder
                     }
                     if (installer != null)
                     {
-                        installer.updateLabelPreVanilla("Progress ... " + ((l + progress) * 100 / allFilesCount) + "%");
+                        installer.updateLabelPreVanilla("Checking game files " + ((l + progress) * 100 / allFilesCount) + "%");
                     }
                     byte[] md5 = calculateMD5(tfcFiles[l]);
                     bool found = false;

@@ -237,7 +237,13 @@ namespace MassEffectModder
             path = gameData.EngineConfigIniPath;
             bool exist = File.Exists(path);
             if (!exist)
+            {
+                if (gameId == MeType.ME1_TYPE)
+                {
+                    MessageBox.Show("Missing game configuration file.\nYou need atleast once launch the game first.");
+                }
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
+            }
             ConfIni engineConf = new ConfIni(path);
             LODSettings.updateLOD(gameId, engineConf, limitME1Lods);
             MessageBox.Show("Game configuration file at " + path + " updated.");

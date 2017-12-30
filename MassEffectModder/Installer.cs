@@ -569,8 +569,10 @@ namespace MassEffectModder
             {
                 if (!checkBoxOptionVanilla.Checked)
                 {
+                    labelFinalStatus.Text = "";
                     List<string> modList = new List<string>();
                     bool vanilla = Misc.checkGameFiles((MeType)gameId, ref errors, ref modList, null, this, Misc.generateModsMd5Entries);
+                    updateLabelPreVanilla("");
                     if (modList.Count != 0)
                     {
                         FileStream fs = new FileStream(filename, FileMode.OpenOrCreate);
@@ -639,6 +641,14 @@ namespace MassEffectModder
                             return false;
                     }
                 }
+            }
+
+            string path = gameData.EngineConfigIniPath;
+            bool exist = File.Exists(path);
+            if (!exist && gameId == 1)
+            {
+                MessageBox.Show("Missing game configuration file.\nYou need atleast once launch the game first.");
+                return false;
             }
 
             return true;
@@ -910,6 +920,8 @@ namespace MassEffectModder
                 return;
             }
 
+            labelFinalStatus.Text = "";
+
             errors = "";
             log = "";
             Misc.startTimer();
@@ -1023,7 +1035,11 @@ namespace MassEffectModder
                 errors += "Failed applying stamp for installation!\n";
 
             var time = Misc.stopTimer();
-            labelFinalStatus.Text = "Installation finished. Process total time: " + Misc.getTimerFormat(time);
+            log += "Installation finished. Process total time: " + Misc.getTimerFormat(time) + Environment.NewLine;
+            labelFinalStatus.Text = "Installation finished.";
+            labelCurrentStatus.Text = "";
+            labelCurrentStatus.ForeColor = Color.FromKnownColor(KnownColor.White);
+            labelDesc.Text = "";
             //buttonNormal.Visible = true;
 
             log += "==========================================" + Environment.NewLine;
@@ -1063,7 +1079,7 @@ namespace MassEffectModder
 
         public void updateLabelPreVanilla(string text)
         {
-            labelFinalStatus.Text = text;
+            labelCurrentStatus.Text = text;
             Application.DoEvents();
         }
 
