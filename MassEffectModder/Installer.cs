@@ -82,7 +82,7 @@ namespace MassEffectModder
             if (baseModNameStr != "")
             {
                 Text = "MEM Installer v" + Application.ProductVersion + " for " + baseModNameStr;
-                if (baseModNameStr.Contains("MEUITM"))
+                if (gameId == 1 && baseModNameStr.Contains("MEUITM"))
                     meuitmMode = true;
             }
             else
@@ -122,7 +122,7 @@ namespace MassEffectModder
                 allowToSkipScan = true;
 
             string meuitm = installerIni.Read("MEUITM", "Main").ToLowerInvariant();
-            if (meuitm == "true" || MeuitmVer != 0)
+            if (gameId == 1 && (meuitm == "true" || MeuitmVer != 0))
                 meuitmMode = true;
             if (meuitmMode && MeuitmVer == 0)
                 MeuitmVer = 1;
