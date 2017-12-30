@@ -57,6 +57,8 @@ namespace MassEffectModder
         bool OptionSkipScanVisible;
         bool OptionRepackVisible;
         bool OptionLimit2KVisible;
+        int stage = 1;
+        int totalStages = 7;
         System.Media.SoundPlayer musicPlayer;
 
         public Installer()
@@ -221,6 +223,9 @@ namespace MassEffectModder
                 string res = assembly.GetName().Name + ".Resources.me" + gameId + "_bg.jpg";
                 pictureBoxBG.Image = new Bitmap(assembly.GetManifestResourceStream(res));
             }
+
+            MessageBox.Show("Before starting the installation,\nmake sure real time scanning is turned off.\n" +
+                "Antivirus software can interfere with the install process.", "Warning !");
 
             if (musicPlayer != null)
                 musicPlayer.PlayLooping();
@@ -488,12 +493,6 @@ namespace MassEffectModder
             }
 
 
-            if (GameData.gameType == MeType.ME3_TYPE)
-            {
-                ME3DLC.unpackAllDLC(null, this);
-                gameData.getPackages(true, true);
-            }
-
             List<string> mods = Misc.detectBrokenMod((MeType)gameId);
             if (mods.Count != 0)
             {
@@ -530,6 +529,23 @@ namespace MassEffectModder
                 OptionVanillaVisible = false;
                 OptionSkipScanVisible = false;
                 OptionRepackVisible = false;
+            }
+
+            if (gameId != -3)
+                totalStages -= 1;
+            if ((updateMode || checkBoxOptionVanilla.Checked) || checkBoxOptionSkipScan.Checked)
+                totalStages -= 1;
+
+            if (updateMode)
+                totalStages -= 2;
+            if (!checkBoxOptionRepack.Checked)
+                totalStages -= 1;
+
+            if (GameData.gameType == MeType.ME3_TYPE)
+            {
+                labelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
+                ME3DLC.unpackAllDLC(null, this);
+                gameData.getPackages(true, true);
             }
 
             if (updateMode || checkBoxOptionSkipScan.Checked)
@@ -569,7 +585,7 @@ namespace MassEffectModder
             {
                 if (!checkBoxOptionVanilla.Checked)
                 {
-                    labelFinalStatus.Text = "";
+                    labelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
                     List<string> modList = new List<string>();
                     bool vanilla = Misc.checkGameFiles((MeType)gameId, ref errors, ref modList, null, this, Misc.generateModsMd5Entries);
                     updateLabelPreVanilla("");
@@ -921,6 +937,7 @@ namespace MassEffectModder
             }
 
             labelFinalStatus.Text = "";
+            labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.White);
 
             errors = "";
             log = "";
@@ -952,6 +969,8 @@ namespace MassEffectModder
                 }
                 log += Environment.NewLine;
 
+                labelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
+
                 log += "Scan textures started..." + Environment.NewLine;
                 errors += treeScan.PrepareListOfTextures(null, null, null, this, ref log, true);
                 textures = treeScan.treeScan;
@@ -966,16 +985,20 @@ namespace MassEffectModder
                 log += "Scan textures skipped" + Environment.NewLine + Environment.NewLine;
             }
 
+            labelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
+
             log += "Process textures started..." + Environment.NewLine;
             applyModules();
             log += "Process textures finished" + Environment.NewLine + Environment.NewLine;
 
 
+            labelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
             cachePackageMgr.CloseAllWithSave(checkBoxOptionRepack.Checked);
 
 
             if (!updateMode && !checkBoxOptionSkipScan.Checked)
             {
+                labelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
                 if (GameData.gameType == MeType.ME1_TYPE)
                 {
                     log += "Remove mipmaps started..." + Environment.NewLine;
@@ -1010,6 +1033,7 @@ namespace MassEffectModder
             {
                 if (!updateMode && !checkBoxOptionSkipScan.Checked)
                 {
+                    labelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
                     log += "Repack started..." + Environment.NewLine;
                     for (int i = 0; i < GameData.packageFiles.Count; i++)
                     {
