@@ -80,7 +80,6 @@
             this.buttonNormal.TabIndex = 4;
             this.buttonNormal.Text = "Standard Mode";
             this.buttonNormal.UseVisualStyleBackColor = false;
-            this.buttonNormal.Visible = false;
             this.buttonNormal.Click += new System.EventHandler(this.buttonNormal_Click);
             // 
             // labelFinalStatus

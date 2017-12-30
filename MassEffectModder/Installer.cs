@@ -156,33 +156,41 @@ namespace MassEffectModder
             labelCurrentStatus.Text = "";
             labelFinalStatus.Text = "";
 
-            buttonsDefault(gameId);
+            if (gameId == 3)
+            {
+                OptionRepackVisible = checkBoxOptionRepack.Visible = labelOptionRepack.Visible = false;
+            }
+            if (gameId == 1)
+            {
+                OptionLimit2KVisible = checkBoxOptionLimit2K.Visible = labelOptionLimit2K.Visible = true;
+            }
+            else
+            {
+                OptionLimit2KVisible = checkBoxOptionLimit2K.Visible = labelOptionLimit2K.Visible = false;
+            }
 
             if (allowToSkip)
             {
-                checkBoxOptionVanilla.Visible = true;
-                labelOptionVanilla.Visible = true;
+                OptionVanillaVisible = checkBoxOptionVanilla.Visible = labelOptionVanilla.Visible = true;
             }
             else
             {
-                checkBoxOptionVanilla.Visible = false;
-                labelOptionVanilla.Visible = false;
+                OptionVanillaVisible = checkBoxOptionVanilla.Visible = labelOptionVanilla.Visible = false;
             }
             if (allowToSkipScan)
             {
-                checkBoxOptionSkipScan.Visible = true;
-                labelOptionSkipScan.Visible = true;
+                OptionSkipScanVisible = checkBoxOptionSkipScan.Visible = labelOptionSkipScan.Visible = true;
             }
             else
             {
-                checkBoxOptionSkipScan.Visible = false;
-                labelOptionSkipScan.Visible = false;
+                OptionSkipScanVisible = checkBoxOptionSkipScan.Visible = labelOptionSkipScan.Visible = false;
             }
             checkBoxOptionVanilla.Checked = false;
             checkBoxOptionLimit2K.Checked = false;
             checkBoxOptionSkipScan.Checked = false;
 
             buttonSTART.Visible = true;
+            buttonNormal.Visible = true;
 
             labelDesc.Parent = pictureBoxBG;
             labelFinalStatus.Parent = pictureBoxBG;
@@ -197,10 +205,8 @@ namespace MassEffectModder
             checkBoxOptionSkipScan.Parent = pictureBoxBG;
             checkBoxOptionVanilla.Parent = pictureBoxBG;
 
-            OptionVanillaVisible = checkBoxOptionVanilla.Visible;
-            OptionSkipScanVisible = checkBoxOptionVanilla.Visible;
-            OptionRepackVisible = checkBoxOptionVanilla.Visible;
-            OptionLimit2KVisible = checkBoxOptionVanilla.Visible;
+            labelOptions.Visible = OptionVanillaVisible || OptionSkipScanVisible ||
+                OptionRepackVisible || OptionLimit2KVisible;
 
             string bgFile = installerIni.Read("BackgroundImage", "Main").ToLowerInvariant();
             if (bgFile != "")
@@ -531,14 +537,18 @@ namespace MassEffectModder
                 OptionRepackVisible = false;
             }
 
-            if (gameId != -3)
+            // unpack DLC
+            if (gameId != 3)
                 totalStages -= 1;
+            // check game files
             if ((updateMode || checkBoxOptionVanilla.Checked) || checkBoxOptionSkipScan.Checked)
                 totalStages -= 1;
 
-            if (updateMode)
+            // scan textures, remove mipmaps
+            if (updateMode || checkBoxOptionSkipScan.Checked)
                 totalStages -= 2;
-            if (!checkBoxOptionRepack.Checked)
+            // recompress game files
+            if (!checkBoxOptionRepack.Checked || updateMode || checkBoxOptionSkipScan.Checked)
                 totalStages -= 1;
 
             if (GameData.gameType == MeType.ME3_TYPE)
@@ -882,19 +892,23 @@ namespace MassEffectModder
         {
             if (gameId == 3)
             {
-                checkBoxOptionRepack.Visible = false;
+                checkBoxOptionRepack.Visible = labelOptionRepack.Visible = false;
             }
             if (gameId == 1)
-                checkBoxOptionLimit2K.Visible = true;
+            {
+                checkBoxOptionLimit2K.Visible = labelOptionLimit2K.Visible = true;
+            }
             else
-                checkBoxOptionLimit2K.Visible = false;
+            {
+                checkBoxOptionLimit2K.Visible = labelOptionLimit2K.Visible = false;
+            }
 
             Application.DoEvents();
         }
 
         private void buttonsEnable(bool enabled)
         {
-            buttonNormal.Visible = false;// enabled;
+            buttonNormal.Visible = false;
             checkBoxOptionRepack.Enabled = OptionRepackVisible;
             if (updateMode)
             {
@@ -986,7 +1000,6 @@ namespace MassEffectModder
             }
 
             labelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
-
             log += "Process textures started..." + Environment.NewLine;
             applyModules();
             log += "Process textures finished" + Environment.NewLine + Environment.NewLine;
@@ -1064,7 +1077,7 @@ namespace MassEffectModder
             labelCurrentStatus.Text = "";
             labelCurrentStatus.ForeColor = Color.FromKnownColor(KnownColor.White);
             labelDesc.Text = "";
-            //buttonNormal.Visible = true;
+            buttonNormal.Visible = true;
 
             log += "==========================================" + Environment.NewLine;
             log += "LOD settings:" + Environment.NewLine;
