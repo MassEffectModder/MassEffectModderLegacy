@@ -182,6 +182,9 @@
     <EmbeddedResource Include="Dlls\zlibwrapper.dll" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\me1_bg.jpg" />
+    <EmbeddedResource Include="Resources\me2_bg.jpg" />
+    <EmbeddedResource Include="Resources\me3_bg.jpg" />
     <EmbeddedResource Include="Dlls\CompressonatorCodecs.dll" />
     <Content Include="MEM.ico" />
   </ItemGroup>
