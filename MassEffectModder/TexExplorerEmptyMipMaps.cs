@@ -52,7 +52,7 @@ namespace MassEffectModder
                 }
                 if (installer != null)
                 {
-                    installer.updateStatusMipMaps("Progress ... " + ((GameData.packageFiles.Count * (phase - 1) + i + 1) * 100 / (GameData.packageFiles.Count * 2)) + " % ");
+                    installer.updateStatusMipMaps("Removing empty mipmaps " + ((GameData.packageFiles.Count * (phase - 1) + i + 1) * 100 / (GameData.packageFiles.Count * 2)) + "% ");
                 }
                 Package package = null;
 
@@ -199,7 +199,7 @@ skip:
                 }
                 if (installer != null)
                 {
-                    installer.updateStatusMipMaps("Progress ... " + (i * 100 / GameData.packageFiles.Count) + " % ");
+                    installer.updateStatusMipMaps("Removing empty mipmaps " + (i * 100 / GameData.packageFiles.Count) + "%");
                 }
                 Package package = null;
 

@@ -53,6 +53,10 @@ namespace MassEffectModder
         int MeuitmVer;
         bool allowToSkipScan;
         bool meuitmMode = false;
+        bool OptionVanillaVisible;
+        bool OptionSkipScanVisible;
+        bool OptionRepackVisible;
+        bool OptionLimit2KVisible;
         System.Media.SoundPlayer musicPlayer;
 
         public Installer()
@@ -146,6 +150,7 @@ namespace MassEffectModder
 
             configIni = new ConfIni();
 
+            labelDesc.Text = "";
             labelCurrentStatus.Text = "";
             labelFinalStatus.Text = "";
 
@@ -190,6 +195,11 @@ namespace MassEffectModder
             checkBoxOptionSkipScan.Parent = pictureBoxBG;
             checkBoxOptionVanilla.Parent = pictureBoxBG;
 
+            OptionVanillaVisible = checkBoxOptionVanilla.Visible;
+            OptionSkipScanVisible = checkBoxOptionVanilla.Visible;
+            OptionRepackVisible = checkBoxOptionVanilla.Visible;
+            OptionLimit2KVisible = checkBoxOptionVanilla.Visible;
+
             string bgFile = installerIni.Read("BackgroundImage", "Main").ToLowerInvariant();
             if (bgFile != "")
             {
@@ -210,20 +220,6 @@ namespace MassEffectModder
                 Assembly assembly = Assembly.GetExecutingAssembly();
                 string res = assembly.GetName().Name + ".Resources.me" + gameId + "_bg.jpg";
                 pictureBoxBG.Image = new Bitmap(assembly.GetManifestResourceStream(res));
-            }
-
-            ulong memorySize = ((new ComputerInfo().TotalPhysicalMemory / 1024 / 1024) + 1023) / 1024;
-            if (memorySize < 4 && gameId == 3)
-            {
-                MessageBox.Show("Detected small amount of physical RAM (8GB is recommended).\nInstallation may take many hours or fail.", "Installer");
-            }
-            else if (memorySize < 8 && gameId == 3)
-            {
-                MessageBox.Show("Detected small amount of physical RAM (8GB is recommended).\nInstallation may take several hours.", "Installer");
-            }
-            else if (memorySize <= 4 && gameId != 3)
-            {
-                MessageBox.Show("Detected small amount of physical RAM (8GB is recommended).\nInstallation may take a long time.", "Installer");
             }
 
             if (musicPlayer != null)
@@ -301,14 +297,29 @@ namespace MassEffectModder
         private bool PreInstallCheck()
         {
             buttonsEnable(false);
-            labelFinalStatus.Text = "Checking...";
+            labelFinalStatus.Text = "Checking game setup...";
             Application.DoEvents();
+
+            ulong memorySize = ((new ComputerInfo().TotalPhysicalMemory / 1024 / 1024) + 1023) / 1024;
+            if (memorySize < 4 && gameId == 3)
+            {
+                MessageBox.Show("Detected small amount of physical RAM (8GB is recommended).\nInstallation may take many hours or fail.", "Installer");
+            }
+            else if (memorySize < 8 && gameId == 3)
+            {
+                MessageBox.Show("Detected small amount of physical RAM (8GB is recommended).\nInstallation may take several hours.", "Installer");
+            }
+            else if (memorySize <= 4 && gameId != 3)
+            {
+                MessageBox.Show("Detected small amount of physical RAM (8GB is recommended).\nInstallation may take a long time.", "Installer");
+            }
+
             memFiles = Directory.GetFiles(sourceDir, "*.mem", SearchOption.AllDirectories).Where(item => item.EndsWith(".mem", StringComparison.OrdinalIgnoreCase)).ToList();
             memFiles.Sort();
             if (memFiles.Count == 0)
             {
-                labelFinalStatus.Text = "No MEM mods found!";
-                labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Red);
+                labelFinalStatus.Text = "No MEM file mods found!, aborting...";
+                labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                 buttonsEnable(true);
                 return false;
             }
@@ -346,8 +357,8 @@ namespace MassEffectModder
                 File.Delete(filename);
             if (errors != "")
             {
-                labelFinalStatus.Text = "There are some errors while detecting MEM mods!";
-                labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Red);
+                labelFinalStatus.Text = "There are some errors while detecting MEM mods, aborting...";
+                labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                 buttonsEnable(true);
 
                 if (File.Exists(filename))
@@ -364,15 +375,15 @@ namespace MassEffectModder
             gameData = new GameData((MeType)gameId, configIni);
             if (!Directory.Exists(GameData.GamePath))
             {
-                labelFinalStatus.Text = "Game path is wrong!";
-                labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Red);
+                labelFinalStatus.Text = "Game path is wrong, aborting...";
+                labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                 buttonsEnable(true);
                 return false;
             }
             if (!gameData.getPackages(true, true))
             {
-                labelFinalStatus.Text = "Missing game data!";
-                labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Red);
+                labelFinalStatus.Text = "Missing game data, aborting...";
+                labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                 buttonsEnable(true);
                 return false;
             }
@@ -380,8 +391,8 @@ namespace MassEffectModder
             {
                 if (!File.Exists(GameData.GamePath + "\\BioGame\\CookedPC\\Startup_int.upk"))
                 {
-                    labelFinalStatus.Text = "ME1 game not found!";
-                    labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Red);
+                    labelFinalStatus.Text = "ME1 game not found, aborting...";
+                    labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                     buttonsEnable(true);
                     return false;
                 }
@@ -390,8 +401,8 @@ namespace MassEffectModder
             {
                 if (!File.Exists(GameData.GamePath + "\\BioGame\\CookedPC\\Textures.tfc"))
                 {
-                    labelFinalStatus.Text = "ME2 game not found!";
-                    labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Red);
+                    labelFinalStatus.Text = "ME2 game not found, aborting...";
+                    labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                     buttonsEnable(true);
                     return false;
                 }
@@ -400,8 +411,8 @@ namespace MassEffectModder
             {
                 if (!File.Exists(GameData.GamePath + "\\BIOGame\\PCConsoleTOC.bin"))
                 {
-                    labelFinalStatus.Text = "ME3 game not found!";
-                    labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Red);
+                    labelFinalStatus.Text = "ME3 game not found, aborting...";
+                    labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                     buttonsEnable(true);
                     return false;
                 }
@@ -433,8 +444,8 @@ namespace MassEffectModder
             }
             if (!writeAccess)
             {
-                labelFinalStatus.Text = "Write access denied to game folders!";
-                labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Red);
+                labelFinalStatus.Text = "Write access denied to game folders, aborting...";
+                labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                 buttonsEnable(true);
                 return false;
             }
@@ -471,7 +482,7 @@ namespace MassEffectModder
             if (diskUsage > diskFreeSpace)
             {
                 labelFinalStatus.Text = "You have not enough disk space remaining. You need about " + Misc.getBytesFormat(diskUsage) + " free.";
-                labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Red);
+                labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                 buttonsEnable(true);
                 return false;
             }
@@ -481,7 +492,6 @@ namespace MassEffectModder
             {
                 ME3DLC.unpackAllDLC(null, this);
                 gameData.getPackages(true, true);
-                updateStatusPrepare("");
             }
 
             List<string> mods = Misc.detectBrokenMod((MeType)gameId);
@@ -503,8 +513,8 @@ namespace MassEffectModder
                 }
                 Process.Start(filename);
 
-                labelFinalStatus.Text = "Detected not compatible mod!";
-                labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Red);
+                labelFinalStatus.Text = "Detected not compatible mod, aborting...";
+                labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                 buttonsEnable(true);
                 return false;
             }
@@ -513,16 +523,13 @@ namespace MassEffectModder
             if (detectMod(gameId))
             {
                 updateMode = true;
-                checkBoxOptionVanilla.Visible = false;
                 checkBoxOptionVanilla.CheckedChanged -= checkBoxOptionVanilla_CheckedChanged;
                 checkBoxOptionVanilla.Checked = true;
                 checkBoxOptionVanilla.CheckedChanged += checkBoxOptionVanilla_CheckedChanged;
-                checkBoxOptionSkipScan.Visible = false;
-                checkBoxOptionRepack.Visible = false;
                 checkBoxOptionRepack.Checked = false;
-                labelOptionVanilla.Visible = false;
-                labelOptionRepack.Visible = false;
-                labelOptionSkipScan.Visible = false;
+                OptionVanillaVisible = false;
+                OptionSkipScanVisible = false;
+                OptionRepackVisible = false;
             }
 
             if (updateMode || checkBoxOptionSkipScan.Checked)
@@ -536,8 +543,8 @@ namespace MassEffectModder
 
                 if (!File.Exists(mapFile))
                 {
-                    labelFinalStatus.Text = "Game was not scanned for textures, can not continue.";
-                    labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Red);
+                    labelFinalStatus.Text = "Game was not scanned for textures, can not continue, aborting...";
+                    labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                     buttonsEnable(true);
                     return false;
                 }
@@ -545,15 +552,15 @@ namespace MassEffectModder
                 if (!loadTexturesMap(mapFile))
                 {
                     labelFinalStatus.Text = "Game inconsistent from previous scan! Reinstall ME" + gameId + " and restart.";
-                    labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Red);
+                    labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                     buttonsEnable(true);
                     return false;
                 }
 
                 if (!MipMaps.verifyGameDataEmptyMipMapsRemoval())
                 {
-                    labelFinalStatus.Text = "Game doesn't have empty mips removed, can not continue.";
-                    labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Red);
+                    labelFinalStatus.Text = "Game doesn't have empty mips removed, aborting...";
+                    labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                     buttonsEnable(true);
                     return false;
                 }
@@ -587,8 +594,8 @@ namespace MassEffectModder
                         fs.WriteStringASCII(errors);
                         fs.Close();
                         Process.Start(filename);
-                        labelFinalStatus.Text = "Game files are not vanilla or not recognized!";
-                        labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Red);
+                        labelFinalStatus.Text = "Game files are not vanilla or not recognized";
+                        labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                         if (gameId == 3)
                         {
                             string message = "The installer detected that the following game files\n" +
@@ -627,7 +634,7 @@ namespace MassEffectModder
                                 "However you can ignore the warning and continue the installation at your own risk!\n";
                             MessageBox.Show(message, "Warning !");
                         }
-                        DialogResult resp = MessageBox.Show("Press Cancel or press Ok button to continue.", "Warning !", MessageBoxButtons.OKCancel);
+                        DialogResult resp = MessageBox.Show("Press Cancel to abort or press Ok button to continue.", "Warning !", MessageBoxButtons.OKCancel);
                         if (resp == DialogResult.Cancel)
                             return false;
                     }
@@ -802,7 +809,7 @@ namespace MassEffectModder
                         dst = MipMaps.decompressData(fs, size);
                         dstLen = dst.Length;
 
-                        updateStatusTextures("Progress: " + (currentNumberOfTotalMods * 100 / totalNumberOfMods) + " %");
+                        updateStatusTextures("Installing textures " + (currentNumberOfTotalMods * 100 / totalNumberOfMods) + "%");
 
                         if (modFiles[l].tag == MipMaps.FileTextureTag)
                         {
@@ -862,7 +869,7 @@ namespace MassEffectModder
         private void buttonsEnable(bool enabled)
         {
             buttonNormal.Visible = false;// enabled;
-            checkBoxOptionRepack.Enabled = enabled;
+            checkBoxOptionRepack.Enabled = OptionRepackVisible;
             if (updateMode)
             {
                 checkBoxOptionVanilla.Enabled = false;
@@ -870,29 +877,38 @@ namespace MassEffectModder
             }
             else
             {
-                checkBoxOptionVanilla.Enabled = enabled;
-                checkBoxOptionSkipScan.Enabled = enabled;
+                checkBoxOptionVanilla.Enabled = OptionVanillaVisible;
+                checkBoxOptionSkipScan.Enabled = OptionSkipScanVisible;
             }
-            checkBoxOptionLimit2K.Enabled = enabled;
+            checkBoxOptionLimit2K.Enabled = OptionLimit2KVisible;
             Application.DoEvents();
         }
 
         private void buttonSTART_Click(object sender, EventArgs e)
         {
-            if (!PreInstallCheck())
-                return;
-
             buttonsEnable(false);
             buttonSTART.Visible = false;
-            checkBoxOptionVanilla.Visible = false;
-            checkBoxOptionSkipScan.Visible = false;
-            checkBoxOptionRepack.Visible = false;
-            checkBoxOptionLimit2K.Visible = false;
-            labelOptionVanilla.Visible = false;
-            labelOptionRepack.Visible = false;
-            labelOptionSkipScan.Visible = false;
-            labelOptionLimit2K.Visible = false;
-            labelFinalStatus.Text = "Process in progress...";
+            checkBoxOptionVanilla.Visible = labelOptionVanilla.Visible = false;
+            checkBoxOptionSkipScan.Visible = labelOptionSkipScan.Visible = false;
+            checkBoxOptionRepack.Visible = labelOptionRepack.Visible = false;
+            checkBoxOptionLimit2K.Visible = labelOptionLimit2K.Visible = false;
+            labelOptions.Visible = false;
+            if (meuitmMode)
+                labelDesc.Text = "Installing MEUITM for Mass Effect";
+            else
+                labelDesc.Text = "Installing ALOT for Mass Effect " + gameId;
+
+            if (!PreInstallCheck())
+            {
+                checkBoxOptionVanilla.Visible = OptionVanillaVisible;
+                checkBoxOptionSkipScan.Visible = OptionSkipScanVisible;
+                checkBoxOptionRepack.Visible = OptionRepackVisible;
+                checkBoxOptionLimit2K.Visible = OptionLimit2KVisible;
+                labelOptions.Visible = checkBoxOptionVanilla.Visible || checkBoxOptionSkipScan.Visible ||
+                    checkBoxOptionRepack.Visible || checkBoxOptionLimit2K.Visible;
+                labelDesc.Text = "";
+                return;
+            }
 
             errors = "";
             log = "";
@@ -901,14 +917,12 @@ namespace MassEffectModder
             if (!updateMode && !checkBoxOptionSkipScan.Checked)
             {
                 log += "Prepare game data started..." + Environment.NewLine;
-                updateStatusPrepare("In progress...");
                 if (GameData.gameType == MeType.ME1_TYPE)
                     Misc.VerifyME1Exe(gameData, false);
 
                 if (GameData.gameType != MeType.ME1_TYPE)
                     gameData.getTfcTextures();
 
-                updateStatusPrepare("");
                 log += "Prepare game data finished" + Environment.NewLine + Environment.NewLine;
 
                 if (Directory.Exists(GameData.DLCData))
@@ -927,10 +941,8 @@ namespace MassEffectModder
                 log += Environment.NewLine;
 
                 log += "Scan textures started..." + Environment.NewLine;
-                updateStatusScan("In progress...");
                 errors += treeScan.PrepareListOfTextures(null, null, null, this, ref log, true);
                 textures = treeScan.treeScan;
-                updateStatusScan("");
                 log += "Scan textures finished" + Environment.NewLine + Environment.NewLine;
             }
             else
@@ -938,23 +950,16 @@ namespace MassEffectModder
                 if (GameData.gameType != MeType.ME1_TYPE)
                     gameData.getTfcTextures();
 
-                updateStatusPrepare("Skipped");
                 log += "Prepare game data skipped" + Environment.NewLine + Environment.NewLine;
-
-                updateStatusScan("Skipped");
                 log += "Scan textures skipped" + Environment.NewLine + Environment.NewLine;
             }
 
             log += "Process textures started..." + Environment.NewLine;
-            updateStatusTextures("In progress...");
             applyModules();
-            updateStatusTextures("");
             log += "Process textures finished" + Environment.NewLine + Environment.NewLine;
 
 
-            updateStatusStore("Progress...");
             cachePackageMgr.CloseAllWithSave(checkBoxOptionRepack.Checked);
-            updateStatusStore("");
 
 
             if (!updateMode && !checkBoxOptionSkipScan.Checked)
@@ -962,24 +967,19 @@ namespace MassEffectModder
                 if (GameData.gameType == MeType.ME1_TYPE)
                 {
                     log += "Remove mipmaps started..." + Environment.NewLine;
-                    updateStatusMipMaps("In progress...");
                     errors += mipMaps.removeMipMapsME1(1, textures, null, null, this, checkBoxOptionRepack.Checked);
                     errors += mipMaps.removeMipMapsME1(2, textures, null, null, this, checkBoxOptionRepack.Checked);
-                    updateStatusMipMaps("");
                     log += "Remove mipmaps finished" + Environment.NewLine + Environment.NewLine;
                 }
                 else
                 {
                     log += "Remove mipmaps started..." + Environment.NewLine;
-                    updateStatusMipMaps("In progress...");
                     errors += mipMaps.removeMipMapsME2ME3(textures, null, null, this, checkBoxOptionRepack.Checked);
-                    updateStatusMipMaps("");
                     log += "Remove mipmaps finished" + Environment.NewLine + Environment.NewLine;
                 }
             }
             else
             {
-                updateStatusMipMaps("Skipped");
                 log += "Remove mipmaps skipped" + Environment.NewLine + Environment.NewLine;
             }
 
@@ -1001,7 +1001,7 @@ namespace MassEffectModder
                     log += "Repack started..." + Environment.NewLine;
                     for (int i = 0; i < GameData.packageFiles.Count; i++)
                     {
-                        updateStatusRepackZlib("Repacking PCC files... " + ((i + 1) * 100 / GameData.packageFiles.Count) + " %");
+                        updateStatusRepackZlib("Recompress game files " + ((i + 1) * 100 / GameData.packageFiles.Count) + "%");
                         Package package = new Package(GameData.packageFiles[i], true, true);
                         if (package.compressed && package.compressionType != Package.CompressionType.Zlib)
                         {
@@ -1010,12 +1010,10 @@ namespace MassEffectModder
                             package.SaveToFile(true);
                         }
                     }
-                    updateStatusRepackZlib("");
                     log += "Repack finished" + Environment.NewLine + Environment.NewLine;
                 }
                 else
                 {
-                    updateStatusRepackZlib("Skipped");
                     log += "Repack skipped" + Environment.NewLine + Environment.NewLine;
                 }
             }
@@ -1025,8 +1023,8 @@ namespace MassEffectModder
                 errors += "Failed applying stamp for installation!\n";
 
             var time = Misc.stopTimer();
-            labelFinalStatus.Text = "Process finished. Process total time: " + Misc.getTimerFormat(time);
-            buttonNormal.Visible = true;
+            labelFinalStatus.Text = "Installation finished. Process total time: " + Misc.getTimerFormat(time);
+            //buttonNormal.Visible = true;
 
             log += "==========================================" + Environment.NewLine;
             log += "LOD settings:" + Environment.NewLine;
@@ -1057,7 +1055,8 @@ namespace MassEffectModder
                     fs.WriteStringASCII("================================================================================" + Environment.NewLine + Environment.NewLine);
                     fs.WriteStringASCII(errors);
                 }
-                MessageBox.Show("WARNING: Some errors have occured!");
+                labelFinalStatus.Text = "WARNING: Some errors have occured!";
+                labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                 Process.Start(filename);
             }
         }
@@ -1070,37 +1069,37 @@ namespace MassEffectModder
 
         public void updateStatusPrepare(string text)
         {
-            labelFinalStatus.Text = text;
+            labelCurrentStatus.Text = text;
             Application.DoEvents();
         }
 
         public void updateStatusScan(string text)
         {
-            labelFinalStatus.Text = text;
+            labelCurrentStatus.Text = text;
             Application.DoEvents();
         }
 
         public void updateStatusMipMaps(string text)
         {
-            labelFinalStatus.Text = text;
+            labelCurrentStatus.Text = text;
             Application.DoEvents();
         }
 
         public void updateStatusTextures(string text)
         {
-            labelFinalStatus.Text = text;
+            labelCurrentStatus.Text = text;
             Application.DoEvents();
         }
 
         public void updateStatusStore(string text)
         {
-            labelFinalStatus.Text = text;
+            labelCurrentStatus.Text = text;
             Application.DoEvents();
         }
 
         public void updateStatusRepackZlib(string text)
         {
-            labelFinalStatus.Text = text;
+            labelCurrentStatus.Text = text;
             Application.DoEvents();
         }
 

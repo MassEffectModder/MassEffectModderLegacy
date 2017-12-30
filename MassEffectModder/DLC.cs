@@ -364,7 +364,7 @@ namespace MassEffectModder
                 }
                 if (installer != null)
                 {
-                    installer.updateStatusPrepare("Extracting DLC ... " + (i + 1) + " of " + sfarFiles.Count);
+                    installer.updateStatusPrepare("Unpacking DLC " + (i * 100 / sfarFiles.Count) + "%");
                 }
                 dlc.extract(sfarFiles[i], outPath);
             }

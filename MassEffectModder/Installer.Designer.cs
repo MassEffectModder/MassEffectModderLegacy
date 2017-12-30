@@ -74,7 +74,7 @@
             this.buttonNormal.BackColor = System.Drawing.SystemColors.Control;
             this.buttonNormal.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.buttonNormal.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.buttonNormal.Location = new System.Drawing.Point(16, 403);
+            this.buttonNormal.Location = new System.Drawing.Point(16, 504);
             this.buttonNormal.Name = "buttonNormal";
             this.buttonNormal.Size = new System.Drawing.Size(111, 23);
             this.buttonNormal.TabIndex = 4;
@@ -89,24 +89,25 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.labelFinalStatus.BackColor = System.Drawing.Color.Transparent;
             this.labelFinalStatus.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.labelFinalStatus.Font = new System.Drawing.Font("Segoe UI Light", 26.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.labelFinalStatus.Font = new System.Drawing.Font("Segoe UI Light", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelFinalStatus.ForeColor = System.Drawing.Color.White;
-            this.labelFinalStatus.Location = new System.Drawing.Point(109, 145);
+            this.labelFinalStatus.Location = new System.Drawing.Point(12, 138);
             this.labelFinalStatus.Name = "labelFinalStatus";
-            this.labelFinalStatus.Size = new System.Drawing.Size(572, 47);
+            this.labelFinalStatus.Size = new System.Drawing.Size(909, 45);
             this.labelFinalStatus.TabIndex = 25;
+            this.labelFinalStatus.Text = "final status";
+            this.labelFinalStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // checkBoxOptionRepack
             // 
             this.checkBoxOptionRepack.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBoxOptionRepack.AutoSize = true;
             this.checkBoxOptionRepack.BackColor = System.Drawing.Color.Transparent;
-            this.checkBoxOptionRepack.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.checkBoxOptionRepack.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.checkBoxOptionRepack.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxOptionRepack.Location = new System.Drawing.Point(16, 316);
+            this.checkBoxOptionRepack.Location = new System.Drawing.Point(16, 417);
             this.checkBoxOptionRepack.Name = "checkBoxOptionRepack";
-            this.checkBoxOptionRepack.Size = new System.Drawing.Size(12, 11);
+            this.checkBoxOptionRepack.Size = new System.Drawing.Size(15, 14);
             this.checkBoxOptionRepack.TabIndex = 35;
             this.checkBoxOptionRepack.TabStop = false;
             this.checkBoxOptionRepack.UseVisualStyleBackColor = false;
@@ -116,12 +117,11 @@
             this.checkBoxOptionSkipScan.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBoxOptionSkipScan.AutoSize = true;
             this.checkBoxOptionSkipScan.BackColor = System.Drawing.Color.Transparent;
-            this.checkBoxOptionSkipScan.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.checkBoxOptionSkipScan.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.checkBoxOptionSkipScan.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxOptionSkipScan.Location = new System.Drawing.Point(16, 380);
+            this.checkBoxOptionSkipScan.Location = new System.Drawing.Point(16, 481);
             this.checkBoxOptionSkipScan.Name = "checkBoxOptionSkipScan";
-            this.checkBoxOptionSkipScan.Size = new System.Drawing.Size(12, 11);
+            this.checkBoxOptionSkipScan.Size = new System.Drawing.Size(15, 14);
             this.checkBoxOptionSkipScan.TabIndex = 52;
             this.checkBoxOptionSkipScan.TabStop = false;
             this.checkBoxOptionSkipScan.UseVisualStyleBackColor = false;
@@ -132,12 +132,11 @@
             this.checkBoxOptionLimit2K.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBoxOptionLimit2K.AutoSize = true;
             this.checkBoxOptionLimit2K.BackColor = System.Drawing.Color.Transparent;
-            this.checkBoxOptionLimit2K.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.checkBoxOptionLimit2K.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.checkBoxOptionLimit2K.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxOptionLimit2K.Location = new System.Drawing.Point(16, 338);
+            this.checkBoxOptionLimit2K.Location = new System.Drawing.Point(16, 439);
             this.checkBoxOptionLimit2K.Name = "checkBoxOptionLimit2K";
-            this.checkBoxOptionLimit2K.Size = new System.Drawing.Size(12, 11);
+            this.checkBoxOptionLimit2K.Size = new System.Drawing.Size(15, 14);
             this.checkBoxOptionLimit2K.TabIndex = 39;
             this.checkBoxOptionLimit2K.TabStop = false;
             this.checkBoxOptionLimit2K.UseVisualStyleBackColor = false;
@@ -148,12 +147,11 @@
             this.checkBoxOptionVanilla.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBoxOptionVanilla.AutoSize = true;
             this.checkBoxOptionVanilla.BackColor = System.Drawing.Color.Transparent;
-            this.checkBoxOptionVanilla.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.checkBoxOptionVanilla.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.checkBoxOptionVanilla.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxOptionVanilla.Location = new System.Drawing.Point(16, 359);
+            this.checkBoxOptionVanilla.Location = new System.Drawing.Point(16, 460);
             this.checkBoxOptionVanilla.Name = "checkBoxOptionVanilla";
-            this.checkBoxOptionVanilla.Size = new System.Drawing.Size(12, 11);
+            this.checkBoxOptionVanilla.Size = new System.Drawing.Size(15, 14);
             this.checkBoxOptionVanilla.TabIndex = 38;
             this.checkBoxOptionVanilla.TabStop = false;
             this.checkBoxOptionVanilla.UseVisualStyleBackColor = false;
@@ -166,7 +164,7 @@
             this.buttonSTART.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.buttonSTART.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.buttonSTART.ForeColor = System.Drawing.Color.Black;
-            this.buttonSTART.Location = new System.Drawing.Point(697, 403);
+            this.buttonSTART.Location = new System.Drawing.Point(871, 504);
             this.buttonSTART.Name = "buttonSTART";
             this.buttonSTART.Size = new System.Drawing.Size(75, 23);
             this.buttonSTART.TabIndex = 2;
@@ -180,12 +178,14 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.labelCurrentStatus.BackColor = System.Drawing.Color.Transparent;
             this.labelCurrentStatus.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.labelCurrentStatus.Font = new System.Drawing.Font("Segoe UI Light", 26.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.labelCurrentStatus.Font = new System.Drawing.Font("Segoe UI Light", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelCurrentStatus.ForeColor = System.Drawing.Color.White;
-            this.labelCurrentStatus.Location = new System.Drawing.Point(109, 211);
+            this.labelCurrentStatus.Location = new System.Drawing.Point(12, 211);
             this.labelCurrentStatus.Name = "labelCurrentStatus";
-            this.labelCurrentStatus.Size = new System.Drawing.Size(572, 45);
+            this.labelCurrentStatus.Size = new System.Drawing.Size(909, 45);
             this.labelCurrentStatus.TabIndex = 28;
+            this.labelCurrentStatus.Text = "current status";
+            this.labelCurrentStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // labelOptions
             // 
@@ -194,7 +194,7 @@
             this.labelOptions.BackColor = System.Drawing.Color.Black;
             this.labelOptions.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelOptions.ForeColor = System.Drawing.Color.White;
-            this.labelOptions.Location = new System.Drawing.Point(12, 280);
+            this.labelOptions.Location = new System.Drawing.Point(12, 381);
             this.labelOptions.Name = "labelOptions";
             this.labelOptions.Size = new System.Drawing.Size(74, 21);
             this.labelOptions.TabIndex = 54;
@@ -209,7 +209,7 @@
             this.pictureBoxBG.Location = new System.Drawing.Point(-1, 0);
             this.pictureBoxBG.MaximumSize = new System.Drawing.Size(1920, 1080);
             this.pictureBoxBG.Name = "pictureBoxBG";
-            this.pictureBoxBG.Size = new System.Drawing.Size(785, 440);
+            this.pictureBoxBG.Size = new System.Drawing.Size(960, 540);
             this.pictureBoxBG.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxBG.TabIndex = 29;
             this.pictureBoxBG.TabStop = false;
@@ -221,7 +221,7 @@
             this.labelOptionRepack.BackColor = System.Drawing.Color.Black;
             this.labelOptionRepack.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelOptionRepack.ForeColor = System.Drawing.Color.White;
-            this.labelOptionRepack.Location = new System.Drawing.Point(34, 311);
+            this.labelOptionRepack.Location = new System.Drawing.Point(34, 412);
             this.labelOptionRepack.Name = "labelOptionRepack";
             this.labelOptionRepack.Size = new System.Drawing.Size(184, 21);
             this.labelOptionRepack.TabIndex = 55;
@@ -234,7 +234,7 @@
             this.labelOptionLimit2K.BackColor = System.Drawing.Color.Black;
             this.labelOptionLimit2K.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelOptionLimit2K.ForeColor = System.Drawing.Color.White;
-            this.labelOptionLimit2K.Location = new System.Drawing.Point(34, 333);
+            this.labelOptionLimit2K.Location = new System.Drawing.Point(34, 434);
             this.labelOptionLimit2K.Name = "labelOptionLimit2K";
             this.labelOptionLimit2K.Size = new System.Drawing.Size(158, 21);
             this.labelOptionLimit2K.TabIndex = 56;
@@ -247,7 +247,7 @@
             this.labelOptionVanilla.BackColor = System.Drawing.Color.Black;
             this.labelOptionVanilla.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelOptionVanilla.ForeColor = System.Drawing.Color.White;
-            this.labelOptionVanilla.Location = new System.Drawing.Point(34, 354);
+            this.labelOptionVanilla.Location = new System.Drawing.Point(34, 455);
             this.labelOptionVanilla.Name = "labelOptionVanilla";
             this.labelOptionVanilla.Size = new System.Drawing.Size(147, 21);
             this.labelOptionVanilla.TabIndex = 57;
@@ -260,7 +260,7 @@
             this.labelOptionSkipScan.BackColor = System.Drawing.Color.Black;
             this.labelOptionSkipScan.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelOptionSkipScan.ForeColor = System.Drawing.Color.White;
-            this.labelOptionSkipScan.Location = new System.Drawing.Point(34, 375);
+            this.labelOptionSkipScan.Location = new System.Drawing.Point(34, 476);
             this.labelOptionSkipScan.Name = "labelOptionSkipScan";
             this.labelOptionSkipScan.Size = new System.Drawing.Size(187, 21);
             this.labelOptionSkipScan.TabIndex = 58;
@@ -272,18 +272,20 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.labelDesc.BackColor = System.Drawing.Color.Transparent;
             this.labelDesc.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.labelDesc.Font = new System.Drawing.Font("Segoe UI Light", 26.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.labelDesc.Font = new System.Drawing.Font("Segoe UI Light", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelDesc.ForeColor = System.Drawing.Color.White;
-            this.labelDesc.Location = new System.Drawing.Point(109, 65);
+            this.labelDesc.Location = new System.Drawing.Point(12, 65);
             this.labelDesc.Name = "labelDesc";
-            this.labelDesc.Size = new System.Drawing.Size(572, 47);
+            this.labelDesc.Size = new System.Drawing.Size(909, 45);
             this.labelDesc.TabIndex = 59;
+            this.labelDesc.Text = "description";
+            this.labelDesc.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // Installer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(784, 438);
+            this.ClientSize = new System.Drawing.Size(958, 539);
             this.Controls.Add(this.labelDesc);
             this.Controls.Add(this.labelOptionSkipScan);
             this.Controls.Add(this.labelOptionVanilla);
@@ -301,7 +303,7 @@
             this.Controls.Add(this.pictureBoxBG);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximumSize = new System.Drawing.Size(1920, 1080);
-            this.MinimumSize = new System.Drawing.Size(800, 477);
+            this.MinimumSize = new System.Drawing.Size(974, 578);
             this.Name = "Installer";
             this.Text = "MEM Installer for ALOT";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxBG)).EndInit();

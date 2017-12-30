@@ -213,7 +213,7 @@ namespace MassEffectModder
                 }
                 if (installer != null)
                 {
-                    installer.updateStatusScan("Progress... " + (i * 100 / GameData.packageFiles.Count) + " % ");
+                    installer.updateStatusScan("Scanning textures " + (i * 100 / GameData.packageFiles.Count) + "% ");
                 }
                 errors += FindTextures(textures, GameData.packageFiles[i], cachePackageMgr, ref log);
             }
