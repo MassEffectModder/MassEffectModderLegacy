@@ -240,8 +240,7 @@ namespace MassEffectModder
             ZlibHelper.Zip zip = new ZlibHelper.Zip();
             try
             {
-                byte[] buffer = File.ReadAllBytes(file);
-                handle = zip.Open(buffer, ref numEntries, 0);
+                handle = zip.Open(file, ref numEntries, 0);
                 for (uint i = 0; i < numEntries; i++)
                 {
                     result = zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);

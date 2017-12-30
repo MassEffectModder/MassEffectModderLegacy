@@ -647,8 +647,7 @@ namespace MassEffectModder
                         try
                         {
                             int indexTpf = -1;
-                            byte[] buffer = File.ReadAllBytes(file);
-                            handle = zip.Open(buffer, ref numEntries, 1);
+                            handle = zip.Open(file, ref numEntries, 1);
                             for (ulong i = 0; i < numEntries; i++)
                             {
                                 result = zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
@@ -1364,8 +1363,7 @@ namespace MassEffectModder
                     try
                     {
                         int indexTpf = -1;
-                        byte[] buffer = File.ReadAllBytes(file);
-                        handle = zip.Open(buffer, ref numEntries, 1);
+                        handle = zip.Open(file, ref numEntries, 1);
                         for (ulong i = 0; i < numEntries; i++)
                         {
                             result = zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
