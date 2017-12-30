@@ -52,6 +52,7 @@ namespace MassEffectModder
         int AlotVer;
         int MeuitmVer;
         bool allowToSkipScan;
+        bool meuitmMode = false;
 
         public Installer()
         {
@@ -79,7 +80,11 @@ namespace MassEffectModder
             }
             string baseModNameStr = installerIni.Read("BaseModName", "Main");
             if (baseModNameStr != "")
+            {
                 Text = "MEM Installer v" + Application.ProductVersion + " for " + baseModNameStr;
+                if (baseModNameStr.Contains("MEUITM"))
+                    meuitmMode = true;
+            }
             else
                 Text += " ME" + gameId;
             if (runAsAdmin)
@@ -115,6 +120,12 @@ namespace MassEffectModder
             skip = installerIni.Read("AllowSkipScan", "Main").ToLowerInvariant();
             if (skip == "true")
                 allowToSkipScan = true;
+
+            string meuitm = installerIni.Read("MEUITM", "Main").ToLowerInvariant();
+            if (meuitm == "true" || MeuitmVer != 0)
+                meuitmMode = true;
+            if (meuitmMode && MeuitmVer == 0)
+                MeuitmVer = 1;
 
             configIni = new ConfIni();
 
