@@ -152,23 +152,40 @@ namespace MassEffectModder
             buttonsDefault(gameId);
 
             if (allowToSkip)
+            {
                 checkBoxOptionVanilla.Visible = true;
+                labelOptionVanilla.Visible = true;
+            }
             else
+            {
                 checkBoxOptionVanilla.Visible = false;
+                labelOptionVanilla.Visible = false;
+            }
             if (allowToSkipScan)
+            {
                 checkBoxOptionSkipScan.Visible = true;
+                labelOptionSkipScan.Visible = true;
+            }
             else
+            {
                 checkBoxOptionSkipScan.Visible = false;
+                labelOptionSkipScan.Visible = false;
+            }
             checkBoxOptionVanilla.Checked = false;
             checkBoxOptionLimit2K.Checked = false;
             checkBoxOptionSkipScan.Checked = false;
 
             buttonSTART.Visible = true;
 
+            labelDesc.Parent = pictureBoxBG;
             labelFinalStatus.Parent = pictureBoxBG;
             labelCurrentStatus.Parent = pictureBoxBG;
             labelOptions.Parent = pictureBoxBG;
-            checkBoxPreEnableRepack.Parent = pictureBoxBG;
+            labelOptionLimit2K.Parent = pictureBoxBG;
+            labelOptionRepack.Parent = pictureBoxBG;
+            labelOptionSkipScan.Parent = pictureBoxBG;
+            labelOptionVanilla.Parent = pictureBoxBG;
+            checkBoxOptionRepack.Parent = pictureBoxBG;
             checkBoxOptionLimit2K.Parent = pictureBoxBG;
             checkBoxOptionSkipScan.Parent = pictureBoxBG;
             checkBoxOptionVanilla.Parent = pictureBoxBG;
@@ -501,8 +518,11 @@ namespace MassEffectModder
                 checkBoxOptionVanilla.Checked = true;
                 checkBoxOptionVanilla.CheckedChanged += checkBoxOptionVanilla_CheckedChanged;
                 checkBoxOptionSkipScan.Visible = false;
-                checkBoxPreEnableRepack.Visible = false;
-                checkBoxPreEnableRepack.Checked = false;
+                checkBoxOptionRepack.Visible = false;
+                checkBoxOptionRepack.Checked = false;
+                labelOptionVanilla.Visible = false;
+                labelOptionRepack.Visible = false;
+                labelOptionSkipScan.Visible = false;
             }
 
             if (updateMode || checkBoxOptionSkipScan.Checked)
@@ -829,7 +849,7 @@ namespace MassEffectModder
         {
             if (gameId == 3)
             {
-                checkBoxPreEnableRepack.Visible = false;
+                checkBoxOptionRepack.Visible = false;
             }
             if (gameId == 1)
                 checkBoxOptionLimit2K.Visible = true;
@@ -841,9 +861,8 @@ namespace MassEffectModder
 
         private void buttonsEnable(bool enabled)
         {
-            buttonExit.Visible = enabled;
-            buttonNormal.Visible = enabled;
-            checkBoxPreEnableRepack.Enabled = enabled;
+            buttonNormal.Visible = false;// enabled;
+            checkBoxOptionRepack.Enabled = enabled;
             if (updateMode)
             {
                 checkBoxOptionVanilla.Enabled = false;
@@ -865,6 +884,14 @@ namespace MassEffectModder
 
             buttonsEnable(false);
             buttonSTART.Visible = false;
+            checkBoxOptionVanilla.Visible = false;
+            checkBoxOptionSkipScan.Visible = false;
+            checkBoxOptionRepack.Visible = false;
+            checkBoxOptionLimit2K.Visible = false;
+            labelOptionVanilla.Visible = false;
+            labelOptionRepack.Visible = false;
+            labelOptionSkipScan.Visible = false;
+            labelOptionLimit2K.Visible = false;
             labelFinalStatus.Text = "Process in progress...";
 
             errors = "";
@@ -926,7 +953,7 @@ namespace MassEffectModder
 
 
             updateStatusStore("Progress...");
-            cachePackageMgr.CloseAllWithSave(checkBoxPreEnableRepack.Checked);
+            cachePackageMgr.CloseAllWithSave(checkBoxOptionRepack.Checked);
             updateStatusStore("");
 
 
@@ -936,8 +963,8 @@ namespace MassEffectModder
                 {
                     log += "Remove mipmaps started..." + Environment.NewLine;
                     updateStatusMipMaps("In progress...");
-                    errors += mipMaps.removeMipMapsME1(1, textures, null, null, this, checkBoxPreEnableRepack.Checked);
-                    errors += mipMaps.removeMipMapsME1(2, textures, null, null, this, checkBoxPreEnableRepack.Checked);
+                    errors += mipMaps.removeMipMapsME1(1, textures, null, null, this, checkBoxOptionRepack.Checked);
+                    errors += mipMaps.removeMipMapsME1(2, textures, null, null, this, checkBoxOptionRepack.Checked);
                     updateStatusMipMaps("");
                     log += "Remove mipmaps finished" + Environment.NewLine + Environment.NewLine;
                 }
@@ -945,7 +972,7 @@ namespace MassEffectModder
                 {
                     log += "Remove mipmaps started..." + Environment.NewLine;
                     updateStatusMipMaps("In progress...");
-                    errors += mipMaps.removeMipMapsME2ME3(textures, null, null, this, checkBoxPreEnableRepack.Checked);
+                    errors += mipMaps.removeMipMapsME2ME3(textures, null, null, this, checkBoxOptionRepack.Checked);
                     updateStatusMipMaps("");
                     log += "Remove mipmaps finished" + Environment.NewLine + Environment.NewLine;
                 }
@@ -967,7 +994,7 @@ namespace MassEffectModder
             log += "Updating LODs and other settings finished" + Environment.NewLine + Environment.NewLine;
 
 
-            if (checkBoxPreEnableRepack.Checked)
+            if (checkBoxOptionRepack.Checked)
             {
                 if (!updateMode && !checkBoxOptionSkipScan.Checked)
                 {
@@ -999,7 +1026,6 @@ namespace MassEffectModder
 
             var time = Misc.stopTimer();
             labelFinalStatus.Text = "Process finished. Process total time: " + Misc.getTimerFormat(time);
-            buttonExit.Visible = true;
             buttonNormal.Visible = true;
 
             log += "==========================================" + Environment.NewLine;
