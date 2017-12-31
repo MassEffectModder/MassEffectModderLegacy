@@ -160,6 +160,10 @@ namespace MassEffectModder
             {
                 OptionRepackVisible = checkBoxOptionRepack.Visible = labelOptionRepack.Visible = false;
             }
+            else
+            {
+                OptionRepackVisible = checkBoxOptionRepack.Visible = labelOptionRepack.Visible = true;
+            }
             if (gameId == 1)
             {
                 OptionLimit2KVisible = checkBoxOptionLimit2K.Visible = labelOptionLimit2K.Visible = true;
@@ -940,10 +944,10 @@ namespace MassEffectModder
 
             if (!PreInstallCheck())
             {
-                checkBoxOptionVanilla.Visible = OptionVanillaVisible;
-                checkBoxOptionSkipScan.Visible = OptionSkipScanVisible;
-                checkBoxOptionRepack.Visible = OptionRepackVisible;
-                checkBoxOptionLimit2K.Visible = OptionLimit2KVisible;
+                labelOptionVanilla.Visible = checkBoxOptionVanilla.Visible = OptionVanillaVisible;
+                labelOptionSkipScan.Visible = checkBoxOptionSkipScan.Visible = OptionSkipScanVisible;
+                labelOptionRepack.Visible = checkBoxOptionRepack.Visible = OptionRepackVisible;
+                labelOptionLimit2K.Visible = checkBoxOptionLimit2K.Visible = OptionLimit2KVisible;
                 labelOptions.Visible = checkBoxOptionVanilla.Visible || checkBoxOptionSkipScan.Visible ||
                     checkBoxOptionRepack.Visible || checkBoxOptionLimit2K.Visible;
                 labelDesc.Text = "";
