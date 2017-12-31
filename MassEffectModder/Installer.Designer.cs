@@ -90,7 +90,7 @@
             this.labelFinalStatus.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.labelFinalStatus.Font = new System.Drawing.Font("Segoe UI Light", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelFinalStatus.ForeColor = System.Drawing.Color.White;
-            this.labelFinalStatus.Location = new System.Drawing.Point(9, 266);
+            this.labelFinalStatus.Location = new System.Drawing.Point(9, 264);
             this.labelFinalStatus.Name = "labelFinalStatus";
             this.labelFinalStatus.Size = new System.Drawing.Size(909, 45);
             this.labelFinalStatus.TabIndex = 25;
@@ -104,7 +104,7 @@
             this.checkBoxOptionRepack.BackColor = System.Drawing.Color.Transparent;
             this.checkBoxOptionRepack.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.checkBoxOptionRepack.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxOptionRepack.Location = new System.Drawing.Point(16, 417);
+            this.checkBoxOptionRepack.Location = new System.Drawing.Point(16, 418);
             this.checkBoxOptionRepack.Name = "checkBoxOptionRepack";
             this.checkBoxOptionRepack.Size = new System.Drawing.Size(15, 14);
             this.checkBoxOptionRepack.TabIndex = 35;
@@ -179,7 +179,7 @@
             this.labelCurrentStatus.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.labelCurrentStatus.Font = new System.Drawing.Font("Segoe UI Light", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelCurrentStatus.ForeColor = System.Drawing.Color.White;
-            this.labelCurrentStatus.Location = new System.Drawing.Point(9, 311);
+            this.labelCurrentStatus.Location = new System.Drawing.Point(9, 296);
             this.labelCurrentStatus.Name = "labelCurrentStatus";
             this.labelCurrentStatus.Size = new System.Drawing.Size(909, 45);
             this.labelCurrentStatus.TabIndex = 28;
@@ -220,7 +220,7 @@
             this.labelOptionRepack.BackColor = System.Drawing.Color.Black;
             this.labelOptionRepack.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelOptionRepack.ForeColor = System.Drawing.Color.White;
-            this.labelOptionRepack.Location = new System.Drawing.Point(34, 412);
+            this.labelOptionRepack.Location = new System.Drawing.Point(34, 413);
             this.labelOptionRepack.Name = "labelOptionRepack";
             this.labelOptionRepack.Size = new System.Drawing.Size(184, 21);
             this.labelOptionRepack.TabIndex = 55;
@@ -273,7 +273,7 @@
             this.labelDesc.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.labelDesc.Font = new System.Drawing.Font("Segoe UI Light", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelDesc.ForeColor = System.Drawing.Color.White;
-            this.labelDesc.Location = new System.Drawing.Point(9, 221);
+            this.labelDesc.Location = new System.Drawing.Point(9, 229);
             this.labelDesc.Name = "labelDesc";
             this.labelDesc.Size = new System.Drawing.Size(909, 45);
             this.labelDesc.TabIndex = 59;
