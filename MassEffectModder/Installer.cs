@@ -60,6 +60,9 @@ namespace MassEffectModder
         int stage = 1;
         int totalStages = 7;
         System.Media.SoundPlayer musicPlayer;
+        CustomLabel customLabelDesc;
+        CustomLabel customLabelCurrentStatus;
+        CustomLabel customLabelFinalStatus;
 
         public Installer()
         {
@@ -68,6 +71,52 @@ namespace MassEffectModder
             mipMaps = new MipMaps();
             treeScan = new TreeScan();
             cachePackageMgr = new CachePackageMgr(null, this);
+
+            // 
+            // customLabelDesc
+            // 
+            customLabelDesc = new CustomLabel();
+            customLabelDesc.Anchor = labelDesc.Anchor;
+            customLabelDesc.BackColor = labelDesc.BackColor;
+            customLabelDesc.FlatStyle = labelDesc.FlatStyle;
+            customLabelDesc.Font = labelDesc.Font;
+            customLabelDesc.ForeColor = labelDesc.ForeColor;
+            customLabelDesc.Location = labelDesc.Location;
+            customLabelDesc.Name = "customLabelDesc";
+            customLabelDesc.Size = labelDesc.Size;
+            customLabelDesc.TextAlign = labelDesc.TextAlign;
+            customLabelDesc.Visible = true;
+            Controls.Add(customLabelDesc);
+            // 
+            // customLabelCurrentStatus
+            // 
+            customLabelCurrentStatus = new CustomLabel();
+            customLabelCurrentStatus.Anchor = labelCurrentStatus.Anchor;
+            customLabelCurrentStatus.BackColor = labelCurrentStatus.BackColor;
+            customLabelCurrentStatus.FlatStyle = labelCurrentStatus.FlatStyle;
+            customLabelCurrentStatus.Font = labelCurrentStatus.Font;
+            customLabelCurrentStatus.ForeColor = labelCurrentStatus.ForeColor;
+            customLabelCurrentStatus.Location = labelCurrentStatus.Location;
+            customLabelCurrentStatus.Name = "customLabelCurrentStatus";
+            customLabelCurrentStatus.Size = labelCurrentStatus.Size;
+            customLabelCurrentStatus.TextAlign = labelCurrentStatus.TextAlign;
+            customLabelCurrentStatus.Visible = true;
+            Controls.Add(customLabelCurrentStatus);
+            // 
+            // customLabelDesc
+            // 
+            customLabelFinalStatus = new CustomLabel();
+            customLabelFinalStatus.Anchor = labelFinalStatus.Anchor;
+            customLabelFinalStatus.BackColor = labelFinalStatus.BackColor;
+            customLabelFinalStatus.FlatStyle = labelFinalStatus.FlatStyle;
+            customLabelFinalStatus.Font = labelFinalStatus.Font;
+            customLabelFinalStatus.ForeColor = labelFinalStatus.ForeColor;
+            customLabelFinalStatus.Location = labelFinalStatus.Location;
+            customLabelFinalStatus.Name = "customLabelFinalStatus";
+            customLabelFinalStatus.Size = labelFinalStatus.Size;
+            customLabelFinalStatus.TextAlign = labelFinalStatus.TextAlign;
+            customLabelFinalStatus.Visible = true;
+            Controls.Add(customLabelFinalStatus);
         }
 
         public bool Run(bool runAsAdmin)
@@ -152,9 +201,8 @@ namespace MassEffectModder
 
             configIni = new ConfIni();
 
-            labelDesc.Text = "";
-            labelCurrentStatus.Text = "";
-            labelFinalStatus.Text = "";
+            customLabelDesc.Text = customLabelCurrentStatus.Text = customLabelFinalStatus.Text = "";
+
 
             if (gameId == 3)
             {
@@ -196,9 +244,9 @@ namespace MassEffectModder
             buttonSTART.Visible = true;
             buttonNormal.Visible = true;
 
-            labelDesc.Parent = pictureBoxBG;
-            labelFinalStatus.Parent = pictureBoxBG;
-            labelCurrentStatus.Parent = pictureBoxBG;
+            customLabelDesc.Parent = pictureBoxBG;
+            customLabelFinalStatus.Parent = pictureBoxBG;
+            customLabelCurrentStatus.Parent = pictureBoxBG;
             labelOptions.Parent = pictureBoxBG;
             labelOptionLimit2K.Parent = pictureBoxBG;
             labelOptionRepack.Parent = pictureBoxBG;
@@ -312,7 +360,7 @@ namespace MassEffectModder
         private bool PreInstallCheck()
         {
             buttonsEnable(false);
-            labelFinalStatus.Text = "Checking game setup...";
+            customLabelFinalStatus.Text = "Checking game setup...";
             Application.DoEvents();
 
             ulong memorySize = ((new ComputerInfo().TotalPhysicalMemory / 1024 / 1024) + 1023) / 1024;
@@ -333,8 +381,8 @@ namespace MassEffectModder
             memFiles.Sort();
             if (memFiles.Count == 0)
             {
-                labelFinalStatus.Text = "No MEM file mods found!, aborting...";
-                labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
+                customLabelFinalStatus.Text = "No MEM file mods found!, aborting...";
+                customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                 buttonsEnable(true);
                 return false;
             }
@@ -372,8 +420,8 @@ namespace MassEffectModder
                 File.Delete(filename);
             if (errors != "")
             {
-                labelFinalStatus.Text = "There are some errors while detecting MEM mods, aborting...";
-                labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
+                customLabelFinalStatus.Text = "There are some errors while detecting MEM mods, aborting...";
+                customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                 buttonsEnable(true);
 
                 if (File.Exists(filename))
@@ -390,15 +438,15 @@ namespace MassEffectModder
             gameData = new GameData((MeType)gameId, configIni);
             if (!Directory.Exists(GameData.GamePath))
             {
-                labelFinalStatus.Text = "Game path is wrong, aborting...";
-                labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
+                customLabelFinalStatus.Text = "Game path is wrong, aborting...";
+                customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                 buttonsEnable(true);
                 return false;
             }
             if (!gameData.getPackages(true, true))
             {
-                labelFinalStatus.Text = "Missing game data, aborting...";
-                labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
+                customLabelFinalStatus.Text = "Missing game data, aborting...";
+                customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                 buttonsEnable(true);
                 return false;
             }
@@ -406,8 +454,8 @@ namespace MassEffectModder
             {
                 if (!File.Exists(GameData.GamePath + "\\BioGame\\CookedPC\\Startup_int.upk"))
                 {
-                    labelFinalStatus.Text = "ME1 game not found, aborting...";
-                    labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
+                    customLabelFinalStatus.Text = "ME1 game not found, aborting...";
+                    customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                     buttonsEnable(true);
                     return false;
                 }
@@ -416,8 +464,8 @@ namespace MassEffectModder
             {
                 if (!File.Exists(GameData.GamePath + "\\BioGame\\CookedPC\\Textures.tfc"))
                 {
-                    labelFinalStatus.Text = "ME2 game not found, aborting...";
-                    labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
+                    customLabelFinalStatus.Text = "ME2 game not found, aborting...";
+                    customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                     buttonsEnable(true);
                     return false;
                 }
@@ -426,8 +474,8 @@ namespace MassEffectModder
             {
                 if (!File.Exists(GameData.GamePath + "\\BIOGame\\PCConsoleTOC.bin"))
                 {
-                    labelFinalStatus.Text = "ME3 game not found, aborting...";
-                    labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
+                    customLabelFinalStatus.Text = "ME3 game not found, aborting...";
+                    customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                     buttonsEnable(true);
                     return false;
                 }
@@ -459,8 +507,8 @@ namespace MassEffectModder
             }
             if (!writeAccess)
             {
-                labelFinalStatus.Text = "Write access denied to game folders, aborting...";
-                labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
+                customLabelFinalStatus.Text = "Write access denied to game folders, aborting...";
+                customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                 buttonsEnable(true);
                 return false;
             }
@@ -496,8 +544,8 @@ namespace MassEffectModder
 
             if (diskUsage > diskFreeSpace)
             {
-                labelFinalStatus.Text = "You have not enough disk space remaining. You need about " + Misc.getBytesFormat(diskUsage) + " free.";
-                labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
+                customLabelFinalStatus.Text = "You have not enough disk space remaining. You need about " + Misc.getBytesFormat(diskUsage) + " free.";
+                customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                 buttonsEnable(true);
                 return false;
             }
@@ -522,8 +570,8 @@ namespace MassEffectModder
                 }
                 Process.Start(filename);
 
-                labelFinalStatus.Text = "Detected not compatible mod, aborting...";
-                labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
+                customLabelFinalStatus.Text = "Detected not compatible mod, aborting...";
+                customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                 buttonsEnable(true);
                 return false;
             }
@@ -557,7 +605,7 @@ namespace MassEffectModder
 
             if (GameData.gameType == MeType.ME3_TYPE)
             {
-                labelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
+                customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
                 ME3DLC.unpackAllDLC(null, this);
                 gameData.getPackages(true, true);
             }
@@ -573,24 +621,24 @@ namespace MassEffectModder
 
                 if (!File.Exists(mapFile))
                 {
-                    labelFinalStatus.Text = "Game was not scanned for textures, can not continue, aborting...";
-                    labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
+                    customLabelFinalStatus.Text = "Game was not scanned for textures, can not continue, aborting...";
+                    customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                     buttonsEnable(true);
                     return false;
                 }
 
                 if (!loadTexturesMap(mapFile))
                 {
-                    labelFinalStatus.Text = "Game inconsistent from previous scan! Reinstall ME" + gameId + " and restart.";
-                    labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
+                    customLabelFinalStatus.Text = "Game inconsistent from previous scan! Reinstall ME" + gameId + " and restart.";
+                    customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                     buttonsEnable(true);
                     return false;
                 }
 
                 if (!MipMaps.verifyGameDataEmptyMipMapsRemoval())
                 {
-                    labelFinalStatus.Text = "Game doesn't have empty mips removed, aborting...";
-                    labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
+                    customLabelFinalStatus.Text = "Game doesn't have empty mips removed, aborting...";
+                    customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                     buttonsEnable(true);
                     return false;
                 }
@@ -599,7 +647,7 @@ namespace MassEffectModder
             {
                 if (!checkBoxOptionVanilla.Checked)
                 {
-                    labelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
+                    customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
                     List<string> modList = new List<string>();
                     bool vanilla = Misc.checkGameFiles((MeType)gameId, ref errors, ref modList, null, this, Misc.generateModsMd5Entries);
                     updateLabelPreVanilla("");
@@ -626,8 +674,8 @@ namespace MassEffectModder
                         fs.WriteStringASCII(errors);
                         fs.Close();
                         Process.Start(filename);
-                        labelFinalStatus.Text = "Game files are not vanilla or not recognized";
-                        labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
+                        customLabelFinalStatus.Text = "Game files are not vanilla or not recognized";
+                        customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                         if (gameId == 3)
                         {
                             string message = "The installer detected that the following game files\n" +
@@ -938,9 +986,9 @@ namespace MassEffectModder
             checkBoxOptionLimit2K.Visible = labelOptionLimit2K.Visible = false;
             labelOptions.Visible = false;
             if (meuitmMode)
-                labelDesc.Text = "Installing MEUITM for Mass Effect";
+                customLabelDesc.Text = "Installing MEUITM for Mass Effect";
             else
-                labelDesc.Text = "Installing ALOT for Mass Effect " + gameId;
+                customLabelDesc.Text = "Installing ALOT for Mass Effect " + gameId;
 
             if (!PreInstallCheck())
             {
@@ -950,12 +998,12 @@ namespace MassEffectModder
                 labelOptionLimit2K.Visible = checkBoxOptionLimit2K.Visible = OptionLimit2KVisible;
                 labelOptions.Visible = checkBoxOptionVanilla.Visible || checkBoxOptionSkipScan.Visible ||
                     checkBoxOptionRepack.Visible || checkBoxOptionLimit2K.Visible;
-                labelDesc.Text = "";
+                customLabelDesc.Text = "";
                 return;
             }
 
-            labelFinalStatus.Text = "";
-            labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.White);
+            customLabelFinalStatus.Text = "";
+            customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.White);
 
             errors = "";
             log = "";
@@ -987,7 +1035,7 @@ namespace MassEffectModder
                 }
                 log += Environment.NewLine;
 
-                labelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
+                customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
 
                 log += "Scan textures started..." + Environment.NewLine;
                 errors += treeScan.PrepareListOfTextures(null, null, null, this, ref log, true);
@@ -1003,19 +1051,19 @@ namespace MassEffectModder
                 log += "Scan textures skipped" + Environment.NewLine + Environment.NewLine;
             }
 
-            labelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
+            customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
             log += "Process textures started..." + Environment.NewLine;
             applyModules();
             log += "Process textures finished" + Environment.NewLine + Environment.NewLine;
 
 
-            labelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
+            customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
             cachePackageMgr.CloseAllWithSave(checkBoxOptionRepack.Checked);
 
 
             if (!updateMode && !checkBoxOptionSkipScan.Checked)
             {
-                labelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
+                customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
                 if (GameData.gameType == MeType.ME1_TYPE)
                 {
                     log += "Remove mipmaps started..." + Environment.NewLine;
@@ -1050,7 +1098,7 @@ namespace MassEffectModder
             {
                 if (!updateMode && !checkBoxOptionSkipScan.Checked)
                 {
-                    labelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
+                    customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
                     log += "Repack started..." + Environment.NewLine;
                     for (int i = 0; i < GameData.packageFiles.Count; i++)
                     {
@@ -1077,10 +1125,10 @@ namespace MassEffectModder
 
             var time = Misc.stopTimer();
             log += "Installation finished. Process total time: " + Misc.getTimerFormat(time) + Environment.NewLine;
-            labelFinalStatus.Text = "Installation finished.";
-            labelCurrentStatus.Text = "";
-            labelCurrentStatus.ForeColor = Color.FromKnownColor(KnownColor.White);
-            labelDesc.Text = "";
+            customLabelFinalStatus.Text = "Installation finished.";
+            customLabelCurrentStatus.Text = "";
+            customLabelCurrentStatus.ForeColor = Color.FromKnownColor(KnownColor.White);
+            customLabelDesc.Text = "";
             buttonNormal.Visible = true;
 
             log += "==========================================" + Environment.NewLine;
@@ -1112,51 +1160,51 @@ namespace MassEffectModder
                     fs.WriteStringASCII("================================================================================" + Environment.NewLine + Environment.NewLine);
                     fs.WriteStringASCII(errors);
                 }
-                labelFinalStatus.Text = "WARNING: Some errors have occured!";
-                labelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
+                customLabelFinalStatus.Text = "WARNING: Some errors have occured!";
+                customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                 Process.Start(filename);
             }
         }
 
         public void updateLabelPreVanilla(string text)
         {
-            labelCurrentStatus.Text = text;
+            customLabelCurrentStatus.Text = text;
             Application.DoEvents();
         }
 
         public void updateStatusPrepare(string text)
         {
-            labelCurrentStatus.Text = text;
+            customLabelCurrentStatus.Text = text;
             Application.DoEvents();
         }
 
         public void updateStatusScan(string text)
         {
-            labelCurrentStatus.Text = text;
+            customLabelCurrentStatus.Text = text;
             Application.DoEvents();
         }
 
         public void updateStatusMipMaps(string text)
         {
-            labelCurrentStatus.Text = text;
+            customLabelCurrentStatus.Text = text;
             Application.DoEvents();
         }
 
         public void updateStatusTextures(string text)
         {
-            labelCurrentStatus.Text = text;
+            customLabelCurrentStatus.Text = text;
             Application.DoEvents();
         }
 
         public void updateStatusStore(string text)
         {
-            labelCurrentStatus.Text = text;
+            customLabelCurrentStatus.Text = text;
             Application.DoEvents();
         }
 
         public void updateStatusRepackZlib(string text)
         {
-            labelCurrentStatus.Text = text;
+            customLabelCurrentStatus.Text = text;
             Application.DoEvents();
         }
 

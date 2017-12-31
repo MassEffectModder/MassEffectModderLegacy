@@ -96,6 +96,7 @@
             this.labelFinalStatus.TabIndex = 25;
             this.labelFinalStatus.Text = "final status";
             this.labelFinalStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.labelFinalStatus.Visible = false;
             // 
             // checkBoxOptionRepack
             // 
@@ -185,6 +186,7 @@
             this.labelCurrentStatus.TabIndex = 28;
             this.labelCurrentStatus.Text = "current status";
             this.labelCurrentStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.labelCurrentStatus.Visible = false;
             // 
             // labelOptions
             // 
@@ -279,6 +281,7 @@
             this.labelDesc.TabIndex = 59;
             this.labelDesc.Text = "description";
             this.labelDesc.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.labelDesc.Visible = false;
             // 
             // Installer
             // 
