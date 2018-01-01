@@ -1,7 +1,7 @@
 ﻿/*
  * MassEffectModder
  *
- * Copyright (C) 2016-2017 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2016-2018 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -347,9 +347,9 @@ namespace MassEffectModder
                     int prevAlotV = fs.ReadInt32();
                     int prevProductV = fs.ReadInt32();
                     uint memiTag = fs.ReadUInt32();
-                    if (prevProductV == MEMI_TAG)
+                    if (memiTag == MEMI_TAG)
                     {
-                        if (prevProductV < 10 || prevProductV == 16777472) // default before MEM v178
+                        if (prevProductV < 10 || prevProductV == 4352 || prevProductV == 16777472) // default before MEM v178
                             prevProductV = prevAlotV = prevMeuitmV = 0;
                     }
                     else
