@@ -340,12 +340,27 @@ namespace MassEffectModder
             }
             try
             {
-                using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Write))
+                using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.ReadWrite))
                 {
-                    fs.SeekEnd();
-                    fs.WriteInt32(MeuitmV);
-                    fs.WriteInt32(AlotV);
-                    fs.WriteInt32(int.Parse(Application.ProductVersion));
+                    fs.Seek(-16, SeekOrigin.End);
+                    int prevMeuitmV = fs.ReadInt32();
+                    int prevAlotV = fs.ReadInt32();
+                    int prevProductV = fs.ReadInt32();
+                    uint memiTag = fs.ReadUInt32();
+                    if (prevProductV == MEMI_TAG)
+                    {
+                        if (prevProductV < 10 || prevProductV == 16777472) // default before MEM v178
+                            prevProductV = prevAlotV = prevMeuitmV = 0;
+                    }
+                    else
+                        prevProductV = prevAlotV = prevMeuitmV = 0;
+                    if (MeuitmV != 0)
+                        prevMeuitmV = MeuitmV;
+                    if (AlotV != 0)
+                        prevAlotV = AlotV;
+                    fs.WriteInt32(prevMeuitmV);
+                    fs.WriteInt32(prevAlotV);
+                    fs.WriteInt32((int)(prevProductV & 0xffff0000) | int.Parse(Application.ProductVersion));
                     fs.WriteUInt32(MEMI_TAG);
                 }
             }
