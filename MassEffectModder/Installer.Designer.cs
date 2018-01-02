@@ -180,7 +180,7 @@
             this.labelCurrentStatus.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.labelCurrentStatus.Font = new System.Drawing.Font("Segoe UI Light", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelCurrentStatus.ForeColor = System.Drawing.Color.White;
-            this.labelCurrentStatus.Location = new System.Drawing.Point(9, 300);
+            this.labelCurrentStatus.Location = new System.Drawing.Point(9, 297);
             this.labelCurrentStatus.Name = "labelCurrentStatus";
             this.labelCurrentStatus.Size = new System.Drawing.Size(909, 45);
             this.labelCurrentStatus.TabIndex = 28;
