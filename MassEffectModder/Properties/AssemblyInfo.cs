@@ -1,7 +1,7 @@
 /*
  * MassEffectModder
  *
- * Copyright (C) 2014-2017 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2014-2018 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
 [assembly: Guid("a283fe02-fd28-474d-a214-0d8c8c41d062")]
-[assembly: AssemblyVersion("190")]
-[assembly: AssemblyFileVersion("190")]
+[assembly: AssemblyVersion("191")]
+[assembly: AssemblyFileVersion("191")]

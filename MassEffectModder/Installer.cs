@@ -403,6 +403,8 @@ namespace MassEffectModder
             try
             {
                 handle = zip.Open(path, ref numEntries, 0);
+                if (handle == IntPtr.Zero)
+                    throw new Exception();
                 for (uint i = 0; i < numEntries; i++)
                 {
                     result = zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
@@ -470,6 +472,10 @@ namespace MassEffectModder
             customLabelFinalStatus.Text = "Checking game setup...";
             Application.DoEvents();
 
+            string filename = "errors-precheck.txt";
+            if (File.Exists(filename))
+                File.Delete(filename);
+
             ulong memorySize = ((new ComputerInfo().TotalPhysicalMemory / 1024 / 1024) + 1023) / 1024;
             if (memorySize < 4 && gameId == 3)
             {
@@ -522,9 +528,7 @@ namespace MassEffectModder
                     }
                 }
             }
-            string filename = "errors-precheck.txt";
-            if (File.Exists(filename))
-                File.Delete(filename);
+
             if (errors != "")
             {
                 customLabelFinalStatus.Text = "There are some errors while detecting MEM mods, aborting...";
