@@ -52,6 +52,8 @@ namespace MassEffectModder
         int AlotVer;
         int MeuitmVer;
         bool allowToSkipScan;
+        string softShadowsModPath;
+        string splashBitmapPath;
         bool meuitmMode = false;
         bool OptionVanillaVisible;
         bool OptionSkipScanVisible;
@@ -282,6 +284,24 @@ namespace MassEffectModder
                 pictureBoxBG.Image = new Bitmap(assembly.GetManifestResourceStream(res));
             }
 
+            softShadowsModPath = installerIni.Read("SoftShadowsMod", "Main").ToLowerInvariant();
+            if (softShadowsModPath != "")
+            {
+                if (!File.Exists(softShadowsModPath) || Path.GetExtension(softShadowsModPath).ToLowerInvariant() != ".zip")
+                {
+                    softShadowsModPath = "";
+                }
+            }
+
+            splashBitmapPath = installerIni.Read("SplashBitmap", "Main").ToLowerInvariant();
+            if (splashBitmapPath != "")
+            {
+                if (!File.Exists(splashBitmapPath) || Path.GetExtension(splashBitmapPath).ToLowerInvariant() != ".bmp")
+                {
+                    splashBitmapPath = "";
+                }
+            }
+
             MessageBox.Show("Before starting the installation,\nmake sure real time scanning is turned off.\n" +
                 "Antivirus software can interfere with the install process.", "Warning !");
 
@@ -363,6 +383,78 @@ namespace MassEffectModder
                     fs.WriteInt32((int)(prevProductV & 0xffff0000) | int.Parse(Application.ProductVersion));
                     fs.WriteUInt32(MEMI_TAG);
                 }
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool installSoftShadowsMod(GameData gameData, string path)
+        {
+            IntPtr handle = IntPtr.Zero;
+            int result;
+            ulong numEntries = 0;
+            string fileName = "";
+            ulong dstLen = 0;
+            ZlibHelper.Zip zip = new ZlibHelper.Zip();
+            try
+            {
+                handle = zip.Open(path, ref numEntries, 0);
+                for (uint i = 0; i < numEntries; i++)
+                {
+                    result = zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
+                    if (result != 0)
+                        throw new Exception();
+
+                    byte[] data = new byte[dstLen];
+                    result = zip.ReadCurrentFile(handle, data, dstLen);
+                    if (result != 0)
+                    {
+                        throw new Exception();
+                    }
+
+                    string filePath = GameData.GamePath + "\\Engine\\Shaders\\" + fileName;
+                    if (File.Exists(filePath))
+                        File.Delete(filePath);
+                    using (FileStream fs = new FileStream(filePath, FileMode.CreateNew))
+                    {
+                        fs.WriteFromBuffer(data);
+                    }
+
+                    zip.GoToNextFile(handle);
+                }
+            }
+            catch
+            {
+                return false;
+            }
+
+            try
+            {
+                string cachePath = gameData.GameUserPath + "\\Published\\CookedPC\\LocalShaderCache-PC-D3D-SM3.upk";
+                if (File.Exists(cachePath))
+                    File.Delete(cachePath);
+            }
+            catch
+            {
+                return false;
+            }
+
+
+            return true;
+        }
+
+        private bool installSplashScreen(string path)
+        {
+            string filePath = GameData.bioGamePath + "\\Splash\\Splash.bmp";
+            try
+            {
+                if (File.Exists(filePath))
+                    File.Delete(filePath);
+                File.Copy(path, filePath);
             }
             catch
             {
@@ -1137,6 +1229,28 @@ namespace MassEffectModder
 
             if (!applyModTag(gameId, MeuitmVer, AlotVer))
                 errors += "Failed applying stamp for installation!\n";
+
+            if (meuitmMode && softShadowsModPath != "")
+            {
+                if (installSoftShadowsMod(gameData, softShadowsModPath))
+                    log += "Soft Shadows mod installed.";
+                else
+                {
+                    log += "Soft Shadows mod failed to install!";
+                    errors += "Soft Shadows mod failed to install!";
+                }
+            }
+
+            if (meuitmMode && splashBitmapPath != "")
+            {
+                if (installSplashScreen(splashBitmapPath))
+                    log += "Splash screen mod installed.";
+                else
+                {
+                    log += "Splash mod failed to install!";
+                    errors += "Splash mod failed to install!";
+                }
+            }
 
             var time = Misc.stopTimer();
             log += "Installation finished. Process total time: " + Misc.getTimerFormat(time) + Environment.NewLine;
