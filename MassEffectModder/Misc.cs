@@ -325,13 +325,16 @@ namespace MassEffectModder
         {
             if (gameId == MeType.ME1_TYPE)
             {
-                engineConf.Write("MaxShadowResolution", "4096", "Engine.GameEngine");
+                engineConf.Write("MaxShadowResolution", "2048", "Engine.GameEngine");
                 if (softShadowsME1)
                     engineConf.Write("MinShadowResolution", "16", "Engine.GameEngine");
                 else
                     engineConf.Write("MinShadowResolution", "64", "Engine.GameEngine");
                 engineConf.Write("DynamicShadows", "True", "SystemSettings");
-                engineConf.Write("DepthBias", "0.006000", "SystemSettings");
+                if (softShadowsME1)
+                    engineConf.Write("DepthBias", "0.006000", "SystemSettings");
+                else
+                    engineConf.Write("DepthBias", "0.030000", "SystemSettings");
                 engineConf.Write("ShadowFilterQualityBias", "2", "SystemSettings");
                 engineConf.Write("ShadowFilterRadius", "5", "Engine.GameEngine");
                 engineConf.Write("bEnableBranchingPCFShadows", "True", "Engine.GameEngine");
