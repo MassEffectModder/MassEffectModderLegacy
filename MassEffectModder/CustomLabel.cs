@@ -35,17 +35,16 @@ namespace MassEffectModder
 
             using (GraphicsPath gfxPath = new GraphicsPath())
             {
-                e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
+                g.SmoothingMode = SmoothingMode.HighQuality;
                 using (Pen outline = new Pen(Color.Black, 3) { LineJoin = LineJoin.Round })
                 {
                     using (StringFormat format = new StringFormat() { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center })
                     {
                         using (Brush foreBrush = new SolidBrush(ForeColor))
                         {
-                            gfxPath.AddString(Text, Font.FontFamily, (int)Font.Style, (int)e.Graphics.DpiY * Font.Size / 72,
-                                e.ClipRectangle, format);
-                            e.Graphics.DrawPath(outline, gfxPath);
-                            e.Graphics.FillPath(foreBrush, gfxPath);
+                            gfxPath.AddString(Text, Font.FontFamily, (int)Font.Style, (int)e.Graphics.DpiY * Font.Size / 72, e.ClipRectangle, format);
+                            g.DrawPath(outline, gfxPath);
+                            g.FillPath(foreBrush, gfxPath);
                         }
                     }
                 }
