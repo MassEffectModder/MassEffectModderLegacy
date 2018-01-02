@@ -321,12 +321,15 @@ namespace MassEffectModder
             }
         }
 
-        static public void updateGFXSettings(MeType gameId, ConfIni engineConf)
+        static public void updateGFXSettings(MeType gameId, ConfIni engineConf, bool softShadowsME1)
         {
             if (gameId == MeType.ME1_TYPE)
             {
                 engineConf.Write("MaxShadowResolution", "4096", "Engine.GameEngine");
-                engineConf.Write("MinShadowResolution", "64", "Engine.GameEngine");
+                if (softShadowsME1)
+                    engineConf.Write("MinShadowResolution", "16", "Engine.GameEngine");
+                else
+                    engineConf.Write("MinShadowResolution", "64", "Engine.GameEngine");
                 engineConf.Write("DynamicShadows", "True", "SystemSettings");
                 engineConf.Write("DepthBias", "0.006000", "SystemSettings");
                 engineConf.Write("ShadowFilterQualityBias", "2", "SystemSettings");
