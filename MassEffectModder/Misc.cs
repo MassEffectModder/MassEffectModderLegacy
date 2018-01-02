@@ -328,6 +328,7 @@ namespace MassEffectModder
                 engineConf.Write("MaxShadowResolution", "4096", "Engine.GameEngine");
                 engineConf.Write("MinShadowResolution", "64", "Engine.GameEngine");
                 engineConf.Write("DynamicShadows", "True", "SystemSettings");
+                engineConf.Write("DepthBias", "0.006000", "SystemSettings");
                 engineConf.Write("ShadowFilterQualityBias", "2", "SystemSettings");
                 engineConf.Write("ShadowFilterRadius", "5", "Engine.GameEngine");
                 engineConf.Write("bEnableBranchingPCFShadows", "True", "Engine.GameEngine");
