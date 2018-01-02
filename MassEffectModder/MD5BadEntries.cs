@@ -1,7 +1,7 @@
 /*
  * MassEffectModder
  *
- * Copyright (C) 2017 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2017-2018 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,9 +23,9 @@ namespace MassEffectModder
 {
     static partial class Misc
     {
-        const string Bad_ME1UITM = "MEUITM";
-        const string Bad_ME1Controller = "ME1 Controller v1.2.0 - MEUITM";
-        const string Bad_ME1SameSexRomances = "ME1 Same-Sex Romances v2.0 - MEUITM";
+        const string Bad_ME1UITM = "MEUITM legacy installer version";
+        const string Bad_ME1Controller = "ME1 Controller v1.2.0 - legacy MEUITM version";
+        const string Bad_ME1SameSexRomances = "ME1 Same-Sex Romances v2.0 - legacy MEUITM version";
         const string Bad_NoSharedCooldown = "ME2 No Shared Cooldown";
 
         static public MD5ModFileEntry[] badMOD = new MD5ModFileEntry[]
