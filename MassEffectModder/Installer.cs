@@ -186,18 +186,27 @@ namespace MassEffectModder
                 MeuitmVer = 1;
 
             string musicFile = installerIni.Read("MusicSource", "Main").ToLowerInvariant();
-            if (musicFile != "")
+            if (musicFile != "" && File.Exists(musicFile))
             {
-                if (File.Exists(musicFile))
+                try
                 {
-                    try
+                    if (Path.GetExtension(musicFile).ToLowerInvariant() == ".mp3")
+                    {
+                        byte[] srcBuffer = File.ReadAllBytes(musicFile);
+                        byte[] wavBuffer = LibMadHelper.LibMad.Decompress(srcBuffer);
+                        if (wavBuffer.Length != 0)
+                        {
+                            MemoryStream wavStream = new MemoryStream(wavBuffer);
+                            musicPlayer = new System.Media.SoundPlayer(wavStream);
+                        }
+                    }
+                    else if (Path.GetExtension(musicFile).ToLowerInvariant() == ".wav")
                     {
                         musicPlayer = new System.Media.SoundPlayer(musicFile);
                     }
-                    catch
-                    {
-                        musicPlayer = null;
-                    }
+                }
+                catch
+                {
                 }
             }
 

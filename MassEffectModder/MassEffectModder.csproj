@@ -85,6 +85,7 @@
     <Compile Include="GameDataPath.cs" />
     <Compile Include="Helpers\7Zip\SevenZipHelper.cs" />
     <Compile Include="Helpers\Codecs\CompressonatorCodecs.cs" />
+    <Compile Include="Helpers\LibMad\libmadwrapper.cs" />
     <Compile Include="Helpers\StreamIO.cs" />
     <Compile Include="Image.cs" />
     <Compile Include="ImageBMP.cs" />
@@ -189,6 +190,7 @@
     <EmbeddedResource Include="Resources\me2_bg.jpg" />
     <EmbeddedResource Include="Resources\me3_bg.jpg" />
     <EmbeddedResource Include="Dlls\CompressonatorCodecs.dll" />
+    <EmbeddedResource Include="Dlls\libmadwrapper.dll" />
     <Content Include="MEM.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
