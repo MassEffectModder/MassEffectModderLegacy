@@ -455,6 +455,9 @@ namespace MassEffectModder
                 string cachePath = gameData.GameUserPath + "\\Published\\CookedPC\\LocalShaderCache-PC-D3D-SM3.upk";
                 if (File.Exists(cachePath))
                     File.Delete(cachePath);
+                cachePath = GameData.MainData + "\\LocalShaderCache-PC-D3D-SM3.upk";
+                if (File.Exists(cachePath))
+                    File.Delete(cachePath);
             }
             catch
             {
