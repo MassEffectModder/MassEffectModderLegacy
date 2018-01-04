@@ -59,6 +59,7 @@ namespace MassEffectModder
         bool OptionSkipScanVisible;
         bool OptionRepackVisible;
         bool OptionLimit2KVisible;
+        bool mute = false;
         int stage = 1;
         int totalStages = 7;
         System.Media.SoundPlayer musicPlayer;
@@ -242,6 +243,7 @@ namespace MassEffectModder
             checkBoxOptionLimit2K.Parent = pictureBoxBG;
             checkBoxOptionSkipScan.Parent = pictureBoxBG;
             checkBoxOptionVanilla.Parent = pictureBoxBG;
+            buttonMute.Parent = pictureBoxBG;
 
             labelOptions.Visible = OptionVanillaVisible || OptionSkipScanVisible ||
                 OptionRepackVisible || OptionLimit2KVisible;
@@ -306,6 +308,7 @@ namespace MassEffectModder
                                     MemoryStream wavStream = new MemoryStream(wavBuffer);
                                     musicPlayer = new System.Media.SoundPlayer(wavStream);
                                     musicPlayer.PlayLooping();
+                                    Invoke(new Action(() => { buttonMute.Visible = true; }));
                                 }
                             }
                             catch
@@ -317,6 +320,7 @@ namespace MassEffectModder
                     {
                         musicPlayer = new System.Media.SoundPlayer(musicFile);
                         musicPlayer.PlayLooping();
+                        buttonMute.Visible = true;
                     }
                 }
                 catch
@@ -1419,6 +1423,26 @@ namespace MassEffectModder
                 checkBoxOptionVanilla.CheckedChanged -= checkBoxOptionVanilla_CheckedChanged;
                 checkBoxOptionVanilla.Checked = false;
                 checkBoxOptionVanilla.CheckedChanged += checkBoxOptionVanilla_CheckedChanged;
+            }
+        }
+
+        private void buttonMute_Click(object sender, EventArgs e)
+        {
+            if (musicPlayer != null)
+            {
+                buttonMute.Visible = true;
+                if (mute)
+                {
+                    buttonMute.ImageIndex = 0;
+                    mute = false;
+                    musicPlayer.PlayLooping();
+                }
+                else
+                {
+                    buttonMute.ImageIndex = 1;
+                    mute = true;
+                    musicPlayer.Stop();
+                }
             }
         }
     }

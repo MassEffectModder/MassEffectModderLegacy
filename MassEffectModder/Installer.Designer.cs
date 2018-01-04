@@ -49,6 +49,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Installer));
             this.buttonNormal = new System.Windows.Forms.Button();
             this.labelFinalStatus = new System.Windows.Forms.Label();
@@ -65,6 +66,8 @@
             this.labelOptionVanilla = new System.Windows.Forms.Label();
             this.labelOptionSkipScan = new System.Windows.Forms.Label();
             this.labelDesc = new System.Windows.Forms.Label();
+            this.buttonMute = new System.Windows.Forms.Button();
+            this.imageListAudio = new System.Windows.Forms.ImageList(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxBG)).BeginInit();
             this.SuspendLayout();
             // 
@@ -283,11 +286,37 @@
             this.labelDesc.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.labelDesc.Visible = false;
             // 
+            // buttonMute
+            // 
+            this.buttonMute.BackColor = System.Drawing.Color.Transparent;
+            this.buttonMute.FlatAppearance.BorderSize = 0;
+            this.buttonMute.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
+            this.buttonMute.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+            this.buttonMute.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonMute.ForeColor = System.Drawing.Color.Transparent;
+            this.buttonMute.ImageIndex = 0;
+            this.buttonMute.ImageList = this.imageListAudio;
+            this.buttonMute.Location = new System.Drawing.Point(911, 12);
+            this.buttonMute.Name = "buttonMute";
+            this.buttonMute.Size = new System.Drawing.Size(35, 36);
+            this.buttonMute.TabIndex = 60;
+            this.buttonMute.UseVisualStyleBackColor = false;
+            this.buttonMute.Visible = false;
+            this.buttonMute.Click += new System.EventHandler(this.buttonMute_Click);
+            // 
+            // imageListAudio
+            // 
+            this.imageListAudio.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListAudio.ImageStream")));
+            this.imageListAudio.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageListAudio.Images.SetKeyName(0, "speaker.png");
+            this.imageListAudio.Images.SetKeyName(1, "mute.png");
+            // 
             // Installer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(958, 539);
+            this.Controls.Add(this.buttonMute);
             this.Controls.Add(this.labelDesc);
             this.Controls.Add(this.labelOptionSkipScan);
             this.Controls.Add(this.labelOptionVanilla);
@@ -330,5 +359,7 @@
         private System.Windows.Forms.Label labelOptionVanilla;
         private System.Windows.Forms.Label labelOptionSkipScan;
         private System.Windows.Forms.Label labelDesc;
+        private System.Windows.Forms.Button buttonMute;
+        private System.Windows.Forms.ImageList imageListAudio;
     }
 }
