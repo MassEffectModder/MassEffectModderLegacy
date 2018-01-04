@@ -185,31 +185,6 @@ namespace MassEffectModder
             if (meuitmMode && MeuitmVer == 0)
                 MeuitmVer = 1;
 
-            string musicFile = installerIni.Read("MusicSource", "Main").ToLowerInvariant();
-            if (musicFile != "" && File.Exists(musicFile))
-            {
-                try
-                {
-                    if (Path.GetExtension(musicFile).ToLowerInvariant() == ".mp3")
-                    {
-                        byte[] srcBuffer = File.ReadAllBytes(musicFile);
-                        byte[] wavBuffer = LibMadHelper.LibMad.Decompress(srcBuffer);
-                        if (wavBuffer.Length != 0)
-                        {
-                            MemoryStream wavStream = new MemoryStream(wavBuffer);
-                            musicPlayer = new System.Media.SoundPlayer(wavStream);
-                        }
-                    }
-                    else if (Path.GetExtension(musicFile).ToLowerInvariant() == ".wav")
-                    {
-                        musicPlayer = new System.Media.SoundPlayer(musicFile);
-                    }
-                }
-                catch
-                {
-                }
-            }
-
             configIni = new ConfIni();
 
             customLabelDesc.Text = customLabelCurrentStatus.Text = customLabelFinalStatus.Text = "";
@@ -314,8 +289,40 @@ namespace MassEffectModder
             MessageBox.Show("Before starting the installation,\nmake sure real time scanning is turned off.\n" +
                 "Antivirus software can interfere with the install process.", "Warning !");
 
-            if (musicPlayer != null)
-                musicPlayer.PlayLooping();
+            string musicFile = installerIni.Read("MusicSource", "Main").ToLowerInvariant();
+            if (musicFile != "" && File.Exists(musicFile))
+            {
+                try
+                {
+                    if (Path.GetExtension(musicFile).ToLowerInvariant() == ".mp3")
+                    {
+                        new System.Threading.Thread(delegate () {
+                            try
+                            {
+                                byte[] srcBuffer = File.ReadAllBytes(musicFile);
+                                byte[] wavBuffer = LibMadHelper.LibMad.Decompress(srcBuffer);
+                                if (wavBuffer.Length != 0)
+                                {
+                                    MemoryStream wavStream = new MemoryStream(wavBuffer);
+                                    musicPlayer = new System.Media.SoundPlayer(wavStream);
+                                    musicPlayer.PlayLooping();
+                                }
+                            }
+                            catch
+                            {
+                            }
+                        }).Start();
+                    }
+                    else if (Path.GetExtension(musicFile).ToLowerInvariant() == ".wav")
+                    {
+                        musicPlayer = new System.Media.SoundPlayer(musicFile);
+                        musicPlayer.PlayLooping();
+                    }
+                }
+                catch
+                {
+                }
+            }
 
             return true;
         }
