@@ -325,21 +325,30 @@ namespace MassEffectModder
         {
             if (gameId == MeType.ME1_TYPE)
             {
+                engineConf.Write("MaxShadowResolution", "2048", "Engine.Engine");
                 engineConf.Write("MaxShadowResolution", "2048", "Engine.GameEngine");
                 if (softShadowsME1)
+                {
+                    engineConf.Write("MinShadowResolution", "16", "Engine.Engine");
                     engineConf.Write("MinShadowResolution", "16", "Engine.GameEngine");
+                }
                 else
+                {
+                    engineConf.Write("MinShadowResolution", "64", "Engine.Engine");
                     engineConf.Write("MinShadowResolution", "64", "Engine.GameEngine");
+                }
                 engineConf.Write("DynamicShadows", "True", "SystemSettings");
-                if (softShadowsME1)
-                    engineConf.Write("DepthBias", "0.006000", "SystemSettings");
-                else
-                    engineConf.Write("DepthBias", "0.030000", "SystemSettings");
+                engineConf.Write("EnableDynamicShadows", "True", "WinDrv.WindowsClient");
+                engineConf.Write("DepthBias", "0.030000", "Engine.Engine");
+                engineConf.Write("DepthBias", "0.030000", "Engine.GameEngine");
                 engineConf.Write("ShadowFilterQualityBias", "2", "SystemSettings");
+                engineConf.Write("ShadowFilterRadius", "5", "Engine.Engine");
                 engineConf.Write("ShadowFilterRadius", "5", "Engine.GameEngine");
+                engineConf.Write("bEnableBranchingPCFShadows", "True", "Engine.Engine");
                 engineConf.Write("bEnableBranchingPCFShadows", "True", "Engine.GameEngine");
                 engineConf.Write("MaxAnisotropy", "16", "SystemSettings");
-                engineConf.Write("DisplayGamma", "2.2", "WinDrv.WindowsClient");
+                engineConf.Write("DisplayGamma", "2.0", "Engine.Client");
+                engineConf.Write("DisplayGamma", "2.0", "WinDrv.WindowsClient");
                 engineConf.Write("TextureLODLevel", "3", "WinDrv.WindowsClient");
                 engineConf.Write("FilterLevel", "2", "WinDrv.WindowsClient");
                 engineConf.Write("Trilinear", "True", "SystemSettings");
