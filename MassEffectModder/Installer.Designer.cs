@@ -211,7 +211,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBoxBG.InitialImage = null;
             this.pictureBoxBG.Location = new System.Drawing.Point(-1, 0);
-            this.pictureBoxBG.MaximumSize = new System.Drawing.Size(1920, 1080);
+            this.pictureBoxBG.MinimumSize = new System.Drawing.Size(960, 540);
             this.pictureBoxBG.Name = "pictureBoxBG";
             this.pictureBoxBG.Size = new System.Drawing.Size(960, 540);
             this.pictureBoxBG.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
