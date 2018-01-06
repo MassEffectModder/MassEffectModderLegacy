@@ -339,7 +339,7 @@ namespace MassEffectModder
                 engineConf.Write("ShadowFilterRadius", "5", "Engine.GameEngine");
                 engineConf.Write("bEnableBranchingPCFShadows", "True", "Engine.GameEngine");
                 engineConf.Write("MaxAnisotropy", "16", "SystemSettings");
-                engineConf.Write("DisplayGamma", "2.0", "WinDrv.WindowsClient");
+                engineConf.Write("DisplayGamma", "2.2", "WinDrv.WindowsClient");
                 engineConf.Write("TextureLODLevel", "3", "WinDrv.WindowsClient");
                 engineConf.Write("FilterLevel", "2", "WinDrv.WindowsClient");
                 engineConf.Write("Trilinear", "True", "SystemSettings");
