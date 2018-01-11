@@ -194,10 +194,7 @@ namespace MassEffectModder
                     {
                         return parsed["assets"][0]["browser_download_url"];
                     }
-                    if (MessageBox.Show("New version of MEM is available: " + githubVersion + "\nDo you want update to new version?", "Update", MessageBoxButtons.YesNo) != DialogResult.Yes)
-                    {
-                        return "";
-                    }
+                    MessageBox.Show("New version of MEM is available: " + githubVersion, "Update");
                     progressBar = new ProgressBar();
                     progressBar.Size = new System.Drawing.Size(400, 40);
                     progressBar.Style = ProgressBarStyle.Marquee;
