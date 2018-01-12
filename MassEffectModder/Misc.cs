@@ -342,8 +342,16 @@ namespace MassEffectModder
                 engineConf.Write("DepthBias", "0.030000", "Engine.Engine");
                 engineConf.Write("DepthBias", "0.030000", "Engine.GameEngine");
                 engineConf.Write("ShadowFilterQualityBias", "2", "SystemSettings");
-                engineConf.Write("ShadowFilterRadius", "5", "Engine.Engine");
-                engineConf.Write("ShadowFilterRadius", "5", "Engine.GameEngine");
+                if (softShadowsME1)
+                {
+                    engineConf.Write("ShadowFilterRadius", "2", "Engine.Engine");
+                    engineConf.Write("ShadowFilterRadius", "2", "Engine.GameEngine");
+                }
+                else
+                {
+                    engineConf.Write("ShadowFilterRadius", "5", "Engine.Engine");
+                    engineConf.Write("ShadowFilterRadius", "5", "Engine.GameEngine");
+                }
                 engineConf.Write("bEnableBranchingPCFShadows", "True", "Engine.Engine");
                 engineConf.Write("bEnableBranchingPCFShadows", "True", "Engine.GameEngine");
                 engineConf.Write("MaxAnisotropy", "16", "SystemSettings");
@@ -357,6 +365,9 @@ namespace MassEffectModder
                 engineConf.Write("ParticleLODBias", "0", "SystemSettings");
                 engineConf.Write("SkeletalMeshLODBias", "0", "SystemSettings");
                 engineConf.Write("DetailMode", "2", "SystemSettings");
+                engineConf.Write("PoolSize", "1536", "TextureStreaming");
+                engineConf.Write("MinTimeToGuaranteeMinMipCount", "0", "TextureStreaming");
+                engineConf.Write("MaxTimeToGuaranteeMinMipCount", "0", "TextureStreaming");
             }
             else if (gameId == MeType.ME2_TYPE)
             {

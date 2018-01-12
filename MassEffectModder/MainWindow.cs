@@ -448,7 +448,7 @@ namespace MassEffectModder
             checkGameFiles(MeType.ME3_TYPE);
         }
 
-        private void updateGfxME(MeType gameId)
+        private void updateGfxME(MeType gameId, bool softShadowsMode = false)
         {
             enableGameDataMenu(false);
             GameData gameData = new GameData(gameId, _configIni);
@@ -464,7 +464,12 @@ namespace MassEffectModder
 
         private void toolStripUpdateGfxME1MenuItem_Click(object sender, EventArgs e)
         {
-            updateGfxME(MeType.ME1_TYPE);
+            updateGfxME(MeType.ME1_TYPE, false);
+        }
+
+        private void toolStripUpdateGfxME1MenuItemSoftMode_Click(object sender, EventArgs e)
+        {
+            updateGfxME(MeType.ME1_TYPE, true);
         }
 
         private void toolStripUpdateGfxME2MenuItem_Click(object sender, EventArgs e)
