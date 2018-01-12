@@ -457,7 +457,7 @@ namespace MassEffectModder
             if (!exist)
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
             ConfIni engineConf = new ConfIni(path);
-            LODSettings.updateGFXSettings(gameId, engineConf, false);
+            LODSettings.updateGFXSettings(gameId, engineConf, false, false);
             MessageBox.Show("Game configuration file at " + path + " updated.");
             enableGameDataMenu(true);
         }

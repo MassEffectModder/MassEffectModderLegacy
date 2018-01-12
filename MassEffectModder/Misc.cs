@@ -321,7 +321,7 @@ namespace MassEffectModder
             }
         }
 
-        static public void updateGFXSettings(MeType gameId, ConfIni engineConf, bool softShadowsME1)
+        static public void updateGFXSettings(MeType gameId, ConfIni engineConf, bool softShadowsME1, bool meuitmMode)
         {
             if (gameId == MeType.ME1_TYPE)
             {
@@ -339,8 +339,16 @@ namespace MassEffectModder
                 }
                 engineConf.Write("DynamicShadows", "True", "SystemSettings");
                 engineConf.Write("EnableDynamicShadows", "True", "WinDrv.WindowsClient");
-                engineConf.Write("DepthBias", "0.030000", "Engine.Engine");
-                engineConf.Write("DepthBias", "0.030000", "Engine.GameEngine");
+                if (softShadowsME1 && meuitmMode)
+                {
+                    engineConf.Write("DepthBias", "0.006000", "Engine.Engine");
+                    engineConf.Write("DepthBias", "0.006000", "Engine.GameEngine");
+                }
+                else
+                {
+                    engineConf.Write("DepthBias", "0.030000", "Engine.Engine");
+                    engineConf.Write("DepthBias", "0.030000", "Engine.GameEngine");
+                }
                 engineConf.Write("ShadowFilterQualityBias", "2", "SystemSettings");
                 if (softShadowsME1)
                 {

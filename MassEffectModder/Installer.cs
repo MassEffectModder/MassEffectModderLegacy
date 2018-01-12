@@ -1224,7 +1224,7 @@ namespace MassEffectModder
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
             ConfIni engineConf = new ConfIni(path);
             LODSettings.updateLOD((MeType)gameId, engineConf, checkBoxOptionLimit2K.Checked);
-            LODSettings.updateGFXSettings((MeType)gameId, engineConf, softShadowsModPath != "");
+            LODSettings.updateGFXSettings((MeType)gameId, engineConf, softShadowsModPath != "", meuitmMode);
             log += "Updating LODs and other settings finished" + Environment.NewLine + Environment.NewLine;
 
 
