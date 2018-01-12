@@ -144,85 +144,85 @@ namespace MassEffectModder
             // massEffect1ToolStripMenuItem
             // 
             this.massEffect1ToolStripMenuItem.Name = "massEffect1ToolStripMenuItem";
-            this.massEffect1ToolStripMenuItem.Size = new System.Drawing.Size(274, 22);
+            this.massEffect1ToolStripMenuItem.Size = new System.Drawing.Size(320, 22);
             this.massEffect1ToolStripMenuItem.Text = "Texture Manager";
             this.massEffect1ToolStripMenuItem.Click += new System.EventHandler(this.massEffect1ToolStripMenuItem_Click);
             // 
             // toolStripME1RemoveTreeMenuItem
             // 
             this.toolStripME1RemoveTreeMenuItem.Name = "toolStripME1RemoveTreeMenuItem";
-            this.toolStripME1RemoveTreeMenuItem.Size = new System.Drawing.Size(274, 22);
+            this.toolStripME1RemoveTreeMenuItem.Size = new System.Drawing.Size(320, 22);
             this.toolStripME1RemoveTreeMenuItem.Text = "Remove Textures Scan File";
             this.toolStripME1RemoveTreeMenuItem.Click += new System.EventHandler(this.toolStripME1RemoveTreeMenuItem_Click);
             // 
             // toolStripExtractME1MEMMenuItem
             // 
             this.toolStripExtractME1MEMMenuItem.Name = "toolStripExtractME1MEMMenuItem";
-            this.toolStripExtractME1MEMMenuItem.Size = new System.Drawing.Size(274, 22);
+            this.toolStripExtractME1MEMMenuItem.Size = new System.Drawing.Size(320, 22);
             this.toolStripExtractME1MEMMenuItem.Text = "Extract MEM mod file";
             this.toolStripExtractME1MEMMenuItem.Click += new System.EventHandler(this.toolStripExtractME1MEMMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(271, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(317, 6);
             // 
             // repackME1ToolStripMenuItem
             // 
             this.repackME1ToolStripMenuItem.Name = "repackME1ToolStripMenuItem";
-            this.repackME1ToolStripMenuItem.Size = new System.Drawing.Size(274, 22);
+            this.repackME1ToolStripMenuItem.Size = new System.Drawing.Size(320, 22);
             this.repackME1ToolStripMenuItem.Text = "Repack Game Files";
             this.repackME1ToolStripMenuItem.Click += new System.EventHandler(this.repackME1ToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(271, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(317, 6);
             // 
             // updateME1ConfigToolStripMenuItem
             // 
             this.updateME1ConfigToolStripMenuItem.Name = "updateME1ConfigToolStripMenuItem";
-            this.updateME1ConfigToolStripMenuItem.Size = new System.Drawing.Size(274, 22);
+            this.updateME1ConfigToolStripMenuItem.Size = new System.Drawing.Size(320, 22);
             this.updateME1ConfigToolStripMenuItem.Text = "Update LOD Settings";
             this.updateME1ConfigToolStripMenuItem.Click += new System.EventHandler(this.updateME1ConfigToolStripMenuItem_Click);
             // 
             // updateME1Config2KToolStripMenuItem
             // 
             this.updateME1Config2KToolStripMenuItem.Name = "updateME1Config2KToolStripMenuItem";
-            this.updateME1Config2KToolStripMenuItem.Size = new System.Drawing.Size(274, 22);
+            this.updateME1Config2KToolStripMenuItem.Size = new System.Drawing.Size(320, 22);
             this.updateME1Config2KToolStripMenuItem.Text = "Update LOD Settings (2K)";
             this.updateME1Config2KToolStripMenuItem.Click += new System.EventHandler(this.updateME1Config2KToolStripMenuItem_Click);
             // 
             // removeLODSetME1MenuItem
             // 
             this.removeLODSetME1MenuItem.Name = "removeLODSetME1MenuItem";
-            this.removeLODSetME1MenuItem.Size = new System.Drawing.Size(274, 22);
+            this.removeLODSetME1MenuItem.Size = new System.Drawing.Size(320, 22);
             this.removeLODSetME1MenuItem.Text = "Remove LOD Settings";
             this.removeLODSetME1MenuItem.Click += new System.EventHandler(this.removeLODSetME1MenuItem_Click);
             // 
             // toolStripUpdateGfxME1MenuItem
             // 
             this.toolStripUpdateGfxME1MenuItem.Name = "toolStripUpdateGfxME1MenuItem";
-            this.toolStripUpdateGfxME1MenuItem.Size = new System.Drawing.Size(274, 22);
+            this.toolStripUpdateGfxME1MenuItem.Size = new System.Drawing.Size(320, 22);
             this.toolStripUpdateGfxME1MenuItem.Text = "Apply Game\'s Settings";
             this.toolStripUpdateGfxME1MenuItem.Click += new System.EventHandler(this.toolStripUpdateGfxME1MenuItem_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(271, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(317, 6);
             // 
             // changeGamePathME1ToolStripMenuItem
             // 
             this.changeGamePathME1ToolStripMenuItem.Name = "changeGamePathME1ToolStripMenuItem";
-            this.changeGamePathME1ToolStripMenuItem.Size = new System.Drawing.Size(274, 22);
+            this.changeGamePathME1ToolStripMenuItem.Size = new System.Drawing.Size(320, 22);
             this.changeGamePathME1ToolStripMenuItem.Text = "Change Game Path";
             this.changeGamePathME1ToolStripMenuItem.Click += new System.EventHandler(this.changeGamePathME1ToolStripMenuItem_Click);
             // 
             // toolStripCheckFilesME1MenuItem
             // 
             this.toolStripCheckFilesME1MenuItem.Name = "toolStripCheckFilesME1MenuItem";
-            this.toolStripCheckFilesME1MenuItem.Size = new System.Drawing.Size(274, 22);
+            this.toolStripCheckFilesME1MenuItem.Size = new System.Drawing.Size(320, 22);
             this.toolStripCheckFilesME1MenuItem.Text = "Check Game Files";
             this.toolStripCheckFilesME1MenuItem.Click += new System.EventHandler(this.toolStripCheckFilesME1MenuItem_Click);
             // 
@@ -505,8 +505,8 @@ namespace MassEffectModder
             // toolStripUpdateGfxME1MenuItemSoftMode
             // 
             this.toolStripUpdateGfxME1MenuItemSoftMode.Name = "toolStripUpdateGfxME1MenuItemSoftMode";
-            this.toolStripUpdateGfxME1MenuItemSoftMode.Size = new System.Drawing.Size(274, 22);
-            this.toolStripUpdateGfxME1MenuItemSoftMode.Text = "Apply Game\'s Settings (Soft Shadows)";
+            this.toolStripUpdateGfxME1MenuItemSoftMode.Size = new System.Drawing.Size(320, 22);
+            this.toolStripUpdateGfxME1MenuItemSoftMode.Text = "Apply Game\'s Settings (for Soft Shadows mod)";
             this.toolStripUpdateGfxME1MenuItemSoftMode.Click += new System.EventHandler(this.toolStripUpdateGfxME1MenuItemSoftMode_Click);
             // 
             // MainWindow
