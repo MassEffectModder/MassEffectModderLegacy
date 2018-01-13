@@ -245,7 +245,9 @@ namespace MassEffectModder
                                 }
                             }
                             if (!found)
-                                throw new Exception();
+                            {
+                                log += "Error: not able match 'slave' texture: + " + textures[k].name + " to 'master'.";
+                            }
                         }
                     }
                     if (!textures[k].list.Exists(s => s.slave) &&
