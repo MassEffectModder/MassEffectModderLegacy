@@ -23,7 +23,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{964A5986-62A4-4058-82F6-AA494DD5CFFD}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>sevenzipwrapper</RootNamespace>
+    <RootNamespace>libmadwrapper</RootNamespace>
     <ProjectName>libmadwrapper</ProjectName>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
