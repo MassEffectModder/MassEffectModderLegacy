@@ -53,6 +53,7 @@ namespace MassEffectModder
         int MeuitmVer;
         bool allowToSkipScan;
         string softShadowsModPath;
+        string splashDemiurge;
         string splashBitmapPath;
         bool meuitmMode = false;
         bool OptionVanillaVisible;
@@ -279,6 +280,15 @@ namespace MassEffectModder
                 }
             }
 
+            splashDemiurge = installerIni.Read("DemiurgeSplashVideo", "Main").ToLowerInvariant();
+            if (splashDemiurge != "")
+            {
+                if (!File.Exists(splashDemiurge) || Path.GetExtension(splashDemiurge).ToLowerInvariant() != ".bik")
+                {
+                    splashDemiurge = "";
+                }
+            }
+
             splashBitmapPath = installerIni.Read("SplashBitmap", "Main").ToLowerInvariant();
             if (splashBitmapPath != "")
             {
@@ -475,6 +485,23 @@ namespace MassEffectModder
         private bool installSplashScreen(string path)
         {
             string filePath = GameData.bioGamePath + "\\Splash\\Splash.bmp";
+            try
+            {
+                if (File.Exists(filePath))
+                    File.Delete(filePath);
+                File.Copy(path, filePath);
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool installSplashVideo(string path)
+        {
+            string filePath = GameData.MainData + "\\Movies\\db_standard.bik";
             try
             {
                 if (File.Exists(filePath))
@@ -1276,6 +1303,17 @@ namespace MassEffectModder
                 {
                     log += "Splash mod failed to install!";
                     errors += "Splash mod failed to install!";
+                }
+            }
+
+            if (meuitmMode && splashDemiurge != "")
+            {
+                if (installSplashVideo(splashDemiurge))
+                    log += "Splash video mod installed.";
+                else
+                {
+                    log += "Splash video mod failed to install!";
+                    errors += "Splash video mod failed to install!";
                 }
             }
 
