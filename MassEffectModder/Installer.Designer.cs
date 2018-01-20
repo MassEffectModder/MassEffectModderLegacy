@@ -351,6 +351,7 @@
             // comboBoxMod1
             // 
             this.comboBoxMod1.BackColor = System.Drawing.Color.Black;
+            this.comboBoxMod1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxMod1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.comboBoxMod1.ForeColor = System.Drawing.Color.White;
             this.comboBoxMod1.FormattingEnabled = true;
@@ -363,6 +364,7 @@
             // comboBoxMod2
             // 
             this.comboBoxMod2.BackColor = System.Drawing.Color.Black;
+            this.comboBoxMod2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxMod2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.comboBoxMod2.ForeColor = System.Drawing.Color.White;
             this.comboBoxMod2.FormattingEnabled = true;
@@ -375,6 +377,7 @@
             // comboBoxMod3
             // 
             this.comboBoxMod3.BackColor = System.Drawing.Color.Black;
+            this.comboBoxMod3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxMod3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.comboBoxMod3.ForeColor = System.Drawing.Color.White;
             this.comboBoxMod3.FormattingEnabled = true;
@@ -387,6 +390,7 @@
             // comboBoxMod4
             // 
             this.comboBoxMod4.BackColor = System.Drawing.Color.Black;
+            this.comboBoxMod4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxMod4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.comboBoxMod4.ForeColor = System.Drawing.Color.White;
             this.comboBoxMod4.FormattingEnabled = true;
@@ -399,6 +403,7 @@
             // comboBoxMod5
             // 
             this.comboBoxMod5.BackColor = System.Drawing.Color.Black;
+            this.comboBoxMod5.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxMod5.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.comboBoxMod5.ForeColor = System.Drawing.Color.White;
             this.comboBoxMod5.FormattingEnabled = true;
@@ -411,6 +416,7 @@
             // comboBoxMod6
             // 
             this.comboBoxMod6.BackColor = System.Drawing.Color.Black;
+            this.comboBoxMod6.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxMod6.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.comboBoxMod6.ForeColor = System.Drawing.Color.White;
             this.comboBoxMod6.FormattingEnabled = true;
@@ -423,6 +429,7 @@
             // comboBoxMod7
             // 
             this.comboBoxMod7.BackColor = System.Drawing.Color.Black;
+            this.comboBoxMod7.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxMod7.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.comboBoxMod7.ForeColor = System.Drawing.Color.White;
             this.comboBoxMod7.FormattingEnabled = true;
@@ -435,6 +442,7 @@
             // comboBoxMod8
             // 
             this.comboBoxMod8.BackColor = System.Drawing.Color.Black;
+            this.comboBoxMod8.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxMod8.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.comboBoxMod8.ForeColor = System.Drawing.Color.White;
             this.comboBoxMod8.FormattingEnabled = true;
@@ -447,6 +455,7 @@
             // comboBoxMod9
             // 
             this.comboBoxMod9.BackColor = System.Drawing.Color.Black;
+            this.comboBoxMod9.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxMod9.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.comboBoxMod9.ForeColor = System.Drawing.Color.White;
             this.comboBoxMod9.FormattingEnabled = true;

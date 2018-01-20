@@ -34,6 +34,13 @@ namespace MassEffectModder
 {
     public partial class Installer : Form
     {
+        struct ModSelection
+        {
+            public List<string> files;
+            public List<string> descriptions;
+        }
+        List<ModSelection> modsSelection;
+        List<string> allMemMods;
         const uint MEMI_TAG = 0x494D454D;
         public bool exitToModder;
         ConfIni configIni;
@@ -187,6 +194,99 @@ namespace MassEffectModder
                 meuitmMode = true;
             if (meuitmMode && MeuitmVer == 0)
                 MeuitmVer = 1;
+
+            comboBoxMod0.Visible = comboBoxMod1.Visible = comboBoxMod2.Visible = comboBoxMod3.Visible = false;
+            comboBoxMod4.Visible = comboBoxMod5.Visible = comboBoxMod6.Visible = comboBoxMod7.Visible = false;
+            comboBoxMod8.Visible = comboBoxMod9.Visible = false;
+
+            allMemMods = new List<string>();
+            modsSelection = new List<ModSelection>();
+            for (int i = 1; i <= 10; i++)
+            {
+                ModSelection modSelect = new ModSelection();
+                modSelect.files = new List<string>();
+                modSelect.descriptions = new List<string>();
+                for (int l = 1; l <= 10; l++)
+                {
+                    string file = installerIni.Read("File" + l, "Mod" + i).ToLowerInvariant();
+                    string description = installerIni.Read("Label" + l, "Mod" + i);
+                    if (file == "" || description == "")
+                        continue;
+                    modSelect.files.Add(file);
+                    modSelect.descriptions.Add(description);
+                }
+                if (modSelect.files.Count < 2)
+                {
+                    modSelect.files.Clear();
+                    modSelect.descriptions.Clear();
+                }
+                modsSelection.Add(modSelect);
+            }
+            for (int i = 1; i <= modsSelection.Count; i++)
+            {
+                ModSelection modSelect = modsSelection[i - 1];
+                for (int l = 1; l <= modSelect.files.Count; l++)
+                {
+                    allMemMods.Add(modSelect.files[l - 1]);
+                    string description = modSelect.descriptions[l - 1];
+                    switch (i)
+                    {
+                        case 1:
+                            comboBoxMod0.Items.Add(description);
+                            comboBoxMod0.Visible = true;
+                            comboBoxMod0.SelectedIndex = 0;
+                            break;
+                        case 2:
+                            comboBoxMod1.Items.Add(description);
+                            comboBoxMod1.Visible = true;
+                            comboBoxMod1.SelectedIndex = 0;
+                            break;
+                        case 3:
+                            comboBoxMod2.Items.Add(description);
+                            comboBoxMod2.Visible = true;
+                            comboBoxMod2.SelectedIndex = 0;
+                            break;
+                        case 4:
+                            comboBoxMod3.Items.Add(description);
+                            comboBoxMod3.Visible = true;
+                            comboBoxMod3.SelectedIndex = 0;
+                            break;
+                        case 5:
+                            comboBoxMod4.Items.Add(description);
+                            comboBoxMod4.Visible = true;
+                            comboBoxMod4.SelectedIndex = 0;
+                            break;
+                        case 6:
+                            comboBoxMod5.Items.Add(description);
+                            comboBoxMod5.Visible = true;
+                            comboBoxMod5.SelectedIndex = 0;
+                            break;
+                        case 7:
+                            comboBoxMod6.Items.Add(description);
+                            comboBoxMod6.Visible = true;
+                            comboBoxMod6.SelectedIndex = 0;
+                            break;
+                        case 8:
+                            comboBoxMod7.Items.Add(description);
+                            comboBoxMod7.Visible = true;
+                            comboBoxMod7.SelectedIndex = 0;
+                            break;
+                        case 9:
+                            comboBoxMod8.Items.Add(description);
+                            comboBoxMod8.Visible = true;
+                            comboBoxMod8.SelectedIndex = 0;
+                            break;
+                        case 10:
+                            comboBoxMod9.Items.Add(description);
+                            comboBoxMod9.Visible = true;
+                            comboBoxMod9.SelectedIndex = 0;
+                            break;
+                    }
+                }
+            }
+
+            if (modsSelection.Count == 0)
+                labelModsSelection.Visible = false;
 
             configIni = new ConfIni();
 
@@ -1140,6 +1240,47 @@ namespace MassEffectModder
 
         private void buttonSTART_Click(object sender, EventArgs e)
         {
+            List<string> selectedFileMods = new List<string>();
+            for (int i = 1; i <= modsSelection.Count; i++)
+            {
+                ModSelection modSelect = modsSelection[i - 1];
+                string file = "";
+                switch (i)
+                {
+                    case 1:
+                        file = modSelect.files[comboBoxMod0.SelectedIndex];
+                        break;
+                    case 2:
+                        file = modSelect.files[comboBoxMod1.SelectedIndex];
+                        break;
+                    case 3:
+                        file = modSelect.files[comboBoxMod2.SelectedIndex];
+                        break;
+                    case 4:
+                        file = modSelect.files[comboBoxMod3.SelectedIndex];
+                        break;
+                    case 5:
+                        file = modSelect.files[comboBoxMod4.SelectedIndex];
+                        break;
+                    case 6:
+                        file = modSelect.files[comboBoxMod5.SelectedIndex];
+                        break;
+                    case 7:
+                        file = modSelect.files[comboBoxMod6.SelectedIndex];
+                        break;
+                    case 8:
+                        file = modSelect.files[comboBoxMod7.SelectedIndex];
+                        break;
+                    case 9:
+                        file = modSelect.files[comboBoxMod8.SelectedIndex];
+                        break;
+                    case 10:
+                        file = modSelect.files[comboBoxMod9.SelectedIndex];
+                        break;
+                }
+                selectedFileMods.Add(file);
+            }
+
             buttonsEnable(false);
             buttonSTART.Visible = false;
             checkBoxOptionVanilla.Visible = labelOptionVanilla.Visible = false;
@@ -1152,6 +1293,11 @@ namespace MassEffectModder
             else
                 customLabelDesc.Text = "Installing ALOT for Mass Effect " + gameId;
 
+            comboBoxMod0.Visible = comboBoxMod1.Visible = comboBoxMod2.Visible = comboBoxMod3.Visible = false;
+            comboBoxMod4.Visible = comboBoxMod5.Visible = comboBoxMod6.Visible = comboBoxMod7.Visible = false;
+            comboBoxMod8.Visible = comboBoxMod9.Visible = false;
+            labelModsSelection.Visible = false;
+
             if (!PreInstallCheck())
             {
                 labelOptionVanilla.Visible = checkBoxOptionVanilla.Visible = OptionVanillaVisible;
@@ -1161,7 +1307,60 @@ namespace MassEffectModder
                 labelOptions.Visible = checkBoxOptionVanilla.Visible || checkBoxOptionSkipScan.Visible ||
                     checkBoxOptionRepack.Visible || checkBoxOptionLimit2K.Visible;
                 customLabelDesc.Text = "";
+
+                for (int i = 1; i <= modsSelection.Count; i++)
+                {
+                    ModSelection modSelect = modsSelection[i - 1];
+                    string file = "";
+                    switch (i)
+                    {
+                        case 1:
+                            comboBoxMod0.Visible = true;
+                            break;
+                        case 2:
+                            comboBoxMod1.Visible = true;
+                            break;
+                        case 3:
+                            comboBoxMod2.Visible = true;
+                            break;
+                        case 4:
+                            comboBoxMod3.Visible = true;
+                            break;
+                        case 5:
+                            comboBoxMod4.Visible = true;
+                            break;
+                        case 6:
+                            comboBoxMod5.Visible = true;
+                            break;
+                        case 7:
+                            comboBoxMod6.Visible = true;
+                            break;
+                        case 8:
+                            comboBoxMod7.Visible = true;
+                            break;
+                        case 9:
+                            comboBoxMod8.Visible = true;
+                            break;
+                        case 10:
+                            comboBoxMod9.Visible = true;
+                            break;
+                    }
+                    selectedFileMods.Add(file);
+                }
+
+                if (modsSelection.Count != 0)
+                    labelModsSelection.Visible = true;
+
                 return;
+            }
+
+            for (int i = 0; i < selectedFileMods.Count; i++)
+            {
+                allMemMods.Remove(selectedFileMods[i]);
+            }
+            for (int i = 0; i < allMemMods.Count; i++)
+            {
+                memFiles.Remove(Path.GetFileName(allMemMods[i]).ToLowerInvariant());
             }
 
             customLabelFinalStatus.Text = "";
