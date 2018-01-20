@@ -146,7 +146,8 @@ namespace MassEffectModder
                     meuitmMode = true;
             }
             else
-                Text += " ME" + gameId;
+                Text += " for ALOT ME" + gameId;
+
             if (runAsAdmin)
                 Text += " (run as Administrator)";
 
