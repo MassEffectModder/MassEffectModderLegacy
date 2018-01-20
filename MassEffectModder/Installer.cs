@@ -1359,9 +1359,11 @@ namespace MassEffectModder
             {
                 allMemMods.Remove(selectedFileMods[i]);
             }
-            for (int i = 0; i < allMemMods.Count; i++)
+            for (int i = 0; i < memFiles.Count; i++)
             {
-                memFiles.Remove(Path.GetFileName(allMemMods[i]).ToLowerInvariant());
+                string file = Path.GetFileName(memFiles[i]).ToLowerInvariant();
+                if (allMemMods.Contains(file))
+                    memFiles.RemoveAt(i--);
             }
 
             customLabelFinalStatus.Text = "";
