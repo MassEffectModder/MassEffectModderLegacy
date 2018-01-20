@@ -219,6 +219,7 @@ namespace MassEffectModder
                 {
                     modSelect.files.Clear();
                     modSelect.descriptions.Clear();
+                    continue;
                 }
                 modsSelection.Add(modSelect);
             }
