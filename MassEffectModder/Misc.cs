@@ -1247,7 +1247,7 @@ namespace MassEffectModder
                     Image image = new Image(file, Image.ImageFormat.Unknown).convertToARGB();
 
                     if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
-                        foundCrcList[0].width / foundCrcList[0].height)
+                        texture.mipMapsList[0].width / texture.mipMapsList[0].height)
                     {
                         errors += "Error in texture: " + Path.GetFileName(file) + " This texture has wrong aspect ratio, skipping texture..." + Environment.NewLine;
                         continue;
