@@ -68,6 +68,7 @@ namespace MassEffectModder
         bool OptionSkipScanVisible;
         bool OptionRepackVisible;
         bool OptionLimit2KVisible;
+        bool OptionIndirectSound;
         bool mute = false;
         int stage = 1;
         int totalStages = 7;
@@ -196,6 +197,15 @@ namespace MassEffectModder
             if (meuitmMode && MeuitmVer == 0)
                 MeuitmVer = 1;
 
+            indirectSoundPath = installerIni.Read("IndirectSound", "Main").ToLowerInvariant();
+            if (indirectSoundPath != "")
+            {
+                if (!File.Exists(indirectSoundPath) || Path.GetExtension(indirectSoundPath).ToLowerInvariant() != ".zip")
+                {
+                    indirectSoundPath = "";
+                }
+            }
+
             comboBoxMod0.Visible = comboBoxMod1.Visible = comboBoxMod2.Visible = comboBoxMod3.Visible = false;
             comboBoxMod4.Visible = comboBoxMod5.Visible = comboBoxMod6.Visible = comboBoxMod7.Visible = false;
             comboBoxMod8.Visible = comboBoxMod9.Visible = false;
@@ -294,7 +304,6 @@ namespace MassEffectModder
 
             customLabelDesc.Text = customLabelCurrentStatus.Text = customLabelFinalStatus.Text = "";
 
-
             if (gameId == 3)
             {
                 OptionRepackVisible = checkBoxOptionRepack.Visible = labelOptionRepack.Visible = false;
@@ -306,10 +315,15 @@ namespace MassEffectModder
             if (gameId == 1)
             {
                 OptionLimit2KVisible = checkBoxOptionLimit2K.Visible = labelOptionLimit2K.Visible = true;
+                if (indirectSoundPath != "")
+                    OptionIndirectSound = checkBoxOptionIndirectSound.Visible = labelOptionIndirectSound.Visible = true;
+                else
+                    OptionIndirectSound = checkBoxOptionIndirectSound.Visible = labelOptionIndirectSound.Visible = false;
             }
             else
             {
                 OptionLimit2KVisible = checkBoxOptionLimit2K.Visible = labelOptionLimit2K.Visible = false;
+                OptionIndirectSound = checkBoxOptionIndirectSound.Visible = labelOptionIndirectSound.Visible = false;
             }
 
             if (allowToSkip)
@@ -328,7 +342,6 @@ namespace MassEffectModder
             {
                 OptionSkipScanVisible = checkBoxOptionSkipScan.Visible = labelOptionSkipScan.Visible = false;
             }
-            checkBoxOptionIndirectSound.Visible = false;
             checkBoxOptionIndirectSound.Checked = false;
             checkBoxOptionVanilla.Checked = false;
             checkBoxOptionLimit2K.Checked = false;
@@ -345,10 +358,15 @@ namespace MassEffectModder
             labelOptionRepack.Parent = pictureBoxBG;
             labelOptionSkipScan.Parent = pictureBoxBG;
             labelOptionVanilla.Parent = pictureBoxBG;
+            labelOptionIndirectSound.Parent = pictureBoxBG;
             checkBoxOptionRepack.Parent = pictureBoxBG;
             checkBoxOptionLimit2K.Parent = pictureBoxBG;
             checkBoxOptionSkipScan.Parent = pictureBoxBG;
             checkBoxOptionVanilla.Parent = pictureBoxBG;
+            checkBoxOptionIndirectSound.Parent = pictureBoxBG;
+            labelModsSelection.Parent = pictureBoxBG;
+            comboBoxMod0.Parent = comboBoxMod1.Parent = comboBoxMod2.Parent = comboBoxMod3.Parent = comboBoxMod4.Parent = pictureBoxBG;
+            comboBoxMod1.Parent = comboBoxMod2.Parent = comboBoxMod3.Parent = comboBoxMod4.Parent = comboBoxMod5.Parent = pictureBoxBG;
             buttonMute.Parent = pictureBoxBG;
 
             labelOptions.Visible = OptionVanillaVisible || OptionSkipScanVisible ||
@@ -400,18 +418,6 @@ namespace MassEffectModder
                 if (!File.Exists(splashBitmapPath) || Path.GetExtension(splashBitmapPath).ToLowerInvariant() != ".bmp")
                 {
                     splashBitmapPath = "";
-                }
-            }
-
-            if (meuitmMode)
-            {
-                indirectSoundPath = installerIni.Read("IndirectSound", "Main").ToLowerInvariant();
-                if (indirectSoundPath != "")
-                {
-                    if (!File.Exists(indirectSoundPath) || Path.GetExtension(indirectSoundPath).ToLowerInvariant() != ".zip")
-                    {
-                        indirectSoundPath = "";
-                    }
                 }
             }
 
@@ -1288,10 +1294,6 @@ namespace MassEffectModder
         {
             buttonNormal.Visible = false;
             checkBoxOptionRepack.Enabled = OptionRepackVisible;
-            if (meuitmMode && indirectSoundPath != "")
-            {
-                checkBoxOptionIndirectSound.Visible = enabled;
-            }
             if (updateMode)
             {
                 checkBoxOptionVanilla.Enabled = false;
@@ -1355,6 +1357,7 @@ namespace MassEffectModder
             checkBoxOptionSkipScan.Visible = labelOptionSkipScan.Visible = false;
             checkBoxOptionRepack.Visible = labelOptionRepack.Visible = false;
             checkBoxOptionLimit2K.Visible = labelOptionLimit2K.Visible = false;
+            labelOptionIndirectSound.Visible = checkBoxOptionIndirectSound.Visible = false;
             labelOptions.Visible = false;
             if (meuitmMode)
                 customLabelDesc.Text = "Installing MEUITM for Mass Effect";
@@ -1372,8 +1375,9 @@ namespace MassEffectModder
                 labelOptionSkipScan.Visible = checkBoxOptionSkipScan.Visible = OptionSkipScanVisible;
                 labelOptionRepack.Visible = checkBoxOptionRepack.Visible = OptionRepackVisible;
                 labelOptionLimit2K.Visible = checkBoxOptionLimit2K.Visible = OptionLimit2KVisible;
+                labelOptionIndirectSound.Visible = checkBoxOptionIndirectSound.Visible = OptionIndirectSound;
                 labelOptions.Visible = checkBoxOptionVanilla.Visible || checkBoxOptionSkipScan.Visible ||
-                    checkBoxOptionRepack.Visible || checkBoxOptionLimit2K.Visible;
+                    checkBoxOptionRepack.Visible || checkBoxOptionLimit2K.Visible || checkBoxOptionIndirectSound.Visible;
                 customLabelDesc.Text = "";
 
                 for (int i = 1; i <= modsSelection.Count; i++)
@@ -1554,7 +1558,7 @@ namespace MassEffectModder
             if (!applyModTag(gameId, MeuitmVer, AlotVer))
                 errors += "Failed applying stamp for installation!\n";
 
-            if (meuitmMode && softShadowsModPath != "")
+            if (gameId == 1 && softShadowsModPath != "")
             {
                 if (installSoftShadowsMod(gameData, softShadowsModPath))
                     log += "Soft Shadows mod installed.";
@@ -1565,7 +1569,7 @@ namespace MassEffectModder
                 }
             }
 
-            if (meuitmMode && splashBitmapPath != "")
+            if (gameId == 1 && splashBitmapPath != "")
             {
                 if (installSplashScreen(splashBitmapPath))
                     log += "Splash screen mod installed.";
@@ -1576,7 +1580,7 @@ namespace MassEffectModder
                 }
             }
 
-            if (meuitmMode && splashDemiurge != "")
+            if (gameId == 1 && splashDemiurge != "")
             {
                 if (installSplashVideo(splashDemiurge))
                     log += "Splash video mod installed.";
@@ -1587,7 +1591,7 @@ namespace MassEffectModder
                 }
             }
 
-            if (meuitmMode && indirectSoundPath != "" && checkBoxOptionIndirectSound.Checked)
+            if (gameId == 1 && indirectSoundPath != "" && checkBoxOptionIndirectSound.Checked)
             {
                 if (installIndirectSoundPath(indirectSoundPath))
                     log += "Indirect Sound installed.";

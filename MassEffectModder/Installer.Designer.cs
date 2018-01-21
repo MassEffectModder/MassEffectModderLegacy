@@ -330,7 +330,7 @@
             this.labelModsSelection.BackColor = System.Drawing.Color.Black;
             this.labelModsSelection.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelModsSelection.ForeColor = System.Drawing.Color.White;
-            this.labelModsSelection.Location = new System.Drawing.Point(12, 12);
+            this.labelModsSelection.Location = new System.Drawing.Point(8, 12);
             this.labelModsSelection.Name = "labelModsSelection";
             this.labelModsSelection.Size = new System.Drawing.Size(129, 21);
             this.labelModsSelection.TabIndex = 61;
