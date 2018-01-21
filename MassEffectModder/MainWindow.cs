@@ -503,37 +503,34 @@ namespace MassEffectModder
                     string errors = "";
                     string log = "";
                     string[] files = modFile.FileNames;
+                    long diskFreeSpace = Misc.getDiskFreeSpace(modDir.SelectedPath);
+                    long diskUsage = 0;
                     foreach (string file in files)
                     {
-                        long diskFreeSpace = Misc.getDiskFreeSpace(modDir.SelectedPath);
-                        long diskUsage = 0;
-                        foreach (string item in files)
+                        diskUsage += new FileInfo(file).Length;
+                    }
+                    diskUsage = (long)(diskUsage * 2.5);
+                    if (diskUsage >= diskFreeSpace)
+                    {
+                        MessageBox.Show("You have not enough disk space remaining. You need about " + Misc.getBytesFormat(diskUsage) + " free.");
+                    }
+                    else
+                    {
+                        Misc.startTimer();
+                        foreach (string file in files)
                         {
-                            diskUsage += new FileInfo(item).Length;
-                        }
-                        diskUsage = (long)(diskUsage * 2.5);
-                        if (diskUsage < diskFreeSpace)
-                        {
-                            Misc.startTimer();
-                            foreach (string item in files)
-                            {
-                                string outDir = Path.Combine(modDir.SelectedPath, Path.GetFileNameWithoutExtension(item));
-                                Directory.CreateDirectory(outDir);
-                                updateStatusLabel("MOD: " + item + " - extracting...");
-                                updateStatusLabel2("");
-                                errors += new MipMaps().extractTextureMod(item, outDir, null, null, null, ref log);
-                            }
-                            var time = Misc.stopTimer();
-                            updateStatusLabel("MODs extracted. Process total time: " + Misc.getTimerFormat(time));
+                            string outDir = Path.Combine(modDir.SelectedPath, Path.GetFileNameWithoutExtension(file));
+                            Directory.CreateDirectory(outDir);
+                            updateStatusLabel("MOD: " + file + " - extracting...");
                             updateStatusLabel2("");
-                            if (errors != "")
-                            {
-                                MessageBox.Show("WARNING: Some errors have occured!");
-                            }
+                            errors += new MipMaps().extractTextureMod(file, outDir, null, null, null, ref log);
                         }
-                        else
+                        var time = Misc.stopTimer();
+                        updateStatusLabel("MODs extracted. Process total time: " + Misc.getTimerFormat(time));
+                        updateStatusLabel2("");
+                        if (errors != "")
                         {
-                            MessageBox.Show("You have not enough disk space remaining. You need about " + Misc.getBytesFormat(diskUsage) + " free.");
+                            MessageBox.Show("WARNING: Some errors have occured!");
                         }
                     }
                 }
