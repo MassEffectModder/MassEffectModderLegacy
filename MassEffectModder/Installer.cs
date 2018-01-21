@@ -62,6 +62,7 @@ namespace MassEffectModder
         string softShadowsModPath;
         string splashDemiurge;
         string splashBitmapPath;
+        string indirectSoundPath;
         bool meuitmMode = false;
         bool OptionVanillaVisible;
         bool OptionSkipScanVisible;
@@ -327,6 +328,8 @@ namespace MassEffectModder
             {
                 OptionSkipScanVisible = checkBoxOptionSkipScan.Visible = labelOptionSkipScan.Visible = false;
             }
+            checkBoxOptionIndirectSound.Visible = false;
+            checkBoxOptionIndirectSound.Checked = false;
             checkBoxOptionVanilla.Checked = false;
             checkBoxOptionLimit2K.Checked = false;
             checkBoxOptionSkipScan.Checked = false;
@@ -397,6 +400,18 @@ namespace MassEffectModder
                 if (!File.Exists(splashBitmapPath) || Path.GetExtension(splashBitmapPath).ToLowerInvariant() != ".bmp")
                 {
                     splashBitmapPath = "";
+                }
+            }
+
+            if (meuitmMode)
+            {
+                indirectSoundPath = installerIni.Read("IndirectSound", "Main").ToLowerInvariant();
+                if (indirectSoundPath != "")
+                {
+                    if (!File.Exists(indirectSoundPath) || Path.GetExtension(indirectSoundPath).ToLowerInvariant() != ".zip")
+                    {
+                        indirectSoundPath = "";
+                    }
                 }
             }
 
@@ -580,7 +595,6 @@ namespace MassEffectModder
                 return false;
             }
 
-
             return true;
         }
 
@@ -609,6 +623,55 @@ namespace MassEffectModder
                 if (File.Exists(filePath))
                     File.Delete(filePath);
                 File.Copy(path, filePath);
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool installIndirectSoundPath(string path)
+        {
+            IntPtr handle = IntPtr.Zero;
+            int result;
+            ulong numEntries = 0;
+            string fileName = "";
+            ulong dstLen = 0;
+            ZlibHelper.Zip zip = new ZlibHelper.Zip();
+            try
+            {
+                handle = zip.Open(path, ref numEntries, 0);
+                if (handle == IntPtr.Zero)
+                    throw new Exception();
+                for (uint i = 0; i < numEntries; i++)
+                {
+                    result = zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
+                    if (result != 0)
+                        throw new Exception();
+                    if (fileName.ToLowerInvariant() != "dsound.dll" &&
+                        fileName.ToLowerInvariant() != "dsound.ini")
+                    {
+                        continue;
+                    }
+                    byte[] data = new byte[dstLen];
+                    result = zip.ReadCurrentFile(handle, data, dstLen);
+                    if (result != 0)
+                    {
+                        throw new Exception();
+                    }
+
+                    string filePath = GameData.GamePath + "\\Binaries\\" + fileName;
+                    if (File.Exists(filePath))
+                        File.Delete(filePath);
+                    using (FileStream fs = new FileStream(filePath, FileMode.CreateNew))
+                    {
+                        fs.WriteFromBuffer(data);
+                    }
+
+                    zip.GoToNextFile(handle);
+                }
             }
             catch
             {
@@ -1225,6 +1288,10 @@ namespace MassEffectModder
         {
             buttonNormal.Visible = false;
             checkBoxOptionRepack.Enabled = OptionRepackVisible;
+            if (meuitmMode && indirectSoundPath != "")
+            {
+                checkBoxOptionIndirectSound.Visible = enabled;
+            }
             if (updateMode)
             {
                 checkBoxOptionVanilla.Enabled = false;
@@ -1517,6 +1584,17 @@ namespace MassEffectModder
                 {
                     log += "Splash video mod failed to install!";
                     errors += "Splash video mod failed to install!";
+                }
+            }
+
+            if (meuitmMode && indirectSoundPath != "" && checkBoxOptionIndirectSound.Checked)
+            {
+                if (installIndirectSoundPath(indirectSoundPath))
+                    log += "Indirect Sound installed.";
+                else
+                {
+                    log += "Indirect Sound failed to install!";
+                    errors += "Indirect Sound failed to install!";
                 }
             }
 

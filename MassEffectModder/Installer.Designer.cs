@@ -79,6 +79,8 @@
             this.comboBoxMod7 = new System.Windows.Forms.ComboBox();
             this.comboBoxMod8 = new System.Windows.Forms.ComboBox();
             this.comboBoxMod9 = new System.Windows.Forms.ComboBox();
+            this.labelOptionIndirectSound = new System.Windows.Forms.Label();
+            this.checkBoxOptionIndirectSound = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxBG)).BeginInit();
             this.SuspendLayout();
             // 
@@ -119,7 +121,7 @@
             this.checkBoxOptionRepack.BackColor = System.Drawing.Color.Transparent;
             this.checkBoxOptionRepack.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.checkBoxOptionRepack.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxOptionRepack.Location = new System.Drawing.Point(16, 393);
+            this.checkBoxOptionRepack.Location = new System.Drawing.Point(16, 372);
             this.checkBoxOptionRepack.Name = "checkBoxOptionRepack";
             this.checkBoxOptionRepack.Size = new System.Drawing.Size(15, 14);
             this.checkBoxOptionRepack.TabIndex = 35;
@@ -148,7 +150,7 @@
             this.checkBoxOptionLimit2K.BackColor = System.Drawing.Color.Transparent;
             this.checkBoxOptionLimit2K.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.checkBoxOptionLimit2K.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxOptionLimit2K.Location = new System.Drawing.Point(16, 414);
+            this.checkBoxOptionLimit2K.Location = new System.Drawing.Point(16, 393);
             this.checkBoxOptionLimit2K.Name = "checkBoxOptionLimit2K";
             this.checkBoxOptionLimit2K.Size = new System.Drawing.Size(15, 14);
             this.checkBoxOptionLimit2K.TabIndex = 39;
@@ -209,7 +211,7 @@
             this.labelOptions.BackColor = System.Drawing.Color.Black;
             this.labelOptions.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelOptions.ForeColor = System.Drawing.Color.White;
-            this.labelOptions.Location = new System.Drawing.Point(12, 361);
+            this.labelOptions.Location = new System.Drawing.Point(12, 346);
             this.labelOptions.Name = "labelOptions";
             this.labelOptions.Size = new System.Drawing.Size(74, 21);
             this.labelOptions.TabIndex = 54;
@@ -236,7 +238,7 @@
             this.labelOptionRepack.BackColor = System.Drawing.Color.Black;
             this.labelOptionRepack.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelOptionRepack.ForeColor = System.Drawing.Color.White;
-            this.labelOptionRepack.Location = new System.Drawing.Point(34, 388);
+            this.labelOptionRepack.Location = new System.Drawing.Point(34, 367);
             this.labelOptionRepack.Name = "labelOptionRepack";
             this.labelOptionRepack.Size = new System.Drawing.Size(184, 21);
             this.labelOptionRepack.TabIndex = 55;
@@ -249,7 +251,7 @@
             this.labelOptionLimit2K.BackColor = System.Drawing.Color.Black;
             this.labelOptionLimit2K.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelOptionLimit2K.ForeColor = System.Drawing.Color.White;
-            this.labelOptionLimit2K.Location = new System.Drawing.Point(34, 409);
+            this.labelOptionLimit2K.Location = new System.Drawing.Point(34, 388);
             this.labelOptionLimit2K.Name = "labelOptionLimit2K";
             this.labelOptionLimit2K.Size = new System.Drawing.Size(158, 21);
             this.labelOptionLimit2K.TabIndex = 56;
@@ -466,11 +468,40 @@
             this.comboBoxMod9.TabIndex = 71;
             this.comboBoxMod9.TabStop = false;
             // 
+            // labelOptionIndirectSound
+            // 
+            this.labelOptionIndirectSound.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.labelOptionIndirectSound.AutoSize = true;
+            this.labelOptionIndirectSound.BackColor = System.Drawing.Color.Black;
+            this.labelOptionIndirectSound.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.labelOptionIndirectSound.ForeColor = System.Drawing.Color.White;
+            this.labelOptionIndirectSound.Location = new System.Drawing.Point(34, 409);
+            this.labelOptionIndirectSound.Name = "labelOptionIndirectSound";
+            this.labelOptionIndirectSound.Size = new System.Drawing.Size(173, 21);
+            this.labelOptionIndirectSound.TabIndex = 73;
+            this.labelOptionIndirectSound.Text = "Install Indirect Sound";
+            // 
+            // checkBoxOptionIndirectSound
+            // 
+            this.checkBoxOptionIndirectSound.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.checkBoxOptionIndirectSound.AutoSize = true;
+            this.checkBoxOptionIndirectSound.BackColor = System.Drawing.Color.Transparent;
+            this.checkBoxOptionIndirectSound.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.checkBoxOptionIndirectSound.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.checkBoxOptionIndirectSound.Location = new System.Drawing.Point(16, 414);
+            this.checkBoxOptionIndirectSound.Name = "checkBoxOptionIndirectSound";
+            this.checkBoxOptionIndirectSound.Size = new System.Drawing.Size(15, 14);
+            this.checkBoxOptionIndirectSound.TabIndex = 72;
+            this.checkBoxOptionIndirectSound.TabStop = false;
+            this.checkBoxOptionIndirectSound.UseVisualStyleBackColor = false;
+            // 
             // Installer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(958, 539);
+            this.Controls.Add(this.labelOptionIndirectSound);
+            this.Controls.Add(this.checkBoxOptionIndirectSound);
             this.Controls.Add(this.comboBoxMod9);
             this.Controls.Add(this.comboBoxMod8);
             this.Controls.Add(this.comboBoxMod7);
@@ -538,5 +569,7 @@
         private System.Windows.Forms.ComboBox comboBoxMod7;
         private System.Windows.Forms.ComboBox comboBoxMod8;
         private System.Windows.Forms.ComboBox comboBoxMod9;
+        private System.Windows.Forms.Label labelOptionIndirectSound;
+        private System.Windows.Forms.CheckBox checkBoxOptionIndirectSound;
     }
 }
