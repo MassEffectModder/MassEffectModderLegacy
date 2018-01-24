@@ -62,6 +62,7 @@ namespace MassEffectModder
             this.updateME1Config2KToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeLODSetME1MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripUpdateGfxME1MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripUpdateGfxME1MenuItemSoftMode = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.changeGamePathME1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripCheckFilesME1MenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -102,7 +103,12 @@ namespace MassEffectModder
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.statusStrip2 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripUpdateGfxME1MenuItemSoftMode = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItemCreateBinME1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripMenuItemCreateBinME2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItemCreateBinME3 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator13 = new System.Windows.Forms.ToolStripSeparator();
             this.menuGame.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.statusStrip2.SuspendLayout();
@@ -126,6 +132,8 @@ namespace MassEffectModder
             this.massEffect1ToolStripMenuItem,
             this.toolStripME1RemoveTreeMenuItem,
             this.toolStripExtractME1MEMMenuItem,
+            this.toolStripSeparator8,
+            this.toolStripMenuItemCreateBinME1,
             this.toolStripSeparator2,
             this.repackME1ToolStripMenuItem,
             this.toolStripSeparator1,
@@ -207,6 +215,13 @@ namespace MassEffectModder
             this.toolStripUpdateGfxME1MenuItem.Text = "Apply Game\'s Settings";
             this.toolStripUpdateGfxME1MenuItem.Click += new System.EventHandler(this.toolStripUpdateGfxME1MenuItem_Click);
             // 
+            // toolStripUpdateGfxME1MenuItemSoftMode
+            // 
+            this.toolStripUpdateGfxME1MenuItemSoftMode.Name = "toolStripUpdateGfxME1MenuItemSoftMode";
+            this.toolStripUpdateGfxME1MenuItemSoftMode.Size = new System.Drawing.Size(320, 22);
+            this.toolStripUpdateGfxME1MenuItemSoftMode.Text = "Apply Game\'s Settings (for Soft Shadows mod)";
+            this.toolStripUpdateGfxME1MenuItemSoftMode.Click += new System.EventHandler(this.toolStripUpdateGfxME1MenuItemSoftMode_Click);
+            // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
@@ -232,6 +247,8 @@ namespace MassEffectModder
             this.massEffect2ToolStripMenuItem,
             this.toolStripME2RemoveTreeMenuItem,
             this.toolStripExtractME2MEMMenuItem,
+            this.toolStripSeparator13,
+            this.toolStripMenuItemCreateBinME2,
             this.toolStripSeparator5,
             this.repackME2ToolStripMenuItem,
             this.toolStripSeparator6,
@@ -329,6 +346,8 @@ namespace MassEffectModder
             this.massEffect3ToolStripMenuItem,
             this.toolStripME3RemoveTreeMenuItem,
             this.toolStripExtractME3MEMMenuItem,
+            this.toolStripSeparator12,
+            this.toolStripMenuItemCreateBinME3,
             this.toolStripSeparator4,
             this.toolStripMenuItemUpdateTOCs,
             this.toolStripSeparator9,
@@ -502,12 +521,38 @@ namespace MassEffectModder
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
             this.toolStripStatusLabel2.Size = new System.Drawing.Size(0, 17);
             // 
-            // toolStripUpdateGfxME1MenuItemSoftMode
+            // toolStripMenuItemCreateBinME1
             // 
-            this.toolStripUpdateGfxME1MenuItemSoftMode.Name = "toolStripUpdateGfxME1MenuItemSoftMode";
-            this.toolStripUpdateGfxME1MenuItemSoftMode.Size = new System.Drawing.Size(320, 22);
-            this.toolStripUpdateGfxME1MenuItemSoftMode.Text = "Apply Game\'s Settings (for Soft Shadows mod)";
-            this.toolStripUpdateGfxME1MenuItemSoftMode.Click += new System.EventHandler(this.toolStripUpdateGfxME1MenuItemSoftMode_Click);
+            this.toolStripMenuItemCreateBinME1.Name = "toolStripMenuItemCreateBinME1";
+            this.toolStripMenuItemCreateBinME1.Size = new System.Drawing.Size(320, 22);
+            this.toolStripMenuItemCreateBinME1.Text = "Create binary mod";
+            // 
+            // toolStripSeparator8
+            // 
+            this.toolStripSeparator8.Name = "toolStripSeparator8";
+            this.toolStripSeparator8.Size = new System.Drawing.Size(317, 6);
+            // 
+            // toolStripMenuItemCreateBinME2
+            // 
+            this.toolStripMenuItemCreateBinME2.Name = "toolStripMenuItemCreateBinME2";
+            this.toolStripMenuItemCreateBinME2.Size = new System.Drawing.Size(212, 22);
+            this.toolStripMenuItemCreateBinME2.Text = "Create binary mod";
+            // 
+            // toolStripMenuItemCreateBinME3
+            // 
+            this.toolStripMenuItemCreateBinME3.Name = "toolStripMenuItemCreateBinME3";
+            this.toolStripMenuItemCreateBinME3.Size = new System.Drawing.Size(212, 22);
+            this.toolStripMenuItemCreateBinME3.Text = "Create binary mod";
+            // 
+            // toolStripSeparator12
+            // 
+            this.toolStripSeparator12.Name = "toolStripSeparator12";
+            this.toolStripSeparator12.Size = new System.Drawing.Size(209, 6);
+            // 
+            // toolStripSeparator13
+            // 
+            this.toolStripSeparator13.Name = "toolStripSeparator13";
+            this.toolStripSeparator13.Size = new System.Drawing.Size(209, 6);
             // 
             // MainWindow
             // 
@@ -589,6 +634,12 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripMenuItem updateME1ConfigToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripUpdateGfxME1MenuItemSoftMode;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemCreateBinME1;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator13;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemCreateBinME2;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator12;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemCreateBinME3;
     }
 }
 

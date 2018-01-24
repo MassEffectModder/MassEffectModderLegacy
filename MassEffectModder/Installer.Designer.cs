@@ -332,9 +332,9 @@
             this.labelModsSelection.ForeColor = System.Drawing.Color.White;
             this.labelModsSelection.Location = new System.Drawing.Point(8, 12);
             this.labelModsSelection.Name = "labelModsSelection";
-            this.labelModsSelection.Size = new System.Drawing.Size(129, 21);
+            this.labelModsSelection.Size = new System.Drawing.Size(187, 21);
             this.labelModsSelection.TabIndex = 61;
-            this.labelModsSelection.Text = "Mods selection:";
+            this.labelModsSelection.Text = "Mod variants selection:";
             // 
             // comboBoxMod0
             // 
@@ -346,7 +346,7 @@
             this.comboBoxMod0.FormattingEnabled = true;
             this.comboBoxMod0.Location = new System.Drawing.Point(12, 36);
             this.comboBoxMod0.Name = "comboBoxMod0";
-            this.comboBoxMod0.Size = new System.Drawing.Size(180, 21);
+            this.comboBoxMod0.Size = new System.Drawing.Size(183, 21);
             this.comboBoxMod0.TabIndex = 62;
             this.comboBoxMod0.TabStop = false;
             this.comboBoxMod0.ValueMember = "0";
@@ -360,7 +360,7 @@
             this.comboBoxMod1.FormattingEnabled = true;
             this.comboBoxMod1.Location = new System.Drawing.Point(12, 63);
             this.comboBoxMod1.Name = "comboBoxMod1";
-            this.comboBoxMod1.Size = new System.Drawing.Size(180, 21);
+            this.comboBoxMod1.Size = new System.Drawing.Size(183, 21);
             this.comboBoxMod1.TabIndex = 63;
             this.comboBoxMod1.TabStop = false;
             // 
@@ -373,7 +373,7 @@
             this.comboBoxMod2.FormattingEnabled = true;
             this.comboBoxMod2.Location = new System.Drawing.Point(12, 90);
             this.comboBoxMod2.Name = "comboBoxMod2";
-            this.comboBoxMod2.Size = new System.Drawing.Size(180, 21);
+            this.comboBoxMod2.Size = new System.Drawing.Size(183, 21);
             this.comboBoxMod2.TabIndex = 64;
             this.comboBoxMod2.TabStop = false;
             // 
@@ -386,7 +386,7 @@
             this.comboBoxMod3.FormattingEnabled = true;
             this.comboBoxMod3.Location = new System.Drawing.Point(12, 117);
             this.comboBoxMod3.Name = "comboBoxMod3";
-            this.comboBoxMod3.Size = new System.Drawing.Size(180, 21);
+            this.comboBoxMod3.Size = new System.Drawing.Size(183, 21);
             this.comboBoxMod3.TabIndex = 65;
             this.comboBoxMod3.TabStop = false;
             // 
@@ -399,7 +399,7 @@
             this.comboBoxMod4.FormattingEnabled = true;
             this.comboBoxMod4.Location = new System.Drawing.Point(12, 144);
             this.comboBoxMod4.Name = "comboBoxMod4";
-            this.comboBoxMod4.Size = new System.Drawing.Size(180, 21);
+            this.comboBoxMod4.Size = new System.Drawing.Size(183, 21);
             this.comboBoxMod4.TabIndex = 66;
             this.comboBoxMod4.TabStop = false;
             // 
@@ -412,7 +412,7 @@
             this.comboBoxMod5.FormattingEnabled = true;
             this.comboBoxMod5.Location = new System.Drawing.Point(12, 171);
             this.comboBoxMod5.Name = "comboBoxMod5";
-            this.comboBoxMod5.Size = new System.Drawing.Size(180, 21);
+            this.comboBoxMod5.Size = new System.Drawing.Size(183, 21);
             this.comboBoxMod5.TabIndex = 67;
             this.comboBoxMod5.TabStop = false;
             // 
@@ -425,7 +425,7 @@
             this.comboBoxMod6.FormattingEnabled = true;
             this.comboBoxMod6.Location = new System.Drawing.Point(12, 198);
             this.comboBoxMod6.Name = "comboBoxMod6";
-            this.comboBoxMod6.Size = new System.Drawing.Size(180, 21);
+            this.comboBoxMod6.Size = new System.Drawing.Size(183, 21);
             this.comboBoxMod6.TabIndex = 68;
             this.comboBoxMod6.TabStop = false;
             // 
@@ -438,7 +438,7 @@
             this.comboBoxMod7.FormattingEnabled = true;
             this.comboBoxMod7.Location = new System.Drawing.Point(12, 225);
             this.comboBoxMod7.Name = "comboBoxMod7";
-            this.comboBoxMod7.Size = new System.Drawing.Size(180, 21);
+            this.comboBoxMod7.Size = new System.Drawing.Size(183, 21);
             this.comboBoxMod7.TabIndex = 69;
             this.comboBoxMod7.TabStop = false;
             // 
@@ -451,7 +451,7 @@
             this.comboBoxMod8.FormattingEnabled = true;
             this.comboBoxMod8.Location = new System.Drawing.Point(12, 252);
             this.comboBoxMod8.Name = "comboBoxMod8";
-            this.comboBoxMod8.Size = new System.Drawing.Size(180, 21);
+            this.comboBoxMod8.Size = new System.Drawing.Size(183, 21);
             this.comboBoxMod8.TabIndex = 70;
             this.comboBoxMod8.TabStop = false;
             // 
@@ -464,7 +464,7 @@
             this.comboBoxMod9.FormattingEnabled = true;
             this.comboBoxMod9.Location = new System.Drawing.Point(12, 279);
             this.comboBoxMod9.Name = "comboBoxMod9";
-            this.comboBoxMod9.Size = new System.Drawing.Size(180, 21);
+            this.comboBoxMod9.Size = new System.Drawing.Size(183, 21);
             this.comboBoxMod9.TabIndex = 71;
             this.comboBoxMod9.TabStop = false;
             // 
