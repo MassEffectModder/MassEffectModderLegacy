@@ -149,13 +149,9 @@ namespace MassEffectModder
             {
                 path = @"\BioGame\CookedPC\BIOC_Materials.pcc";
             }
-            if (gametype == MeType.ME3_TYPE)
-            {
-                path = @"\BIOGame\CookedPCConsole\adv_combat_tutorial_xbox_D_Int.afc";
-            }
             for (int i = 0; i < GameData.packageFiles.Count; i++)
             {
-                if (GameData.packageFiles[i].Contains(path))
+                if (path != "" && GameData.packageFiles[i].Contains(path))
                     continue;
                 updateStatusLabel("Repack PCC file " + (i + 1) + " of " + GameData.packageFiles.Count);
                 try
