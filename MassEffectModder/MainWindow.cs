@@ -140,8 +140,23 @@ namespace MassEffectModder
                 return;
             }
             GetPackages(gameData);
+            string path = "";
+            if (gametype == MeType.ME1_TYPE)
+            {
+                path = @"\BioGame\CookedPC\testVolumeLight_VFX.upk";
+            }
+            if (gametype == MeType.ME2_TYPE)
+            {
+                path = @"\BioGame\CookedPC\BIOC_Materials.pcc";
+            }
+            if (gametype == MeType.ME3_TYPE)
+            {
+                path = @"\BIOGame\CookedPCConsole\adv_combat_tutorial_xbox_D_Int.afc";
+            }
             for (int i = 0; i < GameData.packageFiles.Count; i++)
             {
+                if (GameData.packageFiles[i].Contains(path))
+                    continue;
                 updateStatusLabel("Repack PCC file " + (i + 1) + " of " + GameData.packageFiles.Count);
                 try
                 {
@@ -551,6 +566,64 @@ namespace MassEffectModder
         private void toolStripExtractME3MEMMenuItem_Click(object sender, EventArgs e)
         {
             toolStripExtractMEMMenuItem();
+        }
+
+        void toolStripCreateBinaryMod(MeType gameType)
+        {
+            enableGameDataMenu(false);
+            GameData gameData = new GameData(gameType, _configIni);
+            if (!Directory.Exists(GameData.GamePath))
+            {
+                MessageBox.Show("Game path is wrong!");
+                enableGameDataMenu(true);
+                return;
+            }
+            updateStatusLabel("Finding packages in game setup...");
+            if (!gameData.getPackages())
+            {
+                updateStatusLabel("");
+                enableGameDataMenu(true);
+                return;
+            }
+
+            using (FolderBrowserDialog modDir = new FolderBrowserDialog())
+            {
+                modDir.Description = "Please select source directory for modded package files";
+                if (modDir.ShowDialog() != DialogResult.OK)
+                {
+                    enableGameDataMenu(true);
+                    return;
+                }
+
+                using (OpenFileDialog modFile = new OpenFileDialog())
+                {
+                    modFile.Title = "Please select MEM mod file";
+                    modFile.Filter = "MEM mod file | *.mem";
+                    modFile.Multiselect = true;
+                    if (modFile.ShowDialog() != DialogResult.OK)
+                    {
+                        enableGameDataMenu(true);
+                        return;
+                    }
+
+                }
+            }
+            enableGameDataMenu(true);
+        }
+
+        private void toolStripMenuItemCreateBinME1_Click(object sender, EventArgs e)
+        {
+            toolStripCreateBinaryMod(MeType.ME1_TYPE);
+        }
+
+        private void toolStripMenuItemCreateBinME2_Click(object sender, EventArgs e)
+        {
+            toolStripCreateBinaryMod(MeType.ME2_TYPE);
+        }
+
+        private void toolStripMenuItemCreateBinME3_Click(object sender, EventArgs e)
+        {
+            toolStripCreateBinaryMod(MeType.ME3_TYPE);
         }
     }
 }

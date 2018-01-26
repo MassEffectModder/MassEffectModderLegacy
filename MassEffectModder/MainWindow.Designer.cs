@@ -526,6 +526,7 @@ namespace MassEffectModder
             this.toolStripMenuItemCreateBinME1.Name = "toolStripMenuItemCreateBinME1";
             this.toolStripMenuItemCreateBinME1.Size = new System.Drawing.Size(320, 22);
             this.toolStripMenuItemCreateBinME1.Text = "Create binary mod";
+            this.toolStripMenuItemCreateBinME1.Click += new System.EventHandler(this.toolStripMenuItemCreateBinME1_Click);
             // 
             // toolStripSeparator8
             // 
@@ -537,12 +538,14 @@ namespace MassEffectModder
             this.toolStripMenuItemCreateBinME2.Name = "toolStripMenuItemCreateBinME2";
             this.toolStripMenuItemCreateBinME2.Size = new System.Drawing.Size(212, 22);
             this.toolStripMenuItemCreateBinME2.Text = "Create binary mod";
+            this.toolStripMenuItemCreateBinME2.Click += new System.EventHandler(this.toolStripMenuItemCreateBinME2_Click);
             // 
             // toolStripMenuItemCreateBinME3
             // 
             this.toolStripMenuItemCreateBinME3.Name = "toolStripMenuItemCreateBinME3";
             this.toolStripMenuItemCreateBinME3.Size = new System.Drawing.Size(212, 22);
             this.toolStripMenuItemCreateBinME3.Text = "Create binary mod";
+            this.toolStripMenuItemCreateBinME3.Click += new System.EventHandler(this.toolStripMenuItemCreateBinME3_Click);
             // 
             // toolStripSeparator12
             // 
