@@ -143,15 +143,15 @@ namespace MassEffectModder
             string path = "";
             if (gametype == MeType.ME1_TYPE)
             {
-                path = @"\BioGame\CookedPC\testVolumeLight_VFX.upk";
+                path = @"\BioGame\CookedPC\testVolumeLight_VFX.upk".ToLowerInvariant();
             }
             if (gametype == MeType.ME2_TYPE)
             {
-                path = @"\BioGame\CookedPC\BIOC_Materials.pcc";
+                path = @"\BioGame\CookedPC\BIOC_Materials.pcc".ToLowerInvariant();
             }
             for (int i = 0; i < GameData.packageFiles.Count; i++)
             {
-                if (path != "" && GameData.packageFiles[i].Contains(path))
+                if (path != "" && GameData.packageFiles[i].ToLowerInvariant().Contains(path))
                     continue;
                 updateStatusLabel("Repack PCC file " + (i + 1) + " of " + GameData.packageFiles.Count);
                 try
