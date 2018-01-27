@@ -464,44 +464,6 @@ namespace MassEffectModder
             return true;
         }
 
-        public static void AddMarkerToPackages(MeType gameId)
-        {
-            string path = "";
-            if (gameId == MeType.ME1_TYPE)
-            {
-                path = @"\BioGame\CookedPC\testVolumeLight_VFX.upk".ToLowerInvariant();
-            }
-            if (gameId == MeType.ME2_TYPE)
-            {
-                path = @"\BioGame\CookedPC\BIOC_Materials.pcc".ToLowerInvariant();
-            }
-            Console.WriteLine("Adding marker to package files started..." + Environment.NewLine);
-            for (int i = 0; i < GameData.packageFiles.Count; i++)
-            {
-                if (path != "" && GameData.packageFiles[i].ToLowerInvariant().Contains(path))
-                    continue;
-                try
-                {
-                    using (FileStream fs = new FileStream(GameData.packageFiles[i], FileMode.Open, FileAccess.ReadWrite))
-                    {
-                        fs.SeekEnd();
-                        fs.Seek(-Package.MEMendFileMarker.Length, SeekOrigin.Current);
-                        string marker = fs.ReadStringASCII(Package.MEMendFileMarker.Length);
-                        if (marker != Package.MEMendFileMarker)
-                        {
-                            fs.SeekEnd();
-                            fs.WriteStringASCII(Package.MEMendFileMarker);
-                        }
-                    }
-                }
-                catch
-                {
-                    Console.WriteLine("The file is could not be opened to write marker, skipped: " + GameData.packageFiles[i]);
-                }
-            }
-            Console.WriteLine("Adding marker to package files ended." + Environment.NewLine);
-        }
-
         bool detectMod(int gameId)
         {
             string path = "";
@@ -1591,10 +1553,6 @@ namespace MassEffectModder
                     log += "Repack skipped" + Environment.NewLine + Environment.NewLine;
                 }
             }
-
-
-            if (updateMode || checkBoxOptionSkipScan.Checked)
-                AddMarkerToPackages((MeType)gameId);
 
 
             if (!applyModTag(gameId, MeuitmVer, AlotVer))

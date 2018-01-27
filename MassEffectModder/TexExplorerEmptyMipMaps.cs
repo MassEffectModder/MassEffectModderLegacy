@@ -37,6 +37,38 @@ namespace MassEffectModder
             public uint crc;
         }
 
+        public void AddMarkerToPackages(string packagePath)
+        {
+            string path = "";
+            if (GameData.gameType == MeType.ME1_TYPE)
+            {
+                path = @"\BioGame\CookedPC\testVolumeLight_VFX.upk".ToLowerInvariant();
+            }
+            if (GameData.gameType == MeType.ME2_TYPE)
+            {
+                path = @"\BioGame\CookedPC\BIOC_Materials.pcc".ToLowerInvariant();
+            }
+            if (path != "" && packagePath.ToLowerInvariant().Contains(path))
+                return;
+            try
+            {
+                using (FileStream fs = new FileStream(packagePath, FileMode.Open, FileAccess.ReadWrite))
+                {
+                    fs.SeekEnd();
+                    fs.Seek(-Package.MEMendFileMarker.Length, SeekOrigin.Current);
+                    string marker = fs.ReadStringASCII(Package.MEMendFileMarker.Length);
+                    if (marker != Package.MEMendFileMarker)
+                    {
+                        fs.SeekEnd();
+                        fs.WriteStringASCII(Package.MEMendFileMarker);
+                    }
+                }
+            }
+            catch
+            {
+            }
+        }
+
         public string removeMipMapsME1(int phase, List<FoundTexture> textures, CachePackageMgr cachePackageMgr,
             MainWindow mainWindow, Installer installer, bool forceZlib = false)
         {
@@ -174,6 +206,11 @@ skip:
                         else
                             package.SaveToFile();
                     }
+                    else
+                    {
+                        package.Dispose();
+                        AddMarkerToPackages(GameData.packageFiles[i]);
+                    }
                     package.Dispose();
                 }
                 else
@@ -261,6 +298,11 @@ skip:
                             package.SaveToFile(forceZlib);
                         else
                             package.SaveToFile();
+                    }
+                    else
+                    {
+                        package.Dispose();
+                        AddMarkerToPackages(GameData.packageFiles[i]);
                     }
                     package.Dispose();
                 }
