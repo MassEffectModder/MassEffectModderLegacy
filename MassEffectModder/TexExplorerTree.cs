@@ -361,10 +361,6 @@ namespace MassEffectModder
                         errors += mipmaps.removeMipMapsME2ME3(textures, null, mainWindow, null);
                     }
                 }
-
-                var time = Misc.stopTimer();
-                mainWindow.updateStatusLabel("Done. Process total time: " + Misc.getTimerFormat(time));
-                mainWindow.updateStatusLabel2("");
             }
             treeScan = textures;
 
@@ -381,8 +377,6 @@ namespace MassEffectModder
             {
                 if (path != "" && GameData.packageFiles[i].ToLowerInvariant().Contains(path))
                     continue;
-                if (mainWindow != null)
-                    mainWindow.updateStatusLabel("Adding marker to package file " + (i + 1) + " of " + GameData.packageFiles.Count);
                 try
                 {
                     using (FileStream fs = new FileStream(GameData.packageFiles[i], FileMode.Open, FileAccess.ReadWrite))
@@ -401,6 +395,12 @@ namespace MassEffectModder
                 {
                     errors += "The file is could not be opened to write marker, skipped: " + GameData.packageFiles[i] + Environment.NewLine;
                 }
+            }
+            if (mainWindow != null)
+            {
+                var time = Misc.stopTimer();
+                mainWindow.updateStatusLabel("Done. Process total time: " + Misc.getTimerFormat(time));
+                mainWindow.updateStatusLabel2("");
             }
 
             return errors;
