@@ -373,6 +373,11 @@ namespace MassEffectModder
             {
                 path = @"\BioGame\CookedPC\BIOC_Materials.pcc".ToLowerInvariant();
             }
+            if (mainWindow != null)
+            {
+                mainWindow.updateStatusLabel("Adding marker to package files...");
+                mainWindow.updateStatusLabel2("");
+            }
             for (int i = 0; i < GameData.packageFiles.Count; i++)
             {
                 if (path != "" && GameData.packageFiles[i].ToLowerInvariant().Contains(path))
