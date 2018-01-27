@@ -1,7 +1,7 @@
 /*
  * MassEffectModder
  *
- * Copyright (C) 2014-2017 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2014-2018 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -367,6 +367,42 @@ namespace MassEffectModder
                 mainWindow.updateStatusLabel2("");
             }
             treeScan = textures;
+
+            path = "";
+            if (GameData.gameType == MeType.ME1_TYPE)
+            {
+                path = @"\BioGame\CookedPC\testVolumeLight_VFX.upk";
+            }
+            if (GameData.gameType == MeType.ME2_TYPE)
+            {
+                path = @"\BioGame\CookedPC\BIOC_Materials.pcc";
+            }
+            for (int i = 0; i < GameData.packageFiles.Count; i++)
+            {
+                if (path != "" && GameData.packageFiles[i].Contains(path))
+                    continue;
+                if (mainWindow != null)
+                    mainWindow.updateStatusLabel("Adding marker to package file " + (i + 1) + " of " + GameData.packageFiles.Count);
+                try
+                {
+                    using (FileStream fs = new FileStream(GameData.packageFiles[i], FileMode.Open, FileAccess.ReadWrite))
+                    {
+                        fs.SeekEnd();
+                        fs.Seek(-Package.MEMendFileMarker.Length, SeekOrigin.Current);
+                        string marker = fs.ReadStringASCII(Package.MEMendFileMarker.Length);
+                        if (marker != Package.MEMendFileMarker)
+                        {
+                            fs.SeekEnd();
+                            fs.WriteStringASCII(Package.MEMendFileMarker);
+                        }
+                    }
+                }
+                catch
+                {
+                    errors += "The file is could not be opened to write marker, skipped: " + GameData.packageFiles[i] + Environment.NewLine;
+                }
+            }
+
             return errors;
         }
 

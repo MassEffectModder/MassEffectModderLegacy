@@ -1,7 +1,7 @@
 /*
  * MassEffectModder
  *
- * Copyright (C) 2014-2017 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2014-2018 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -56,6 +56,7 @@ namespace MassEffectModder
         const int packageHeaderDependsOffsetTableOffset = 24;
         const int packageHeaderGuidsOffsetTableOffset = 28;
         const int packageHeaderGuidsCountTableOffset = 36;
+        public const string MEMendFileMarker = "ThisIsMEMEndOfFileMarker";
 
         public enum CompressionType
         {
@@ -1270,6 +1271,9 @@ namespace MassEffectModder
                     chunks.Clear();
                     chunks = null;
                 }
+
+                fs.SeekEnd();
+                fs.WriteStringASCII(MEMendFileMarker);
             }
 
             tempOutput.Close();
