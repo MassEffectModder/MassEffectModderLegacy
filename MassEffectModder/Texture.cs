@@ -1,7 +1,7 @@
 /*
  * MassEffectModder
  *
- * Copyright (C) 2015-2017 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2015-2018 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -149,13 +149,11 @@ namespace MassEffectModder
                 }
                 else
                 {
-                    if (baseName != "")
+                    if (baseName != "" && !properties.exists("NeverStream") &&
+                        GameData.packageFiles.Exists(s => Path.GetFileNameWithoutExtension(s).Equals(baseName, StringComparison.OrdinalIgnoreCase)))
                     {
-                        if (GameData.packageFiles.Exists(s => Path.GetFileNameWithoutExtension(s).Equals(baseName, StringComparison.OrdinalIgnoreCase)))
-                        {
-                            basePackageName = baseName;
-                            weakSlave = true;
-                        }
+                        basePackageName = baseName;
+                        weakSlave = true;
                     }
                 }
             }

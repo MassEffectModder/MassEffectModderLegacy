@@ -1,7 +1,7 @@
 /*
  * MassEffectModder
  *
- * Copyright (C) 2014-2017 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2014-2018 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -352,6 +352,12 @@ namespace MassEffectModder
                         mipmap.storageType = texture.getTopMipmap().storageType;
                         if (texture.mipMapsList.Count() > 1)
                         {
+                            // WA: remove later someday
+                            if (GameData.gameType == MeType.ME1_TYPE && texture.properties.exists("NeverStream"))
+                            {
+                                nodeTexture.linkToMaster = -1;
+                            }
+
                             if (GameData.gameType == MeType.ME1_TYPE && nodeTexture.linkToMaster == -1)
                             {
                                 if (mipmap.storageType == Texture.StorageTypes.pccUnc)
