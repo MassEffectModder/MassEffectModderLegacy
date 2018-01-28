@@ -314,7 +314,7 @@ namespace MassEffectModder
                 if (previewShow)
                 {
                     MatchedTexture nodeTexture = node.textures[index].list[0];
-                    Package package = cachePackageMgr.OpenPackage(GameData.GamePath + nodeTexture.path);
+                    Package package = new Package(GameData.GamePath + nodeTexture.path, true);
                     Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
                     byte[] textureData = texture.getTopImageData();
                     if (textureData != null)
@@ -326,6 +326,7 @@ namespace MassEffectModder
                         pictureBoxPreview.Show();
                         richTextBoxInfo.Hide();
                     }
+                    package.Dispose();
                 }
                 else
                 {
@@ -335,7 +336,7 @@ namespace MassEffectModder
                     for (int index2 = 0; index2 < (detailedInfo ? node.textures[index].list.Count : 1); index2++)
                     {
                         MatchedTexture nodeTexture = node.textures[index].list[index2];
-                        Package package = cachePackageMgr.OpenPackage(GameData.GamePath + nodeTexture.path);
+                        Package package = new Package(GameData.GamePath + nodeTexture.path, true);
                         Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
                         text += "\nTexture instance: " + (index2 + 1) + "\n";
                         text += "  Texture name:  " + package.exportsTable[nodeTexture.exportID].objectName + "\n";
@@ -362,6 +363,7 @@ namespace MassEffectModder
                             text += "    CompSize:    " + texture.mipMapsList[l].compressedSize + "\n";
                             text += "    UnCompSize:  " + texture.mipMapsList[l].uncompressedSize + "\n";
                         }
+                        package.Dispose();
                     }
                     richTextBoxInfo.Text = text;
                     pictureBoxPreview.Hide();
