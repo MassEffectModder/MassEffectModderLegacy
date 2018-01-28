@@ -607,18 +607,19 @@ namespace MassEffectModder
                                     throw new Exception("Decompressed data size not expected!");
                             }
                         }
-                        else
+                        else if (compressionType == CompressionType.Zlib)
                         {
                             Parallel.For(0, blocks.Count, b =>
                             {
                                 uint dstLen = 0;
                                 ChunkBlock block = blocks[b];
-                                if (compressionType == CompressionType.Zlib)
-                                    dstLen = new ZlibHelper.Zlib().Decompress(block.compressedBuffer, block.comprSize, block.uncompressedBuffer);
+                                dstLen = new ZlibHelper.Zlib().Decompress(block.compressedBuffer, block.comprSize, block.uncompressedBuffer);
                                 if (dstLen != block.uncomprSize)
                                     throw new Exception("Decompressed data size not expected!");
                             });
                         }
+                        else
+                            throw new Exception("Compression type not expected!");
 
                         for (int b = 0; b < blocks.Count; b++)
                         {
@@ -1218,21 +1219,20 @@ namespace MassEffectModder
                                 chunk.blocks[b] = block;
                             }
                         }
-                        else
+                        else if (compressionType == CompressionType.Zlib)
                         {
                             Parallel.For(0, chunk.blocks.Count, b =>
                             {
                                 ChunkBlock block = chunk.blocks[b];
-                                if (compressionType == CompressionType.Zlib)
-                                    block.compressedBuffer = new ZlibHelper.Zlib().Compress(block.uncompressedBuffer);
-                                else
-                                    throw new Exception("Compression type not expected!");
+                                block.compressedBuffer = new ZlibHelper.Zlib().Compress(block.uncompressedBuffer);
                                 if (block.compressedBuffer.Length == 0)
                                     throw new Exception("Compression failed!");
                                 block.comprSize = (uint)block.compressedBuffer.Length;
                                 chunk.blocks[b] = block;
                             });
                         }
+                        else
+                            throw new Exception("Compression type not expected!");
 
                         for (int b = 0; b < newNumBlocks; b++)
                         {

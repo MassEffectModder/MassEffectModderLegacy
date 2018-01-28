@@ -223,21 +223,19 @@ namespace MassEffectModder
                         blocks[b] = block;
                     }
                 }
-                else
+                else if (type == StorageTypes.extZlib || type == StorageTypes.pccZlib)
                 {
                     Parallel.For(0, blocks.Count, b =>
                     {
                         Package.ChunkBlock block = blocks[b];
-                        if (type == StorageTypes.extZlib || type == StorageTypes.pccZlib)
-                            block.compressedBuffer = new ZlibHelper.Zlib().Compress(block.uncompressedBuffer);
-                        else
-                            throw new Exception("Compression type not expected!");
+                        block.compressedBuffer = new ZlibHelper.Zlib().Compress(block.uncompressedBuffer);
                         if (block.compressedBuffer.Length == 0)
                             throw new Exception("Compression failed!");
                         block.comprSize = (uint)block.compressedBuffer.Length;
                         blocks[b] = block;
                     });
-                }
+                } else
+                    throw new Exception("Compression type not expected!");
 
                 for (int b = 0; b < blocks.Count; b++)
                 {
@@ -307,18 +305,19 @@ namespace MassEffectModder
                         throw new Exception("Decompressed data size not expected!");
                 }
             }
-            else
+            else if (type == StorageTypes.extZlib || type == StorageTypes.pccZlib)
             {
                 Parallel.For(0, blocks.Count, b =>
                 {
                     uint dstLen = 0;
                     Package.ChunkBlock block = blocks[b];
-                    if (type == StorageTypes.extZlib || type == StorageTypes.pccZlib)
-                        dstLen = new ZlibHelper.Zlib().Decompress(block.compressedBuffer, block.comprSize, block.uncompressedBuffer);
+                    dstLen = new ZlibHelper.Zlib().Decompress(block.compressedBuffer, block.comprSize, block.uncompressedBuffer);
                     if (dstLen != block.uncomprSize)
                         throw new Exception("Decompressed data size not expected!");
                 });
             }
+            else
+                throw new Exception("Compression type not expected!");
 
             int dstPos = 0;
             for (int b = 0; b < blocks.Count; b++)
