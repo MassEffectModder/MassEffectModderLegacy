@@ -453,8 +453,39 @@ namespace MassEffectModder
                         fs.Skip(-2);
                         fs.WriteUInt16(flag); // write LAA flag
                     }
-                    return true;
                 }
+                // search for "ProductName Mass Effect"
+                byte[] pattern = { 0x50, 0, 0x72, 0, 0x6F, 0, 0x64, 0, 0x75, 0, 0x63, 0, 0x74, 0, 0x4E, 0, 0x61, 0, 0x6D, 0, 0x65, 0, 0, 0, 0, 0,
+                                   0x4D, 0, 0x61, 0, 0x73, 0, 0x73, 0, 0x20, 0, 0x45, 0, 0x66, 0, 0x66, 0, 0x65, 0, 0x63, 0, 0x74, 0 };
+                byte[] buffer = File.ReadAllBytes(GameData.GameExePath);
+                int pos = -1;
+                for (int i = 0; i < buffer.Length; i++)
+                {
+                    if (buffer[i] == pattern[0])
+                    {
+                        bool found = true;
+                        for (int l = 1; l < pattern.Length; l++)
+                        {
+                            if (buffer[i + l] != pattern[l])
+                            {
+                                found = false;
+                                break;
+                            }
+                        }
+                        if (found)
+                        {
+                            pos = i;
+                            break;
+                        }
+                    }
+                }
+                if (pos != -1)
+                {
+                    // replace to "Mass_Effect"
+                    buffer[pos + 34] = 0x5f;
+                    File.WriteAllBytes(GameData.GameExePath, buffer);
+                }
+                return true;
             }
 
             return false;
