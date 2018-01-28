@@ -28,6 +28,9 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Text;
+using System.Security.AccessControl;
+using System.Security.Principal;
+using Microsoft.Win32;
 
 namespace MassEffectModder
 {
@@ -197,7 +200,91 @@ namespace MassEffectModder
             }
 
             if (_gameSelected == MeType.ME1_TYPE)
-                Misc.VerifyME1Exe(gameData);
+            {
+                Misc.ApplyLAAForME1Exe(gameData);
+
+                string keyRegistry = @"SOFTWARE\WOW6432Node\AGEIA Technologies";
+                try
+                {
+                    RegistryKey key = Registry.LocalMachine.OpenSubKey(keyRegistry, true);
+                    if (key != null)
+                    {
+                        key.Close();
+                    }
+                }
+                catch
+                {
+                    if (Misc.isRunAsAdministrator())
+                    {
+                        RegistryKey key = Registry.LocalMachine.OpenSubKey(keyRegistry, true);
+                        if (key == null)
+                        {
+                            string userName = WindowsIdentity.GetCurrent().Name;
+                            key = Registry.LocalMachine.CreateSubKey(keyRegistry);
+                            RegistrySecurity security = new RegistrySecurity();
+                            security = key.GetAccessControl();
+                            security.AddAccessRule(new RegistryAccessRule(userName, RegistryRights.WriteKey | RegistryRights.ReadKey | RegistryRights.Delete |
+                                RegistryRights.FullControl, InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit, PropagationFlags.None, AccessControlType.Allow));
+                            key.SetAccessControl(security);
+                        }
+                        else
+                        {
+                            key.Close();
+                        }
+
+                        Misc.ChangeProductNameForME1Exe(gameData);
+
+                        string gameExePath = GameData.GameExePath;
+                        key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", true);
+                        string entry = (string)key.GetValue(gameExePath, null);
+                        if (entry != null)
+                        {
+                            key.DeleteValue(gameExePath);
+                        }
+                    }
+                    else
+                    {
+                        int? value = (int?)Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System", "EnableLUA", null);
+                        if (value != null && value > 0)
+                        {
+                            MessageBox.Show("Some game folders/registry keys are not writeable by your user account.\n" +
+                                "MEM will attempt to grant access to these folders/registry with PermissionsGranter.exe program.\n\n" +
+                                "Registry: HKLM\\SOFTWARE\\WOW6432Node\\AGEIA Technologies\n" +
+                                "(Fixes a ME1 launch issue)", "Granting permissions to Mass Effect directories");
+
+                            string userName = WindowsIdentity.GetCurrent().Name;
+                            Process process = new Process();
+                            process.StartInfo.FileName = Path.Combine(Program.dllPath, "PermissionsGranter.exe");
+                            process.StartInfo.Arguments = "\"" + userName + "\" -create-hklm-reg-key \"SOFTWARE\\WOW6432Node\\AGEIA Technologies\"";
+                            process.StartInfo.CreateNoWindow = true;
+                            process.StartInfo.UseShellExecute = false;
+                            process.StartInfo.Verb = "runas";
+                            process.Start();
+                            process.WaitForExit(60000);
+                            if (process.ExitCode == 0)
+                            {
+                                Misc.ChangeProductNameForME1Exe(gameData);
+
+                                string gameExePath = GameData.GameExePath;
+                                var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", true);
+                                string entry = (string)key.GetValue(gameExePath, null);
+                                if (entry != null)
+                                {
+                                    key.DeleteValue(gameExePath);
+                                }
+                            }
+                            else
+                            {
+                                MessageBox.Show("MEM is not able to fix a ME1 launch issue\nbecause the MEM does not have administrative rights.");
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("MEM is not able to fix a ME1 launch issue\nbecause the MEM does not have administrative rights and UAC is disabled.");
+                        }
+                    }
+                }
+            }
 
             if (!_mainWindow.GetPackages(gameData))
             {

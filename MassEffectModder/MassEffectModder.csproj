@@ -193,6 +193,7 @@
     <EmbeddedResource Include="Dlls\CompressonatorCodecs.dll" />
     <EmbeddedResource Include="Dlls\libmadwrapper.dll" />
     <EmbeddedResource Include="Dlls\xdelta.dll" />
+    <EmbeddedResource Include="Dlls\PermissionsGranter.exe" />
     <Content Include="MEM.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1448,7 +1448,7 @@ namespace MassEffectModder
             {
                 log += "Prepare game data started..." + Environment.NewLine;
                 if (GameData.gameType == MeType.ME1_TYPE)
-                    Misc.VerifyME1Exe(gameData, false);
+                    Misc.ApplyLAAForME1Exe(gameData, false);
 
                 if (GameData.gameType != MeType.ME1_TYPE)
                     gameData.getTfcTextures();

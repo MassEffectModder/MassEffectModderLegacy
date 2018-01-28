@@ -59,7 +59,8 @@ namespace MassEffectModder
             string[] resources = assembly.GetManifestResourceNames();
             for (int l = 0; l < resources.Length; l++)
             {
-                if (resources[l].EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
+                if (resources[l].EndsWith(".dll", StringComparison.OrdinalIgnoreCase) ||
+                   (resources[l].EndsWith(".exe", StringComparison.OrdinalIgnoreCase)))
                 {
                     string dllName = resources[l].Substring(resources[l].IndexOf("Dlls.") + "Dlls.".Length);
                     string dllFilePath = Path.Combine(dllPath, dllName);
@@ -100,6 +101,23 @@ namespace MassEffectModder
                         using (Stream s = Assembly.GetEntryAssembly().GetManifestResourceStream(resources[l]))
                         {
                             tableME3 = s.ReadToBuffer(s.Length);
+                        }
+                    }
+                }
+                else if (resources[l].EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (resources[l].Contains("PermissionsGranter.exe"))
+                    {
+                        string exePath = Path.Combine(dllPath, "PermissionsGranter.exe");
+                        if (!Directory.Exists(dllPath))
+                            Directory.CreateDirectory(dllPath);
+
+                        using (Stream s = Assembly.GetEntryAssembly().GetManifestResourceStream(resources[l]))
+                        {
+                            byte[] buf = s.ReadToBuffer(s.Length);
+                            if (File.Exists(exePath))
+                                File.Delete(exePath);
+                            File.WriteAllBytes(exePath, buf);
                         }
                     }
                 }

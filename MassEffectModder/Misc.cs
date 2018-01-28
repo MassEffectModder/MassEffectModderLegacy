@@ -435,7 +435,7 @@ namespace MassEffectModder
             public string modName;
         }
 
-        static public bool VerifyME1Exe(GameData gameData, bool gui = true)
+        static public bool ApplyLAAForME1Exe(GameData gameData, bool gui = true)
         {
             if (File.Exists(GameData.GameExePath))
             {
@@ -454,6 +454,16 @@ namespace MassEffectModder
                         fs.WriteUInt16(flag); // write LAA flag
                     }
                 }
+                return true;
+            }
+
+            return false;
+        }
+
+        static public bool ChangeProductNameForME1Exe(GameData gameData, bool gui = true)
+        {
+            if (File.Exists(GameData.GameExePath))
+            {
                 // search for "ProductName Mass Effect"
                 byte[] pattern = { 0x50, 0, 0x72, 0, 0x6F, 0, 0x64, 0, 0x75, 0, 0x63, 0, 0x74, 0, 0x4E, 0, 0x61, 0, 0x6D, 0, 0x65, 0, 0, 0, 0, 0,
                                    0x4D, 0, 0x61, 0, 0x73, 0, 0x73, 0, 0x20, 0, 0x45, 0, 0x66, 0, 0x66, 0, 0x65, 0, 0x63, 0, 0x74, 0 };
