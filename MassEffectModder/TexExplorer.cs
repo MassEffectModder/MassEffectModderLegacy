@@ -865,6 +865,7 @@ namespace MassEffectModder
                 return;
             if (listViewMods.SelectedItems[0].Name.EndsWith(".mod", StringComparison.OrdinalIgnoreCase))
                 return;
+            _mainWindow.updateStatusLabel("Processing MOD...");
             richTextBoxInfo.Text = mipMaps.listTextureMod(listViewMods.SelectedItems[0].Name, _textures, cachePackageMgr, this, ref log);
             _mainWindow.updateStatusLabel("Done.");
             _mainWindow.updateStatusLabel2("");

@@ -371,7 +371,7 @@ namespace MassEffectModder
                         pkgPath = fs.ReadStringASCIINull();
                     }
 
-                    if (texExplorer != null)
+                    if (texExplorer != null && (extract || replace))
                     {
                         texExplorer._mainWindow.updateStatusLabel("Processing MOD " + Path.GetFileName(filenameMod) +
                             " - File " + (i + 1) + " of " + numFiles + " - " + name);
