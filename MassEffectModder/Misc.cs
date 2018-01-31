@@ -19,12 +19,15 @@
  *
  */
 
+using Microsoft.Win32;
 using StreamHelpers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Text;
@@ -435,7 +438,7 @@ namespace MassEffectModder
             public string modName;
         }
 
-        static public bool ApplyLAAForME1Exe(GameData gameData, bool gui = true)
+        static public bool ApplyLAAForME1Exe()
         {
             if (File.Exists(GameData.GameExePath))
             {
@@ -447,8 +450,6 @@ namespace MassEffectModder
                     ushort flag = fs.ReadUInt16(); // read flags
                     if ((flag & 0x20) != 0x20) // check for LAA flag
                     {
-                        if (gui)
-                            MessageBox.Show("Large Aware Address flag is not enabled on Mass Effect executable file. Correcting...");
                         flag |= 0x20;
                         fs.Skip(-2);
                         fs.WriteUInt16(flag); // write LAA flag
@@ -460,7 +461,7 @@ namespace MassEffectModder
             return false;
         }
 
-        static public bool ChangeProductNameForME1Exe(GameData gameData, bool gui = true)
+        static public bool ChangeProductNameForME1Exe()
         {
             if (File.Exists(GameData.GameExePath))
             {
@@ -530,6 +531,184 @@ namespace MassEffectModder
         static public bool isRunAsAdministrator()
         {
             return (new WindowsPrincipal(WindowsIdentity.GetCurrent())).IsInRole(WindowsBuiltInRole.Administrator);
+        }
+
+        static public bool CheckAndCorrectAccessToGame(MeType gameId)
+        {
+            bool writeAccess = false;
+            if (checkWriteAccessDir(GameData.MainData))
+                writeAccess = true;
+            if (writeAccess && gameId == MeType.ME1_TYPE)
+            {
+                writeAccess = checkWriteAccessFile(GameData.GamePath + @"\BioGame\CookedPC\Packages\GameObjects\Characters\Humanoids\HumanMale\BIOG_HMM_HED_PROMorph.upk");
+            }
+            if (writeAccess && gameId == MeType.ME2_TYPE)
+            {
+                writeAccess = checkWriteAccessFile(GameData.GamePath + @"\BioGame\CookedPC\BioD_CitAsL.pcc");
+            }
+            if (writeAccess && gameId == MeType.ME3_TYPE)
+            {
+                writeAccess = checkWriteAccessFile(GameData.GamePath + @"\BioGame\CookedPCConsole\BioA_CitSam_000LevelTrans.pcc");
+            }
+
+            bool uac = false;
+            int? value = (int?)Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System", "EnableLUA", null);
+            if (value != null && value > 0)
+                uac = true;
+
+            bool registryExists = false;
+            if (gameId == MeType.ME1_TYPE)
+            {
+                ApplyLAAForME1Exe();
+
+                string keyRegistry = @"SOFTWARE\WOW6432Node\AGEIA Technologies";
+                RegistryKey key = Registry.LocalMachine.OpenSubKey(keyRegistry, true);
+                if (key != null)
+                {
+                    key.Close();
+                    registryExists = true;
+                }
+                else
+                {
+                    if (isRunAsAdministrator())
+                    {
+                        string userName = WindowsIdentity.GetCurrent().Name;
+                        key = Registry.LocalMachine.CreateSubKey(keyRegistry);
+                        RegistrySecurity security = new RegistrySecurity();
+                        security = key.GetAccessControl();
+                        security.AddAccessRule(new RegistryAccessRule(userName, RegistryRights.WriteKey | RegistryRights.ReadKey | RegistryRights.Delete |
+                            RegistryRights.FullControl, InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit, PropagationFlags.None, AccessControlType.Allow));
+                        key.SetAccessControl(security);
+                        key.Close();
+                        registryExists = true;
+                    }
+                }
+            }
+
+            string msg;
+            if (!uac)
+            {
+                msg = "MEM is not able to";
+                if (!writeAccess)
+                {
+                    msg += " grant write access to game folders";
+                }
+                if (gameId == MeType.ME1_TYPE && !registryExists)
+                {
+                    if (!writeAccess)
+                        msg += " and";
+                    msg += " fix a ME1 launch issue";
+                }
+                msg += "\nbecause MEM does not have administrative rights and UAC is disabled.";
+                MessageBox.Show(msg);
+                return false;
+            }
+
+            if (!writeAccess || (gameId == MeType.ME1_TYPE && !registryExists))
+            {
+                msg = "Some";
+                if (!writeAccess)
+                {
+                    msg += " game folders";
+                }
+                if (gameId == MeType.ME1_TYPE && !registryExists)
+                {
+                    if (!writeAccess)
+                        msg += " and";
+                    msg += " registry keys";
+                }
+
+                msg += " are not writeable by your user account.\nMEM will attempt to grant access to";
+
+                if (!writeAccess)
+                {
+                    msg += " game folders";
+                }
+                if (gameId == MeType.ME1_TYPE && !registryExists)
+                {
+                    if (!writeAccess)
+                        msg += " and";
+                    msg += " registry keys";
+                }
+
+                msg += " with PermissionsGranter.exe program.\n\n";
+
+                if (!writeAccess)
+                {
+                    msg += "Game folder: " + GameData.GamePath + "\n\n";
+                }
+                if (gameId == MeType.ME1_TYPE && !registryExists)
+                {
+                    msg += "Registry: HKLM\\SOFTWARE\\WOW6432Node\\AGEIA Technologies\n";
+                    msg += "(Fixes a ME1 launch issue)";
+                }
+
+                MessageBox.Show(msg, "Granting permissions");
+
+                bool failedAccess = true;
+                string userName = WindowsIdentity.GetCurrent().Name;
+                try
+                {
+                    Process process = new Process();
+                    process.StartInfo.FileName = Path.Combine(Program.dllPath, "PermissionsGranter.exe");
+                    process.StartInfo.Arguments = "\"" + userName + "\"";
+                    if (gameId == MeType.ME1_TYPE && !registryExists)
+                        process.StartInfo.Arguments = " -create-hklm-reg-key \"SOFTWARE\\WOW6432Node\\AGEIA Technologies\"";
+                    if (!writeAccess)
+                        process.StartInfo.Arguments = " " + GameData.GamePath;
+                    process.StartInfo.CreateNoWindow = true;
+                    process.StartInfo.UseShellExecute = true;
+                    process.StartInfo.Verb = "runas";
+                    process.Start();
+                    if (process.ExitCode == 0)
+                        failedAccess = false;
+                }
+                catch
+                {
+                    failedAccess = true;
+                }
+
+                if (failedAccess)
+                {
+                    msg = "MEM is not able to";
+                    if (!writeAccess)
+                    {
+                        msg += " grant write access to game folders";
+                    }
+                    if (gameId == MeType.ME1_TYPE && !registryExists)
+                    {
+                        if (!writeAccess)
+                            msg += " and";
+                        msg += " fix a ME1 launch issue";
+                    }
+                    msg += "\nbecause MEM does not have administrative rights.";
+                    MessageBox.Show(msg);
+                    return false;
+                }
+
+                registryExists = true;
+            }
+
+            if (gameId == MeType.ME1_TYPE && registryExists)
+            {
+                string gameExePath = GameData.GameExePath;
+                RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", true);
+                if (key != null)
+                {
+                    string entry = (string)key.GetValue(gameExePath, null);
+                    if (entry != null)
+                    {
+                        entry = entry.Replace("RUNASADMIN", "");
+                        entry = entry.Replace("WINXPSP3", "");
+                        key.SetValue(gameExePath, entry);
+                    }
+                    key.Close();
+                }
+
+                ChangeProductNameForME1Exe();
+            }
+
+            return true;
         }
 
         static public long getDiskFreeSpace(string path)

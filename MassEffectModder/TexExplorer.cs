@@ -28,9 +28,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Text;
-using System.Security.AccessControl;
-using System.Security.Principal;
-using Microsoft.Win32;
 
 namespace MassEffectModder
 {
@@ -168,118 +165,10 @@ namespace MassEffectModder
                 return;
             }
 
-            bool writeAccess = false;
-            if (Misc.checkWriteAccessDir(GameData.MainData))
-                writeAccess = true;
-            if (_gameSelected == MeType.ME1_TYPE)
+            if (!Misc.CheckAndCorrectAccessToGame(_gameSelected))
             {
-                if (Misc.checkWriteAccessFile(GameData.GamePath + @"\BioGame\CookedPC\Packages\GameObjects\Characters\Humanoids\HumanMale\BIOG_HMM_HED_PROMorph.upk"))
-                    writeAccess = true;
-                else
-                    writeAccess = false;
-            }
-            if (_gameSelected == MeType.ME2_TYPE)
-            {
-                if (Misc.checkWriteAccessFile(GameData.GamePath + @"\BioGame\CookedPC\BioD_CitAsL.pcc"))
-                    writeAccess = true;
-                else
-                    writeAccess = false;
-            }
-            if (_gameSelected == MeType.ME3_TYPE)
-            {
-                if (Misc.checkWriteAccessFile(GameData.GamePath + @"\BioGame\CookedPCConsole\BioA_CitSam_000LevelTrans.pcc"))
-                    writeAccess = true;
-                else
-                    writeAccess = false;
-            }
-            if (!writeAccess)
-            {
-                MessageBox.Show("Write access denied to game folders!\n\n" + GameData.GamePath);
                 Close();
                 return;
-            }
-
-            if (_gameSelected == MeType.ME1_TYPE)
-            {
-                Misc.ApplyLAAForME1Exe(gameData);
-
-                string keyRegistry = @"SOFTWARE\WOW6432Node\AGEIA Technologies";
-                bool registryExists = false;
-                RegistryKey key = Registry.LocalMachine.OpenSubKey(keyRegistry, true);
-                if (key != null)
-                {
-                    key.Close();
-                    registryExists = true;
-                }
-                else
-                {
-                    if (Misc.isRunAsAdministrator())
-                    {
-                        string userName = WindowsIdentity.GetCurrent().Name;
-                        key = Registry.LocalMachine.CreateSubKey(keyRegistry);
-                        RegistrySecurity security = new RegistrySecurity();
-                        security = key.GetAccessControl();
-                        security.AddAccessRule(new RegistryAccessRule(userName, RegistryRights.WriteKey | RegistryRights.ReadKey | RegistryRights.Delete |
-                            RegistryRights.FullControl, InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit, PropagationFlags.None, AccessControlType.Allow));
-                        key.SetAccessControl(security);
-                        key.Close();
-                        registryExists = true;
-                    }
-                    else
-                    {
-                        int? value = (int?)Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System", "EnableLUA", null);
-                        if (value != null && value > 0)
-                        {
-                            MessageBox.Show("Some game folders/registry keys are not writeable by your user account.\n" +
-                                "MEM will attempt to grant access to these folders/registry with PermissionsGranter.exe program.\n\n" +
-                                "Registry: HKLM\\SOFTWARE\\WOW6432Node\\AGEIA Technologies\n" +
-                                "(Fixes a ME1 launch issue)", "Granting permissions to Mass Effect directories");
-
-                            string userName = WindowsIdentity.GetCurrent().Name;
-                            try
-                            {
-                                Process process = new Process();
-                                process.StartInfo.FileName = Path.Combine(Program.dllPath, "PermissionsGranter.exe");
-                                process.StartInfo.Arguments = "\"" + userName + "\" -create-hklm-reg-key \"SOFTWARE\\WOW6432Node\\AGEIA Technologies\"";
-                                process.StartInfo.CreateNoWindow = true;
-                                process.StartInfo.UseShellExecute = true;
-                                process.StartInfo.Verb = "runas";
-                                process.Start();
-                                if (process.ExitCode == 0)
-                                    registryExists = true;
-                                else
-                                    MessageBox.Show("MEM is not able to fix a ME1 launch issue\nbecause the MEM does not have administrative rights.");
-                            }
-                            catch
-                            {
-                                MessageBox.Show("MEM is not able to fix a ME1 launch issue\nbecause the MEM does not have administrative rights.");
-                            }
-                        }
-                        else
-                        {
-                            MessageBox.Show("MEM is not able to fix a ME1 launch issue\nbecause the MEM does not have administrative rights and UAC is disabled.");
-                        }
-                    }
-                }
-
-                if (registryExists)
-                {
-                    string gameExePath = GameData.GameExePath;
-                    key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", true);
-                    if (key != null)
-                    {
-                        string entry = (string)key.GetValue(gameExePath, null);
-                        if (entry != null)
-                        {
-                            entry = entry.Replace("RUNASADMIN", "");
-                            entry = entry.Replace("WINXPSP3", "");
-                            key.SetValue(gameExePath, entry);
-                        }
-                        key.Close();
-                    }
-
-                    Misc.ChangeProductNameForME1Exe(gameData);
-                }
             }
 
             if (!_mainWindow.GetPackages(gameData))

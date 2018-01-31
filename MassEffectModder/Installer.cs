@@ -813,33 +813,10 @@ namespace MassEffectModder
                 }
             }
 
-            bool writeAccess = false;
-            if (Misc.checkWriteAccessDir(GameData.MainData))
-                writeAccess = true;
-            if (gameId == (int)MeType.ME1_TYPE)
-            {
-                if (Misc.checkWriteAccessFile(GameData.GamePath + @"\BioGame\CookedPC\Packages\GameObjects\Characters\Humanoids\HumanMale\BIOG_HMM_HED_PROMorph.upk"))
-                    writeAccess = true;
-                else
-                    writeAccess = false;
-            }
-            if (gameId == (int)MeType.ME2_TYPE)
-            {
-                if (Misc.checkWriteAccessFile(GameData.GamePath + @"\BioGame\CookedPC\BioD_CitAsL.pcc"))
-                    writeAccess = true;
-                else
-                    writeAccess = false;
-            }
-            if (gameId == (int)MeType.ME3_TYPE)
-            {
-                if (Misc.checkWriteAccessFile(GameData.GamePath + @"\BioGame\CookedPCConsole\BioA_CitSam_000LevelTrans.pcc"))
-                    writeAccess = true;
-                else
-                    writeAccess = false;
-            }
+            bool writeAccess = Misc.CheckAndCorrectAccessToGame((MeType)gameId);
             if (!writeAccess)
             {
-                customLabelFinalStatus.Text = "Write access denied to game folders, aborting...";
+                customLabelFinalStatus.Text = "Write access denied, aborting...";
                 customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                 buttonsEnable(true);
                 return false;
@@ -1447,9 +1424,6 @@ namespace MassEffectModder
             if (!updateMode && !checkBoxOptionSkipScan.Checked)
             {
                 log += "Prepare game data started..." + Environment.NewLine;
-                if (GameData.gameType == MeType.ME1_TYPE)
-                    Misc.ApplyLAAForME1Exe(gameData, false);
-
                 if (GameData.gameType != MeType.ME1_TYPE)
                     gameData.getTfcTextures();
 
