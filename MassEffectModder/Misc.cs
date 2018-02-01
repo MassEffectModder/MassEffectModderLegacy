@@ -559,26 +559,35 @@ namespace MassEffectModder
             bool registryExists = false;
             if (gameId == MeType.ME1_TYPE)
             {
-                ApplyLAAForME1Exe();
-
                 string keyRegistry = @"SOFTWARE\WOW6432Node\AGEIA Technologies";
-                RegistryKey key = Registry.LocalMachine.OpenSubKey(keyRegistry, true);
-                if (key != null)
+                RegistryKey key;
+                if (isRunAsAdministrator())
                 {
+                    string userName = WindowsIdentity.GetCurrent().Name;
+                    key = Registry.LocalMachine.CreateSubKey(keyRegistry);
+                    RegistrySecurity security = new RegistrySecurity();
+                    security = key.GetAccessControl();
+                    security.AddAccessRule(new RegistryAccessRule(userName, RegistryRights.WriteKey |
+                        RegistryRights.ReadKey | RegistryRights.Delete |
+                        RegistryRights.FullControl, InheritanceFlags.ContainerInherit |
+                        InheritanceFlags.ObjectInherit, PropagationFlags.None, AccessControlType.Allow));
+                    key.SetAccessControl(security);
                     key.Close();
                     registryExists = true;
                 }
                 else
                 {
-                    if (isRunAsAdministrator())
+                    try
                     {
-                        string userName = WindowsIdentity.GetCurrent().Name;
-                        key = Registry.LocalMachine.CreateSubKey(keyRegistry);
-                        RegistrySecurity security = new RegistrySecurity();
-                        security = key.GetAccessControl();
-                        security.AddAccessRule(new RegistryAccessRule(userName, RegistryRights.WriteKey | RegistryRights.ReadKey | RegistryRights.Delete |
-                            RegistryRights.FullControl, InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit, PropagationFlags.None, AccessControlType.Allow));
-                        key.SetAccessControl(security);
+                        key = Registry.LocalMachine.OpenSubKey(keyRegistry, true);
+                    }
+                    catch
+                    {
+                        key = null;
+                    }
+
+                    if (key != null)
+                    {
                         key.Close();
                         registryExists = true;
                     }
@@ -599,7 +608,7 @@ namespace MassEffectModder
                         msg += " and";
                     msg += " fix a ME1 launch issue";
                 }
-                msg += "\nbecause MEM does not have administrative rights and UAC is disabled.";
+                msg += " because MEM does not have administrative rights and UAC is disabled.";
                 MessageBox.Show(msg);
                 return false;
             }
@@ -653,9 +662,9 @@ namespace MassEffectModder
                     process.StartInfo.FileName = Path.Combine(Program.dllPath, "PermissionsGranter.exe");
                     process.StartInfo.Arguments = "\"" + userName + "\"";
                     if (gameId == MeType.ME1_TYPE && !registryExists)
-                        process.StartInfo.Arguments = " -create-hklm-reg-key \"SOFTWARE\\WOW6432Node\\AGEIA Technologies\"";
+                        process.StartInfo.Arguments += " -create-hklm-reg-key \"SOFTWARE\\WOW6432Node\\AGEIA Technologies\"";
                     if (!writeAccess)
-                        process.StartInfo.Arguments = " " + GameData.GamePath;
+                        process.StartInfo.Arguments += " " + GameData.GamePath;
                     process.StartInfo.CreateNoWindow = true;
                     process.StartInfo.UseShellExecute = true;
                     process.StartInfo.Verb = "runas";
@@ -681,13 +690,16 @@ namespace MassEffectModder
                             msg += " and";
                         msg += " fix a ME1 launch issue";
                     }
-                    msg += "\nbecause MEM does not have administrative rights.";
+                    msg += " because MEM does not have administrative rights.";
                     MessageBox.Show(msg);
                     return false;
                 }
 
                 registryExists = true;
             }
+
+            if (gameId == MeType.ME1_TYPE)
+                ApplyLAAForME1Exe();
 
             if (gameId == MeType.ME1_TYPE && registryExists)
             {
