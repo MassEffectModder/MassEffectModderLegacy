@@ -664,7 +664,7 @@ namespace MassEffectModder
                     if (gameId == MeType.ME1_TYPE && !registryExists)
                         process.StartInfo.Arguments += " -create-hklm-reg-key \"SOFTWARE\\WOW6432Node\\AGEIA Technologies\"";
                     if (!writeAccess)
-                        process.StartInfo.Arguments += " " + GameData.GamePath;
+                        process.StartInfo.Arguments += " \"" + GameData.GamePath + "\"";
                     process.StartInfo.CreateNoWindow = true;
                     process.StartInfo.UseShellExecute = true;
                     process.StartInfo.Verb = "runas";
