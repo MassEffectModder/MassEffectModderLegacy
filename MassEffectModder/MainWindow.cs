@@ -44,6 +44,9 @@ namespace MassEffectModder
             if (runAsAdmin)
                 Text += " (run as Administrator)";
             _configIni = new ConfIni();
+            if (runAsAdmin)
+                MessageBox.Show("The program should be run as standard user to avoid (user account) issues.\n" +
+                    "The porgram will ask for administrative rights when necessary.");
         }
 
         public void enableGameDataMenu(bool enable)

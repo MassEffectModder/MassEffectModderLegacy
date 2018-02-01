@@ -134,6 +134,10 @@ namespace MassEffectModder
 
         public bool Run(bool runAsAdmin)
         {
+            if (runAsAdmin)
+                MessageBox.Show("The Installer should be run as standard user to avoid (user account) issues.\n" +
+                    "The installer will ask for administrative rights when necessary.");
+
             installerIni = new ConfIni(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "installer.ini"));
             string gameIdStr = installerIni.Read("GameId", "Main");
             if (gameIdStr.ToLowerInvariant() == "me1")
