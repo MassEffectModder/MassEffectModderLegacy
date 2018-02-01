@@ -62,6 +62,7 @@ namespace MassEffectModder
         string softShadowsModPath;
         string splashDemiurge;
         string splashBitmapPath;
+        string reshadePath;
         string indirectSoundPath;
         bool meuitmMode = false;
         bool OptionVanillaVisible;
@@ -69,6 +70,7 @@ namespace MassEffectModder
         bool OptionRepackVisible;
         bool OptionLimit2KVisible;
         bool OptionIndirectSound;
+        bool OptionReshade;
         bool mute = false;
         int stage = 1;
         int totalStages = 7;
@@ -323,11 +325,16 @@ namespace MassEffectModder
                     OptionIndirectSound = checkBoxOptionIndirectSound.Visible = labelOptionIndirectSound.Visible = true;
                 else
                     OptionIndirectSound = checkBoxOptionIndirectSound.Visible = labelOptionIndirectSound.Visible = false;
+                if (reshadePath != "")
+                    OptionReshade = checkBoxOptionReshade.Visible = labelOptionReshade.Visible = true;
+                else
+                    OptionReshade = checkBoxOptionReshade.Visible = labelOptionReshade.Visible = false;
             }
             else
             {
                 OptionLimit2KVisible = checkBoxOptionLimit2K.Visible = labelOptionLimit2K.Visible = false;
                 OptionIndirectSound = checkBoxOptionIndirectSound.Visible = labelOptionIndirectSound.Visible = false;
+                OptionReshade = false;
             }
 
             if (allowToSkip)
@@ -350,6 +357,7 @@ namespace MassEffectModder
             checkBoxOptionVanilla.Checked = false;
             checkBoxOptionLimit2K.Checked = false;
             checkBoxOptionSkipScan.Checked = false;
+            checkBoxOptionReshade.Checked = false;
 
             buttonSTART.Visible = true;
             buttonNormal.Visible = true;
@@ -368,13 +376,14 @@ namespace MassEffectModder
             checkBoxOptionSkipScan.Parent = pictureBoxBG;
             checkBoxOptionVanilla.Parent = pictureBoxBG;
             checkBoxOptionIndirectSound.Parent = pictureBoxBG;
+            checkBoxOptionReshade.Parent = pictureBoxBG;
             labelModsSelection.Parent = pictureBoxBG;
             comboBoxMod0.Parent = comboBoxMod1.Parent = comboBoxMod2.Parent = comboBoxMod3.Parent = comboBoxMod4.Parent = pictureBoxBG;
             comboBoxMod1.Parent = comboBoxMod2.Parent = comboBoxMod3.Parent = comboBoxMod4.Parent = comboBoxMod5.Parent = pictureBoxBG;
             buttonMute.Parent = pictureBoxBG;
 
             labelOptions.Visible = OptionVanillaVisible || OptionSkipScanVisible ||
-                OptionRepackVisible || OptionLimit2KVisible;
+                OptionRepackVisible || OptionLimit2KVisible || OptionReshade;
 
             string bgFile = installerIni.Read("BackgroundImage", "Main").ToLowerInvariant();
             if (bgFile != "")
@@ -422,6 +431,15 @@ namespace MassEffectModder
                 if (!File.Exists(splashBitmapPath) || Path.GetExtension(splashBitmapPath).ToLowerInvariant() != ".bmp")
                 {
                     splashBitmapPath = "";
+                }
+            }
+
+            reshadePath = installerIni.Read("ReShade", "Main").ToLowerInvariant();
+            if (reshadePath != "")
+            {
+                if (!File.Exists(reshadePath) || Path.GetExtension(reshadePath).ToLowerInvariant() != ".zip")
+                {
+                    reshadePath = "";
                 }
             }
 
@@ -673,6 +691,58 @@ namespace MassEffectModder
                     }
 
                     string filePath = GameData.GamePath + "\\Binaries\\" + fileName;
+                    if (File.Exists(filePath))
+                        File.Delete(filePath);
+                    using (FileStream fs = new FileStream(filePath, FileMode.CreateNew))
+                    {
+                        fs.WriteFromBuffer(data);
+                    }
+
+                    zip.GoToNextFile(handle);
+                }
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool installReshadePath(string path)
+        {
+            IntPtr handle = IntPtr.Zero;
+            int result;
+            ulong numEntries = 0;
+            string fileName = "";
+            ulong dstLen = 0;
+            ZlibHelper.Zip zip = new ZlibHelper.Zip();
+            try
+            {
+                handle = zip.Open(path, ref numEntries, 0);
+                if (handle == IntPtr.Zero)
+                    throw new Exception();
+                for (uint i = 0; i < numEntries; i++)
+                {
+                    result = zip.GetCurrentFileInfo(handle, ref fileName, ref dstLen);
+                    if (result != 0)
+                        throw new Exception();
+                    fileName = fileName.Replace('/', '\\');
+                    string filePath = GameData.GamePath + "\\Binaries\\" + fileName;
+                    if (filePath.EndsWith("\\"))
+                    {
+                        if (!Directory.Exists(filePath))
+                            Directory.CreateDirectory(filePath);
+                        zip.GoToNextFile(handle);
+                        continue;
+                    }
+                    byte[] data = new byte[dstLen];
+                    result = zip.ReadCurrentFile(handle, data, dstLen);
+                    if (result != 0)
+                    {
+                        throw new Exception();
+                    }
+
                     if (File.Exists(filePath))
                         File.Delete(filePath);
                     using (FileStream fs = new FileStream(filePath, FileMode.CreateNew))
@@ -1577,6 +1647,17 @@ namespace MassEffectModder
                 {
                     log += "Indirect Sound failed to install!";
                     errors += "Indirect Sound failed to install!";
+                }
+            }
+
+            if (gameId == 1 && reshadePath != "" && checkBoxOptionReshade.Checked)
+            {
+                if (installReshadePath(reshadePath))
+                    log += "ReShader installed.";
+                else
+                {
+                    log += "ReShader failed to install!";
+                    errors += "ReShader failed to install!";
                 }
             }
 
