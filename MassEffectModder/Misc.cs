@@ -669,6 +669,7 @@ namespace MassEffectModder
                     process.StartInfo.UseShellExecute = true;
                     process.StartInfo.Verb = "runas";
                     process.Start();
+                    process.WaitForExit(60000);
                     if (process.ExitCode == 0)
                         failedAccess = false;
                 }
