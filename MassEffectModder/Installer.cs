@@ -82,7 +82,7 @@ namespace MassEffectModder
         public Installer()
         {
             InitializeComponent();
-            Text = "MEM Installer v" + Application.ProductVersion + " for ALOT";
+            Text = "MEM Installer v" + Application.ProductVersion;
             mipMaps = new MipMaps();
             treeScan = new TreeScan();
             cachePackageMgr = new CachePackageMgr(null, this);
@@ -334,7 +334,7 @@ namespace MassEffectModder
             {
                 OptionLimit2KVisible = checkBoxOptionLimit2K.Visible = labelOptionLimit2K.Visible = false;
                 OptionIndirectSound = checkBoxOptionIndirectSound.Visible = labelOptionIndirectSound.Visible = false;
-                OptionReshade = false;
+                OptionReshade = checkBoxOptionReshade.Visible = labelOptionReshade.Visible = false;
             }
 
             if (allowToSkip)
@@ -1409,6 +1409,7 @@ namespace MassEffectModder
             checkBoxOptionRepack.Visible = labelOptionRepack.Visible = false;
             checkBoxOptionLimit2K.Visible = labelOptionLimit2K.Visible = false;
             labelOptionIndirectSound.Visible = checkBoxOptionIndirectSound.Visible = false;
+            labelOptionReshade.Visible = checkBoxOptionReshade.Visible = false;
             labelOptions.Visible = false;
             if (meuitmMode)
                 customLabelDesc.Text = "Installing MEUITM for Mass Effect";
@@ -1427,8 +1428,10 @@ namespace MassEffectModder
                 labelOptionRepack.Visible = checkBoxOptionRepack.Visible = OptionRepackVisible;
                 labelOptionLimit2K.Visible = checkBoxOptionLimit2K.Visible = OptionLimit2KVisible;
                 labelOptionIndirectSound.Visible = checkBoxOptionIndirectSound.Visible = OptionIndirectSound;
+                labelOptionReshade.Visible = checkBoxOptionReshade.Visible = OptionReshade;
                 labelOptions.Visible = checkBoxOptionVanilla.Visible || checkBoxOptionSkipScan.Visible ||
-                    checkBoxOptionRepack.Visible || checkBoxOptionLimit2K.Visible || checkBoxOptionIndirectSound.Visible;
+                    checkBoxOptionRepack.Visible || checkBoxOptionLimit2K.Visible || checkBoxOptionIndirectSound.Visible ||
+                    checkBoxOptionReshade.Visible;
                 customLabelDesc.Text = "";
 
                 for (int i = 1; i <= modsSelection.Count; i++)
