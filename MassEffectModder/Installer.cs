@@ -736,6 +736,8 @@ namespace MassEffectModder
                         zip.GoToNextFile(handle);
                         continue;
                     }
+                    if (!Directory.Exists(Path.GetDirectoryName(filePath)))
+                        Directory.CreateDirectory(Path.GetDirectoryName(filePath));
                     byte[] data = new byte[dstLen];
                     result = zip.ReadCurrentFile(handle, data, dstLen);
                     if (result != 0)
