@@ -1692,13 +1692,6 @@ namespace MassEffectModder
             {
                 using (FileStream fs = new FileStream(filename, FileMode.CreateNew))
                 {
-                    fs.WriteStringASCII("================================================================================" + Environment.NewLine);
-                    fs.WriteStringASCII("WARNING: Some textures couldn't be installed." + Environment.NewLine);
-                    fs.WriteStringASCII("This is not necessarily a problem, as it will happen if you do not own all DLCs." + Environment.NewLine);
-                    fs.WriteStringASCII("If that is your case, you can safely ignore the errors below. " + Environment.NewLine);
-                    fs.WriteStringASCII("If you have all DLCs but still see these errors, " + Environment.NewLine);
-                    fs.WriteStringASCII("you should redownload your game and install your mods again." + Environment.NewLine);
-                    fs.WriteStringASCII("================================================================================" + Environment.NewLine + Environment.NewLine);
                     fs.WriteStringASCII(errors);
                 }
                 customLabelFinalStatus.Text = "WARNING: Some errors have occured!";
