@@ -595,7 +595,7 @@ namespace MassEffectModder
             }
 
             string msg;
-            if (!uac)
+            if (!uac && ((gameId == MeType.ME1_TYPE && !registryExists) || !writeAccess))
             {
                 msg = "MEM is not able to";
                 if (!writeAccess)
