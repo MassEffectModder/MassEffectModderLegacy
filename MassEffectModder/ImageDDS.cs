@@ -539,7 +539,6 @@ namespace MassEffectModder
         {
             if (src.Length != w * h * 4)
                 throw new Exception("not ARGB buffer input");
-            byte[] srcBlock;
             int blockSize = CompressonatorCodecs.Codecs.BLOCK_SIZE_4X4BPP8;
             if (dstFormat == PixelFormat.DXT1)
                 blockSize = CompressonatorCodecs.Codecs.BLOCK_SIZE_4X4BPP4;
@@ -548,7 +547,6 @@ namespace MassEffectModder
             int cores = Environment.ProcessorCount;
             if (w * h < 65536 || w < 256)
                 cores = 1;
-            cores = 1; // force to one thread for now
             if ((cores * 4 * 4) > h)
                 cores = h / 4 / 4;
             int partSize = h / 4 / cores;
@@ -559,6 +557,7 @@ namespace MassEffectModder
 
             Parallel.For(0, cores, p =>
             {
+                byte[] srcBlock;
                 for (int y = range[p]; y < range[p + 1]; y++)
                 {
                     for (int x = 0; x < w / 4; x++)
@@ -602,12 +601,9 @@ namespace MassEffectModder
         static private byte[] decompressMipmap(PixelFormat srcFormat, byte[] src, int w, int h)
         {
             byte[] dst = new byte[w * h * 4];
-            byte[] blockDst;
-            uint[] block;
             int cores = Environment.ProcessorCount;
             if (w * h < 65536 || w < 256)
                 cores = 1;
-            cores = 1; // force to one thread for now
             if ((cores * 4 * 4) > h)
                 cores = h / 4 / 4;
             int partSize = h / 4 / cores;
@@ -618,6 +614,8 @@ namespace MassEffectModder
 
             Parallel.For(0, cores, p =>
             {
+                uint[] block;
+                byte[] blockDst;
                 for (int y = range[p]; y < range[p + 1]; y++)
                 {
                     for (int x = 0; x < w / 4; x++)
