@@ -545,11 +545,18 @@ namespace MassEffectModder
 
             byte[] dst = new byte[blockSize * (w / 4) * (h / 4)];
             int cores = Environment.ProcessorCount;
-            if (w * h < 65536 || w < 256)
+            int partSize;
+            if (w * h < 65536 || w < 256 || h < 16)
+            {
                 cores = 1;
-            if ((cores * 4 * 4) > h)
-                cores = h / 4 / 4;
-            int partSize = h / 4 / cores;
+                partSize = h / 4;
+            }
+            else
+            {
+                if ((cores * 4 * 4) > h)
+                    cores = h / 4 / 4;
+                partSize = h / 4 / cores;
+            }
             int[] range = new int[cores + 1];
 
             for (int p = 1; p <= cores; p++)
@@ -602,11 +609,18 @@ namespace MassEffectModder
         {
             byte[] dst = new byte[w * h * 4];
             int cores = Environment.ProcessorCount;
-            if (w * h < 65536 || w < 256)
+            int partSize;
+            if (w * h < 65536 || w < 256 || h < 16)
+            {
                 cores = 1;
-            if ((cores * 4 * 4) > h)
-                cores = h / 4 / 4;
-            int partSize = h / 4 / cores;
+                partSize = h / 4;
+            }
+            else
+            {
+                if ((cores * 4 * 4) > h)
+                    cores = h / 4 / 4;
+                partSize = h / 4 / cores;
+            }
             int[] range = new int[cores + 1];
 
             for (int p = 1; p <= cores; p++)
