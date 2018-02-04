@@ -985,7 +985,7 @@ namespace MassEffectModder
             if (updateMode || checkBoxOptionSkipScan.Checked)
                 totalStages -= 2;
             // recompress game files
-            if (!checkBoxOptionRepack.Checked || updateMode || checkBoxOptionSkipScan.Checked)
+            if ((!checkBoxOptionRepack.Checked || updateMode || checkBoxOptionSkipScan.Checked) && gameId != 1)
                 totalStages -= 1;
 
             if (GameData.gameType == MeType.ME3_TYPE)
@@ -1582,9 +1582,9 @@ namespace MassEffectModder
             log += "Updating LODs and other settings finished" + Environment.NewLine + Environment.NewLine;
 
 
-            if (checkBoxOptionRepack.Checked)
+            if (checkBoxOptionRepack.Checked || gameId == 1)
             {
-                if (!updateMode && !checkBoxOptionSkipScan.Checked)
+                if (!updateMode && !checkBoxOptionSkipScan.Checked || gameId == 1)
                 {
                     customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
                     log += "Repack started..." + Environment.NewLine;
@@ -1592,7 +1592,9 @@ namespace MassEffectModder
                     {
                         updateStatusRepackZlib("Recompress game files " + ((i + 1) * 100 / GameData.packageFiles.Count) + "%");
                         Package package = new Package(GameData.packageFiles[i], true, true);
-                        if (package.compressed && package.compressionType != Package.CompressionType.Zlib)
+                        if (package.compressed)
+                            if (package.compressionType != Package.CompressionType.Zlib && gameId == 2 ||
+                                package.compressionType == Package.CompressionType.Zlib && gameId == 1)
                         {
                             package.Dispose();
                             package = new Package(GameData.packageFiles[i]);
