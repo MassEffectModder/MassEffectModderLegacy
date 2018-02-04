@@ -1,7 +1,7 @@
 /*
  * MassEffectModder
  *
- * Copyright (C) 2016-2017 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2016-2018 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -546,17 +546,16 @@ namespace MassEffectModder
 
             byte[] dst = new byte[blockSize * (w / 4) * (h / 4)];
             int cores = Environment.ProcessorCount;
-            int partSize = (h / 4) / cores;
-            if (partSize < 4)
+            if (w * h < 65536 || w < 256)
                 cores = 1;
             cores = 1; // force to one thread for now
+            if ((cores * 4 * 4) > h)
+                cores = h / 4 / 4;
+            int partSize = h / 4 / cores;
             int[] range = new int[cores + 1];
 
             for (int p = 1; p <= cores; p++)
-            {
-                range[p] = (partSize * p) - 1;
-            }
-            range[cores] = h / 4;
+                range[p] = (partSize * p);
 
             Parallel.For(0, cores, p =>
             {
@@ -606,17 +605,16 @@ namespace MassEffectModder
             byte[] blockDst;
             uint[] block;
             int cores = Environment.ProcessorCount;
-            int partSize = (h / 4) / cores;
-            if (partSize < 4)
+            if (w * h < 65536 || w < 256)
                 cores = 1;
             cores = 1; // force to one thread for now
+            if ((cores * 4 * 4) > h)
+                cores = h / 4 / 4;
+            int partSize = h / 4 / cores;
             int[] range = new int[cores + 1];
 
             for (int p = 1; p <= cores; p++)
-            {
-                range[p] = (partSize * p) - 1;
-            }
-            range[cores] = h / 4;
+                range[p] = (partSize * p);
 
             Parallel.For(0, cores, p =>
             {

@@ -1,7 +1,7 @@
 /*
  * MassEffectModder
  *
- * Copyright (C) 2016-2017 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2016-2018 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -188,8 +188,8 @@ namespace MassEffectModder
                         else if (format == ImageFormat.JPEG)
                             frame = new JpegBitmapDecoder(stream, BitmapCreateOptions.None, BitmapCacheOption.Default).Frames[0];
 
-                        if (!checkPowerOfTwo((int)frame.PixelWidth) ||
-                            !checkPowerOfTwo((int)frame.PixelHeight))
+                        if (!checkPowerOfTwo(frame.PixelWidth) ||
+                            !checkPowerOfTwo(frame.PixelHeight))
                             throw new Exception("dimensions not power of two");
 
                         FormatConvertedBitmap srcBitmap = new FormatConvertedBitmap();
