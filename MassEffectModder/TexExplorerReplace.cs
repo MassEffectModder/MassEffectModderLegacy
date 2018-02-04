@@ -235,7 +235,10 @@ namespace MassEffectModder
                     cacheCprMipmaps = new List<byte[]>();
                     for (int m = 0; m < image.mipMaps.Count(); m++)
                     {
-                        cacheCprMipmaps.Add(texture.compressTexture(image.mipMaps[m].data, Texture.StorageTypes.extZlib));
+                        if (GameData.gameType != MeType.ME1_TYPE)
+                            cacheCprMipmaps.Add(texture.compressTexture(image.mipMaps[m].data, Texture.StorageTypes.extZlib));
+                        else
+                            cacheCprMipmaps.Add(texture.compressTexture(image.mipMaps[m].data, Texture.StorageTypes.extLZO));
                     }
                 }
 
@@ -401,10 +404,13 @@ namespace MassEffectModder
                         }
                     }
 
-                    if (mipmap.storageType == Texture.StorageTypes.extLZO)
-                        mipmap.storageType = Texture.StorageTypes.extZlib;
-                    if (mipmap.storageType == Texture.StorageTypes.pccLZO)
-                        mipmap.storageType = Texture.StorageTypes.pccZlib;
+                    if (GameData.gameType != MeType.ME1_TYPE)
+                    {
+                        if (mipmap.storageType == Texture.StorageTypes.extLZO)
+                            mipmap.storageType = Texture.StorageTypes.extZlib;
+                        if (mipmap.storageType == Texture.StorageTypes.pccLZO)
+                            mipmap.storageType = Texture.StorageTypes.pccZlib;
+                    }
 
                     mipmap.uncompressedSize = image.mipMaps[m].data.Length;
                     if (GameData.gameType == MeType.ME1_TYPE)
