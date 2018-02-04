@@ -27,11 +27,6 @@ BOOL WINAPI DllMain(HINSTANCE hin, DWORD reason, LPVOID lpvReserved) { return TR
 
 #define LZO_EXPORT __declspec(dllexport)
 
-#define HEAP_ALLOC(var, size) \
-	lzo_align_t __LZO_MMODEL var [ ((size) + (sizeof(lzo_align_t) - 1)) / sizeof(lzo_align_t) ]
-
-static HEAP_ALLOC(wrkmem, LZO1X_1_15_MEM_COMPRESS); 
-
 LZO_EXPORT int LZODecompress(unsigned char *src, unsigned int src_len, unsigned char *dst, unsigned int *dst_len)
 {
 	lzo_uint len = *dst_len;
@@ -54,11 +49,17 @@ LZO_EXPORT int LZOCompress(unsigned char *src, unsigned int src_len, unsigned ch
 	if (status != LZO_E_OK)
 		return status;
 
+	unsigned char *wrkmem = malloc(LZO1X_1_15_MEM_COMPRESS);
+	if (wrkmem == NULL)
+		return LZO_E_OUT_OF_MEMORY;
 	memset(wrkmem, 0, LZO1X_1_15_MEM_COMPRESS);
 
 	unsigned char *tmpBuffer = malloc(src_len + LZO1X_1_15_MEM_COMPRESS);
 	if (tmpBuffer == NULL)
+	{
+		free(wrkmem);
 		return LZO_E_OUT_OF_MEMORY;
+	}
 	memset(tmpBuffer, 0, src_len + LZO1X_1_15_MEM_COMPRESS);
 
 	status = lzo1x_1_15_compress(src, src_len, tmpBuffer, &len, wrkmem);
@@ -68,6 +69,7 @@ LZO_EXPORT int LZOCompress(unsigned char *src, unsigned int src_len, unsigned ch
 	}
 
 	free(tmpBuffer);
+	free(wrkmem);
 
 	return status;
 }
