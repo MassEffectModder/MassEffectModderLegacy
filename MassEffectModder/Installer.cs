@@ -1588,8 +1588,18 @@ namespace MassEffectModder
                 {
                     customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
                     log += "Repack started..." + Environment.NewLine;
+                    if (gameId == (int)MeType.ME1_TYPE)
+                    {
+                        path = @"\BioGame\CookedPC\testVolumeLight_VFX.upk".ToLowerInvariant();
+                    }
+                    if (gameId == (int)MeType.ME2_TYPE)
+                    {
+                        path = @"\BioGame\CookedPC\BIOC_Materials.pcc".ToLowerInvariant();
+                    }
                     for (int i = 0; i < GameData.packageFiles.Count; i++)
                     {
+                        if (GameData.packageFiles[i].ToLowerInvariant().Contains(path))
+                            continue;
                         updateStatusRepackZlib("Recompress game files " + ((i + 1) * 100 / GameData.packageFiles.Count) + "%");
                         Package package = new Package(GameData.packageFiles[i], true, true);
                         if (package.compressed)
@@ -1599,6 +1609,7 @@ namespace MassEffectModder
                             package.Dispose();
                             package = new Package(GameData.packageFiles[i]);
                             package.SaveToFile(true);
+                            package.Dispose();
                         }
                     }
                     log += "Repack finished" + Environment.NewLine + Environment.NewLine;
