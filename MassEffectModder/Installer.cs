@@ -1593,8 +1593,8 @@ namespace MassEffectModder
                         updateStatusRepackZlib("Recompress game files " + ((i + 1) * 100 / GameData.packageFiles.Count) + "%");
                         Package package = new Package(GameData.packageFiles[i], true, true);
                         if (package.compressed)
-                            if (package.compressionType != Package.CompressionType.Zlib && gameId == 2 ||
-                                package.compressionType == Package.CompressionType.Zlib && gameId == 1)
+                            if ((package.compressionType != Package.CompressionType.Zlib && gameId == 2) ||
+                                (package.compressionType == Package.CompressionType.Zlib && gameId == 1))
                         {
                             package.Dispose();
                             package = new Package(GameData.packageFiles[i]);
