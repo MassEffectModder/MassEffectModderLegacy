@@ -1117,6 +1117,13 @@ namespace MassEffectModder
                     forceCompressed = false;
             }
 
+            // WA Force back to LZO2 compression
+            if (packageFileVersion == packageFileVersionME1 && compressionType == CompressionType.Zlib)
+            {
+                compressionType = CompressionType.LZO;
+                forceCompressed = true;
+            }
+
             if (namesOffset > sortedExports[0].dataOffset ||
                 importsOffset > sortedExports[0].dataOffset ||
                 exportsOffset > sortedExports[0].dataOffset ||
