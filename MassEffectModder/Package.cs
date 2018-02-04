@@ -598,14 +598,14 @@ namespace MassEffectModder
 
                         if (compressionType == CompressionType.LZO)
                         {
-                            for (int b = 0; b < blocks.Count; b++)
+                            Parallel.For(0, blocks.Count, b =>
                             {
                                 uint dstLen;
                                 ChunkBlock block = blocks[b];
                                 dstLen = new LZO2Helper.LZO2().Decompress(block.compressedBuffer, block.comprSize, block.uncompressedBuffer);
                                 if (dstLen != block.uncomprSize)
                                     throw new Exception("Decompressed data size not expected!");
-                            }
+                            });
                         }
                         else if (compressionType == CompressionType.Zlib)
                         {
@@ -1218,7 +1218,7 @@ namespace MassEffectModder
 
                         if (compressionType == CompressionType.LZO)
                         {
-                            for (int b = 0; b < newNumBlocks; b++)
+                            Parallel.For(0, chunk.blocks.Count, b =>
                             {
                                 ChunkBlock block = chunk.blocks[b];
                                 block.compressedBuffer = new LZO2Helper.LZO2().Compress(block.uncompressedBuffer);
@@ -1226,7 +1226,7 @@ namespace MassEffectModder
                                     throw new Exception("Compression failed!");
                                 block.comprSize = (uint)block.compressedBuffer.Length;
                                 chunk.blocks[b] = block;
-                            }
+                            });
                         }
                         else if (compressionType == CompressionType.Zlib)
                         {
