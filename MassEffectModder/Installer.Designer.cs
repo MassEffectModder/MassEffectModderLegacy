@@ -108,7 +108,7 @@
             this.labelFinalStatus.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.labelFinalStatus.Font = new System.Drawing.Font("Segoe UI Light", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelFinalStatus.ForeColor = System.Drawing.Color.White;
-            this.labelFinalStatus.Location = new System.Drawing.Point(9, 264);
+            this.labelFinalStatus.Location = new System.Drawing.Point(9, 267);
             this.labelFinalStatus.Name = "labelFinalStatus";
             this.labelFinalStatus.Size = new System.Drawing.Size(909, 45);
             this.labelFinalStatus.TabIndex = 25;
@@ -123,7 +123,7 @@
             this.checkBoxOptionRepack.BackColor = System.Drawing.Color.Transparent;
             this.checkBoxOptionRepack.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.checkBoxOptionRepack.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxOptionRepack.Location = new System.Drawing.Point(16, 351);
+            this.checkBoxOptionRepack.Location = new System.Drawing.Point(16, 481);
             this.checkBoxOptionRepack.Name = "checkBoxOptionRepack";
             this.checkBoxOptionRepack.Size = new System.Drawing.Size(15, 14);
             this.checkBoxOptionRepack.TabIndex = 35;
@@ -137,7 +137,7 @@
             this.checkBoxOptionSkipScan.BackColor = System.Drawing.Color.Transparent;
             this.checkBoxOptionSkipScan.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.checkBoxOptionSkipScan.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxOptionSkipScan.Location = new System.Drawing.Point(16, 456);
+            this.checkBoxOptionSkipScan.Location = new System.Drawing.Point(16, 460);
             this.checkBoxOptionSkipScan.Name = "checkBoxOptionSkipScan";
             this.checkBoxOptionSkipScan.Size = new System.Drawing.Size(15, 14);
             this.checkBoxOptionSkipScan.TabIndex = 52;
@@ -152,7 +152,7 @@
             this.checkBoxOptionLimit2K.BackColor = System.Drawing.Color.Transparent;
             this.checkBoxOptionLimit2K.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.checkBoxOptionLimit2K.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxOptionLimit2K.Location = new System.Drawing.Point(16, 372);
+            this.checkBoxOptionLimit2K.Location = new System.Drawing.Point(16, 376);
             this.checkBoxOptionLimit2K.Name = "checkBoxOptionLimit2K";
             this.checkBoxOptionLimit2K.Size = new System.Drawing.Size(15, 14);
             this.checkBoxOptionLimit2K.TabIndex = 39;
@@ -167,7 +167,7 @@
             this.checkBoxOptionVanilla.BackColor = System.Drawing.Color.Transparent;
             this.checkBoxOptionVanilla.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.checkBoxOptionVanilla.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxOptionVanilla.Location = new System.Drawing.Point(16, 435);
+            this.checkBoxOptionVanilla.Location = new System.Drawing.Point(16, 439);
             this.checkBoxOptionVanilla.Name = "checkBoxOptionVanilla";
             this.checkBoxOptionVanilla.Size = new System.Drawing.Size(15, 14);
             this.checkBoxOptionVanilla.TabIndex = 38;
@@ -198,7 +198,7 @@
             this.labelCurrentStatus.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.labelCurrentStatus.Font = new System.Drawing.Font("Segoe UI Light", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelCurrentStatus.ForeColor = System.Drawing.Color.White;
-            this.labelCurrentStatus.Location = new System.Drawing.Point(9, 300);
+            this.labelCurrentStatus.Location = new System.Drawing.Point(9, 302);
             this.labelCurrentStatus.Name = "labelCurrentStatus";
             this.labelCurrentStatus.Size = new System.Drawing.Size(909, 45);
             this.labelCurrentStatus.TabIndex = 28;
@@ -213,7 +213,7 @@
             this.labelOptions.BackColor = System.Drawing.Color.Black;
             this.labelOptions.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelOptions.ForeColor = System.Drawing.Color.White;
-            this.labelOptions.Location = new System.Drawing.Point(12, 324);
+            this.labelOptions.Location = new System.Drawing.Point(12, 350);
             this.labelOptions.Name = "labelOptions";
             this.labelOptions.Size = new System.Drawing.Size(74, 21);
             this.labelOptions.TabIndex = 54;
@@ -238,9 +238,10 @@
             this.labelOptionRepack.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.labelOptionRepack.AutoSize = true;
             this.labelOptionRepack.BackColor = System.Drawing.Color.Black;
+            this.labelOptionRepack.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.labelOptionRepack.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelOptionRepack.ForeColor = System.Drawing.Color.White;
-            this.labelOptionRepack.Location = new System.Drawing.Point(34, 346);
+            this.labelOptionRepack.Location = new System.Drawing.Point(34, 476);
             this.labelOptionRepack.Name = "labelOptionRepack";
             this.labelOptionRepack.Size = new System.Drawing.Size(184, 21);
             this.labelOptionRepack.TabIndex = 55;
@@ -251,9 +252,10 @@
             this.labelOptionLimit2K.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.labelOptionLimit2K.AutoSize = true;
             this.labelOptionLimit2K.BackColor = System.Drawing.Color.Black;
+            this.labelOptionLimit2K.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.labelOptionLimit2K.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelOptionLimit2K.ForeColor = System.Drawing.Color.White;
-            this.labelOptionLimit2K.Location = new System.Drawing.Point(34, 367);
+            this.labelOptionLimit2K.Location = new System.Drawing.Point(34, 371);
             this.labelOptionLimit2K.Name = "labelOptionLimit2K";
             this.labelOptionLimit2K.Size = new System.Drawing.Size(158, 21);
             this.labelOptionLimit2K.TabIndex = 56;
@@ -264,9 +266,10 @@
             this.labelOptionVanilla.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.labelOptionVanilla.AutoSize = true;
             this.labelOptionVanilla.BackColor = System.Drawing.Color.Black;
+            this.labelOptionVanilla.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.labelOptionVanilla.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelOptionVanilla.ForeColor = System.Drawing.Color.White;
-            this.labelOptionVanilla.Location = new System.Drawing.Point(34, 430);
+            this.labelOptionVanilla.Location = new System.Drawing.Point(34, 434);
             this.labelOptionVanilla.Name = "labelOptionVanilla";
             this.labelOptionVanilla.Size = new System.Drawing.Size(147, 21);
             this.labelOptionVanilla.TabIndex = 57;
@@ -277,9 +280,10 @@
             this.labelOptionSkipScan.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.labelOptionSkipScan.AutoSize = true;
             this.labelOptionSkipScan.BackColor = System.Drawing.Color.Black;
+            this.labelOptionSkipScan.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.labelOptionSkipScan.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelOptionSkipScan.ForeColor = System.Drawing.Color.White;
-            this.labelOptionSkipScan.Location = new System.Drawing.Point(34, 451);
+            this.labelOptionSkipScan.Location = new System.Drawing.Point(34, 455);
             this.labelOptionSkipScan.Name = "labelOptionSkipScan";
             this.labelOptionSkipScan.Size = new System.Drawing.Size(187, 21);
             this.labelOptionSkipScan.TabIndex = 58;
@@ -293,7 +297,7 @@
             this.labelDesc.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.labelDesc.Font = new System.Drawing.Font("Segoe UI Light", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelDesc.ForeColor = System.Drawing.Color.White;
-            this.labelDesc.Location = new System.Drawing.Point(9, 226);
+            this.labelDesc.Location = new System.Drawing.Point(9, 228);
             this.labelDesc.Name = "labelDesc";
             this.labelDesc.Size = new System.Drawing.Size(909, 45);
             this.labelDesc.TabIndex = 59;
@@ -332,7 +336,7 @@
             this.labelModsSelection.BackColor = System.Drawing.Color.Black;
             this.labelModsSelection.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelModsSelection.ForeColor = System.Drawing.Color.White;
-            this.labelModsSelection.Location = new System.Drawing.Point(8, 12);
+            this.labelModsSelection.Location = new System.Drawing.Point(8, 5);
             this.labelModsSelection.Name = "labelModsSelection";
             this.labelModsSelection.Size = new System.Drawing.Size(187, 21);
             this.labelModsSelection.TabIndex = 61;
@@ -346,7 +350,7 @@
             this.comboBoxMod0.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.comboBoxMod0.ForeColor = System.Drawing.Color.White;
             this.comboBoxMod0.FormattingEnabled = true;
-            this.comboBoxMod0.Location = new System.Drawing.Point(12, 36);
+            this.comboBoxMod0.Location = new System.Drawing.Point(12, 26);
             this.comboBoxMod0.Name = "comboBoxMod0";
             this.comboBoxMod0.Size = new System.Drawing.Size(183, 21);
             this.comboBoxMod0.TabIndex = 62;
@@ -360,7 +364,7 @@
             this.comboBoxMod1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.comboBoxMod1.ForeColor = System.Drawing.Color.White;
             this.comboBoxMod1.FormattingEnabled = true;
-            this.comboBoxMod1.Location = new System.Drawing.Point(12, 63);
+            this.comboBoxMod1.Location = new System.Drawing.Point(12, 46);
             this.comboBoxMod1.Name = "comboBoxMod1";
             this.comboBoxMod1.Size = new System.Drawing.Size(183, 21);
             this.comboBoxMod1.TabIndex = 63;
@@ -373,7 +377,7 @@
             this.comboBoxMod2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.comboBoxMod2.ForeColor = System.Drawing.Color.White;
             this.comboBoxMod2.FormattingEnabled = true;
-            this.comboBoxMod2.Location = new System.Drawing.Point(12, 90);
+            this.comboBoxMod2.Location = new System.Drawing.Point(12, 66);
             this.comboBoxMod2.Name = "comboBoxMod2";
             this.comboBoxMod2.Size = new System.Drawing.Size(183, 21);
             this.comboBoxMod2.TabIndex = 64;
@@ -386,7 +390,7 @@
             this.comboBoxMod3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.comboBoxMod3.ForeColor = System.Drawing.Color.White;
             this.comboBoxMod3.FormattingEnabled = true;
-            this.comboBoxMod3.Location = new System.Drawing.Point(12, 117);
+            this.comboBoxMod3.Location = new System.Drawing.Point(12, 86);
             this.comboBoxMod3.Name = "comboBoxMod3";
             this.comboBoxMod3.Size = new System.Drawing.Size(183, 21);
             this.comboBoxMod3.TabIndex = 65;
@@ -399,7 +403,7 @@
             this.comboBoxMod4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.comboBoxMod4.ForeColor = System.Drawing.Color.White;
             this.comboBoxMod4.FormattingEnabled = true;
-            this.comboBoxMod4.Location = new System.Drawing.Point(12, 144);
+            this.comboBoxMod4.Location = new System.Drawing.Point(12, 106);
             this.comboBoxMod4.Name = "comboBoxMod4";
             this.comboBoxMod4.Size = new System.Drawing.Size(183, 21);
             this.comboBoxMod4.TabIndex = 66;
@@ -412,7 +416,7 @@
             this.comboBoxMod5.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.comboBoxMod5.ForeColor = System.Drawing.Color.White;
             this.comboBoxMod5.FormattingEnabled = true;
-            this.comboBoxMod5.Location = new System.Drawing.Point(12, 171);
+            this.comboBoxMod5.Location = new System.Drawing.Point(12, 126);
             this.comboBoxMod5.Name = "comboBoxMod5";
             this.comboBoxMod5.Size = new System.Drawing.Size(183, 21);
             this.comboBoxMod5.TabIndex = 67;
@@ -425,7 +429,7 @@
             this.comboBoxMod6.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.comboBoxMod6.ForeColor = System.Drawing.Color.White;
             this.comboBoxMod6.FormattingEnabled = true;
-            this.comboBoxMod6.Location = new System.Drawing.Point(12, 198);
+            this.comboBoxMod6.Location = new System.Drawing.Point(12, 146);
             this.comboBoxMod6.Name = "comboBoxMod6";
             this.comboBoxMod6.Size = new System.Drawing.Size(183, 21);
             this.comboBoxMod6.TabIndex = 68;
@@ -438,7 +442,7 @@
             this.comboBoxMod7.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.comboBoxMod7.ForeColor = System.Drawing.Color.White;
             this.comboBoxMod7.FormattingEnabled = true;
-            this.comboBoxMod7.Location = new System.Drawing.Point(12, 225);
+            this.comboBoxMod7.Location = new System.Drawing.Point(12, 166);
             this.comboBoxMod7.Name = "comboBoxMod7";
             this.comboBoxMod7.Size = new System.Drawing.Size(183, 21);
             this.comboBoxMod7.TabIndex = 69;
@@ -451,7 +455,7 @@
             this.comboBoxMod8.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.comboBoxMod8.ForeColor = System.Drawing.Color.White;
             this.comboBoxMod8.FormattingEnabled = true;
-            this.comboBoxMod8.Location = new System.Drawing.Point(12, 252);
+            this.comboBoxMod8.Location = new System.Drawing.Point(12, 186);
             this.comboBoxMod8.Name = "comboBoxMod8";
             this.comboBoxMod8.Size = new System.Drawing.Size(183, 21);
             this.comboBoxMod8.TabIndex = 70;
@@ -464,7 +468,7 @@
             this.comboBoxMod9.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.comboBoxMod9.ForeColor = System.Drawing.Color.White;
             this.comboBoxMod9.FormattingEnabled = true;
-            this.comboBoxMod9.Location = new System.Drawing.Point(12, 279);
+            this.comboBoxMod9.Location = new System.Drawing.Point(12, 206);
             this.comboBoxMod9.Name = "comboBoxMod9";
             this.comboBoxMod9.Size = new System.Drawing.Size(183, 21);
             this.comboBoxMod9.TabIndex = 71;
@@ -475,9 +479,10 @@
             this.labelOptionIndirectSound.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.labelOptionIndirectSound.AutoSize = true;
             this.labelOptionIndirectSound.BackColor = System.Drawing.Color.Black;
+            this.labelOptionIndirectSound.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.labelOptionIndirectSound.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelOptionIndirectSound.ForeColor = System.Drawing.Color.White;
-            this.labelOptionIndirectSound.Location = new System.Drawing.Point(34, 388);
+            this.labelOptionIndirectSound.Location = new System.Drawing.Point(34, 392);
             this.labelOptionIndirectSound.Name = "labelOptionIndirectSound";
             this.labelOptionIndirectSound.Size = new System.Drawing.Size(173, 21);
             this.labelOptionIndirectSound.TabIndex = 73;
@@ -490,7 +495,7 @@
             this.checkBoxOptionIndirectSound.BackColor = System.Drawing.Color.Transparent;
             this.checkBoxOptionIndirectSound.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.checkBoxOptionIndirectSound.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxOptionIndirectSound.Location = new System.Drawing.Point(16, 393);
+            this.checkBoxOptionIndirectSound.Location = new System.Drawing.Point(16, 397);
             this.checkBoxOptionIndirectSound.Name = "checkBoxOptionIndirectSound";
             this.checkBoxOptionIndirectSound.Size = new System.Drawing.Size(15, 14);
             this.checkBoxOptionIndirectSound.TabIndex = 72;
@@ -502,9 +507,10 @@
             this.labelOptionReshade.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.labelOptionReshade.AutoSize = true;
             this.labelOptionReshade.BackColor = System.Drawing.Color.Black;
+            this.labelOptionReshade.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.labelOptionReshade.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelOptionReshade.ForeColor = System.Drawing.Color.White;
-            this.labelOptionReshade.Location = new System.Drawing.Point(34, 409);
+            this.labelOptionReshade.Location = new System.Drawing.Point(34, 413);
             this.labelOptionReshade.Name = "labelOptionReshade";
             this.labelOptionReshade.Size = new System.Drawing.Size(127, 21);
             this.labelOptionReshade.TabIndex = 75;
@@ -517,7 +523,7 @@
             this.checkBoxOptionReshade.BackColor = System.Drawing.Color.Transparent;
             this.checkBoxOptionReshade.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.checkBoxOptionReshade.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxOptionReshade.Location = new System.Drawing.Point(16, 414);
+            this.checkBoxOptionReshade.Location = new System.Drawing.Point(16, 418);
             this.checkBoxOptionReshade.Name = "checkBoxOptionReshade";
             this.checkBoxOptionReshade.Size = new System.Drawing.Size(15, 14);
             this.checkBoxOptionReshade.TabIndex = 74;

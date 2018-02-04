@@ -133,28 +133,20 @@ namespace MassEffectModder
             return true;
         }
 
-        public void repackME12(MeType gametype)
+        public void repackME2()
         {
             string errors = "";
-            GameData gameData = new GameData(gametype, _configIni);
+            GameData gameData = new GameData(MeType.ME2_TYPE, _configIni);
             if (!Directory.Exists(GameData.GamePath))
             {
                 MessageBox.Show("Game path is wrong!");
                 return;
             }
             GetPackages(gameData);
-            string path = "";
-            if (gametype == MeType.ME1_TYPE)
-            {
-                path = @"\BioGame\CookedPC\testVolumeLight_VFX.upk".ToLowerInvariant();
-            }
-            if (gametype == MeType.ME2_TYPE)
-            {
-                path = @"\BioGame\CookedPC\BIOC_Materials.pcc".ToLowerInvariant();
-            }
+            string path = @"\BioGame\CookedPC\BIOC_Materials.pcc".ToLowerInvariant();
             for (int i = 0; i < GameData.packageFiles.Count; i++)
             {
-                if (path != "" && GameData.packageFiles[i].ToLowerInvariant().Contains(path))
+                if (GameData.packageFiles[i].ToLowerInvariant().Contains(path))
                     continue;
                 updateStatusLabel("Repack PCC file " + (i + 1) + " of " + GameData.packageFiles.Count);
                 try
@@ -188,17 +180,10 @@ namespace MassEffectModder
             updateStatusLabel2("");
         }
 
-        private void repackME1ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            enableGameDataMenu(false);
-            repackME12(MeType.ME1_TYPE);
-            enableGameDataMenu(true);
-        }
-
         private void repackME2ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             enableGameDataMenu(false);
-            repackME12(MeType.ME2_TYPE);
+            repackME2();
             enableGameDataMenu(true);
         }
 

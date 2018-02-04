@@ -310,13 +310,13 @@ namespace MassEffectModder
 
             customLabelDesc.Text = customLabelCurrentStatus.Text = customLabelFinalStatus.Text = "";
 
-            if (gameId == 3)
+            if (gameId == 2)
             {
-                OptionRepackVisible = checkBoxOptionRepack.Visible = labelOptionRepack.Visible = false;
+                OptionRepackVisible = checkBoxOptionRepack.Visible = labelOptionRepack.Visible = true;
             }
             else
             {
-                OptionRepackVisible = checkBoxOptionRepack.Visible = labelOptionRepack.Visible = true;
+                OptionRepackVisible = checkBoxOptionRepack.Visible = labelOptionRepack.Visible = false;
             }
             if (gameId == 1)
             {
@@ -1555,8 +1555,8 @@ namespace MassEffectModder
                 if (GameData.gameType == MeType.ME1_TYPE)
                 {
                     log += "Remove mipmaps started..." + Environment.NewLine;
-                    errors += mipMaps.removeMipMapsME1(1, textures, null, null, this, checkBoxOptionRepack.Checked);
-                    errors += mipMaps.removeMipMapsME1(2, textures, null, null, this, checkBoxOptionRepack.Checked);
+                    errors += mipMaps.removeMipMapsME1(1, textures, null, null, this, false);
+                    errors += mipMaps.removeMipMapsME1(2, textures, null, null, this, false);
                     log += "Remove mipmaps finished" + Environment.NewLine + Environment.NewLine;
                 }
                 else
