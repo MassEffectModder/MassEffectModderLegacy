@@ -1003,6 +1003,10 @@ namespace MassEffectModder
             if (forceZlib && compressionType != CompressionType.Zlib)
                 modified = true;
 
+            // WA Allow force back to LZO2
+            if (forceZlib && packageFileVersion == packageFileVersionME1)
+                modified = true;
+
             if (packageFile.Length == 0 || !modified && !forceDecompressed && !forceCompressed)
                 return false;
 
