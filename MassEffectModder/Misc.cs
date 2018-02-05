@@ -1091,6 +1091,7 @@ namespace MassEffectModder
                                         continue;
                                     }
                                     Texture texture = new Texture(pkg, f.list[0].exportID, pkg.getExportData(f.list[0].exportID));
+                                    pkg.Dispose();
                                     string fmt = texture.properties.getProperty("Format").valueName;
                                     PixelFormat pixelFormat = Image.getEngineFormatType(fmt);
                                     Image image = new Image(mod.data, Image.ImageFormat.DDS);
@@ -1291,6 +1292,7 @@ namespace MassEffectModder
                                     continue;
                                 }
                                 Texture texture = new Texture(pkg, foundCrcList[0].list[0].exportID, pkg.getExportData(foundCrcList[0].list[0].exportID));
+                                pkg.Dispose();
                                 string fmt = texture.properties.getProperty("Format").valueName;
                                 PixelFormat pixelFormat = Image.getEngineFormatType(fmt);
                                 Image image = new Image(mod.data, Path.GetExtension(filename));
@@ -1388,6 +1390,7 @@ namespace MassEffectModder
                             continue;
                         }
                         Texture texture = new Texture(pkg, foundCrcList[0].list[0].exportID, pkg.getExportData(foundCrcList[0].list[0].exportID));
+                        pkg.Dispose();
                         string fmt = texture.properties.getProperty("Format").valueName;
                         PixelFormat pixelFormat = Image.getEngineFormatType(fmt);
                         mod.data = fs.ReadToBuffer((int)fs.Length);
@@ -1475,6 +1478,7 @@ namespace MassEffectModder
                         continue;
                     }
                     Texture texture = new Texture(pkg, foundCrcList[0].list[0].exportID, pkg.getExportData(foundCrcList[0].list[0].exportID));
+                    pkg.Dispose();
                     string fmt = texture.properties.getProperty("Format").valueName;
                     PixelFormat pixelFormat = Image.getEngineFormatType(fmt);
                     Image image = new Image(file, Image.ImageFormat.Unknown).convertToARGB();

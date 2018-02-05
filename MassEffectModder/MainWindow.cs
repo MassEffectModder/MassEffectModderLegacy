@@ -158,6 +158,7 @@ namespace MassEffectModder
                         package = new Package(GameData.packageFiles[i]);
                         package.SaveToFile(true);
                     }
+                    package.Dispose();
                 }
                 catch
                 {
@@ -572,7 +573,7 @@ namespace MassEffectModder
 
             using (FolderBrowserDialog modDir = new FolderBrowserDialog())
             {
-                modDir.Description = "Please select source directory for modded package files";
+                modDir.Description = "Please select source directory of modded package files";
                 if (modDir.ShowDialog() != DialogResult.OK)
                 {
                     enableGameDataMenu(true);

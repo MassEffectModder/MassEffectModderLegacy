@@ -351,6 +351,7 @@ skip:
                 {
                     Package package = new Package(GameData.GamePath + entries[i].packagePath);
                     Texture texture = new Texture(package, entries[i].exportId, package.getExportData(entries[i].exportId));
+                    package.Dispose();
                     if (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty))
                         return false;
                 }

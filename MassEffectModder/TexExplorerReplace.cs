@@ -614,6 +614,7 @@ namespace MassEffectModder
                     _mainWindow.updateStatusLabel("Verify: " + node.textures[index].name + " in " + matchedTexture.path);
                     Package pkg = new Package(GameData.GamePath + matchedTexture.path);
                     Texture texture = new Texture(pkg, matchedTexture.exportID, pkg.getExportData(matchedTexture.exportID));
+                    pkg.Dispose();
                     for (int m = 0; m < matchedTexture.crcs.Count(); m++)
                     {
                         if (matchedTexture.crcs[m] != texture.getCrcData(texture.getMipMapDataByIndex(m)))

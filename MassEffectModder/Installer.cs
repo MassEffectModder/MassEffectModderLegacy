@@ -1314,6 +1314,7 @@ namespace MassEffectModder
                             }
                             Package pkg = cachePackageMgr.OpenPackage(path);
                             pkg.setExportData(exportId, dst);
+                            pkg = null;
                         }
                         else
                         {
@@ -1609,8 +1610,8 @@ namespace MassEffectModder
                             package.Dispose();
                             package = new Package(GameData.packageFiles[i]);
                             package.SaveToFile(true);
-                            package.Dispose();
                         }
+                        package.Dispose();
                     }
                     log += "Repack finished" + Environment.NewLine + Environment.NewLine;
                 }

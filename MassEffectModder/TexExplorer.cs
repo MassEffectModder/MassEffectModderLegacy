@@ -783,6 +783,7 @@ namespace MassEffectModder
                                 }
                                 matchedTexture.crcs = null;
                                 foundTexture.list[t] = matchedTexture;
+                                pkg.Dispose();
                             }
                         }
                     }
@@ -1289,6 +1290,7 @@ namespace MassEffectModder
                                     mod.data = fs.ReadToBuffer(len);
                                     Package pkg = new Package(GameData.GamePath + f.list[0].path);
                                     Texture texture = new Texture(pkg, f.list[0].exportID, pkg.getExportData(f.list[0].exportID));
+                                    pkg.Dispose();
                                     string fmt = texture.properties.getProperty("Format").valueName;
                                     PixelFormat pixelFormat = Image.getEngineFormatType(fmt);
                                     Image image = new Image(mod.data, Image.ImageFormat.DDS);
@@ -1420,6 +1422,7 @@ namespace MassEffectModder
                                 }
                                 Package pkg = new Package(GameData.GamePath + foundCrcList[0].list[0].path);
                                 Texture texture = new Texture(pkg, foundCrcList[0].list[0].exportID, pkg.getExportData(foundCrcList[0].list[0].exportID));
+                                pkg.Dispose();
                                 string fmt = texture.properties.getProperty("Format").valueName;
                                 PixelFormat pixelFormat = Image.getEngineFormatType(fmt);
 

@@ -609,6 +609,7 @@ namespace MassEffectModder
         {
             Package package = new Package(packagePath);
             Texture texture = new Texture(package, exportID, package.getExportData(exportID));
+            package.Dispose();
             while (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty))
             {
                 texture.mipMapsList.Remove(texture.mipMapsList.First(s => s.storageType == Texture.StorageTypes.empty));
@@ -638,6 +639,7 @@ namespace MassEffectModder
         {
             Package package = new Package(packagePath);
             Texture texture = new Texture(package, exportID, package.getExportData(exportID));
+            package.Dispose();
             PixelFormat format = Image.getEngineFormatType(texture.properties.getProperty("Format").valueName);
             Texture.MipMap mipmap = texture.getTopMipmap();
             byte[] data = texture.getTopImageData();
