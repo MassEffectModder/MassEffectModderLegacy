@@ -443,8 +443,12 @@ namespace MassEffectModder
                 }
             }
 
-            MessageBox.Show("Before starting the installation,\nmake sure real time scanning is turned off.\n" +
-                "Antivirus software can interfere with the install process.", "Warning !");
+            string msg = "Before starting the installation,\nmake sure real time scanning is turned off.\n" +
+                "Antivirus software can interfere with the install process\n" +
+                "and crash the installer.\n\n";
+            if (gameId == 1)
+                msg += "Antivirus software can also add MassEffect.exe into the blocked list.";
+            MessageBox.Show(msg, "Warning !");
 
             string musicFile = installerIni.Read("MusicSource", "Main").ToLowerInvariant();
             if (musicFile != "" && File.Exists(musicFile))
