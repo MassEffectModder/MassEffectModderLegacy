@@ -54,22 +54,18 @@ namespace MassEffectModder
                     _path = null;
             }
 
-            string softwareKey = @"HKEY_LOCAL_MACHINE\SOFTWARE\";
-            string key64 = @"Wow6432Node\";
-            string gameKey = @"BioWare\Mass Effect";
+            string registryKey = @"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\BioWare\Mass Effect";
             string entry = "Path";
 
             if (type == MeType.ME2_TYPE)
-                gameKey += @" 2";
+                registryKey += @" 2";
             else if (type == MeType.ME3_TYPE)
             {
-                gameKey += @" 3";
+                registryKey += @" 3";
                 entry = "Install Dir";
             }
 
-            path = (string)Registry.GetValue(softwareKey + gameKey, entry, null);
-            if (path == null)
-                path = (string)Registry.GetValue(softwareKey + key64 + gameKey, entry, null);
+            path = (string)Registry.GetValue(registryKey, entry, null);
             if (path != null && !force)
             {
                 _path = path.TrimEnd(Path.DirectorySeparatorChar);
