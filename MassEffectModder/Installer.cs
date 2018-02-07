@@ -1672,6 +1672,11 @@ namespace MassEffectModder
                     errors += "Indirect Sound failed to install!";
                 }
             }
+            if (gameId == 1)
+            {
+                if (File.Exists(GameData.GamePath + "\\Binaries\\dsound.dll"))
+                    engineConf.Write("DeviceName", "Generic Hardware", "ISACTAudio.ISACTAudioDevice");
+            }
 
             if (gameId == 1 && reshadePath != "" && checkBoxOptionReshade.Checked)
             {
