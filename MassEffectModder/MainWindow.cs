@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 
@@ -564,12 +565,8 @@ namespace MassEffectModder
                 return;
             }
             updateStatusLabel("Finding packages in game setup...");
-            if (!gameData.getPackages())
-            {
-                updateStatusLabel("");
-                enableGameDataMenu(true);
-                return;
-            }
+            gameData.getPackagesOnlyBase();
+            updateStatusLabel("");
 
             using (FolderBrowserDialog modDir = new FolderBrowserDialog())
             {
@@ -579,6 +576,77 @@ namespace MassEffectModder
                     enableGameDataMenu(true);
                     return;
                 }
+
+                List<string> exe = Directory.GetFiles(modDir.SelectedPath, "*.*",
+                    SearchOption.AllDirectories).Where(s => s.EndsWith(".exe",
+                    StringComparison.OrdinalIgnoreCase)).ToList();
+                if (exe.Count != 0)
+                {
+                    MessageBox.Show("The source directory doesn't seems right, aborting...");
+                    enableGameDataMenu(true);
+                    return;
+                }
+
+                List<string> dlcs = Directory.GetFiles(modDir.SelectedPath, "*.*",
+                    SearchOption.AllDirectories).Where(s => s.Contains("\\DLC\\")).ToList();
+                if (dlcs.Count != 0)
+                {
+                    MessageBox.Show("The source directory can not contains DLC, aborting...");
+                    enableGameDataMenu(true);
+                    return;
+                }
+
+                for (int i = 0; i < GameData.packageFiles.Count; i++)
+                {
+                    try
+                    {
+                        using (FileStream fs = new FileStream(GameData.packageFiles[i], FileMode.Open, FileAccess.Read))
+                        {
+                            fs.SeekEnd();
+                            fs.Seek(-Package.MEMendFileMarker.Length, SeekOrigin.Current);
+                            string marker = fs.ReadStringASCII(Package.MEMendFileMarker.Length);
+                            if (marker == Package.MEMendFileMarker)
+                            {
+                                MessageBox.Show("Game files are not vanilla, aborting...");
+                                enableGameDataMenu(true);
+                                return;
+                            }
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }
+
+                List< string> mods = Directory.GetFiles(modDir.SelectedPath, "*.*",
+                    SearchOption.AllDirectories).Where(s => s.EndsWith(".upk",
+                    StringComparison.OrdinalIgnoreCase) ||
+                    s.EndsWith(".u", StringComparison.OrdinalIgnoreCase) ||
+                    s.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase) ||
+                    s.EndsWith(".sfm", StringComparison.OrdinalIgnoreCase)).ToList();
+
+                for (int i = 0; i < mods.Count; i++)
+                {
+                    try
+                    {
+                        using (FileStream fs = new FileStream(mods[i], FileMode.Open, FileAccess.Read))
+                        {
+                            fs.SeekEnd();
+                            fs.Seek(-Package.MEMendFileMarker.Length, SeekOrigin.Current);
+                            string marker = fs.ReadStringASCII(Package.MEMendFileMarker.Length);
+                            if (marker == Package.MEMendFileMarker)
+                            {
+                                MessageBox.Show("Mod files must be based on vanilla game data, aborting...");
+                                enableGameDataMenu(true);
+                                return;
+                            }
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }
+
 
                 using (OpenFileDialog modFile = new OpenFileDialog())
                 {

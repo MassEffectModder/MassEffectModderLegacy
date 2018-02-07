@@ -387,6 +387,21 @@ namespace MassEffectModder
             return true;
         }
 
+        public void getPackagesOnlyBase()
+        {
+            packageFiles = Directory.GetFiles(MainData, "*.*",
+            SearchOption.AllDirectories).Where(s => s.EndsWith(".upk",
+                StringComparison.OrdinalIgnoreCase) ||
+                s.EndsWith(".u", StringComparison.OrdinalIgnoreCase) ||
+                s.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase) ||
+                s.EndsWith(".sfm", StringComparison.OrdinalIgnoreCase)).ToList();
+            packageFiles.RemoveAll(s => s.ToLowerInvariant().Contains("localshadercache-pc-d3d-sm3.upk"));
+            packageFiles.RemoveAll(s => s.ToLowerInvariant().Contains("refshadercache-pc-d3d-sm3.upk"));
+            packageFiles.RemoveAll(s => s.ToLowerInvariant().Contains("guidcache"));
+            packageFiles.RemoveAll(s => s.ToLowerInvariant().Contains("testVolumeLight_VFX.upk"));
+            packageFiles.RemoveAll(s => s.ToLowerInvariant().Contains("BIOC_Materials.pcc"));
+        }
+
         void ClosePackagesList()
         {
             packageFiles.Clear();
