@@ -187,14 +187,14 @@
     <EmbeddedResource Include="Dlls\zlibwrapper.dll" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\me1_bg.jpg" />
-    <EmbeddedResource Include="Resources\me2_bg.jpg" />
-    <EmbeddedResource Include="Resources\me3_bg.jpg" />
     <EmbeddedResource Include="Dlls\CompressonatorCodecs.dll" />
     <EmbeddedResource Include="Dlls\libmadwrapper.dll" />
     <EmbeddedResource Include="Dlls\xdelta.dll" />
     <EmbeddedResource Include="Dlls\PermissionsGranter.exe" />
     <Content Include="MEM.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

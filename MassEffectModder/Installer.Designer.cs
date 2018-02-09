@@ -53,7 +53,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Installer));
             this.buttonNormal = new System.Windows.Forms.Button();
             this.labelFinalStatus = new System.Windows.Forms.Label();
-            this.checkBoxOptionRepack = new System.Windows.Forms.CheckBox();
             this.checkBoxOptionSkipScan = new System.Windows.Forms.CheckBox();
             this.checkBoxOptionLimit2K = new System.Windows.Forms.CheckBox();
             this.checkBoxOptionVanilla = new System.Windows.Forms.CheckBox();
@@ -61,7 +60,6 @@
             this.labelCurrentStatus = new System.Windows.Forms.Label();
             this.labelOptions = new System.Windows.Forms.Label();
             this.pictureBoxBG = new System.Windows.Forms.PictureBox();
-            this.labelOptionRepack = new System.Windows.Forms.Label();
             this.labelOptionLimit2K = new System.Windows.Forms.Label();
             this.labelOptionVanilla = new System.Windows.Forms.Label();
             this.labelOptionSkipScan = new System.Windows.Forms.Label();
@@ -115,20 +113,6 @@
             this.labelFinalStatus.Text = "final status";
             this.labelFinalStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.labelFinalStatus.Visible = false;
-            // 
-            // checkBoxOptionRepack
-            // 
-            this.checkBoxOptionRepack.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.checkBoxOptionRepack.AutoSize = true;
-            this.checkBoxOptionRepack.BackColor = System.Drawing.Color.Transparent;
-            this.checkBoxOptionRepack.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.checkBoxOptionRepack.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxOptionRepack.Location = new System.Drawing.Point(16, 481);
-            this.checkBoxOptionRepack.Name = "checkBoxOptionRepack";
-            this.checkBoxOptionRepack.Size = new System.Drawing.Size(15, 14);
-            this.checkBoxOptionRepack.TabIndex = 35;
-            this.checkBoxOptionRepack.TabStop = false;
-            this.checkBoxOptionRepack.UseVisualStyleBackColor = false;
             // 
             // checkBoxOptionSkipScan
             // 
@@ -232,20 +216,6 @@
             this.pictureBoxBG.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxBG.TabIndex = 29;
             this.pictureBoxBG.TabStop = false;
-            // 
-            // labelOptionRepack
-            // 
-            this.labelOptionRepack.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.labelOptionRepack.AutoSize = true;
-            this.labelOptionRepack.BackColor = System.Drawing.Color.Black;
-            this.labelOptionRepack.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.labelOptionRepack.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.labelOptionRepack.ForeColor = System.Drawing.Color.White;
-            this.labelOptionRepack.Location = new System.Drawing.Point(34, 476);
-            this.labelOptionRepack.Name = "labelOptionRepack";
-            this.labelOptionRepack.Size = new System.Drawing.Size(184, 21);
-            this.labelOptionRepack.TabIndex = 55;
-            this.labelOptionRepack.Text = "Recompress game files";
             // 
             // labelOptionLimit2K
             // 
@@ -556,14 +526,12 @@
             this.Controls.Add(this.labelOptionSkipScan);
             this.Controls.Add(this.labelOptionVanilla);
             this.Controls.Add(this.labelOptionLimit2K);
-            this.Controls.Add(this.labelOptionRepack);
             this.Controls.Add(this.labelOptions);
             this.Controls.Add(this.checkBoxOptionSkipScan);
             this.Controls.Add(this.labelCurrentStatus);
             this.Controls.Add(this.checkBoxOptionLimit2K);
             this.Controls.Add(this.buttonSTART);
             this.Controls.Add(this.checkBoxOptionVanilla);
-            this.Controls.Add(this.checkBoxOptionRepack);
             this.Controls.Add(this.buttonNormal);
             this.Controls.Add(this.labelFinalStatus);
             this.Controls.Add(this.pictureBoxBG);
@@ -581,7 +549,6 @@
         #endregion
         private System.Windows.Forms.Button buttonNormal;
         private System.Windows.Forms.Label labelFinalStatus;
-        private System.Windows.Forms.CheckBox checkBoxOptionRepack;
         private System.Windows.Forms.CheckBox checkBoxOptionVanilla;
         private System.Windows.Forms.CheckBox checkBoxOptionLimit2K;
         private System.Windows.Forms.CheckBox checkBoxOptionSkipScan;
@@ -589,7 +556,6 @@
         private System.Windows.Forms.Label labelCurrentStatus;
         private System.Windows.Forms.PictureBox pictureBoxBG;
         private System.Windows.Forms.Label labelOptions;
-        private System.Windows.Forms.Label labelOptionRepack;
         private System.Windows.Forms.Label labelOptionLimit2K;
         private System.Windows.Forms.Label labelOptionVanilla;
         private System.Windows.Forms.Label labelOptionSkipScan;
