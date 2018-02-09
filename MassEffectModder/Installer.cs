@@ -764,6 +764,20 @@ namespace MassEffectModder
                 return false;
             }
 
+            if (File.Exists(GameData.GamePath + "\\Binaries\\d3d9.ini"))
+            {
+                try
+                {
+                    ConfIni shaderConf = new ConfIni(GameData.GamePath + "\\Binaries\\d3d9.ini");
+                    shaderConf.Write("GENERAL", "TextureSearchPaths", GameData.GamePath + "\\Binaries\\reshade-shaders\\Textures");
+                    shaderConf.Write("GENERAL", "EffectSearchPaths", GameData.GamePath + "\\Binaries\\reshade-shaders\\Shaders");
+                    shaderConf.Write("GENERAL", "PresetFiles", GameData.GamePath + "\\Binaries\\MassEffect.ini");
+                }
+                catch
+                {
+                }
+            }
+
             return true;
         }
 
