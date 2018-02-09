@@ -307,6 +307,7 @@
             // 
             // buttonMute
             // 
+            this.buttonMute.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonMute.BackColor = System.Drawing.Color.Transparent;
             this.buttonMute.FlatAppearance.BorderSize = 0;
             this.buttonMute.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
