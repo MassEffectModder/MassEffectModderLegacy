@@ -769,9 +769,9 @@ namespace MassEffectModder
                 try
                 {
                     ConfIni shaderConf = new ConfIni(GameData.GamePath + "\\Binaries\\d3d9.ini");
-                    shaderConf.Write("GENERAL", "TextureSearchPaths", GameData.GamePath + "\\Binaries\\reshade-shaders\\Textures");
-                    shaderConf.Write("GENERAL", "EffectSearchPaths", GameData.GamePath + "\\Binaries\\reshade-shaders\\Shaders");
-                    shaderConf.Write("GENERAL", "PresetFiles", GameData.GamePath + "\\Binaries\\MassEffect.ini");
+                    shaderConf.Write("TextureSearchPaths", GameData.GamePath + "\\Binaries\\reshade-shaders\\Textures", "GENERAL");
+                    shaderConf.Write("EffectSearchPaths", GameData.GamePath + "\\Binaries\\reshade-shaders\\Shaders", "GENERAL");
+                    shaderConf.Write("PresetFiles", GameData.GamePath + "\\Binaries\\MassEffect.ini", "GENERAL");
                 }
                 catch
                 {
