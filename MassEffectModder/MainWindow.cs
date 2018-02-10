@@ -134,6 +134,61 @@ namespace MassEffectModder
             return true;
         }
 
+        public void repackME2()
+        {
+            string errors = "";
+            GameData gameData = new GameData(MeType.ME2_TYPE, _configIni);
+            if (!Directory.Exists(GameData.GamePath))
+            {
+                MessageBox.Show("Game path is wrong!");
+                return;
+            }
+            GetPackages(gameData);
+            string path = @"\BioGame\CookedPC\BIOC_Materials.pcc".ToLowerInvariant();
+            for (int i = 0; i < GameData.packageFiles.Count; i++)
+            {
+                if (GameData.packageFiles[i].ToLowerInvariant().Contains(path))
+                    continue;
+                updateStatusLabel("Repack PCC file " + (i + 1) + " of " + GameData.packageFiles.Count);
+                try
+                {
+                    Package package = new Package(GameData.packageFiles[i], true, true);
+                    if (package.compressed && package.compressionType != Package.CompressionType.Zlib)
+                    {
+                        package.Dispose();
+                        package = new Package(GameData.packageFiles[i]);
+                        package.SaveToFile(true);
+                    }
+                    package.Dispose();
+                }
+                catch
+                {
+                    errors += "The file is propably broken, skipped: " + GameData.packageFiles[i] + Environment.NewLine;
+                }
+            }
+            if (errors != "")
+            {
+                string filename = "pcc-errors.txt";
+                if (File.Exists(filename))
+                    File.Delete(filename);
+                using (FileStream fs = new FileStream(filename, FileMode.CreateNew))
+                {
+                    fs.WriteStringASCII(errors);
+                }
+                MessageBox.Show("WARNING: Some errors have occured!");
+                Process.Start(filename);
+            }
+            updateStatusLabel("Done");
+            updateStatusLabel2("");
+        }
+
+        private void repackME2ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            enableGameDataMenu(false);
+            repackME2();
+            enableGameDataMenu(true);
+        }
+
         private void updateME2ConfigToolStripMenuItem_Click(object sender, EventArgs e)
         {
             updateMEConfig(MeType.ME2_TYPE);

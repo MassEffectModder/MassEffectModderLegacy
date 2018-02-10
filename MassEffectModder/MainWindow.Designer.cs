@@ -73,6 +73,8 @@ namespace MassEffectModder
             this.toolStripSeparator13 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItemCreateBinME2 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this.repackME2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.updateME2ConfigToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeLODSetME2MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripUpdateGfxME2MenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -244,6 +246,8 @@ namespace MassEffectModder
             this.toolStripSeparator13,
             this.toolStripMenuItemCreateBinME2,
             this.toolStripSeparator5,
+            this.repackME2ToolStripMenuItem,
+            this.toolStripSeparator6,
             this.updateME2ConfigToolStripMenuItem,
             this.removeLODSetME2MenuItem,
             this.toolStripUpdateGfxME2MenuItem,
@@ -291,6 +295,18 @@ namespace MassEffectModder
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
             this.toolStripSeparator5.Size = new System.Drawing.Size(209, 6);
+            // 
+            // repackME2ToolStripMenuItem
+            // 
+            this.repackME2ToolStripMenuItem.Name = "repackME2ToolStripMenuItem";
+            this.repackME2ToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.repackME2ToolStripMenuItem.Text = "Repack Game Files";
+            this.repackME2ToolStripMenuItem.Click += new System.EventHandler(this.repackME2ToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator6
+            // 
+            this.toolStripSeparator6.Name = "toolStripSeparator6";
+            this.toolStripSeparator6.Size = new System.Drawing.Size(209, 6);
             // 
             // updateME2ConfigToolStripMenuItem
             // 
@@ -560,6 +576,7 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuME3;
         private System.Windows.Forms.ToolStripMenuItem massEffect3ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem updateME1Config2KToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem repackME2ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem extractME3DLCPackagesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem updateME2ConfigToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem updateME3ConfigToolStripMenuItem;
@@ -580,6 +597,7 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
