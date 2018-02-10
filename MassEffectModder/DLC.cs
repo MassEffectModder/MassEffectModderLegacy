@@ -32,7 +32,7 @@ using System.Windows.Forms;
 
 namespace MassEffectModder
 {
-    class ME3DLC : IDisposable
+    class ME3DLC
     {
         const uint SfarTag = 0x53464152; // 'SFAR'
         const uint SfarVersion = 0x00010000;
@@ -42,7 +42,6 @@ namespace MassEffectModder
         byte[] FileListHash = new byte[] { 0xb5, 0x50, 0x19, 0xcb, 0xf9, 0xd3, 0xda, 0x65, 0xd5, 0x5b, 0x32, 0x1c, 0x00, 0x19, 0x69, 0x7c };
         const long MaxBlockSize = 0x00010000;
         MainWindow mainWindow;
-        FileStream sfarFile;
         int filenamesIndex;
         uint filesCount;
         List<FileEntry> filesList;
@@ -72,60 +71,46 @@ namespace MassEffectModder
             mainWindow = main;
         }
 
-        public void Dispose()
+        private void loadHeader(MemoryStream stream)
         {
-            sfarFile.Close();
-            sfarFile.Dispose();
-            sfarFile = null;
-        }
-
-        private void loadHeader(string filename)
-        {
-            if (!File.Exists(filename))
-                throw new Exception("File not found: " + filename);
-
-            if (sfarFile != null)
-                return;
-
-            sfarFile = new FileStream(filename, FileMode.Open, FileAccess.Read);
-            uint tag = sfarFile.ReadUInt32();
+            uint tag = stream.ReadUInt32();
             if (tag != SfarTag)
                 throw new Exception("Wrong SFAR tag");
-            uint sfarVersion = sfarFile.ReadUInt32();
+            uint sfarVersion = stream.ReadUInt32();
             if (sfarVersion != SfarVersion)
                 throw new Exception("Wrong SFAR version");
 
-            uint dataOffset = sfarFile.ReadUInt32();
-            uint entriesOffset = sfarFile.ReadUInt32();
-            filesCount = sfarFile.ReadUInt32();
-            uint sizesArrayOffset = sfarFile.ReadUInt32();
-            maxBlockSize = sfarFile.ReadUInt32();
-            uint compressionTag = sfarFile.ReadUInt32();
+            uint dataOffset = stream.ReadUInt32();
+            uint entriesOffset = stream.ReadUInt32();
+            filesCount = stream.ReadUInt32();
+            uint sizesArrayOffset = stream.ReadUInt32();
+            maxBlockSize = stream.ReadUInt32();
+            uint compressionTag = stream.ReadUInt32();
             if (compressionTag != LZMATag)
                 throw new Exception("Not LZMA compression for SFAR file");
 
             uint numBlockSizes = 0;
-            sfarFile.JumpTo(entriesOffset);
+            stream.JumpTo(entriesOffset);
             filesList = new List<FileEntry>();
             for (int i = 0; i < filesCount; i++)
             {
                 FileEntry file = new FileEntry();
-                file.filenameHash = sfarFile.ReadToBuffer(16);
-                file.compressedBlockSizesIndex = sfarFile.ReadInt32();
-                file.uncomprSize = sfarFile.ReadUInt32();
-                file.uncomprSize |= (long)sfarFile.ReadByte() << 32;
-                file.dataOffset = sfarFile.ReadUInt32();
-                file.dataOffset |= (long)sfarFile.ReadByte() << 32;
+                file.filenameHash = stream.ReadToBuffer(16);
+                file.compressedBlockSizesIndex = stream.ReadInt32();
+                file.uncomprSize = stream.ReadUInt32();
+                file.uncomprSize |= (long)stream.ReadByte() << 32;
+                file.dataOffset = stream.ReadUInt32();
+                file.dataOffset |= (long)stream.ReadByte() << 32;
                 file.numBlocks = (uint)((file.uncomprSize + maxBlockSize - 1) / maxBlockSize);
                 filesList.Add(file);
                 numBlockSizes += file.numBlocks;
             }
 
-            sfarFile.JumpTo(sizesArrayOffset);
+            stream.JumpTo(sizesArrayOffset);
             blockSizes = new List<ushort>();
             for (int i = 0; i < numBlockSizes; i++)
             {
-                blockSizes.Add(sfarFile.ReadUInt16());
+                blockSizes.Add(stream.ReadUInt16());
             }
 
             filenamesIndex = -1;
@@ -133,9 +118,9 @@ namespace MassEffectModder
             {
                 if (StructuralComparisons.StructuralEqualityComparer.Equals(filesList[i].filenameHash, FileListHash))
                 {
-                    sfarFile.JumpTo(filesList[i].dataOffset);
+                    stream.JumpTo(filesList[i].dataOffset);
                     int compressedBlockSize = blockSizes[filesList[i].compressedBlockSizesIndex];
-                    byte[] inBuf = sfarFile.ReadToBuffer(compressedBlockSize);
+                    byte[] inBuf = stream.ReadToBuffer(compressedBlockSize);
                     byte[] outBuf = new SevenZipHelper.LZMA().Decompress(inBuf, (uint)filesList[i].uncomprSize);
                     if (outBuf.Length == 0)
                         throw new Exception();
@@ -162,152 +147,94 @@ namespace MassEffectModder
                 throw new Exception("filenames entry not found");
         }
 
-        public byte[] unpackFileEntry(string filename)
+        public void extract(string SFARfilename, string outPath)
         {
-            if (sfarFile == null)
-                throw new Exception();
+            if (!File.Exists(SFARfilename))
+                throw new Exception("filename missing");
 
-            string name = filename.Replace('\\', '/');
-            byte[] fileHash = MD5.Create().ComputeHash(Encoding.ASCII.GetBytes(name.ToLowerInvariant()));
-            int index = filesList.FindIndex(s => StructuralComparisons.StructuralEqualityComparer.Equals(s.filenameHash, fileHash));
-            if (index == -1)
-                throw new Exception();
-            using (MemoryStream outputFile = new MemoryStream())
+            byte[] buffer = File.ReadAllBytes(SFARfilename);
+            using (MemoryStream stream = new MemoryStream(buffer))
             {
-                sfarFile.JumpTo(filesList[index].dataOffset);
-                if (filesList[index].compressedBlockSizesIndex == -1)
-                {
-                    outputFile.WriteFromStream(sfarFile, filesList[index].uncomprSize);
-                }
-                else
-                {
-                    List<byte[]> uncompressedBlockBuffers = new List<byte[]>();
-                    List<byte[]> compressedBlockBuffers = new List<byte[]>();
-                    List<long> blockBytesLeft = new List<long>();
-                    long bytesLeft = filesList[index].uncomprSize;
-                    for (int j = 0; j < filesList[index].numBlocks; j++)
-                    {
-                        blockBytesLeft.Add(bytesLeft);
-                        int compressedBlockSize = blockSizes[filesList[index].compressedBlockSizesIndex + j];
-                        int uncompressedBlockSize = (int)Math.Min(bytesLeft, maxBlockSize);
-                        if (compressedBlockSize == 0)
-                        {
-                            compressedBlockSize = (int)maxBlockSize;
-                        }
-                        compressedBlockBuffers.Add(sfarFile.ReadToBuffer(compressedBlockSize));
-                        uncompressedBlockBuffers.Add(null);
-                        bytesLeft -= uncompressedBlockSize;
-                    }
+                loadHeader(stream);
 
-                    Parallel.For(0, filesList[index].numBlocks, j =>
+                Directory.CreateDirectory(Path.Combine(outPath, "CookedPCConsole"));
+                using (FileStream outputFile = new FileStream(Path.Combine(outPath, "CookedPCConsole", "Default.sfar"), FileMode.Create, FileAccess.Write))
+                {
+                    outputFile.WriteUInt32(SfarTag);
+                    outputFile.WriteUInt32(SfarVersion);
+                    outputFile.WriteUInt32(HeaderSize);
+                    outputFile.WriteUInt32(HeaderSize);
+                    outputFile.WriteUInt32((uint)filesList.Count);
+                    outputFile.WriteUInt32(HeaderSize);
+                    outputFile.WriteUInt32((uint)MaxBlockSize);
+                    outputFile.WriteUInt32(LZMATag);
+                }
+
+                for (int i = 0; i < filesCount; i++)
+                {
+                    if (filenamesIndex == i)
+                        continue;
+                    if (filesList[i].filenamePath == null)
+                        throw new Exception("filename missing");
+
+                    if (mainWindow != null)
+                        mainWindow.updateStatusLabel2("File " + (i + 1) + " of " + filesList.Count() + " - " + Path.GetFileName(filesList[i].filenamePath));
+
+                    int pos = filesList[i].filenamePath.IndexOf("\\BIOGame\\DLC\\", StringComparison.OrdinalIgnoreCase);
+                    string filename = filesList[i].filenamePath.Substring(pos + ("\\BIOGame\\DLC\\").Length).Replace('/', '\\');
+                    string dir = Path.GetDirectoryName(outPath);
+                    Directory.CreateDirectory(Path.GetDirectoryName(dir + filename));
+                    using (FileStream outputFile = new FileStream(dir + filename, FileMode.Create, FileAccess.Write))
                     {
-                        int compressedBlockSize = blockSizes[filesList[index].compressedBlockSizesIndex + (int)j];
-                        int uncompressedBlockSize = (int)Math.Min(blockBytesLeft[(int)j], maxBlockSize);
-                        if (compressedBlockSize == 0 || compressedBlockSize == blockBytesLeft[(int)j])
+                        stream.JumpTo(filesList[i].dataOffset);
+                        if (filesList[i].compressedBlockSizesIndex == -1)
                         {
-                            uncompressedBlockBuffers[(int)j] = compressedBlockBuffers[(int)j];
+                            outputFile.WriteFromStream(stream, filesList[i].uncomprSize);
                         }
                         else
                         {
-                            uncompressedBlockBuffers[(int)j] = new SevenZipHelper.LZMA().Decompress(compressedBlockBuffers[(int)j], (uint)uncompressedBlockSize);
-                            if (uncompressedBlockBuffers[(int)j].Length == 0)
-                                throw new Exception();
-                        }
-                    });
-
-                    for (int j = 0; j < filesList[index].numBlocks; j++)
-                    {
-                        outputFile.WriteFromBuffer(uncompressedBlockBuffers[j]);
-                    }
-                }
-                return outputFile.ToArray();
-            }
-        }
-
-        public void extract(string SFARfilename, string outPath)
-        {
-            loadHeader(SFARfilename);
-
-            Directory.CreateDirectory(Path.Combine(outPath, "CookedPCConsole"));
-            using (FileStream outputFile = new FileStream(Path.Combine(outPath, "CookedPCConsole", "Default.sfar"), FileMode.Create, FileAccess.Write))
-            {
-                outputFile.WriteUInt32(SfarTag);
-                outputFile.WriteUInt32(SfarVersion);
-                outputFile.WriteUInt32(HeaderSize);
-                outputFile.WriteUInt32(HeaderSize);
-                outputFile.WriteUInt32((uint)filesList.Count);
-                outputFile.WriteUInt32(HeaderSize);
-                outputFile.WriteUInt32((uint)MaxBlockSize);
-                outputFile.WriteUInt32(LZMATag);
-            }
-
-            for (int i = 0; i < filesCount; i++)
-            {
-                if (filenamesIndex == i)
-                    continue;
-                if (filesList[i].filenamePath == null)
-                    throw new Exception("filename missing");
-
-                if (mainWindow != null)
-                    mainWindow.updateStatusLabel2("File " + (i + 1) + " of " + filesList.Count() + " - " + Path.GetFileName(filesList[i].filenamePath));
-
-                int pos = filesList[i].filenamePath.IndexOf("\\BIOGame\\DLC\\", StringComparison.OrdinalIgnoreCase);
-                string filename = filesList[i].filenamePath.Substring(pos + ("\\BIOGame\\DLC\\").Length).Replace('/', '\\');
-                string dir = Path.GetDirectoryName(outPath);
-                Directory.CreateDirectory(Path.GetDirectoryName(dir + filename));
-                using (FileStream outputFile = new FileStream(dir + filename, FileMode.Create, FileAccess.Write))
-                {
-                    sfarFile.JumpTo(filesList[i].dataOffset);
-                    if (filesList[i].compressedBlockSizesIndex == -1)
-                    {
-                        outputFile.WriteFromStream(sfarFile, filesList[i].uncomprSize);
-                    }
-                    else
-                    {
-                        List<byte[]> uncompressedBlockBuffers = new List<byte[]>();
-                        List<byte[]> compressedBlockBuffers = new List<byte[]>();
-                        List<long> blockBytesLeft = new List<long>();
-                        long bytesLeft = filesList[i].uncomprSize;
-                        for (int j = 0; j < filesList[i].numBlocks; j++)
-                        {
-                            blockBytesLeft.Add(bytesLeft);
-                            int compressedBlockSize = blockSizes[filesList[i].compressedBlockSizesIndex + j];
-                            int uncompressedBlockSize = (int)Math.Min(bytesLeft, maxBlockSize);
-                            if (compressedBlockSize == 0)
+                            List<byte[]> uncompressedBlockBuffers = new List<byte[]>();
+                            List<byte[]> compressedBlockBuffers = new List<byte[]>();
+                            List<long> blockBytesLeft = new List<long>();
+                            long bytesLeft = filesList[i].uncomprSize;
+                            for (int j = 0; j < filesList[i].numBlocks; j++)
                             {
-                                compressedBlockSize = (int)maxBlockSize;
+                                blockBytesLeft.Add(bytesLeft);
+                                int compressedBlockSize = blockSizes[filesList[i].compressedBlockSizesIndex + j];
+                                int uncompressedBlockSize = (int)Math.Min(bytesLeft, maxBlockSize);
+                                if (compressedBlockSize == 0)
+                                {
+                                    compressedBlockSize = (int)maxBlockSize;
+                                }
+                                compressedBlockBuffers.Add(stream.ReadToBuffer(compressedBlockSize));
+                                uncompressedBlockBuffers.Add(null);
+                                bytesLeft -= uncompressedBlockSize;
                             }
-                            compressedBlockBuffers.Add(sfarFile.ReadToBuffer(compressedBlockSize));
-                            uncompressedBlockBuffers.Add(null);
-                            bytesLeft -= uncompressedBlockSize;
-                        }
 
-                        Parallel.For(0, filesList[i].numBlocks, j =>
-                        {
-                            int compressedBlockSize = blockSizes[filesList[i].compressedBlockSizesIndex + (int)j];
-                            int uncompressedBlockSize = (int)Math.Min(blockBytesLeft[(int)j], maxBlockSize);
-                            if (compressedBlockSize == 0 || compressedBlockSize == blockBytesLeft[(int)j])
+                            Parallel.For(0, filesList[i].numBlocks, j =>
                             {
-                                uncompressedBlockBuffers[(int)j] = compressedBlockBuffers[(int)j];
-                            }
-                            else
-                            {
-                                uncompressedBlockBuffers[(int)j] = new SevenZipHelper.LZMA().Decompress(compressedBlockBuffers[(int)j], (uint)uncompressedBlockSize);
-                                if (uncompressedBlockBuffers[(int)j].Length == 0)
-                                    throw new Exception();
-                            }
-                        });
+                                int compressedBlockSize = blockSizes[filesList[i].compressedBlockSizesIndex + (int)j];
+                                int uncompressedBlockSize = (int)Math.Min(blockBytesLeft[(int)j], maxBlockSize);
+                                if (compressedBlockSize == 0 || compressedBlockSize == blockBytesLeft[(int)j])
+                                {
+                                    uncompressedBlockBuffers[(int)j] = compressedBlockBuffers[(int)j];
+                                }
+                                else
+                                {
+                                    uncompressedBlockBuffers[(int)j] = new SevenZipHelper.LZMA().Decompress(compressedBlockBuffers[(int)j], (uint)uncompressedBlockSize);
+                                    if (uncompressedBlockBuffers[(int)j].Length == 0)
+                                        throw new Exception();
+                                }
+                            });
 
-                        for (int j = 0; j < filesList[i].numBlocks; j++)
-                        {
-                            outputFile.WriteFromBuffer(uncompressedBlockBuffers[j]);
+                            for (int j = 0; j < filesList[i].numBlocks; j++)
+                            {
+                                outputFile.WriteFromBuffer(uncompressedBlockBuffers[j]);
+                            }
                         }
                     }
                 }
             }
-            sfarFile.Close();
-            sfarFile.Dispose();
-            sfarFile = null;
         }
 
         static public void unpackAllDLC(MainWindow mainWindow, Installer installer)
