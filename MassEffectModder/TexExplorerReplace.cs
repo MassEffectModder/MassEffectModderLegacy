@@ -124,7 +124,21 @@ namespace MassEffectModder
             for (int n = 0; n < list.Count; n++)
             {
                 MatchedTexture nodeTexture = list[n];
-                Package package = cachePackageMgr.OpenPackage(GameData.GamePath + nodeTexture.path);
+                Package package;
+                try
+                {
+                    package = cachePackageMgr.OpenPackage(GameData.GamePath + nodeTexture.path);
+                }
+                catch (Exception e)
+                {
+                    errors += "---- Start --------------------------------------------" + Environment.NewLine;
+                    errors += "Error opening package file: " + GameData.GamePath + nodeTexture.path + Environment.NewLine;
+                    errors += e.Message + Environment.NewLine + Environment.NewLine;
+                    errors += e.StackTrace + Environment.NewLine + Environment.NewLine;
+                    errors += "---- End ----------------------------------------------" + Environment.NewLine + Environment.NewLine;
+                    Console.WriteLine(errors);
+                    break;
+                }
                 Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
                 string fmt = texture.properties.getProperty("Format").valueName;
                 PixelFormat pixelFormat = Image.getEngineFormatType(fmt);

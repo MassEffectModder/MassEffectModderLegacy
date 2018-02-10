@@ -1068,7 +1068,20 @@ namespace MassEffectModder
                     {
                         _mainWindow.updateStatusLabel("Generating textures information from package " + (l + 1) + " of " + GameData.packageFiles.Count);
                         _mainWindow.updateStatusLabel2("");
-                        Package package = new Package(GameData.packageFiles[l]);
+                        Package package;
+                        try
+                        {
+                            package = new Package(GameData.packageFiles[l]);
+                        }
+                        catch (Exception ex)
+                        {
+                            fs.WriteStringASCII("---- Start --------------------------------------------" + Environment.NewLine);
+                            fs.WriteStringASCII("Error opening package file: " + GameData.GamePath + GameData.packageFiles[l] + Environment.NewLine);
+                            fs.WriteStringASCII(ex.Message + Environment.NewLine + Environment.NewLine);
+                            fs.WriteStringASCII(ex.StackTrace + Environment.NewLine + Environment.NewLine);
+                            fs.WriteStringASCII("---- End ----------------------------------------------" + Environment.NewLine + Environment.NewLine);
+                            continue;
+                        }
                         fs.WriteStringASCII("--- Package: " + Path.GetFileName(GameData.packageFiles[l]) + " ---\n");
                         for (int i = 0; i < package.exportsTable.Count; i++)
                         {
