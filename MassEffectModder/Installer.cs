@@ -66,8 +66,9 @@ namespace MassEffectModder
         bool OptionVanillaVisible;
         bool OptionSkipScanVisible;
         bool OptionLimit2KVisible;
-        bool OptionIndirectSound;
-        bool OptionReshade;
+        bool OptionIndirectSoundVisible;
+        bool OptionReshadeVisible;
+        bool OptionBikVisible;
         bool mute = false;
         int stage = 1;
         int totalStages = 6;
@@ -189,6 +190,15 @@ namespace MassEffectModder
                 }
             }
 
+            splashDemiurge = installerIni.Read("DemiurgeSplashVideo", "Main").ToLowerInvariant();
+            if (splashDemiurge != "")
+            {
+                if (!File.Exists(splashDemiurge) || Path.GetExtension(splashDemiurge).ToLowerInvariant() != ".bik")
+                {
+                    splashDemiurge = "";
+                }
+            }
+
             comboBoxMod0.Visible = comboBoxMod1.Visible = comboBoxMod2.Visible = comboBoxMod3.Visible = false;
             comboBoxMod4.Visible = comboBoxMod5.Visible = comboBoxMod6.Visible = comboBoxMod7.Visible = false;
             comboBoxMod8.Visible = comboBoxMod9.Visible = false;
@@ -288,36 +298,33 @@ namespace MassEffectModder
             customLabelDesc.Text = customLabelCurrentStatus.Text = customLabelFinalStatus.Text = "";
 
             OptionLimit2KVisible = checkBoxOptionLimit2K.Visible = labelOptionLimit2K.Visible = true;
+            if (splashDemiurge != "")
+                OptionBikVisible = checkBoxOptionBik.Visible = labelOptionBik.Visible = true;
+            else
+                OptionBikVisible = checkBoxOptionBik.Visible = labelOptionBik.Visible = false;
             if (indirectSoundPath != "")
-                OptionIndirectSound = checkBoxOptionIndirectSound.Visible = labelOptionIndirectSound.Visible = true;
+                OptionIndirectSoundVisible = checkBoxOptionIndirectSound.Visible = labelOptionIndirectSound.Visible = true;
             else
-                OptionIndirectSound = checkBoxOptionIndirectSound.Visible = labelOptionIndirectSound.Visible = false;
+                OptionIndirectSoundVisible = checkBoxOptionIndirectSound.Visible = labelOptionIndirectSound.Visible = false;
             if (reshadePath != "")
-                OptionReshade = checkBoxOptionReshade.Visible = labelOptionReshade.Visible = true;
+                OptionReshadeVisible = checkBoxOptionReshade.Visible = labelOptionReshade.Visible = true;
             else
-                OptionReshade = checkBoxOptionReshade.Visible = labelOptionReshade.Visible = false;
+                OptionReshadeVisible = checkBoxOptionReshade.Visible = labelOptionReshade.Visible = false;
 
             if (allowToSkip)
-            {
                 OptionVanillaVisible = checkBoxOptionVanilla.Visible = labelOptionVanilla.Visible = true;
-            }
             else
-            {
                 OptionVanillaVisible = checkBoxOptionVanilla.Visible = labelOptionVanilla.Visible = false;
-            }
             if (allowToSkipScan)
-            {
                 OptionSkipScanVisible = checkBoxOptionSkipScan.Visible = labelOptionSkipScan.Visible = true;
-            }
             else
-            {
                 OptionSkipScanVisible = checkBoxOptionSkipScan.Visible = labelOptionSkipScan.Visible = false;
-            }
             checkBoxOptionIndirectSound.Checked = false;
             checkBoxOptionVanilla.Checked = false;
             checkBoxOptionLimit2K.Checked = false;
             checkBoxOptionSkipScan.Checked = false;
             checkBoxOptionReshade.Checked = false;
+            checkBoxOptionBik.Checked = true;
 
             buttonSTART.Visible = true;
             buttonNormal.Visible = true;
@@ -330,17 +337,21 @@ namespace MassEffectModder
             labelOptionSkipScan.Parent = pictureBoxBG;
             labelOptionVanilla.Parent = pictureBoxBG;
             labelOptionIndirectSound.Parent = pictureBoxBG;
+            labelOptionReshade.Parent = pictureBoxBG;
+            labelOptionBik.Parent = pictureBoxBG;
             checkBoxOptionLimit2K.Parent = pictureBoxBG;
             checkBoxOptionSkipScan.Parent = pictureBoxBG;
             checkBoxOptionVanilla.Parent = pictureBoxBG;
             checkBoxOptionIndirectSound.Parent = pictureBoxBG;
             checkBoxOptionReshade.Parent = pictureBoxBG;
+            checkBoxOptionBik.Parent = pictureBoxBG;
             labelModsSelection.Parent = pictureBoxBG;
             comboBoxMod0.Parent = comboBoxMod1.Parent = comboBoxMod2.Parent = comboBoxMod3.Parent = comboBoxMod4.Parent = pictureBoxBG;
-            comboBoxMod1.Parent = comboBoxMod2.Parent = comboBoxMod3.Parent = comboBoxMod4.Parent = comboBoxMod5.Parent = pictureBoxBG;
+            comboBoxMod5.Parent = comboBoxMod6.Parent = comboBoxMod7.Parent = comboBoxMod8.Parent = comboBoxMod9.Parent = pictureBoxBG;
             buttonMute.Parent = pictureBoxBG;
 
-            labelOptions.Visible = OptionVanillaVisible || OptionSkipScanVisible || OptionLimit2KVisible || OptionReshade;
+            labelOptions.Visible = OptionVanillaVisible || OptionSkipScanVisible || OptionLimit2KVisible || OptionReshadeVisible ||
+                OptionIndirectSoundVisible || OptionBikVisible;
 
             string bgFile = installerIni.Read("BackgroundImage", "Main").ToLowerInvariant();
             if (bgFile != "")
@@ -369,15 +380,6 @@ namespace MassEffectModder
                 if (!File.Exists(softShadowsModPath) || Path.GetExtension(softShadowsModPath).ToLowerInvariant() != ".zip")
                 {
                     softShadowsModPath = "";
-                }
-            }
-
-            splashDemiurge = installerIni.Read("DemiurgeSplashVideo", "Main").ToLowerInvariant();
-            if (splashDemiurge != "")
-            {
-                if (!File.Exists(splashDemiurge) || Path.GetExtension(splashDemiurge).ToLowerInvariant() != ".bik")
-                {
-                    splashDemiurge = "";
                 }
             }
 
@@ -713,7 +715,6 @@ namespace MassEffectModder
 
         private bool PreInstallCheck()
         {
-            buttonsEnable(false);
             customLabelFinalStatus.Text = "Checking game setup...";
             Application.DoEvents();
 
@@ -733,7 +734,6 @@ namespace MassEffectModder
             {
                 customLabelFinalStatus.Text = "No MEM file mods found!, aborting...";
                 customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
-                buttonsEnable(true);
                 return false;
             }
             errors = "";
@@ -770,7 +770,6 @@ namespace MassEffectModder
             {
                 customLabelFinalStatus.Text = "There are some errors while detecting MEM mods, aborting...";
                 customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
-                buttonsEnable(true);
 
                 if (File.Exists(filename))
                     File.Delete(filename);
@@ -788,21 +787,18 @@ namespace MassEffectModder
             {
                 customLabelFinalStatus.Text = "Game path is wrong, aborting...";
                 customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
-                buttonsEnable(true);
                 return false;
             }
             if (!gameData.getPackages(true, true))
             {
                 customLabelFinalStatus.Text = "Missing game data, aborting...";
                 customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
-                buttonsEnable(true);
                 return false;
             }
             if (!File.Exists(GameData.GamePath + "\\BioGame\\CookedPC\\Startup_int.upk"))
             {
                 customLabelFinalStatus.Text = "ME1 game not found, aborting...";
                 customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
-                buttonsEnable(true);
                 return false;
             }
 
@@ -811,7 +807,6 @@ namespace MassEffectModder
             {
                 customLabelFinalStatus.Text = "Write access denied, aborting...";
                 customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
-                buttonsEnable(true);
                 return false;
             }
 
@@ -829,7 +824,6 @@ namespace MassEffectModder
             {
                 customLabelFinalStatus.Text = "You have not enough disk space remaining. You need about " + Misc.getBytesFormat(diskUsage) + " free.";
                 customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
-                buttonsEnable(true);
                 return false;
             }
 
@@ -855,7 +849,6 @@ namespace MassEffectModder
 
                 customLabelFinalStatus.Text = "Detected not compatible mod, aborting...";
                 customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
-                buttonsEnable(true);
                 return false;
             }
 
@@ -891,7 +884,6 @@ namespace MassEffectModder
                 {
                     customLabelFinalStatus.Text = "Game was not scanned for textures, can not continue, aborting...";
                     customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
-                    buttonsEnable(true);
                     return false;
                 }
 
@@ -899,7 +891,6 @@ namespace MassEffectModder
                 {
                     customLabelFinalStatus.Text = "Game inconsistent from previous scan! Reinstall ME" + gameId + " and restart.";
                     customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
-                    buttonsEnable(true);
                     return false;
                 }
 
@@ -907,7 +898,6 @@ namespace MassEffectModder
                 {
                     customLabelFinalStatus.Text = "Game doesn't have empty mips removed, aborting...";
                     customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
-                    buttonsEnable(true);
                     return false;
                 }
             }
@@ -944,44 +934,18 @@ namespace MassEffectModder
                         Process.Start(filename);
                         customLabelFinalStatus.Text = "Game files are not vanilla or not recognized";
                         customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
-                        if (gameId == 3)
-                        {
-                            string message = "The installer detected that the following game files\n" +
-                                "are modded (not vanilla) or not recognized by the installer.\n" +
-                                "You can find the list of files in the window that just opened.\n\n" +
-                                "The correct installation order is as follows:\n" +
-                                "1. Content mods (PCC, DLC mods)\n";
-                            message += "2. ALOT & ALOT Addon\n";
-                            message += "3. Texture and meshes mods (TPF, DDS, MOD)\n\n" +
-                                "- If you have properly installed content mods before this mod,\n" +
-                                "  this result is normal and you can continue the installation.\n" +
-                                "  It's advised to verify if all items in the list are supposed to be modded.\n" +
-                                "  To verify: compare the list of files that failed the check against\n" +
-                                "  the list of files you copied\n" +
-                                "  from your content mods to the CookedPCConsole directory.\n" +
-                                "  Both lists should be identical.\n\n" +
-                                "- If you are not sure what you installed,\n" +
-                                "  it is recommended that you revert your game to vanilla\n" +
-                                "  and optionally install the content mods (PCC, DLC mods) you want,\n" +
-                                "  then restart the installation of this mod.\n\n\n" +
-                                "However you can ignore the warning and continue the installation at your own risk!\n";
-                            MessageBox.Show(message, "Warning !");
-                        }
-                        else
-                        {
-                            string message = "The installer detected that the following game files\n" +
-                                "are modded (not vanilla) or not recognized by the installer.\n" +
-                                "You can find the list of files in the window that just opened.\n\n" +
-                                "- If you are not sure what you installed,\n" +
-                                "  it is recommended that you revert your game to vanilla\n" +
-                                "  and optionally install the content mods (PCC, DLC mods) you want,\n" +
-                                "  then restart the installation of this mod.\n\n" +
-                                "- If the installer still reports this issue,\n" +
-                                "  do not install unrecognized mod files\n" +
-                                "  and submit a report to add those files to the list of supported mods.\n\n\n" +
-                                "However you can ignore the warning and continue the installation at your own risk!\n";
-                            MessageBox.Show(message, "Warning !");
-                        }
+                        string message = "The installer detected that the following game files\n" +
+                            "are modded (not vanilla) or not recognized by the installer.\n" +
+                            "You can find the list of files in the window that just opened.\n\n" +
+                            "- If you are not sure what you installed,\n" +
+                            "  it is recommended that you revert your game to vanilla\n" +
+                            "  and optionally install the content mods (.UPK, .U, .SFM) you want,\n" +
+                            "  then restart the installation of this mod.\n\n" +
+                            "- If the installer still reports this issue,\n" +
+                            "  do not install unrecognized mod files\n" +
+                            "  and submit a report to add those files to the list of supported mods.\n\n\n" +
+                            "However you can ignore the warning and continue the installation at your own risk!\n";
+                        MessageBox.Show(message, "Warning !");
                         DialogResult resp = MessageBox.Show("Press Cancel to abort or press Ok button to continue.", "Warning !", MessageBoxButtons.OKCancel);
                         if (resp == DialogResult.Cancel)
                             return false;
@@ -989,9 +953,7 @@ namespace MassEffectModder
                 }
             }
 
-            string path = gameData.EngineConfigIniPath;
-            bool exist = File.Exists(path);
-            if (!exist && gameId == 1)
+            if (!File.Exists(gameData.EngineConfigIniPath))
             {
                 MessageBox.Show("Missing game configuration file.\nYou need atleast once launch the game first.");
                 return false;
@@ -1215,23 +1177,6 @@ namespace MassEffectModder
             Application.DoEvents();
         }
 
-        private void buttonsEnable(bool enabled)
-        {
-            buttonNormal.Visible = false;
-            if (updateMode)
-            {
-                checkBoxOptionVanilla.Enabled = false;
-                checkBoxOptionSkipScan.Enabled = false;
-            }
-            else
-            {
-                checkBoxOptionVanilla.Enabled = OptionVanillaVisible;
-                checkBoxOptionSkipScan.Enabled = OptionSkipScanVisible;
-            }
-            checkBoxOptionLimit2K.Enabled = OptionLimit2KVisible;
-            Application.DoEvents();
-        }
-
         private void buttonSTART_Click(object sender, EventArgs e)
         {
             List<string> selectedFileMods = new List<string>();
@@ -1275,13 +1220,14 @@ namespace MassEffectModder
                 selectedFileMods.Add(file);
             }
 
-            buttonsEnable(false);
+            buttonNormal.Visible = false;
             buttonSTART.Visible = false;
             checkBoxOptionVanilla.Visible = labelOptionVanilla.Visible = false;
             checkBoxOptionSkipScan.Visible = labelOptionSkipScan.Visible = false;
             checkBoxOptionLimit2K.Visible = labelOptionLimit2K.Visible = false;
-            labelOptionIndirectSound.Visible = checkBoxOptionIndirectSound.Visible = false;
-            labelOptionReshade.Visible = checkBoxOptionReshade.Visible = false;
+            checkBoxOptionIndirectSound.Visible = labelOptionIndirectSound.Visible = false;
+            checkBoxOptionReshade.Visible = labelOptionReshade.Visible = false;
+            checkBoxOptionBik.Visible = labelOptionBik.Visible = false;
             labelOptions.Visible = false;
             customLabelDesc.Text = "Installing MEUITM for Mass Effect";
             comboBoxMod0.Visible = comboBoxMod1.Visible = comboBoxMod2.Visible = comboBoxMod3.Visible = false;
@@ -1290,61 +1236,7 @@ namespace MassEffectModder
             labelModsSelection.Visible = false;
 
             if (!PreInstallCheck())
-            {
-                labelOptionVanilla.Visible = checkBoxOptionVanilla.Visible = OptionVanillaVisible;
-                labelOptionSkipScan.Visible = checkBoxOptionSkipScan.Visible = OptionSkipScanVisible;
-                labelOptionLimit2K.Visible = checkBoxOptionLimit2K.Visible = OptionLimit2KVisible;
-                labelOptionIndirectSound.Visible = checkBoxOptionIndirectSound.Visible = OptionIndirectSound;
-                labelOptionReshade.Visible = checkBoxOptionReshade.Visible = OptionReshade;
-                labelOptions.Visible = checkBoxOptionVanilla.Visible || checkBoxOptionSkipScan.Visible ||
-                    checkBoxOptionLimit2K.Visible || checkBoxOptionIndirectSound.Visible || checkBoxOptionReshade.Visible;
-                customLabelDesc.Text = "";
-
-                for (int i = 1; i <= modsSelection.Count; i++)
-                {
-                    ModSelection modSelect = modsSelection[i - 1];
-                    string file = "";
-                    switch (i)
-                    {
-                        case 1:
-                            comboBoxMod0.Visible = true;
-                            break;
-                        case 2:
-                            comboBoxMod1.Visible = true;
-                            break;
-                        case 3:
-                            comboBoxMod2.Visible = true;
-                            break;
-                        case 4:
-                            comboBoxMod3.Visible = true;
-                            break;
-                        case 5:
-                            comboBoxMod4.Visible = true;
-                            break;
-                        case 6:
-                            comboBoxMod5.Visible = true;
-                            break;
-                        case 7:
-                            comboBoxMod6.Visible = true;
-                            break;
-                        case 8:
-                            comboBoxMod7.Visible = true;
-                            break;
-                        case 9:
-                            comboBoxMod8.Visible = true;
-                            break;
-                        case 10:
-                            comboBoxMod9.Visible = true;
-                            break;
-                    }
-                    selectedFileMods.Add(file);
-                }
-
-                if (modsSelection.Count != 0)
-                    labelModsSelection.Visible = true;
-
                 return;
-            }
 
             for (int i = 0; i < selectedFileMods.Count; i++)
             {
