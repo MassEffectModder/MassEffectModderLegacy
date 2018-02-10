@@ -1443,11 +1443,11 @@ namespace MassEffectModder
                     continue;
                 updateStatusRepackZlib("Recompress game files " + ((i + 1) * 100 / GameData.packageFiles.Count) + "%");
                 Package package;
-//                try
+                try
                 {
                     package = new Package(GameData.packageFiles[i], true, true);
                 }
-/*                catch (Exception ex)
+                catch (Exception ex)
                 {
                     errors += "---- Start --------------------------------------------" + Environment.NewLine;
                     errors += "Error opening package file: " + GameData.GamePath + GameData.packageFiles[i] + Environment.NewLine;
@@ -1455,7 +1455,7 @@ namespace MassEffectModder
                     errors += ex.StackTrace + Environment.NewLine + Environment.NewLine;
                     errors += "---- End ----------------------------------------------" + Environment.NewLine + Environment.NewLine;
                     continue;
-                }*/
+                }
                 if (package.compressed && package.compressionType == Package.CompressionType.Zlib && gameId == 1)
                 {
                     package.Dispose();
