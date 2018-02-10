@@ -157,7 +157,7 @@ namespace MassEffectModder
                     {
                         package.Dispose();
                         package = new Package(GameData.packageFiles[i]);
-                        package.SaveToFile(true);
+                        package.SaveToFile(true, true);
                     }
                     package.Dispose();
                 }
@@ -186,6 +186,58 @@ namespace MassEffectModder
         {
             enableGameDataMenu(false);
             repackME2();
+            enableGameDataMenu(true);
+        }
+
+        public void repackME3()
+        {
+            string errors = "";
+            GameData gameData = new GameData(MeType.ME3_TYPE, _configIni);
+            if (!Directory.Exists(GameData.GamePath))
+            {
+                MessageBox.Show("Game path is wrong!");
+                return;
+            }
+            GetPackages(gameData);
+            for (int i = 0; i < GameData.packageFiles.Count; i++)
+            {
+                updateStatusLabel("Repack PCC file " + (i + 1) + " of " + GameData.packageFiles.Count);
+                try
+                {
+                    Package package = new Package(GameData.packageFiles[i], true, true);
+                    if (!package.compressed)
+                    {
+                        package.Dispose();
+                        package = new Package(GameData.packageFiles[i]);
+                        package.SaveToFile(true, true);
+                    }
+                    package.Dispose();
+                }
+                catch
+                {
+                    errors += "The file is propably broken, skipped: " + GameData.packageFiles[i] + Environment.NewLine;
+                }
+            }
+            if (errors != "")
+            {
+                string filename = "pcc-errors.txt";
+                if (File.Exists(filename))
+                    File.Delete(filename);
+                using (FileStream fs = new FileStream(filename, FileMode.CreateNew))
+                {
+                    fs.WriteStringASCII(errors);
+                }
+                MessageBox.Show("WARNING: Some errors have occured!");
+                Process.Start(filename);
+            }
+            updateStatusLabel("Done");
+            updateStatusLabel2("");
+        }
+
+        private void repackME3ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            enableGameDataMenu(false);
+            repackME3();
             enableGameDataMenu(true);
         }
 

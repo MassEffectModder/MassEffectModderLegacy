@@ -107,6 +107,8 @@ namespace MassEffectModder
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.statusStrip2 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.repackME3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.menuGame.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.statusStrip2.SuspendLayout();
@@ -356,6 +358,8 @@ namespace MassEffectModder
             this.toolStripExtractME3MEMMenuItem,
             this.toolStripSeparator12,
             this.toolStripMenuItemCreateBinME3,
+            this.toolStripSeparator1,
+            this.repackME3ToolStripMenuItem,
             this.toolStripSeparator4,
             this.toolStripMenuItemUpdateTOCs,
             this.toolStripSeparator9,
@@ -541,6 +545,18 @@ namespace MassEffectModder
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
             this.toolStripStatusLabel2.Size = new System.Drawing.Size(0, 17);
             // 
+            // repackME3ToolStripMenuItem
+            // 
+            this.repackME3ToolStripMenuItem.Name = "repackME3ToolStripMenuItem";
+            this.repackME3ToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.repackME3ToolStripMenuItem.Text = "Repack Game Files";
+            this.repackME3ToolStripMenuItem.Click += new System.EventHandler(this.repackME3ToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(209, 6);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -625,6 +641,8 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemCreateBinME2;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator12;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemCreateBinME3;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem repackME3ToolStripMenuItem;
     }
 }
 
