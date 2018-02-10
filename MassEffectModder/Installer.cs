@@ -1420,6 +1420,9 @@ namespace MassEffectModder
                 log += "Remove mipmaps skipped" + Environment.NewLine + Environment.NewLine;
             }
 
+            if (!applyModTag(gameId, MeuitmVer, 0))
+                errors += "Failed applying stamp for installation!\n";
+
             log += "Updating LODs and other settings started..." + Environment.NewLine;
             string path = gameData.EngineConfigIniPath;
             bool exist = File.Exists(path);
@@ -1463,9 +1466,6 @@ namespace MassEffectModder
             }
             log += "Repack finished" + Environment.NewLine + Environment.NewLine;
 
-
-            if (!applyModTag(gameId, MeuitmVer, 0))
-                errors += "Failed applying stamp for installation!\n";
 
             if (gameId == 1 && softShadowsModPath != "")
             {
