@@ -383,7 +383,7 @@ namespace MassEffectModder
         {
             if (id > 0 && id < exportsTable.Count)
                 return exportsTable[id - 1].objectName;
-            if (id < 0 && -id < importsTable.Count)
+            else if (id < 0 && -id < importsTable.Count)
                 return importsTable[-id - 1].objectName;
             return "Class";
         }
@@ -392,7 +392,7 @@ namespace MassEffectModder
         {
             if (id > 0 && id < exportsTable.Count)
                 return exportsTable[id - 1].objectNameId;
-            if (id < 0 && -id < importsTable.Count)
+            else if (id < 0 && -id < importsTable.Count)
                 return importsTable[-id - 1].objectNameId;
             return 0;
         }
@@ -407,7 +407,7 @@ namespace MassEffectModder
                     s += ".";
                 s += exportsTable[id - 1].objectName;
             }
-            if (id < 0 && -id < importsTable.Count)
+            else if (id < 0 && -id < importsTable.Count)
             {
                 s += resolvePackagePath(importsTable[-id - 1].linkId);
                 if (s != "")
@@ -998,7 +998,8 @@ namespace MassEffectModder
             }
         }
 
-        public bool SaveToFile(bool forceZlib = false, bool forceCompressed = false, bool forceDecompressed = false, string filename = null)
+        public bool SaveToFile(bool forceZlib = false, bool forceCompressed = false,
+            bool forceDecompressed = false, string filename = null, bool appendMarker = true)
         {
             if (forceZlib && compressionType != CompressionType.Zlib)
                 modified = true;
@@ -1281,8 +1282,11 @@ namespace MassEffectModder
                     chunks = null;
                 }
 
-                fs.SeekEnd();
-                fs.WriteStringASCII(MEMendFileMarker);
+                if (appendMarker)
+                {
+                    fs.SeekEnd();
+                    fs.WriteStringASCII(MEMendFileMarker);
+                }
             }
 
             tempOutput.Close();
