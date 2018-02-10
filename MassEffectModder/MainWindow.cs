@@ -209,7 +209,7 @@ namespace MassEffectModder
                     {
                         package.Dispose();
                         package = new Package(GameData.packageFiles[i]);
-                        package.SaveToFile(true, true);
+                        package.SaveToFile(false, true);
                     }
                     package.Dispose();
                 }
