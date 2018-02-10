@@ -152,6 +152,10 @@ namespace MassEffectModder
             if (!File.Exists(SFARfilename))
                 throw new Exception("filename missing");
 
+            if (mainWindow != null)
+            {
+                mainWindow.updateStatusLabel2("Loading SFAR...");
+            }
             byte[] buffer = File.ReadAllBytes(SFARfilename);
             using (MemoryStream stream = new MemoryStream(buffer))
             {
@@ -237,7 +241,7 @@ namespace MassEffectModder
             }
         }
 
-        static public void unpackAllDLC(MainWindow mainWindow, Installer installer)
+        static public void unpackAllDLC(MainWindow mainWindow)
         {
             if (!Directory.Exists(GameData.DLCData))
             {
@@ -288,10 +292,6 @@ namespace MassEffectModder
                 if (mainWindow != null)
                 {
                     mainWindow.updateStatusLabel("SFAR extracting - DLC " + (i + 1) + " of " + sfarFiles.Count);
-                }
-                if (installer != null)
-                {
-                    installer.updateStatusPrepare("Unpacking DLC " + (i * 100 / sfarFiles.Count) + "%");
                 }
                 dlc.extract(sfarFiles[i], outPath);
             }
