@@ -38,6 +38,7 @@ namespace MassEffectModder
         const int SizeOfChunk = 8;
         public const uint FileTextureTag = 0x53444446;
         public const uint FileBinaryTag = 0x4E494246;
+        public const uint FileXdeltaTag = 0x4E494258;
 
         public struct FileMod
         {
@@ -370,6 +371,12 @@ namespace MassEffectModder
                         exportId = fs.ReadInt32();
                         pkgPath = fs.ReadStringASCIINull();
                     }
+                    else if (modFiles[i].tag == FileXdeltaTag)
+                    {
+                        name = modFiles[i].name;
+                        exportId = fs.ReadInt32();
+                        pkgPath = fs.ReadStringASCIINull();
+                    }
 
                     if (texExplorer != null && (extract || replace))
                     {
@@ -399,7 +406,13 @@ namespace MassEffectModder
                         }
                         else if (modFiles[i].tag == FileBinaryTag)
                         {
-                            ListViewItem item = new ListViewItem(name + " (Binary Mod)");
+                            ListViewItem item = new ListViewItem(name + " (Raw Binary Mod)");
+                            item.Name = i.ToString();
+                            texExplorer.listViewTextures.Items.Add(item);
+                        }
+                        else if (modFiles[i].tag == FileXdeltaTag)
+                        {
+                            ListViewItem item = new ListViewItem(name + " (Xdelta Binary Mod)");
                             item.Name = i.ToString();
                             texExplorer.listViewTextures.Items.Add(item);
                         }
@@ -440,6 +453,25 @@ namespace MassEffectModder
                                 newFilename = "B";
                             }
                             newFilename += Path.GetFileName(path).Length + "-" + Path.GetFileName(path) + "-E" + exportId + ".bin";
+                            using (FileStream output = new FileStream(Path.Combine(outDir, newFilename), FileMode.Create, FileAccess.Write))
+                            {
+                                output.Write(dst, 0, (int)dstLen);
+                            }
+                        }
+                        else if (modFiles[i].tag == FileXdeltaTag)
+                        {
+                            string path = pkgPath;
+                            string newFilename;
+                            if (path.Contains("\\DLC\\"))
+                            {
+                                string dlcName = path.Split('\\')[3];
+                                newFilename = "D" + dlcName.Length + "-" + dlcName + "-";
+                            }
+                            else
+                            {
+                                newFilename = "B";
+                            }
+                            newFilename += Path.GetFileName(path).Length + "-" + Path.GetFileName(path) + "-E" + exportId + ".xdelta";
                             using (FileStream output = new FileStream(Path.Combine(outDir, newFilename), FileMode.Create, FileAccess.Write))
                             {
                                 output.Write(dst, 0, (int)dstLen);
@@ -493,6 +525,19 @@ namespace MassEffectModder
                             }
                             Package pkg = cachePackageMgr.OpenPackage(path);
                             pkg.setExportData(exportId, dst);
+                        }
+                        else if (modFiles[i].tag == FileXdeltaTag)
+                        {
+                            string path = GameData.GamePath + pkgPath;
+                            if (!File.Exists(path))
+                            {
+                                errors += "Warning: File " + path + " not exists in your game setup." + Environment.NewLine;
+                                log += "Warning: File " + path + " not exists in your game setup." + Environment.NewLine;
+                                continue;
+                            }
+                            Package pkg = cachePackageMgr.OpenPackage(path);
+                            byte[] buffer = new Xdelta3Helper.Xdelta3().Decompress(pkg.getExportData(exportId), dst);
+                            pkg.setExportData(exportId, buffer);
                         }
                         else
                         {

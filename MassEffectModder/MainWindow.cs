@@ -21,6 +21,7 @@
 
 using StreamHelpers;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -613,7 +614,7 @@ namespace MassEffectModder
                 return;
             }
             updateStatusLabel("Finding packages in game setup...");
-            gameData.getPackagesOnlyBase();
+            gameData.getPackages();
             updateStatusLabel("");
 
             using (FolderBrowserDialog modDir = new FolderBrowserDialog())
@@ -621,6 +622,7 @@ namespace MassEffectModder
                 modDir.Description = "Please select source directory of modded package files";
                 if (modDir.ShowDialog() != DialogResult.OK)
                 {
+                    updateStatusLabel("");
                     enableGameDataMenu(true);
                     return;
                 }
@@ -631,44 +633,14 @@ namespace MassEffectModder
                 if (exe.Count != 0)
                 {
                     MessageBox.Show("The source directory doesn't seems right, aborting...");
+                    updateStatusLabel("");
                     enableGameDataMenu(true);
                     return;
-                }
-
-                List<string> dlcs = Directory.GetFiles(modDir.SelectedPath, "*.*",
-                    SearchOption.AllDirectories).Where(s => s.Contains("\\DLC\\")).ToList();
-                if (dlcs.Count != 0)
-                {
-                    MessageBox.Show("The source directory can not contains DLC, aborting...");
-                    enableGameDataMenu(true);
-                    return;
-                }
-
-                for (int i = 0; i < GameData.packageFiles.Count; i++)
-                {
-                    try
-                    {
-                        using (FileStream fs = new FileStream(GameData.packageFiles[i], FileMode.Open, FileAccess.Read))
-                        {
-                            fs.SeekEnd();
-                            fs.Seek(-Package.MEMendFileMarker.Length, SeekOrigin.Current);
-                            string marker = fs.ReadStringASCII(Package.MEMendFileMarker.Length);
-                            if (marker == Package.MEMendFileMarker)
-                            {
-                                MessageBox.Show("Game files are not vanilla, aborting...");
-                                enableGameDataMenu(true);
-                                return;
-                            }
-                        }
-                    }
-                    catch
-                    {
-                    }
                 }
 
                 List< string> mods = Directory.GetFiles(modDir.SelectedPath, "*.*",
-                    SearchOption.AllDirectories).Where(s => s.EndsWith(".upk",
-                    StringComparison.OrdinalIgnoreCase) ||
+                    SearchOption.AllDirectories).Where(s =>
+                    s.EndsWith(".upk", StringComparison.OrdinalIgnoreCase) ||
                     s.EndsWith(".u", StringComparison.OrdinalIgnoreCase) ||
                     s.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase) ||
                     s.EndsWith(".sfm", StringComparison.OrdinalIgnoreCase)).ToList();
@@ -685,6 +657,7 @@ namespace MassEffectModder
                             if (marker == Package.MEMendFileMarker)
                             {
                                 MessageBox.Show("Mod files must be based on vanilla game data, aborting...");
+                                updateStatusLabel("");
                                 enableGameDataMenu(true);
                                 return;
                             }
@@ -695,20 +668,180 @@ namespace MassEffectModder
                     }
                 }
 
-
-                using (OpenFileDialog modFile = new OpenFileDialog())
+                updateStatusLabel("Scanning mods...");
+                List<string> files = Directory.GetFiles(modDir.SelectedPath, "*.*",
+                    SearchOption.AllDirectories).Where(s =>
+                    s.EndsWith(".upk", StringComparison.OrdinalIgnoreCase) ||
+                    s.EndsWith(".u", StringComparison.OrdinalIgnoreCase) ||
+                    s.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase) ||
+                    s.EndsWith(".sfm", StringComparison.OrdinalIgnoreCase)).ToList();
+                List<TexExplorer.BinaryMod> modFiles = new List<TexExplorer.BinaryMod>();
+                for (int i = 0; i < mods.Count; i++)
                 {
-                    modFile.Title = "Please select MEM mod file";
-                    modFile.Filter = "MEM mod file | *.mem";
-                    modFile.Multiselect = true;
-                    if (modFile.ShowDialog() != DialogResult.OK)
+                    Package vanillaPkg = null;
+                    Package modPkg = null;
+                    bool found = false;
+                    try
                     {
+                        for (int v = 0; v < GameData.packageFiles.Count; v++)
+                        {
+                            if (Path.GetFileName(mods[i]).ToLowerInvariant() == Path.GetFileName(GameData.packageFiles[v]).ToLowerInvariant())
+                            {
+                                modPkg = new Package(mods[i], true);
+                                vanillaPkg = new Package(GameData.packageFiles[v]);
+                                if (modPkg.exportsTable.Count != vanillaPkg.exportsTable.Count ||
+                                    modPkg.namesTable.Count != vanillaPkg.namesTable.Count ||
+                                    modPkg.importsTable.Count != vanillaPkg.importsTable.Count)
+                                {
+                                    found = true;
+                                    vanillaPkg.Dispose();
+                                    continue;
+                                }
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (found && vanillaPkg == null)
+                        {
+                            vanillaPkg.Dispose();
+                            modPkg.Dispose();
+                            MessageBox.Show("Package file not compatible: " + mods[i] + ", aborting...");
+                            updateStatusLabel("");
+                            enableGameDataMenu(true);
+                            return;
+                        }
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Problem opening file: " + mods[i] + ", aborting...");
+                        updateStatusLabel("");
+                        enableGameDataMenu(true);
+                        return;
+                    }
+                    if (!found)
+                    {
+                        MessageBox.Show("Package not present in vanilla game data: " + mods[i] + ", aborting...");
+                        updateStatusLabel("");
                         enableGameDataMenu(true);
                         return;
                     }
 
+                    for (int e = 0; e < modPkg.exportsTable.Count; e++)
+                    {
+                        byte[] vanillaExport = vanillaPkg.getExportData(e);
+                        byte[] modExport = modPkg.getExportData(e);
+                        if (vanillaExport.Length == modExport.Length)
+                        {
+                            if (StructuralComparisons.StructuralEqualityComparer.Equals(vanillaExport, modExport))
+                                continue;
+                        }
+
+                        TexExplorer.BinaryMod mod = new TexExplorer.BinaryMod();
+                        mod.packagePath = GameData.RelativeGameData(vanillaPkg.packagePath);
+                        mod.exportId = e;
+
+                        if (vanillaExport.Length == modExport.Length)
+                        {
+                            mod.data = new Xdelta3Helper.Xdelta3().Compress(vanillaExport, modExport);
+                            mod.binaryModType = 2;
+                        }
+                        else
+                        {
+                            mod.data = new byte[modExport.Length];
+                            Array.Copy(modExport, mod.data, modExport.Length);
+                            mod.binaryModType = 1;
+                        }
+
+                        string name;
+                        if (mod.packagePath.Contains("\\DLC\\"))
+                        {
+                            string dlcName = mod.packagePath.Split('\\')[3];
+                            name = "D" + dlcName.Length + "-" + dlcName + "-";
+                        }
+                        else
+                        {
+                            name = "B";
+                        }
+                        name += Path.GetFileName(mod.packagePath).Length + "-" +
+                            Path.GetFileName(mod.packagePath) + "-E" + mod.exportId;
+                        if (mod.binaryModType == 1)
+                            name += ".bin";
+                        else if (mod.binaryModType == 2)
+                            name += ".xdelta";
+
+                        mod.textureName = name;
+                        modFiles.Add(mod);
+                    }
+                    vanillaPkg.Dispose();
+                    modPkg.Dispose();
+                }
+
+                if (modFiles.Count == 0)
+                {
+                    MessageBox.Show("Nothing to mod, exiting...");
+                    updateStatusLabel("");
+                    enableGameDataMenu(true);
+                    return;
+                }
+
+                updateStatusLabel("Creating mem...");
+                using (SaveFileDialog modFile = new SaveFileDialog())
+                {
+                    modFile.Title = "Please selecct new MEM mod file";
+                    modFile.Filter = "MEM mod file | *.mem";
+                    if (modFile.ShowDialog() != DialogResult.OK)
+                    {
+                        updateStatusLabel("");
+                        enableGameDataMenu(true);
+                        return;
+                    }
+
+                    if (File.Exists(modFile.FileName))
+                        File.Delete(modFile.FileName);
+
+                    using (FileStream outFs = new FileStream(modFile.FileName, FileMode.CreateNew, FileAccess.Write))
+                    {
+                        outFs.WriteUInt32(TexExplorer.TextureModTag);
+                        outFs.WriteUInt32(TexExplorer.TextureModVersion);
+                        outFs.WriteInt64(0); // filled later
+
+                        for (int i = 0; i < modFiles.Count; i++)
+                        {
+                            Stream dst = MipMaps.compressData(modFiles[i].data);
+                            dst.SeekBegin();
+                            TexExplorer.BinaryMod bmod = modFiles[i];
+                            bmod.offset = outFs.Position;
+                            bmod.size = dst.Length;
+                            modFiles[i] = bmod;
+                            outFs.WriteInt32(modFiles[i].exportId);
+                            outFs.WriteStringASCIINull(modFiles[i].packagePath);
+                            outFs.WriteFromStream(dst, dst.Length);
+                        }
+
+                        long pos = outFs.Position;
+                        outFs.SeekBegin();
+                        outFs.WriteUInt32(TexExplorer.TextureModTag);
+                        outFs.WriteUInt32(TexExplorer.TextureModVersion);
+                        outFs.WriteInt64(pos);
+                        outFs.JumpTo(pos);
+                        outFs.WriteUInt32((uint)gameType);
+                        outFs.WriteInt32(modFiles.Count);
+
+                        for (int i = 0; i < modFiles.Count; i++)
+                        {
+                            if (modFiles[i].binaryModType == 1)
+                                outFs.WriteUInt32(MipMaps.FileBinaryTag);
+                            else if (modFiles[i].binaryModType == 2)
+                                outFs.WriteUInt32(MipMaps.FileXdeltaTag);
+                            outFs.WriteStringASCIINull(modFiles[i].textureName);
+                            outFs.WriteInt64(modFiles[i].offset);
+                            outFs.WriteInt64(modFiles[i].size);
+                        }
+                    }
+
                 }
             }
+            updateStatusLabel("Finished");
             enableGameDataMenu(true);
         }
 

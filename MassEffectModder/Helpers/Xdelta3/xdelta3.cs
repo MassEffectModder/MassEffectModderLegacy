@@ -27,11 +27,11 @@ namespace Xdelta3Helper
 {
     public class Xdelta3
     {
-        [DllImport("xdelta3.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("xdelta.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
         private static extern int XDelta3Decompress([In] byte[] srcBuf, uint srcLen, [In] byte[] delta, uint deltaLen,
             [Out] byte[] dstBuf, ref uint dstLen);
 
-        [DllImport("xdelta3.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("xdelta.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
         private static extern int XDelta3Compress([In] byte[] src1Buf, [In] byte[] src2Buf, uint srcLen,
             [Out] byte[] delta, ref uint deltaLen);
 

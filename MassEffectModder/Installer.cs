@@ -1118,6 +1118,12 @@ namespace MassEffectModder
                             exportId = fs.ReadInt32();
                             pkgPath = fs.ReadStringASCIINull();
                         }
+                        else if (modFiles[l].tag == MipMaps.FileXdeltaTag)
+                        {
+                            name = modFiles[l].name;
+                            exportId = fs.ReadInt32();
+                            pkgPath = fs.ReadStringASCIINull();
+                        }
 
                         dst = MipMaps.decompressData(fs, size);
                         dstLen = dst.Length;
@@ -1154,6 +1160,19 @@ namespace MassEffectModder
                             }
                             Package pkg = cachePackageMgr.OpenPackage(path);
                             pkg.setExportData(exportId, dst);
+                            pkg = null;
+                        }
+                        else if (modFiles[l].tag == MipMaps.FileXdeltaTag)
+                        {
+                            string path = GameData.GamePath + pkgPath;
+                            if (!File.Exists(path))
+                            {
+                                log += "Warning: File " + path + " not exists in your game setup." + Environment.NewLine;
+                                continue;
+                            }
+                            Package pkg = cachePackageMgr.OpenPackage(path);
+                            byte[] buffer = new Xdelta3Helper.Xdelta3().Decompress(pkg.getExportData(exportId), dst);
+                            pkg.setExportData(exportId, buffer);
                             pkg = null;
                         }
                         else

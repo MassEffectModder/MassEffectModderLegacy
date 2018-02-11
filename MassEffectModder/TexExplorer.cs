@@ -99,9 +99,11 @@ namespace MassEffectModder
             public string packagePath;
             public int exportId;
             public byte[] data;
-            public bool binaryMod;
+            public int binaryModType;
             public string textureName;
             public uint textureCrc;
+            public long offset;
+            public long size;
         };
 
         public class PackageTreeNode : TreeNode
@@ -925,6 +927,7 @@ namespace MassEffectModder
                     diskUsage += new DirectoryInfo(modFile.SelectedPath).GetFiles("*.jpg").ToList().Sum(file => file.Length);
                     diskUsage += new DirectoryInfo(modFile.SelectedPath).GetFiles("*.jpeg").ToList().Sum(file => file.Length);
                     diskUsage += new DirectoryInfo(modFile.SelectedPath).GetFiles("*.bin").ToList().Sum(file => file.Length);
+                    diskUsage += new DirectoryInfo(modFile.SelectedPath).GetFiles("*.xdelta").ToList().Sum(file => file.Length);
                     long diskFreeSpace = Misc.getDiskFreeSpace(modFile.SelectedPath);
                     diskUsage = (long)(diskUsage / 1.5);
                     if (diskUsage < diskFreeSpace)
@@ -987,6 +990,7 @@ namespace MassEffectModder
                         diskUsage += new DirectoryInfo(listDirs[i]).GetFiles("*.jpg").ToList().Sum(file => file.Length);
                         diskUsage += new DirectoryInfo(listDirs[i]).GetFiles("*.jpeg").ToList().Sum(file => file.Length);
                         diskUsage += new DirectoryInfo(listDirs[i]).GetFiles("*.bin").ToList().Sum(file => file.Length);
+                        diskUsage += new DirectoryInfo(listDirs[i]).GetFiles("*.xdelta").ToList().Sum(file => file.Length);
                     }
                     diskUsage = (long)(diskUsage / 1.5);
 
@@ -1274,7 +1278,7 @@ namespace MassEffectModder
                                         continue;
                                     }
                                     mod.packagePath = Path.Combine(path, package);
-                                    mod.binaryMod = true;
+                                    mod.binaryModType = 1;
                                     len = fs.ReadInt32();
                                     mod.data = fs.ReadToBuffer(len);
                                 }
@@ -1298,7 +1302,7 @@ namespace MassEffectModder
                                     }
                                     textureName = f.name;
                                     mod.textureName = textureName;
-                                    mod.binaryMod = false;
+                                    mod.binaryModType = 0;
                                     len = fs.ReadInt32();
                                     mod.data = fs.ReadToBuffer(len);
                                     Package pkg = new Package(GameData.GamePath + f.list[0].path);
@@ -1423,7 +1427,7 @@ namespace MassEffectModder
 
                                 string textureName = foundCrcList[0].name;
                                 mod.textureName = textureName;
-                                mod.binaryMod = false;
+                                mod.binaryModType = 0;
                                 mod.textureCrc = crc;
                                 mod.data = new byte[dstLen];
                                 result = zip.ReadCurrentFile(handle, mod.data, dstLen);
@@ -1573,10 +1577,18 @@ namespace MassEffectModder
                     fileMod.offset = outFs.Position;
                     fileMod.size = dst.Length;
 
-                    if (mods[l].binaryMod)
+                    if (mods[l].binaryModType == 1)
                     {
                         fileMod.tag = MipMaps.FileBinaryTag;
                         fileMod.name = Path.GetFileNameWithoutExtension(mods[l].packagePath) + "_" + mods[l].exportId + ".bin";
+
+                        outFs.WriteInt32(mods[l].exportId);
+                        outFs.WriteStringASCIINull(mods[l].packagePath);
+                    }
+                    else if (mods[l].binaryModType == 2)
+                    {
+                        fileMod.tag = MipMaps.FileXdeltaTag;
+                        fileMod.name = Path.GetFileNameWithoutExtension(mods[l].packagePath) + "_" + mods[l].exportId + ".xdelta";
 
                         outFs.WriteInt32(mods[l].exportId);
                         outFs.WriteStringASCIINull(mods[l].packagePath);

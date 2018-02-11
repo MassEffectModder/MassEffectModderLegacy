@@ -81,9 +81,9 @@ namespace MassEffectModder
         public string packagePath;
         MemoryStream packageData;
         List<Chunk> chunks;
-        List<NameEntry> namesTable;
+        public List<NameEntry> namesTable;
         uint namesTableEnd;
-        List<ImportEntry> importsTable;
+        public List<ImportEntry> importsTable;
         uint importsTableEnd;
         public List<ExportEntry> exportsTable;
         List<int> dependsTable;
