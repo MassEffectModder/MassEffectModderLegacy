@@ -130,7 +130,7 @@ namespace MassEffectModder
             }
         }
 
-        static public void updateLOD(MeType gameId, ConfIni engineConf, bool limitME1Lods = false)
+        static public void updateLOD(MeType gameId, ConfIni engineConf)
         {
             if (gameId == MeType.ME1_TYPE)
             {
@@ -154,20 +154,10 @@ namespace MassEffectModder
                 engineConf.Write("TEXTUREGROUP_APL_1024", "(MinLODSize=4096,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
                 engineConf.Write("TEXTUREGROUP_GUI", "(MinLODSize=4096,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
                 engineConf.Write("TEXTUREGROUP_Promotional", "(MinLODSize=4096,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
-                if (limitME1Lods)
-                {
-                    engineConf.Write("TEXTUREGROUP_Character_1024", "(MinLODSize=2048,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
-                    engineConf.Write("TEXTUREGROUP_Character_Diff", "(MinLODSize=2048,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
-                    engineConf.Write("TEXTUREGROUP_Character_Norm", "(MinLODSize=2048,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
-                    engineConf.Write("TEXTUREGROUP_Character_Spec", "(MinLODSize=2048,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
-                }
-                else
-                {
-                    engineConf.Write("TEXTUREGROUP_Character_1024", "(MinLODSize=4096,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
-                    engineConf.Write("TEXTUREGROUP_Character_Diff", "(MinLODSize=4096,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
-                    engineConf.Write("TEXTUREGROUP_Character_Norm", "(MinLODSize=4096,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
-                    engineConf.Write("TEXTUREGROUP_Character_Spec", "(MinLODSize=4096,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
-                }
+                engineConf.Write("TEXTUREGROUP_Character_1024", "(MinLODSize=4096,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_Character_Diff", "(MinLODSize=4096,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_Character_Norm", "(MinLODSize=4096,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
+                engineConf.Write("TEXTUREGROUP_Character_Spec", "(MinLODSize=4096,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
             }
             else if (gameId == MeType.ME2_TYPE)
             {
@@ -382,7 +372,7 @@ namespace MassEffectModder
             }
             else if (gameId == MeType.ME2_TYPE)
             {
-                engineConf.Write("MaxShadowResolution", "4096", "SystemSettings");
+                engineConf.Write("MaxShadowResolution", "2048", "SystemSettings");
                 engineConf.Write("MinShadowResolution", "64", "SystemSettings");
                 engineConf.Write("ShadowFilterQualityBias", "2", "SystemSettings");
                 engineConf.Write("ShadowFilterRadius", "5", "SystemSettings");
@@ -399,7 +389,7 @@ namespace MassEffectModder
             }
             else if (gameId == MeType.ME3_TYPE)
             {
-                engineConf.Write("MaxShadowResolution", "4096", "SystemSettings");
+                engineConf.Write("MaxShadowResolution", "2048", "SystemSettings");
                 engineConf.Write("MinShadowResolution", "64", "SystemSettings");
                 engineConf.Write("ShadowFilterQualityBias", "2", "SystemSettings");
                 engineConf.Write("ShadowFilterRadius", "5", "SystemSettings");

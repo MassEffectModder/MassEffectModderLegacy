@@ -65,7 +65,6 @@ namespace MassEffectModder
         bool meuitmMode = true;
         bool OptionVanillaVisible;
         bool OptionSkipScanVisible;
-        bool OptionLimit2KVisible;
         bool OptionIndirectSoundVisible;
         bool OptionReshadeVisible;
         bool OptionBikVisible;
@@ -297,7 +296,6 @@ namespace MassEffectModder
 
             customLabelDesc.Text = customLabelCurrentStatus.Text = customLabelFinalStatus.Text = "";
 
-            OptionLimit2KVisible = checkBoxOptionLimit2K.Visible = labelOptionLimit2K.Visible = true;
             if (splashDemiurge != "")
                 OptionBikVisible = checkBoxOptionBik.Visible = labelOptionBik.Visible = true;
             else
@@ -321,7 +319,6 @@ namespace MassEffectModder
                 OptionSkipScanVisible = checkBoxOptionSkipScan.Visible = labelOptionSkipScan.Visible = false;
             checkBoxOptionIndirectSound.Checked = false;
             checkBoxOptionVanilla.Checked = false;
-            checkBoxOptionLimit2K.Checked = false;
             checkBoxOptionSkipScan.Checked = false;
             checkBoxOptionReshade.Checked = false;
             checkBoxOptionBik.Checked = true;
@@ -333,13 +330,11 @@ namespace MassEffectModder
             customLabelFinalStatus.Parent = pictureBoxBG;
             customLabelCurrentStatus.Parent = pictureBoxBG;
             labelOptions.Parent = pictureBoxBG;
-            labelOptionLimit2K.Parent = pictureBoxBG;
             labelOptionSkipScan.Parent = pictureBoxBG;
             labelOptionVanilla.Parent = pictureBoxBG;
             labelOptionIndirectSound.Parent = pictureBoxBG;
             labelOptionReshade.Parent = pictureBoxBG;
             labelOptionBik.Parent = pictureBoxBG;
-            checkBoxOptionLimit2K.Parent = pictureBoxBG;
             checkBoxOptionSkipScan.Parent = pictureBoxBG;
             checkBoxOptionVanilla.Parent = pictureBoxBG;
             checkBoxOptionIndirectSound.Parent = pictureBoxBG;
@@ -350,7 +345,7 @@ namespace MassEffectModder
             comboBoxMod5.Parent = comboBoxMod6.Parent = comboBoxMod7.Parent = comboBoxMod8.Parent = comboBoxMod9.Parent = pictureBoxBG;
             buttonMute.Parent = pictureBoxBG;
 
-            labelOptions.Visible = OptionVanillaVisible || OptionSkipScanVisible || OptionLimit2KVisible || OptionReshadeVisible ||
+            labelOptions.Visible = OptionVanillaVisible || OptionSkipScanVisible || OptionReshadeVisible ||
                 OptionIndirectSoundVisible || OptionBikVisible;
 
             string bgFile = installerIni.Read("BackgroundImage", "Main").ToLowerInvariant();
@@ -1171,12 +1166,6 @@ namespace MassEffectModder
             }
         }
 
-        public void buttonsDefault(int gameId)
-        {
-            checkBoxOptionLimit2K.Visible = labelOptionLimit2K.Visible = true;
-            Application.DoEvents();
-        }
-
         private void buttonSTART_Click(object sender, EventArgs e)
         {
             List<string> selectedFileMods = new List<string>();
@@ -1224,7 +1213,6 @@ namespace MassEffectModder
             buttonSTART.Visible = false;
             checkBoxOptionVanilla.Visible = labelOptionVanilla.Visible = false;
             checkBoxOptionSkipScan.Visible = labelOptionSkipScan.Visible = false;
-            checkBoxOptionLimit2K.Visible = labelOptionLimit2K.Visible = false;
             checkBoxOptionIndirectSound.Visible = labelOptionIndirectSound.Visible = false;
             checkBoxOptionReshade.Visible = labelOptionReshade.Visible = false;
             checkBoxOptionBik.Visible = labelOptionBik.Visible = false;
@@ -1321,7 +1309,7 @@ namespace MassEffectModder
             if (!exist)
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
             ConfIni engineConf = new ConfIni(path);
-            LODSettings.updateLOD((MeType)gameId, engineConf, checkBoxOptionLimit2K.Checked);
+            LODSettings.updateLOD((MeType)gameId, engineConf);
             LODSettings.updateGFXSettings((MeType)gameId, engineConf, softShadowsModPath != "", meuitmMode);
             log += "Updating LODs and other settings finished" + Environment.NewLine + Environment.NewLine;
 

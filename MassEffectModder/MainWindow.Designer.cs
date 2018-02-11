@@ -59,7 +59,6 @@ namespace MassEffectModder
             this.toolStripMenuItemCreateBinME1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.updateME1ConfigToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.updateME1Config2KToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeLODSetME1MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripUpdateGfxME1MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripUpdateGfxME1MenuItemSoftMode = new System.Windows.Forms.ToolStripMenuItem();
@@ -87,6 +86,8 @@ namespace MassEffectModder
             this.toolStripExtractME3MEMMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItemCreateBinME3 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.repackME3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItemUpdateTOCs = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
@@ -107,8 +108,6 @@ namespace MassEffectModder
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.statusStrip2 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.repackME3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.menuGame.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.statusStrip2.SuspendLayout();
@@ -136,7 +135,6 @@ namespace MassEffectModder
             this.toolStripMenuItemCreateBinME1,
             this.toolStripSeparator2,
             this.updateME1ConfigToolStripMenuItem,
-            this.updateME1Config2KToolStripMenuItem,
             this.removeLODSetME1MenuItem,
             this.toolStripUpdateGfxME1MenuItem,
             this.toolStripUpdateGfxME1MenuItemSoftMode,
@@ -191,13 +189,6 @@ namespace MassEffectModder
             this.updateME1ConfigToolStripMenuItem.Size = new System.Drawing.Size(320, 22);
             this.updateME1ConfigToolStripMenuItem.Text = "Update LOD Settings";
             this.updateME1ConfigToolStripMenuItem.Click += new System.EventHandler(this.updateME1ConfigToolStripMenuItem_Click);
-            // 
-            // updateME1Config2KToolStripMenuItem
-            // 
-            this.updateME1Config2KToolStripMenuItem.Name = "updateME1Config2KToolStripMenuItem";
-            this.updateME1Config2KToolStripMenuItem.Size = new System.Drawing.Size(320, 22);
-            this.updateME1Config2KToolStripMenuItem.Text = "Update LOD Settings (2K)";
-            this.updateME1Config2KToolStripMenuItem.Click += new System.EventHandler(this.updateME1Config2KToolStripMenuItem_Click);
             // 
             // removeLODSetME1MenuItem
             // 
@@ -408,6 +399,18 @@ namespace MassEffectModder
             this.toolStripMenuItemCreateBinME3.Text = "Create binary mod";
             this.toolStripMenuItemCreateBinME3.Click += new System.EventHandler(this.toolStripMenuItemCreateBinME3_Click);
             // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(209, 6);
+            // 
+            // repackME3ToolStripMenuItem
+            // 
+            this.repackME3ToolStripMenuItem.Name = "repackME3ToolStripMenuItem";
+            this.repackME3ToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.repackME3ToolStripMenuItem.Text = "Repack Game Files";
+            this.repackME3ToolStripMenuItem.Click += new System.EventHandler(this.repackME3ToolStripMenuItem_Click);
+            // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
@@ -545,18 +548,6 @@ namespace MassEffectModder
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
             this.toolStripStatusLabel2.Size = new System.Drawing.Size(0, 17);
             // 
-            // repackME3ToolStripMenuItem
-            // 
-            this.repackME3ToolStripMenuItem.Name = "repackME3ToolStripMenuItem";
-            this.repackME3ToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
-            this.repackME3ToolStripMenuItem.Text = "Repack Game Files";
-            this.repackME3ToolStripMenuItem.Click += new System.EventHandler(this.repackME3ToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(209, 6);
-            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -591,7 +582,6 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripMenuItem massEffect2ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuME3;
         private System.Windows.Forms.ToolStripMenuItem massEffect3ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem updateME1Config2KToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem repackME2ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem extractME3DLCPackagesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem updateME2ConfigToolStripMenuItem;

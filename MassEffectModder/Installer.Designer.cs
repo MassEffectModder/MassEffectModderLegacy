@@ -54,13 +54,11 @@
             this.buttonNormal = new System.Windows.Forms.Button();
             this.labelFinalStatus = new System.Windows.Forms.Label();
             this.checkBoxOptionSkipScan = new System.Windows.Forms.CheckBox();
-            this.checkBoxOptionLimit2K = new System.Windows.Forms.CheckBox();
             this.checkBoxOptionVanilla = new System.Windows.Forms.CheckBox();
             this.buttonSTART = new System.Windows.Forms.Button();
             this.labelCurrentStatus = new System.Windows.Forms.Label();
             this.labelOptions = new System.Windows.Forms.Label();
             this.pictureBoxBG = new System.Windows.Forms.PictureBox();
-            this.labelOptionLimit2K = new System.Windows.Forms.Label();
             this.labelOptionVanilla = new System.Windows.Forms.Label();
             this.labelOptionSkipScan = new System.Windows.Forms.Label();
             this.labelDesc = new System.Windows.Forms.Label();
@@ -131,21 +129,6 @@
             this.checkBoxOptionSkipScan.UseVisualStyleBackColor = false;
             this.checkBoxOptionSkipScan.CheckedChanged += new System.EventHandler(this.checkBoxOptionSkipScan_CheckedChanged);
             // 
-            // checkBoxOptionLimit2K
-            // 
-            this.checkBoxOptionLimit2K.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.checkBoxOptionLimit2K.AutoSize = true;
-            this.checkBoxOptionLimit2K.BackColor = System.Drawing.Color.Transparent;
-            this.checkBoxOptionLimit2K.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.checkBoxOptionLimit2K.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxOptionLimit2K.Location = new System.Drawing.Point(16, 376);
-            this.checkBoxOptionLimit2K.Name = "checkBoxOptionLimit2K";
-            this.checkBoxOptionLimit2K.Size = new System.Drawing.Size(15, 14);
-            this.checkBoxOptionLimit2K.TabIndex = 39;
-            this.checkBoxOptionLimit2K.TabStop = false;
-            this.checkBoxOptionLimit2K.UseVisualStyleBackColor = false;
-            this.checkBoxOptionLimit2K.Visible = false;
-            // 
             // checkBoxOptionVanilla
             // 
             this.checkBoxOptionVanilla.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -199,7 +182,7 @@
             this.labelOptions.BackColor = System.Drawing.Color.Black;
             this.labelOptions.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelOptions.ForeColor = System.Drawing.Color.White;
-            this.labelOptions.Location = new System.Drawing.Point(12, 350);
+            this.labelOptions.Location = new System.Drawing.Point(12, 371);
             this.labelOptions.Name = "labelOptions";
             this.labelOptions.Size = new System.Drawing.Size(74, 21);
             this.labelOptions.TabIndex = 54;
@@ -218,20 +201,6 @@
             this.pictureBoxBG.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxBG.TabIndex = 29;
             this.pictureBoxBG.TabStop = false;
-            // 
-            // labelOptionLimit2K
-            // 
-            this.labelOptionLimit2K.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.labelOptionLimit2K.AutoSize = true;
-            this.labelOptionLimit2K.BackColor = System.Drawing.Color.Black;
-            this.labelOptionLimit2K.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.labelOptionLimit2K.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.labelOptionLimit2K.ForeColor = System.Drawing.Color.White;
-            this.labelOptionLimit2K.Location = new System.Drawing.Point(34, 371);
-            this.labelOptionLimit2K.Name = "labelOptionLimit2K";
-            this.labelOptionLimit2K.Size = new System.Drawing.Size(158, 21);
-            this.labelOptionLimit2K.TabIndex = 56;
-            this.labelOptionLimit2K.Text = "Limit textures to 2K";
             // 
             // labelOptionVanilla
             // 
@@ -558,11 +527,9 @@
             this.Controls.Add(this.labelDesc);
             this.Controls.Add(this.labelOptionSkipScan);
             this.Controls.Add(this.labelOptionVanilla);
-            this.Controls.Add(this.labelOptionLimit2K);
             this.Controls.Add(this.labelOptions);
             this.Controls.Add(this.checkBoxOptionSkipScan);
             this.Controls.Add(this.labelCurrentStatus);
-            this.Controls.Add(this.checkBoxOptionLimit2K);
             this.Controls.Add(this.buttonSTART);
             this.Controls.Add(this.checkBoxOptionVanilla);
             this.Controls.Add(this.buttonNormal);
@@ -583,13 +550,11 @@
         private System.Windows.Forms.Button buttonNormal;
         private System.Windows.Forms.Label labelFinalStatus;
         private System.Windows.Forms.CheckBox checkBoxOptionVanilla;
-        private System.Windows.Forms.CheckBox checkBoxOptionLimit2K;
         private System.Windows.Forms.CheckBox checkBoxOptionSkipScan;
         private System.Windows.Forms.Button buttonSTART;
         private System.Windows.Forms.Label labelCurrentStatus;
         private System.Windows.Forms.PictureBox pictureBoxBG;
         private System.Windows.Forms.Label labelOptions;
-        private System.Windows.Forms.Label labelOptionLimit2K;
         private System.Windows.Forms.Label labelOptionVanilla;
         private System.Windows.Forms.Label labelOptionSkipScan;
         private System.Windows.Forms.Label labelDesc;
