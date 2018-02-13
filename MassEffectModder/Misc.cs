@@ -743,10 +743,10 @@ namespace MassEffectModder
                 return string.Format("{0:0.00} GB", size / 1024/ 1024 / 1024.0);
         }
 
-        static System.Diagnostics.Stopwatch timer;
+        static Stopwatch timer;
         public static void startTimer()
         {
-            timer = System.Diagnostics.Stopwatch.StartNew();
+            timer = Stopwatch.StartNew();
         }
 
         public static long stopTimer()
