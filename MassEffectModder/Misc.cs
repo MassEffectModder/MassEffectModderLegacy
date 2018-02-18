@@ -1860,17 +1860,20 @@ namespace MassEffectModder
                     fs.WriteStringASCII("},\nsize = " + new FileInfo(packageMainFiles[l]).Length + ",\n},\n");
                 }
 
-                errors += "File " + packageMainFiles[l] + " has wrong MD5 checksum: ";
-                for (int i = 0; i < md5.Count(); i++)
+                if (!generateMd5Entries && !generateMd5Entries)
                 {
-                    errors += string.Format("{0:x2}", md5[i]);
+                    errors += "File " + packageMainFiles[l] + " has wrong MD5 checksum: ";
+                    for (int i = 0; i < md5.Count(); i++)
+                    {
+                        errors += string.Format("{0:x2}", md5[i]);
+                    }
+                    errors += "\n, expected: ";
+                    for (int i = 0; i < entries[index].md5.Count(); i++)
+                    {
+                        errors += string.Format("{0:x2}", entries[index].md5[i]);
+                    }
+                    errors += Environment.NewLine;
                 }
-                errors += "\n, expected: ";
-                for (int i = 0; i < entries[index].md5.Count(); i++)
-                {
-                    errors += string.Format("{0:x2}", entries[index].md5[i]);
-                }
-                errors += Environment.NewLine;
             }
             progress += packageMainFiles.Count();
 
@@ -1958,17 +1961,20 @@ namespace MassEffectModder
                         fs.WriteStringASCII("},\nsize = " + new FileInfo(packageDLCFiles[l]).Length + ",\n},\n");
                     }
 
-                    errors += "File " + packageDLCFiles[l] + " has wrong MD5 checksum: ";
-                    for (int i = 0; i < md5.Count(); i++)
+                    if (!generateMd5Entries && !generateMd5Entries)
                     {
-                        errors += string.Format("{0:x2}", md5[i]);
+                        errors += "File " + packageDLCFiles[l] + " has wrong MD5 checksum: ";
+                        for (int i = 0; i < md5.Count(); i++)
+                        {
+                            errors += string.Format("{0:x2}", md5[i]);
+                        }
+                        errors += "\n, expected: ";
+                        for (int i = 0; i < entries[index].md5.Count(); i++)
+                        {
+                            errors += string.Format("{0:x2}", entries[index].md5[i]);
+                        }
+                        errors += Environment.NewLine;
                     }
-                    errors += "\n, expected: ";
-                    for (int i = 0; i < entries[index].md5.Count(); i++)
-                    {
-                        errors += string.Format("{0:x2}", entries[index].md5[i]);
-                    }
-                    errors += Environment.NewLine;
                 }
                 progress += packageDLCFiles.Count();
             }
@@ -2011,17 +2017,20 @@ namespace MassEffectModder
 
                     vanilla = false;
 
-                    errors += "File " + sfarFiles[l] + " has wrong MD5 checksum: ";
-                    for (int i = 0; i < md5.Count(); i++)
+                    if (!generateMd5Entries && !generateMd5Entries)
                     {
-                        errors += string.Format("{0:x2}", md5[i]);
+                        errors += "File " + sfarFiles[l] + " has wrong MD5 checksum: ";
+                        for (int i = 0; i < md5.Count(); i++)
+                        {
+                            errors += string.Format("{0:x2}", md5[i]);
+                        }
+                        errors += "\n, expected: ";
+                        for (int i = 0; i < entries[index].md5.Count(); i++)
+                        {
+                            errors += string.Format("{0:x2}", entries[index].md5[i]);
+                        }
+                        errors += Environment.NewLine;
                     }
-                    errors += "\n, expected: ";
-                    for (int i = 0; i < entries[index].md5.Count(); i++)
-                    {
-                        errors += string.Format("{0:x2}", entries[index].md5[i]);
-                    }
-                    errors += Environment.NewLine;
                 }
                 progress += sfarFiles.Count();
             }
@@ -2064,17 +2073,20 @@ namespace MassEffectModder
 
                     vanilla = false;
 
-                    errors += "File " + tfcFiles[l] + " has wrong MD5 checksum: ";
-                    for (int i = 0; i < md5.Count(); i++)
+                    if (!generateMd5Entries && !generateMd5Entries)
                     {
-                        errors += string.Format("{0:x2}", md5[i]);
+                        errors += "File " + tfcFiles[l] + " has wrong MD5 checksum: ";
+                        for (int i = 0; i < md5.Count(); i++)
+                        {
+                            errors += string.Format("{0:x2}", md5[i]);
+                        }
+                        errors += "\n, expected: ";
+                        for (int i = 0; i < entries[index].md5.Count(); i++)
+                        {
+                            errors += string.Format("{0:x2}", entries[index].md5[i]);
+                        }
+                        errors += Environment.NewLine;
                     }
-                    errors += "\n, expected: ";
-                    for (int i = 0; i < entries[index].md5.Count(); i++)
-                    {
-                        errors += string.Format("{0:x2}", entries[index].md5[i]);
-                    }
-                    errors += Environment.NewLine;
                 }
                 progress += tfcFiles.Count();
             }
