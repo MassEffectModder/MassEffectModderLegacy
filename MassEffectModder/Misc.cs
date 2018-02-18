@@ -1836,7 +1836,7 @@ namespace MassEffectModder
                         break;
                     }
                 }
-                if (index == -1)
+                if (index == -1 && !generateMd5Entries)
                     continue;
 
                 vanilla = false;
@@ -1934,7 +1934,7 @@ namespace MassEffectModder
                             break;
                         }
                     }
-                    if (index == -1)
+                    if (index == -1 && !generateMd5Entries)
                         continue;
 
                     vanilla = false;
