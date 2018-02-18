@@ -695,6 +695,7 @@ namespace MassEffectModder
                                 {
                                     found = true;
                                     vanillaPkg.Dispose();
+                                    vanillaPkg = null;
                                     continue;
                                 }
                                 found = true;
@@ -703,7 +704,6 @@ namespace MassEffectModder
                         }
                         if (found && vanillaPkg == null)
                         {
-                            vanillaPkg.Dispose();
                             modPkg.Dispose();
                             MessageBox.Show("Package file not compatible: " + mods[i] + ", aborting...");
                             updateStatusLabel("");
@@ -838,7 +838,6 @@ namespace MassEffectModder
                             outFs.WriteInt64(modFiles[i].size);
                         }
                     }
-
                 }
             }
             updateStatusLabel("Finished");
