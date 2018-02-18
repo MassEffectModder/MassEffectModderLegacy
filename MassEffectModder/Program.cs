@@ -161,6 +161,7 @@ namespace MassEffectModder
             {
                 entriesME1[l].md5 = tmp.ReadToBuffer(16);
                 entriesME1[l].path = tmp.ReadStringASCIINull();
+                entriesME1[l].size = tmp.ReadInt32();
             }
 
             tmp = new MemoryStream(tableME2);
@@ -176,6 +177,7 @@ namespace MassEffectModder
             {
                 entriesME2[l].md5 = tmp.ReadToBuffer(16);
                 entriesME2[l].path = tmp.ReadStringASCIINull();
+                entriesME2[l].size = tmp.ReadInt32();
             }
 
             tmp = new MemoryStream(tableME3);
@@ -191,6 +193,7 @@ namespace MassEffectModder
             {
                 entriesME3[l].md5 = tmp.ReadToBuffer(16);
                 entriesME3[l].path = tmp.ReadStringASCIINull();
+                entriesME3[l].size = tmp.ReadInt32();
             }
         }
 

@@ -29,6 +29,7 @@ namespace Md5SumGen
     {
         public string path;
         public byte[] md5;
+        public int size;
     }
 
     class Tables
@@ -61,6 +62,7 @@ namespace Md5SumGen
             {
                 stream.WriteFromBuffer(entries[p].md5);
                 stream.WriteStringASCIINull(entries[p].path);
+                stream.WriteInt32(entries[p].size);
             }
             using (FileStream fs = new FileStream("MD5EntriesME" + gameId + ".bin", FileMode.Create, FileAccess.Write))
             {

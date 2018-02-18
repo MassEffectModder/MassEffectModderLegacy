@@ -902,7 +902,7 @@ namespace MassEffectModder
                 {
                     customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
                     List<string> modList = new List<string>();
-                    bool vanilla = Misc.checkGameFiles((MeType)gameId, ref errors, ref modList, null, this, Misc.generateModsMd5Entries);
+                    bool vanilla = Misc.checkGameFiles((MeType)gameId, ref errors, ref modList, null, this);
                     updateLabelPreVanilla("");
                     if (modList.Count != 0)
                     {
