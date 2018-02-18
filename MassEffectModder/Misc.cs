@@ -414,11 +414,13 @@ namespace MassEffectModder
     static partial class Misc
     {
         public static bool generateModsMd5Entries = false;
+        public static bool generateMd5Entries = false;
 
         public struct MD5FileEntry
         {
             public string path;
             public byte[] md5;
+            public int size;
         }
 
         public struct MD5ModFileEntry
@@ -1688,7 +1690,7 @@ namespace MassEffectModder
         }
 
         static public bool checkGameFiles(MeType gameType, ref string errors, ref List<string> mods,
-            MainWindow mainWindow = null, Installer installer = null, bool generateMd5Entries = false)
+            MainWindow mainWindow = null, Installer installer = null)
         {
             bool vanilla = true;
             List<string> packageMainFiles = null;
@@ -1771,8 +1773,10 @@ namespace MassEffectModder
 
             mods.Clear();
             FileStream fs = null;
-            if (generateMd5Entries)
+            if (generateModsMd5Entries)
                 fs = new FileStream("MD5ModFileEntry" + (int)gameType + ".cs", FileMode.Create, FileAccess.Write);
+            if (generateMd5Entries)
+                fs = new FileStream("MD5FileEntry" + (int)gameType + ".cs", FileMode.Create, FileAccess.Write);
 
             for (int l = 0; l < packageMainFiles.Count; l++)
             {
@@ -1837,7 +1841,7 @@ namespace MassEffectModder
 
                 vanilla = false;
 
-                if (generateMd5Entries)
+                if (generateModsMd5Entries)
                 {
                     fs.WriteStringASCII("new MD5ModFileEntry\n{\npath = @\"" + GameData.RelativeGameData(packageMainFiles[l]) + "\",\nmd5 = new byte[] { ");
                     for (int i = 0; i < md5.Length; i++)
@@ -1845,6 +1849,15 @@ namespace MassEffectModder
                         fs.WriteStringASCII(string.Format("0x{0:X2}, ", md5[i]));
                     }
                     fs.WriteStringASCII("},\nmodName = \"\",\n},\n");
+                }
+                if (generateMd5Entries)
+                {
+                    fs.WriteStringASCII("new MD5FileEntry\n{\npath = @\"" + GameData.RelativeGameData(packageMainFiles[l]) + "\",\nmd5 = new byte[] { ");
+                    for (int i = 0; i < md5.Length; i++)
+                    {
+                        fs.WriteStringASCII(string.Format("0x{0:X2}, ", md5[i]));
+                    }
+                    fs.WriteStringASCII("},\nsize = " + new FileInfo(packageMainFiles[l]).Length + ",\n},\n");
                 }
 
                 errors += "File " + packageMainFiles[l] + " has wrong MD5 checksum: ";
@@ -1926,7 +1939,7 @@ namespace MassEffectModder
 
                     vanilla = false;
 
-                    if (generateMd5Entries)
+                    if (generateModsMd5Entries)
                     {
                         fs.WriteStringASCII("new MD5ModFileEntry\n{\npath = @\"" + GameData.RelativeGameData(packageDLCFiles[l]) + "\",\nmd5 = new byte[] { ");
                         for (int i = 0; i < md5.Length; i++)
@@ -1934,6 +1947,15 @@ namespace MassEffectModder
                             fs.WriteStringASCII(string.Format("0x{0:X2}, ", md5[i]));
                         }
                         fs.WriteStringASCII("},\nmodName = \"\",\n},\n");
+                    }
+                    if (generateMd5Entries)
+                    {
+                        fs.WriteStringASCII("new MD5FileEntry\n{\npath = @\"" + GameData.RelativeGameData(packageDLCFiles[l]) + "\",\nmd5 = new byte[] { ");
+                        for (int i = 0; i < md5.Length; i++)
+                        {
+                            fs.WriteStringASCII(string.Format("0x{0:X2}, ", md5[i]));
+                        }
+                        fs.WriteStringASCII("},\nsize = " + new FileInfo(packageDLCFiles[l]).Length + ",\n},\n");
                     }
 
                     errors += "File " + packageDLCFiles[l] + " has wrong MD5 checksum: ";
@@ -2056,7 +2078,7 @@ namespace MassEffectModder
                 }
                 progress += tfcFiles.Count();
             }
-            if (generateMd5Entries)
+            if (generateModsMd5Entries || generateMd5Entries)
                 fs.Close();
 
             var time = stopTimer();
