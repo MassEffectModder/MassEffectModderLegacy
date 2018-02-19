@@ -530,18 +530,6 @@ namespace MassEffectModder
             bool writeAccess = false;
             if (checkWriteAccessDir(GameData.MainData))
                 writeAccess = true;
-            if (writeAccess && gameId == MeType.ME1_TYPE)
-            {
-                writeAccess = checkWriteAccessFile(GameData.GamePath + @"\BioGame\CookedPC\Packages\GameObjects\Characters\Humanoids\HumanMale\BIOG_HMM_HED_PROMorph.upk");
-            }
-            if (writeAccess && gameId == MeType.ME2_TYPE)
-            {
-                writeAccess = checkWriteAccessFile(GameData.GamePath + @"\BioGame\CookedPC\BioD_CitAsL.pcc");
-            }
-            if (writeAccess && gameId == MeType.ME3_TYPE)
-            {
-                writeAccess = checkWriteAccessFile(GameData.GamePath + @"\BioGame\CookedPCConsole\BioA_CitSam_000LevelTrans.pcc");
-            }
 
             bool uac = false;
             int? value = (int?)Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System", "EnableLUA", null);
