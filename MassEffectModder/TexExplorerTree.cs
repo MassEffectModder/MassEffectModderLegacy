@@ -33,7 +33,7 @@ namespace MassEffectModder
         public List<FoundTexture> treeScan = null;
         private bool generateBuiltinMapFiles = false; // change to true to enable map files generation
 
-        public string PrepareListOfTextures(TexExplorer texEplorer, CachePackageMgr cachePackageMgr,
+        public string PrepareListOfTextures(TexExplorer texEplorer,
             MainWindow mainWindow, Installer installer, ref string log, bool force = false)
         {
             string errors = "";
@@ -172,23 +172,6 @@ namespace MassEffectModder
                 }
             }
 
-            if (MipMaps.checkGameDataModded(cachePackageMgr))
-            {
-                if (mainWindow != null)
-                {
-                    MessageBox.Show("Detected modded game. Can not continue." +
-                    "\n\nYou need to restore the game to vanilla state then reinstall optional DLC/PCC mods." +
-                    "\n\nThen start Texture Manager again.");
-                    return "";
-                }
-                else if (!force)
-                {
-                    errors += "Detected modded game. Can not continue." + Environment.NewLine + Environment.NewLine +
-                    "You need to restore the game to vanilla state then reinstall optional DLC/PCC mods.";
-                    return "";
-                }
-            }
-
             if (mainWindow != null)
             {
                 DialogResult result = MessageBox.Show("Replacing textures and creating mods requires generating a map of the game's textures.\n" +
@@ -215,7 +198,7 @@ namespace MassEffectModder
                 {
                     installer.updateStatusScan("Scanning textures " + (i * 100 / GameData.packageFiles.Count) + "% ");
                 }
-                errors += FindTextures(textures, GameData.packageFiles[i], cachePackageMgr, ref log);
+                errors += FindTextures(textures, GameData.packageFiles[i], ref log);
             }
 
             if (GameData.gameType == MeType.ME1_TYPE)
@@ -353,12 +336,12 @@ namespace MassEffectModder
                     MipMaps mipmaps = new MipMaps();
                     if (GameData.gameType == MeType.ME1_TYPE)
                     {
-                        errors += mipmaps.removeMipMapsME1(1, textures, null, mainWindow, null);
-                        errors += mipmaps.removeMipMapsME1(2, textures, null, mainWindow, null);
+                        errors += mipmaps.removeMipMapsME1(1, textures, mainWindow, null);
+                        errors += mipmaps.removeMipMapsME1(2, textures, mainWindow, null);
                     }
                     else
                     {
-                        errors += mipmaps.removeMipMapsME2ME3(textures, null, mainWindow, null);
+                        errors += mipmaps.removeMipMapsME2ME3(textures, mainWindow, null);
                     }
                 }
             }
@@ -411,17 +394,14 @@ namespace MassEffectModder
             return errors;
         }
 
-        private string FindTextures(List<FoundTexture> textures, string packagePath, CachePackageMgr cachePackageMgr, ref string log)
+        private string FindTextures(List<FoundTexture> textures, string packagePath, ref string log)
         {
             string errors = "";
             Package package = null;
 
             try
             {
-                if (cachePackageMgr != null)
-                    package = cachePackageMgr.OpenPackage(packagePath);
-                else
-                    package = new Package(packagePath);
+                package = new Package(packagePath);
             }
             catch (Exception e)
             {
@@ -512,14 +492,7 @@ namespace MassEffectModder
                 }
             }
 
-            if (cachePackageMgr == null)
-            {
-                package.Dispose();
-            }
-            else
-            {
-                package.DisposeCache();
-            }
+            package.Dispose();
 
             return errors;
         }

@@ -1286,7 +1286,7 @@ namespace MassEffectModder
                 customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
 
                 log += "Scan textures started..." + Environment.NewLine;
-                errors += treeScan.PrepareListOfTextures(null, null, null, this, ref log, true);
+                errors += treeScan.PrepareListOfTextures(null, null, this, ref log, true);
                 textures = treeScan.treeScan;
                 log += "Scan textures finished" + Environment.NewLine + Environment.NewLine;
             }
@@ -1303,15 +1303,15 @@ namespace MassEffectModder
 
 
             customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
-            cachePackageMgr.CloseAllWithSave(false);
+            cachePackageMgr.CloseAllWithSave(false, true);
 
 
             if (!updateMode && !checkBoxOptionSkipScan.Checked)
             {
                 customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
                 log += "Remove mipmaps started..." + Environment.NewLine;
-                errors += mipMaps.removeMipMapsME1(1, textures, null, null, this, false);
-                errors += mipMaps.removeMipMapsME1(2, textures, null, null, this, false);
+                errors += mipMaps.removeMipMapsME1(1, textures, null, this, false);
+                errors += mipMaps.removeMipMapsME1(2, textures, null, this, false);
                 log += "Remove mipmaps finished" + Environment.NewLine + Environment.NewLine;
             }
             else

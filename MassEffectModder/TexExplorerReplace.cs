@@ -620,7 +620,7 @@ namespace MassEffectModder
                 MipMaps mipMaps = new MipMaps();
                 errors = mipMaps.replaceTexture(image, node.textures[index].list, cachePackageMgr,  node.textures[index].name, node.textures[index].crc, true);
 
-                cachePackageMgr.CloseAllWithSave();
+                cachePackageMgr.CloseAllWithSave(false, false);
 
                 for (int t = 0; t < node.textures[index].list.Count; t++)
                 {

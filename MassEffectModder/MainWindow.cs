@@ -153,7 +153,7 @@ namespace MassEffectModder
                     {
                         package.Dispose();
                         package = new Package(GameData.packageFiles[i]);
-                        package.SaveToFile(true, true);
+                        package.SaveToFile(true, true, false, null, false);
                     }
                     package.Dispose();
                 }
@@ -205,7 +205,7 @@ namespace MassEffectModder
                     {
                         package.Dispose();
                         package = new Package(GameData.packageFiles[i]);
-                        package.SaveToFile(false, true);
+                        package.SaveToFile(false, true, false, null, false);
                     }
                     package.Dispose();
                 }

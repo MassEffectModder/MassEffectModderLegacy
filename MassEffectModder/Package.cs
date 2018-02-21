@@ -1014,6 +1014,15 @@ namespace MassEffectModder
             if (forceCompressed && forceDecompressed)
                 throw new Exception("force de/compression can't be both enabled!");
 
+            if (!appendMarker)
+            {
+                packageFile.SeekEnd();
+                packageFile.Seek(-MEMendFileMarker.Length, SeekOrigin.Current);
+                string marker = packageFile.ReadStringASCII(MEMendFileMarker.Length);
+                if (marker == MEMendFileMarker)
+                    appendMarker = true;
+            }
+
             MemoryStream tempOutput = new MemoryStream();
 
             List<ExportEntry> sortedExports = exportsTable.OrderBy(s => s.dataOffset).ToList();
