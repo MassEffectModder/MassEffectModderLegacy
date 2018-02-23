@@ -1001,7 +1001,11 @@ namespace MassEffectModder
         public bool SaveToFile(bool forceZlib = false, bool forceCompressed = false,
             bool forceDecompressed = false, string filename = null, bool appendMarker = true)
         {
-            if (forceZlib && compressionType != CompressionType.Zlib)
+            if (forceCompressed && packageFileVersion == packageFileVersionME1)
+                forceCompressed = false;
+
+            if (forceZlib && packageFileVersion == packageFileVersionME2 &&
+                    compressionType != CompressionType.Zlib)
                 modified = true;
 
             // WA Allow force back to LZO2
@@ -1120,7 +1124,7 @@ namespace MassEffectModder
                 {
                     if (compressionType == CompressionType.None)
                     {
-                        if (packageFileVersion == packageFileVersionME3)
+                        if (packageFileVersion == packageFileVersionME3 || forceZlib)
                             compressionType = CompressionType.Zlib;
                         else
                             compressionType = CompressionType.LZO;
@@ -1128,7 +1132,11 @@ namespace MassEffectModder
                     compressed = true;
                 }
                 else
+                {
+                    if (!modified)
+                        return false;
                     forceCompressed = false;
+                }
             }
 
             if (namesOffset > sortedExports[0].dataOffset ||
@@ -1190,9 +1198,7 @@ namespace MassEffectModder
                         compressionType = CompressionType.Zlib; // override compression type to Zlib
                     // WA Force back to LZO2 compression
                     if (packageFileVersion == packageFileVersionME1 && compressionType == CompressionType.Zlib)
-                    {
                         compressionType = CompressionType.LZO;
-                    }
                     fs.Write(packageHeader, 0, packageHeader.Length);
                     fs.WriteUInt32((uint)compressionType);
                     fs.WriteUInt32((uint)chunks.Count);
