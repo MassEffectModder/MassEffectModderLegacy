@@ -1820,11 +1820,24 @@ namespace MassEffectModder
                 {
                     if (GameData.RelativeGameData(packageMainFiles[l]).ToLowerInvariant() == entries[p].path.ToLowerInvariant())
                     {
-                        index = p;
-                        break;
+                        if (generateMd5Entries)
+                        {
+                            if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, entries[p].md5))
+                            {
+                                index = p;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            index = p;
+                            break;
+                        }
                     }
                 }
-                if (index == -1 && !generateMd5Entries)
+                if (!generateMd5Entries && index == -1)
+                    continue;
+                if (generateMd5Entries && index != -1)
                     continue;
 
                 vanilla = false;
@@ -1921,11 +1934,24 @@ namespace MassEffectModder
                     {
                         if (GameData.RelativeGameData(packageDLCFiles[l]).ToLowerInvariant() == entries[p].path.ToLowerInvariant())
                         {
-                            index = p;
-                            break;
+                            if (generateMd5Entries)
+                            {
+                                if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, entries[p].md5))
+                                {
+                                    index = p;
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                index = p;
+                                break;
+                            }
                         }
                     }
-                    if (index == -1 && !generateMd5Entries)
+                    if (!generateMd5Entries && index == -1)
+                        continue;
+                    if (generateMd5Entries && index != -1)
                         continue;
 
                     vanilla = false;
