@@ -70,7 +70,7 @@ namespace MassEffectModder
         bool OptionBikVisible;
         bool mute = false;
         int stage = 1;
-        int totalStages = 6;
+        int totalStages = 5;
         System.Media.SoundPlayer musicPlayer;
         CustomLabel customLabelDesc;
         CustomLabel customLabelCurrentStatus;
@@ -1333,39 +1333,6 @@ namespace MassEffectModder
             log += "Updating LODs and other settings finished" + Environment.NewLine + Environment.NewLine;
 
 
-            customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
-            log += "Repack started..." + Environment.NewLine;
-            path = @"\BioGame\CookedPC\testVolumeLight_VFX.upk".ToLowerInvariant();
-            for (int i = 0; i < GameData.packageFiles.Count; i++)
-            {
-                if (GameData.packageFiles[i].ToLowerInvariant().Contains(path))
-                    continue;
-                updateStatusRepackZlib("Recompress game files " + ((i + 1) * 100 / GameData.packageFiles.Count) + "%");
-                Package package;
-                try
-                {
-                    package = new Package(GameData.packageFiles[i], true, true);
-                }
-                catch (Exception ex)
-                {
-                    errors += "---- Start --------------------------------------------" + Environment.NewLine;
-                    errors += "Error opening package file: " + GameData.GamePath + GameData.packageFiles[i] + Environment.NewLine;
-                    errors += ex.Message + Environment.NewLine + Environment.NewLine;
-                    errors += ex.StackTrace + Environment.NewLine + Environment.NewLine;
-                    errors += "---- End ----------------------------------------------" + Environment.NewLine + Environment.NewLine;
-                    continue;
-                }
-                if (package.compressed && package.compressionType == Package.CompressionType.Zlib && gameId == 1)
-                {
-                    package.Dispose();
-                    package = new Package(GameData.packageFiles[i]);
-                    package.SaveToFile(true);
-                }
-                package.Dispose();
-            }
-            log += "Repack finished" + Environment.NewLine + Environment.NewLine;
-
-
             if (gameId == 1 && softShadowsModPath != "")
             {
                 if (installSoftShadowsMod(gameData, softShadowsModPath))
@@ -1490,12 +1457,6 @@ namespace MassEffectModder
         }
 
         public void updateStatusStore(string text)
-        {
-            customLabelCurrentStatus.Text = text;
-            Application.DoEvents();
-        }
-
-        public void updateStatusRepackZlib(string text)
         {
             customLabelCurrentStatus.Text = text;
             Application.DoEvents();
