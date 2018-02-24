@@ -1117,18 +1117,6 @@ namespace MassEffectModder
             }
         }
 
-        private void repackTexturesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            EnableMenuOptions(false);
-            DialogResult result = MessageBox.Show("Repacking textures process can take a lot of time.\n\n" +
-                "Are you sure you want to proceed?", "Textures repacking (WIP feature!)", MessageBoxButtons.YesNo);
-            if (result == DialogResult.No)
-            {
-                new Repack().RepackTexturesTFC(_textures, _mainWindow, cachePackageMgr);
-            }
-            EnableMenuOptions(true);
-        }
-
         private void extractToDDSFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             EnableMenuOptions(false);
