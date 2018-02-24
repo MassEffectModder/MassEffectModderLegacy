@@ -420,7 +420,7 @@ namespace MassEffectModder
         {
             public string path;
             public byte[] md5;
-            //public int size;
+            public int size;
         }
 
         public struct MD5ModFileEntry
