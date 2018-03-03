@@ -553,7 +553,6 @@ namespace MassEffectModder
                         mem.WriteInt16((short)textures[i].height);
                         mem.WriteByte((byte)textures[i].pixfmt);
                         mem.WriteByte(textures[i].alphadxt1 ? (byte)1 : (byte)0);
-                        mem.WriteByte((byte)textures[i].numMips);
 
                         mem.WriteByte((byte)textures[i].list.Count);
                     }
@@ -568,6 +567,7 @@ namespace MassEffectModder
                         {
                             mem.WriteByte((byte)textures[i].list[k].linkToMaster);
                             mem.WriteByte(textures[i].list[k].removeEmptyMips ? (byte)1 : (byte)0);
+                            mem.WriteByte((byte)textures[i].list[k].numMips);
                             mem.WriteInt16((short)pkgs.IndexOf(textures[i].list[k].path));
                         }
                         else
@@ -666,6 +666,7 @@ namespace MassEffectModder
                     matchTexture.path = GameData.RelativeGameData(packagePath);
                     matchTexture.packageName = texture.packageName;
                     matchTexture.removeEmptyMips = texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty);
+                    matchTexture.numMips = texture.mipMapsList.FindAll(s => s.storageType != Texture.StorageTypes.empty).Count;
                     if (GameData.gameType == MeType.ME1_TYPE)
                     {
                         matchTexture.basePackageName = texture.basePackageName;

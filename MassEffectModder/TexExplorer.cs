@@ -60,8 +60,9 @@ namespace MassEffectModder
         public string path;
         public int linkToMaster;
         public uint mipmapOffset;
-        public bool removeEmptyMips;
         public List<uint> crcs;
+        public bool removeEmptyMips;
+        public int numMips;
     }
 
     public struct FoundTexture
@@ -72,7 +73,6 @@ namespace MassEffectModder
         public PixelFormat pixfmt;
         public bool alphadxt1;
         public int width, height;
-        public int numMips;
     }
 
     public partial class TexExplorer : Form
