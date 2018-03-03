@@ -317,11 +317,11 @@ namespace MassEffectModder
                 OptionSkipScanVisible = checkBoxOptionSkipScan.Visible = labelOptionSkipScan.Visible = true;
             else
                 OptionSkipScanVisible = checkBoxOptionSkipScan.Visible = labelOptionSkipScan.Visible = false;
-            checkBoxOptionIndirectSound.Checked = false;
+            checkBoxOptionIndirectSound.Checked = true;
             checkBoxOptionVanilla.Checked = false;
             checkBoxOptionSkipScan.Checked = false;
             checkBoxOptionReshade.Checked = false;
-            checkBoxOptionBik.Checked = true;
+            checkBoxOptionBik.Checked = false;
 
             buttonSTART.Visible = true;
             buttonNormal.Visible = true;
