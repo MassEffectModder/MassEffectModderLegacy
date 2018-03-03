@@ -1336,44 +1336,44 @@ namespace MassEffectModder
             if (gameId == 1 && softShadowsModPath != "")
             {
                 if (installSoftShadowsMod(gameData, softShadowsModPath))
-                    log += "Soft Shadows mod installed.";
+                    log += "Soft Shadows mod installed." + Environment.NewLine + Environment.NewLine;
                 else
                 {
-                    log += "Soft Shadows mod failed to install!";
-                    errors += "Soft Shadows mod failed to install!";
+                    log += "Soft Shadows mod failed to install!" + Environment.NewLine + Environment.NewLine;
+                    errors += "Soft Shadows mod failed to install!\n";
                 }
             }
 
             if (splashBitmapPath != "")
             {
                 if (installSplashScreen(splashBitmapPath))
-                    log += "Splash screen mod installed.";
+                    log += "Splash screen mod installed." + Environment.NewLine + Environment.NewLine;
                 else
                 {
-                    log += "Splash mod failed to install!";
-                    errors += "Splash mod failed to install!";
+                    log += "Splash mod failed to install!" + Environment.NewLine + Environment.NewLine;
+                    errors += "Splash mod failed to install!\n";
                 }
             }
 
             if (splashDemiurge != "")
             {
                 if (installSplashVideo(splashDemiurge))
-                    log += "Splash video mod installed.";
+                    log += "Splash video mod installed." + Environment.NewLine + Environment.NewLine;
                 else
                 {
-                    log += "Splash video mod failed to install!";
-                    errors += "Splash video mod failed to install!";
+                    log += "Splash video mod failed to install!" + Environment.NewLine + Environment.NewLine;
+                    errors += "Splash video mod failed to install!\n";
                 }
             }
 
             if (indirectSoundPath != "" && checkBoxOptionIndirectSound.Checked)
             {
                 if (installIndirectSoundPath(indirectSoundPath))
-                    log += "Indirect Sound installed.";
+                    log += "Indirect Sound installed." + Environment.NewLine + Environment.NewLine;
                 else
                 {
-                    log += "Indirect Sound failed to install!";
-                    errors += "Indirect Sound failed to install!";
+                    log += "Indirect Sound failed to install!" + Environment.NewLine + Environment.NewLine;
+                    errors += "Indirect Sound failed to install!\n";
                 }
             }
             if (File.Exists(GameData.GamePath + "\\Binaries\\dsound.dll"))
@@ -1382,11 +1382,11 @@ namespace MassEffectModder
             if (reshadePath != "" && checkBoxOptionReshade.Checked)
             {
                 if (installReshadePath(reshadePath))
-                    log += "ReShader installed.";
+                    log += "ReShader installed." + Environment.NewLine + Environment.NewLine;
                 else
                 {
-                    log += "ReShader failed to install!";
-                    errors += "ReShader failed to install!";
+                    log += "ReShader failed to install!" + Environment.NewLine + Environment.NewLine;
+                    errors += "ReShader failed to install!\n";
                 }
             }
 
