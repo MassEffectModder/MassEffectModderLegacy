@@ -85,9 +85,6 @@ namespace MassEffectModder
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.convertME3ExplorermodForMEMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.batchConvertME3ExplorermodForMEMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.miscToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.dumpAllTexturesMipmapsInfoTXTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.removeEmptyMipmapsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.searchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStripTextures.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -369,7 +366,6 @@ namespace MassEffectModder
             // 
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MODsToolStripMenuItem,
-            this.miscToolStripMenuItem,
             this.searchToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
@@ -438,29 +434,6 @@ namespace MassEffectModder
             this.batchConvertME3ExplorermodForMEMToolStripMenuItem.Text = "Batch convert .mod .tpf to .mem";
             this.batchConvertME3ExplorermodForMEMToolStripMenuItem.Click += new System.EventHandler(this.batchConvertME3ExplorermodForMEMToolStripMenuItem_Click);
             // 
-            // miscToolStripMenuItem
-            // 
-            this.miscToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.dumpAllTexturesMipmapsInfoTXTToolStripMenuItem,
-            this.removeEmptyMipmapsToolStripMenuItem});
-            this.miscToolStripMenuItem.Name = "miscToolStripMenuItem";
-            this.miscToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.miscToolStripMenuItem.Text = "Scan";
-            // 
-            // dumpAllTexturesMipmapsInfoTXTToolStripMenuItem
-            // 
-            this.dumpAllTexturesMipmapsInfoTXTToolStripMenuItem.Name = "dumpAllTexturesMipmapsInfoTXTToolStripMenuItem";
-            this.dumpAllTexturesMipmapsInfoTXTToolStripMenuItem.Size = new System.Drawing.Size(216, 22);
-            this.dumpAllTexturesMipmapsInfoTXTToolStripMenuItem.Text = "Dump Textures Tree as TXT";
-            this.dumpAllTexturesMipmapsInfoTXTToolStripMenuItem.Click += new System.EventHandler(this.dumpAllTexturesMipmapsInfoTXTToolStripMenuItem_Click);
-            // 
-            // removeEmptyMipmapsToolStripMenuItem
-            // 
-            this.removeEmptyMipmapsToolStripMenuItem.Name = "removeEmptyMipmapsToolStripMenuItem";
-            this.removeEmptyMipmapsToolStripMenuItem.Size = new System.Drawing.Size(216, 22);
-            this.removeEmptyMipmapsToolStripMenuItem.Text = "Remove Empty Mipmaps";
-            this.removeEmptyMipmapsToolStripMenuItem.Click += new System.EventHandler(this.removeEmptyMipmapsToolStripMenuItem_Click);
-            // 
             // searchToolStripMenuItem
             // 
             this.searchToolStripMenuItem.Name = "searchToolStripMenuItem";
@@ -526,14 +499,11 @@ namespace MassEffectModder
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ToolStripMenuItem extractModsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem packMODToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem miscToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem dumpAllTexturesMipmapsInfoTXTToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem createMODBatchToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem extractToDDSFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem extractToPNGFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem info2TextureToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem convertME3ExplorermodForMEMToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem removeEmptyMipmapsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem batchConvertME3ExplorermodForMEMToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem applyModsWithVerificationToolStripMenuItem;

@@ -135,7 +135,6 @@ namespace MassEffectModder
         {
             MODsToolStripMenuItem.Enabled = enable;
             searchToolStripMenuItem.Enabled = enable;
-            miscToolStripMenuItem.Enabled = enable;
             treeViewPackages.Enabled = enable;
             listViewResults.Enabled = enable;
             listViewTextures.Enabled = enable;
@@ -502,7 +501,6 @@ namespace MassEffectModder
             loadMODsToolStripMenuItem.Enabled = !enable;
             clearMODsToolStripMenuItem.Enabled = false;
             packMODToolStripMenuItem.Enabled = !enable;
-            miscToolStripMenuItem.Enabled = !enable;
             Application.DoEvents();
         }
 
@@ -512,7 +510,6 @@ namespace MassEffectModder
             clearMODsToolStripMenuItem.Enabled = enable;
             packMODToolStripMenuItem.Enabled = true;
             searchToolStripMenuItem.Enabled = !enable;
-            miscToolStripMenuItem.Enabled = !enable;
             replaceTextureToolStripMenuItem.Enabled = !enable;
             viewToolStripMenuItem.Enabled = !enable;
             extractToDDSFileToolStripMenuItem.Enabled = !enable;
@@ -1048,75 +1045,6 @@ namespace MassEffectModder
             }
         }
 
-        private void dumpAllTexturesMipmapsInfoTXTToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            using (SaveFileDialog logFile = new SaveFileDialog())
-            {
-                logFile.Title = "Please select output TXT file";
-                logFile.Filter = "TXT file | *.txt";
-                if (logFile.ShowDialog() != DialogResult.OK)
-                    return;
-                string filename = logFile.FileName;
-                if (File.Exists(filename))
-                    File.Delete(filename);
-
-                EnableMenuOptions(false);
-                _mainWindow.updateStatusLabel("Generating textures information...");
-                _mainWindow.updateStatusLabel2("");
-
-                GameData.packageFiles.Sort();
-
-                using (FileStream fs = new FileStream(filename, FileMode.CreateNew, FileAccess.Write))
-                {
-                    for (int l = 0; l < GameData.packageFiles.Count; l++)
-                    {
-                        _mainWindow.updateStatusLabel("Generating textures information from package " + (l + 1) + " of " + GameData.packageFiles.Count);
-                        _mainWindow.updateStatusLabel2("");
-                        Package package;
-                        try
-                        {
-                            package = new Package(GameData.packageFiles[l]);
-                        }
-                        catch (Exception ex)
-                        {
-                            fs.WriteStringASCII("---- Start --------------------------------------------" + Environment.NewLine);
-                            fs.WriteStringASCII("Error opening package file: " + GameData.GamePath + GameData.packageFiles[l] + Environment.NewLine);
-                            fs.WriteStringASCII(ex.Message + Environment.NewLine + Environment.NewLine);
-                            fs.WriteStringASCII(ex.StackTrace + Environment.NewLine + Environment.NewLine);
-                            fs.WriteStringASCII("---- End ----------------------------------------------" + Environment.NewLine + Environment.NewLine);
-                            continue;
-                        }
-                        fs.WriteStringASCII("--- Package: " + Path.GetFileName(GameData.packageFiles[l]) + " ---\n");
-                        for (int i = 0; i < package.exportsTable.Count; i++)
-                        {
-                            int id = package.getClassNameId(package.exportsTable[i].classId);
-                            if (id == package.nameIdTexture2D ||
-                                id == package.nameIdLightMapTexture2D ||
-                                id == package.nameIdShadowMapTexture2D ||
-                                id == package.nameIdTextureFlipBook)
-                            {
-                                Texture texture = new Texture(package, i, package.getExportData(i));
-                                if (!texture.hasImageData())
-                                    continue;
-
-                                fs.WriteStringASCII("Texture: " + package.exportsTable[i].objectName);
-                                for (int m = 0; m < texture.mipMapsList.Count; m++)
-                                {
-                                    fs.WriteStringASCII(", " + texture.mipMapsList[m].width + " x " + texture.mipMapsList[m].height +
-                                        " CRC: " + string.Format("0x{0:X8}", texture.getCrcMipmap(texture.mipMapsList[m])));
-                                }
-                                fs.WriteStringASCII("\n");
-                            }
-                        }
-                        package.Dispose();
-                    }
-                }
-                _mainWindow.updateStatusLabel("Generating textures information completed.");
-                _mainWindow.updateStatusLabel2("");
-                EnableMenuOptions(true);
-            }
-        }
-
         private void extractToDDSFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             EnableMenuOptions(false);
@@ -1637,56 +1565,6 @@ namespace MassEffectModder
                 Process.Start(filename);
             }
             EnableMenuOptions(true);
-        }
-
-        private void removeEmptyMipmapsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (MipMaps.verifyGameDataEmptyMipMapsRemoval())
-            {
-                DialogResult result = MessageBox.Show("It seems empty mipmaps were already removed.\nAre you sure you want to proceed?", "Remove empty mipmaps", MessageBoxButtons.YesNo);
-                if (result == DialogResult.No)
-                    return;
-            }
-            else
-            {
-                DialogResult result = MessageBox.Show("Are you sure you want to proceed?", "Remove empty mipmaps", MessageBoxButtons.YesNo);
-                if (result == DialogResult.No)
-                    return;
-            }
-
-            EnableMenuOptions(false);
-
-            _mainWindow.GetPackages(gameData);
-
-            string errors = "";
-            Misc.startTimer();
-            MipMaps mipmaps = new MipMaps();
-            if (GameData.gameType == MeType.ME1_TYPE)
-            {
-                errors += mipmaps.removeMipMapsME1(1, _textures, _mainWindow, null);
-                errors += mipmaps.removeMipMapsME1(2, _textures, _mainWindow, null);
-            }
-            else
-            {
-                errors += mipmaps.removeMipMapsME2ME3(_textures, _mainWindow, null);
-            }
-            var time = Misc.stopTimer();
-
-            EnableMenuOptions(true);
-            _mainWindow.updateStatusLabel("Done. Process total time: " + Misc.getTimerFormat(time));
-            _mainWindow.updateStatusLabel2("");
-            if (errors != "")
-            {
-                MessageBox.Show("WARNING: Some errors have occured!");
-                string errorFile = "errors-remove.txt";
-                if (File.Exists(errorFile))
-                    File.Delete(errorFile);
-                using (FileStream fs = new FileStream(errorFile, FileMode.CreateNew))
-                {
-                    fs.WriteStringASCII(errors);
-                }
-                Process.Start(errorFile);
-            }
         }
 
         private void batchConvertME3ExplorermodForMEMToolStripMenuItem_Click(object sender, EventArgs e)
