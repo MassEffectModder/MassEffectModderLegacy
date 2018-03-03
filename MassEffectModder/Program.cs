@@ -324,73 +324,79 @@ namespace MassEffectModder
                 File.Delete(filePdb);
         }
 
-        [STAThread]
-
-        static void Main(string[] args)
+        static private void performUpdate(string filename)
         {
-            if (args.Length > 0 && args[0].Equals("-update-mem", StringComparison.OrdinalIgnoreCase))
+            Thread.Sleep(1000);
+            try
             {
-                Thread.Sleep(1000);
-                try
-                {
-                    if (args.Length != 2)
-                        throw new Exception();
-                    string baseName = Path.GetFileNameWithoutExtension(args[1]);
-                    string fileExe = baseName.Substring("new-".Length) + ".exe";
-                    string filePdb = baseName.Substring("new-".Length) + ".pdb";
-                    if (File.Exists(fileExe))
-                        File.Delete(fileExe);
-                    if (File.Exists(filePdb))
-                        File.Delete(filePdb);
-                    File.Copy(baseName + ".exe", fileExe);
-                    File.Copy(baseName + ".pdb", filePdb);
+                string baseName = Path.GetFileNameWithoutExtension(filename);
+                string fileExe = baseName.Substring("new-".Length) + ".exe";
+                string filePdb = baseName.Substring("new-".Length) + ".pdb";
+                if (File.Exists(fileExe))
+                    File.Delete(fileExe);
+                if (File.Exists(filePdb))
+                    File.Delete(filePdb);
+                File.Copy(baseName + ".exe", fileExe);
+                File.Copy(baseName + ".pdb", filePdb);
 
-                    Process process = new Process();
-                    process.StartInfo.FileName = fileExe;
-                    process.StartInfo.CreateNoWindow = true;
-                    process.StartInfo.UseShellExecute = false;
-                    if (!process.Start())
-                        throw new Exception();
+                Process process = new Process();
+                process.StartInfo.FileName = fileExe;
+                process.StartInfo.CreateNoWindow = true;
+                process.StartInfo.UseShellExecute = false;
+                if (!process.Start())
+                    throw new Exception();
 
-                    Environment.Exit(0);
-                }
-                catch
-                {
-                    MessageBox.Show("Failed update MEM!");
-                    Environment.Exit(1);
-                }
+                Environment.Exit(0);
             }
-
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            bool runAsAdmin = false;
-
-            if (Misc.isRunAsAdministrator())
+            catch
             {
-                runAsAdmin = true;
+                MessageBox.Show("Failed update MEM!");
+                Environment.Exit(1);
             }
+        }
 
-            loadEmbeddedDlls();
+        static private void triggerUpdate(string filename)
+        {
+            Process process = new Process();
+            process.StartInfo.FileName = filename;
+            process.StartInfo.Arguments = "-update-mem " + filename;
+            process.StartInfo.CreateNoWindow = true;
+            process.StartInfo.UseShellExecute = false;
+            if (process.Start())
+            {
+                unloadEmbeddedDlls();
+                Environment.Exit(0);
+            }
+            MessageBox.Show("Failed start update MEM instance!");
+        }
 
-
+        static private void processUpdate()
+        {
             cleanupPreviousUpdate();
             string filename = prepareForUpdate();
             if (filename != "")
                 filename = unpackUpdate(filename);
             if (filename != "")
-            {
-                Process process = new Process();
-                process.StartInfo.FileName = filename;
-                process.StartInfo.Arguments = "-update-mem " + filename;
-                process.StartInfo.CreateNoWindow = true;
-                process.StartInfo.UseShellExecute = false;
-                if (process.Start())
-                {
-                    unloadEmbeddedDlls();
-                    Environment.Exit(0);
-                }
-                MessageBox.Show("Failed start update MEM instance!");
-            }
+                triggerUpdate(filename);
+        }
+
+        [STAThread]
+
+        static void Main(string[] args)
+        {
+            if (args.Length == 2 && args[0].Equals("-update-mem", StringComparison.OrdinalIgnoreCase))
+                performUpdate(args[1]);
+
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
+            bool runAsAdmin = false;
+            if (Misc.isRunAsAdministrator())
+                runAsAdmin = true;
+
+            loadEmbeddedDlls();
+
+            processUpdate();
 
             loadMD5Tables();
 
