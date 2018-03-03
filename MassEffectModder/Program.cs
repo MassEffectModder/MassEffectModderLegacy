@@ -50,6 +50,9 @@ namespace MassEffectModder
         public static byte[] tableME1 = null;
         public static byte[] tableME2 = null;
         public static byte[] tableME3 = null;
+        public static List<string> tablePkgsME1 = new List<string>();
+        public static List<string> tablePkgsME2 = new List<string>();
+        public static List<string> tablePkgsME3 = new List<string>();
         private static Form progressForm;
         private static ProgressBar progressBar;
 
@@ -156,16 +159,16 @@ namespace MassEffectModder
                 throw new Exception();
             tmp = new MemoryStream(decompressed);
             int count = tmp.ReadInt32();
-            List<string> files = new List<string>();
+            tablePkgsME1 = new List<string>();
             for (int l = 0; l < count; l++)
             {
-                files.Add(tmp.ReadStringASCIINull());
+                tablePkgsME1.Add(tmp.ReadStringASCIINull());
             }
             count = tmp.ReadInt32();
             entriesME1 = new Misc.MD5FileEntry[count];
             for (int l = 0; l < count; l++)
             {
-                entriesME1[l].path = files[tmp.ReadInt32()];
+                entriesME1[l].path = tablePkgsME1[tmp.ReadInt32()];
                 entriesME1[l].size = tmp.ReadInt32();
                 entriesME1[l].md5 = tmp.ReadToBuffer(16);
             }
@@ -178,16 +181,16 @@ namespace MassEffectModder
                 throw new Exception();
             tmp = new MemoryStream(decompressed);
             count = tmp.ReadInt32();
-            files = new List<string>();
+            tablePkgsME2 = new List<string>();
             for (int l = 0; l < count; l++)
             {
-                files.Add(tmp.ReadStringASCIINull());
+                tablePkgsME2.Add(tmp.ReadStringASCIINull());
             }
             count = tmp.ReadInt32();
             entriesME2 = new Misc.MD5FileEntry[count];
             for (int l = 0; l < count; l++)
             {
-                entriesME2[l].path = files[tmp.ReadInt32()];
+                entriesME2[l].path = tablePkgsME2[tmp.ReadInt32()];
                 entriesME2[l].size = tmp.ReadInt32();
                 entriesME2[l].md5 = tmp.ReadToBuffer(16);
             }
@@ -200,16 +203,16 @@ namespace MassEffectModder
                 throw new Exception();
             tmp = new MemoryStream(decompressed);
             count = tmp.ReadInt32();
-            files = new List<string>();
+            tablePkgsME3 = new List<string>();
             for (int l = 0; l < count; l++)
             {
-                files.Add(tmp.ReadStringASCIINull());
+                tablePkgsME3.Add(tmp.ReadStringASCIINull());
             }
             count = tmp.ReadInt32();
             entriesME3 = new Misc.MD5FileEntry[count];
             for (int l = 0; l < count; l++)
             {
-                entriesME3[l].path = files[tmp.ReadInt32()];
+                entriesME3[l].path = tablePkgsME3[tmp.ReadInt32()];
                 entriesME3[l].size = tmp.ReadInt32();
                 entriesME3[l].md5 = tmp.ReadToBuffer(16);
             }

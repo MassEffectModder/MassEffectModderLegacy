@@ -227,6 +227,7 @@ namespace MassEffectModder
                     matchTexture.exportID = i;
                     matchTexture.path = GameData.RelativeGameData(packagePath);
                     matchTexture.packageName = texture.packageName;
+                    matchTexture.removeEmptyMips = texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty);
                     if (GameData.gameType == MeType.ME1_TYPE)
                     {
                         matchTexture.basePackageName = texture.basePackageName;
@@ -284,6 +285,13 @@ namespace MassEffectModder
         {
             string errors = "";
             treeScan = null;
+            List<string> pkgs;
+            if (GameData.gameType == MeType.ME1_TYPE)
+                pkgs = Program.tablePkgsME1;
+            else if (GameData.gameType == MeType.ME2_TYPE)
+                pkgs = Program.tablePkgsME2;
+            else
+                pkgs = Program.tablePkgsME3;
 
             List<FoundTexture> textures = new List<FoundTexture>();
             string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
@@ -492,26 +500,43 @@ namespace MassEffectModder
                 mem.WriteUInt32(TexExplorer.textureMapBinTag);
                 mem.WriteUInt32(TexExplorer.textureMapBinVersion);
                 mem.WriteInt32(textures.Count);
+
                 for (int i = 0; i < textures.Count; i++)
                 {
-                    mem.WriteInt32(textures[i].name.Length);
+                    if (generateBuiltinMapFiles)
+                        mem.WriteByte((byte)textures[i].name.Length);
+                    else
+                        mem.WriteInt32(textures[i].name.Length);
                     mem.WriteStringASCII(textures[i].name);
                     mem.WriteUInt32(textures[i].crc);
                     if (generateBuiltinMapFiles)
                     {
-                        mem.WriteInt32(textures[i].width);
-                        mem.WriteInt32(textures[i].height);
-                        mem.WriteInt32((int)textures[i].pixfmt);
-                        mem.WriteInt32(textures[i].alphadxt1 ? 1 : 0);
-                        mem.WriteInt32(textures[i].numMips);
+                        mem.WriteInt16((short)textures[i].width);
+                        mem.WriteInt16((short)textures[i].height);
+                        mem.WriteByte((byte)textures[i].pixfmt);
+                        mem.WriteByte(textures[i].alphadxt1 ? (byte)1 : (byte)0);
+                        mem.WriteByte((byte)textures[i].numMips);
+                        mem.WriteByte((byte)textures[i].list.Count);
                     }
-                    mem.WriteInt32(textures[i].list.Count);
+                    else
+                    {
+                        mem.WriteInt32(textures[i].list.Count);
+                    }
                     for (int k = 0; k < textures[i].list.Count; k++)
                     {
                         mem.WriteInt32(textures[i].list[k].exportID);
-                        mem.WriteInt32(textures[i].list[k].linkToMaster);
-                        mem.WriteInt32(textures[i].list[k].path.Length);
-                        mem.WriteStringASCII(textures[i].list[k].path);
+                        if (generateBuiltinMapFiles)
+                        {
+                            mem.WriteByte((byte)textures[i].list[k].linkToMaster);
+                            mem.WriteByte(textures[i].list[k].removeEmptyMips ? (byte)1 : (byte)0);
+                            mem.WriteInt16((short)pkgs.IndexOf(textures[i].list[k].path));
+                        }
+                        else
+                        {
+                            mem.WriteInt32(textures[i].list[k].linkToMaster);
+                            mem.WriteInt32(textures[i].list[k].path.Length);
+                            mem.WriteStringASCII(textures[i].list[k].path);
+                        }
                     }
                 }
                 if (!generateBuiltinMapFiles)
@@ -601,6 +626,7 @@ namespace MassEffectModder
                     matchTexture.exportID = i;
                     matchTexture.path = GameData.RelativeGameData(packagePath);
                     matchTexture.packageName = texture.packageName;
+                    matchTexture.removeEmptyMips = texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty);
                     if (GameData.gameType == MeType.ME1_TYPE)
                     {
                         matchTexture.basePackageName = texture.basePackageName;
