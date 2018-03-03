@@ -1,7 +1,7 @@
 ﻿/*
  * MassEffectModder
  *
- * Copyright (C) 2017 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2017-2018 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,6 +20,7 @@
  */
 
 using System.IO;
+using System.Collections.Generic;
 using StreamHelpers;
 using ZlibHelper;
 
@@ -57,12 +58,26 @@ namespace Md5SumGen
             }
 
             MemoryStream stream = new MemoryStream();
+
+            List<string> files = new List<string>();
+            for (int p = 0; p < entries.Length; p++)
+            {
+                if (!files.Exists(s => s == entries[p].path))
+                    files.Add(entries[p].path);
+            }
+
+            stream.WriteInt32(files.Count);
+            for (int p = 0; p < files.Count; p++)
+            {
+                stream.WriteStringASCIINull(files[p]);
+            }
+
             stream.WriteInt32(entries.Length);
             for (int p = 0; p < entries.Length; p++)
             {
-                stream.WriteFromBuffer(entries[p].md5);
-                stream.WriteStringASCIINull(entries[p].path);
+                stream.WriteInt32(files.IndexOf(entries[p].path));
                 stream.WriteInt32(entries[p].size);
+                stream.WriteFromBuffer(entries[p].md5);
             }
             using (FileStream fs = new FileStream("MD5EntriesME" + gameId + ".bin", FileMode.Create, FileAccess.Write))
             {

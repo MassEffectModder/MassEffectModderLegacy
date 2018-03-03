@@ -156,12 +156,18 @@ namespace MassEffectModder
                 throw new Exception();
             tmp = new MemoryStream(decompressed);
             int count = tmp.ReadInt32();
+            List<string> files = new List<string>();
+            for (int l = 0; l < count; l++)
+            {
+                files.Add(tmp.ReadStringASCIINull());
+            }
+            count = tmp.ReadInt32();
             entriesME1 = new Misc.MD5FileEntry[count];
             for (int l = 0; l < count; l++)
             {
-                entriesME1[l].md5 = tmp.ReadToBuffer(16);
-                entriesME1[l].path = tmp.ReadStringASCIINull();
+                entriesME1[l].path = files[tmp.ReadInt32()];
                 entriesME1[l].size = tmp.ReadInt32();
+                entriesME1[l].md5 = tmp.ReadToBuffer(16);
             }
 
             tmp = new MemoryStream(tableME2);
@@ -172,12 +178,18 @@ namespace MassEffectModder
                 throw new Exception();
             tmp = new MemoryStream(decompressed);
             count = tmp.ReadInt32();
+            files = new List<string>();
+            for (int l = 0; l < count; l++)
+            {
+                files.Add(tmp.ReadStringASCIINull());
+            }
+            count = tmp.ReadInt32();
             entriesME2 = new Misc.MD5FileEntry[count];
             for (int l = 0; l < count; l++)
             {
-                entriesME2[l].md5 = tmp.ReadToBuffer(16);
-                entriesME2[l].path = tmp.ReadStringASCIINull();
+                entriesME2[l].path = files[tmp.ReadInt32()];
                 entriesME2[l].size = tmp.ReadInt32();
+                entriesME2[l].md5 = tmp.ReadToBuffer(16);
             }
 
             tmp = new MemoryStream(tableME3);
@@ -188,12 +200,18 @@ namespace MassEffectModder
                 throw new Exception();
             tmp = new MemoryStream(decompressed);
             count = tmp.ReadInt32();
+            files = new List<string>();
+            for (int l = 0; l < count; l++)
+            {
+                files.Add(tmp.ReadStringASCIINull());
+            }
+            count = tmp.ReadInt32();
             entriesME3 = new Misc.MD5FileEntry[count];
             for (int l = 0; l < count; l++)
             {
-                entriesME3[l].md5 = tmp.ReadToBuffer(16);
-                entriesME3[l].path = tmp.ReadStringASCIINull();
+                entriesME3[l].path = files[tmp.ReadInt32()];
                 entriesME3[l].size = tmp.ReadInt32();
+                entriesME3[l].md5 = tmp.ReadToBuffer(16);
             }
         }
 
