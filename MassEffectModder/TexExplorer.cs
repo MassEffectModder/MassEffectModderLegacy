@@ -184,7 +184,7 @@ namespace MassEffectModder
                 string log = "";
                 _mainWindow.updateStatusLabel("");
                 _mainWindow.updateStatusLabel("Preparing tree...");
-                errors += treeScan.PrepareListOfTextures(this, _mainWindow, null, ref log);
+                errors += treeScan.PrepareListOfTextures(this, _mainWindow, ref log);
                 _textures = treeScan.treeScan;
                 if (errors != "")
                 {

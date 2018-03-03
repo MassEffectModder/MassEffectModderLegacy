@@ -1286,7 +1286,7 @@ namespace MassEffectModder
                 customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
 
                 log += "Scan textures started..." + Environment.NewLine;
-                errors += treeScan.PrepareListOfTextures(null, null, this, ref log, true);
+                errors += treeScan.PrepareListOfTexturesInstaller(this, ref log);
                 textures = treeScan.treeScan;
                 log += "Scan textures finished" + Environment.NewLine + Environment.NewLine;
             }
