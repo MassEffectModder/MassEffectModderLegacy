@@ -555,7 +555,7 @@ namespace MassEffectModder
                         mem.WriteByte((byte)textures[i].pixfmt);
                         mem.WriteByte(textures[i].alphadxt1 ? (byte)1 : (byte)0);
 
-                        mem.WriteByte((byte)textures[i].list.Count);
+                        mem.WriteInt16((short)textures[i].list.Count);
                     }
                     else
                     {
