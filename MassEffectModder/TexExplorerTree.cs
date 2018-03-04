@@ -610,12 +610,12 @@ namespace MassEffectModder
                 MipMaps mipmaps = new MipMaps();
                 if (GameData.gameType == MeType.ME1_TYPE)
                 {
-                    errors += mipmaps.removeMipMapsME1(1, textures, mainWindow, null);
-                    errors += mipmaps.removeMipMapsME1(2, textures, mainWindow, null);
+                    errors += mipmaps.removeMipMapsME1(1, textures, mainWindow);
+                    errors += mipmaps.removeMipMapsME1(2, textures, mainWindow);
                 }
                 else
                 {
-                    errors += mipmaps.removeMipMapsME2ME3(textures, mainWindow, null);
+                    errors += mipmaps.removeMipMapsME2ME3(textures, mainWindow);
                 }
             }
             treeScan = textures;

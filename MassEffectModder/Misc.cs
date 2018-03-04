@@ -762,7 +762,7 @@ namespace MassEffectModder
             }
         }
 
-        static public FoundTexture ParseLegacyMe3xScriptMod(List<FoundTexture> textures, string script, string textureName)
+        static public int ParseLegacyMe3xScriptMod(List<FoundTexture> textures, string script, string textureName)
         {
             Regex parts = new Regex("pccs.Add[(]\"[A-z,0-9/,..]*\"");
             Match match = parts.Match(script);
@@ -788,7 +788,7 @@ namespace MassEffectModder
                                         string pkg = textures[i].list[l].path.Split('\\').Last().Split('.')[0].ToLowerInvariant();
                                         if (pkg == packageName)
                                         {
-                                            return textures[i];
+                                            return i;
                                         }
                                     }
                                 }
@@ -804,7 +804,7 @@ namespace MassEffectModder
                                     string pkg = textures[i].list[l].path.Split('\\').Last().Split('.')[0].ToLowerInvariant();
                                     if (pkg == packageName)
                                     {
-                                        return textures[i];
+                                        return i;
                                     }
                                 }
                             }
@@ -823,7 +823,7 @@ namespace MassEffectModder
                                 string pkg = textures[i].list[l].path.Split('\\').Last().Split('.')[0].ToLowerInvariant();
                                 if (pkg == packageName)
                                 {
-                                    return textures[i];
+                                    return i;
                                 }
                             }
                         }
@@ -831,7 +831,7 @@ namespace MassEffectModder
                 }
             }
 
-            return new FoundTexture();
+            return -1;
         }
 
         static public void ParseME3xBinaryScriptMod(string script, ref string package, ref int expId, ref string path)
@@ -1047,10 +1047,11 @@ namespace MassEffectModder
                                 {
                                     string textureName = desc.Split(' ').Last();
                                     FoundTexture f;
+                                    int index = -1;
                                     try
                                     {
-                                        f = ParseLegacyMe3xScriptMod(textures, scriptLegacy, textureName);
-                                        mod.textureCrc = f.crc;
+                                        index = ParseLegacyMe3xScriptMod(textures, scriptLegacy, textureName);
+                                        f = textures[index];
                                         if (mod.textureCrc == 0)
                                             throw new Exception();
                                     }
@@ -1061,8 +1062,8 @@ namespace MassEffectModder
                                         errors += "Skipping not compatible content, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                         continue;
                                     }
-                                    textureName = f.name;
-                                    mod.textureName = textureName;
+                                    mod.textureCrc = f.crc;
+                                    mod.textureName = f.name;
                                     mod.binaryModType = 0;
                                     len = fs.ReadInt32();
                                     mod.data = fs.ReadToBuffer(len);
@@ -1085,7 +1086,7 @@ namespace MassEffectModder
                                     if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
                                         texture.mipMapsList[0].width / texture.mipMapsList[0].height)
                                     {
-                                        errors += "Error in texture: " + textureName + string.Format("_0x{0:X8}", f.crc) + " This texture has wrong aspect ratio, skipping texture, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
+                                        errors += "Error in texture: " + f.name + string.Format("_0x{0:X8}", f.crc) + " This texture has wrong aspect ratio, skipping texture, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                         continue;
                                     }
 

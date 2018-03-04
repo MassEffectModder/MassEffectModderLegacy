@@ -145,9 +145,18 @@ namespace MassEffectModder
                                 continue;
                             }
 
-                            FoundTexture foundTexture = textures.Find(s => s.crc == crc);
-                            if (foundTexture.crc != 0)
+                            int index = -1;
+                            for (int t = 0; t < textures.Count; t++)
                             {
+                                if (textures[t].crc == crc)
+                                {
+                                    index = t;
+                                    break;
+                                }
+                            }
+                            if (index != -1)
+                            {
+                                FoundTexture foundTexture = textures[index];
                                 byte[] data = new byte[dstLen];
                                 result = zip.ReadCurrentFile(handle, data, dstLen);
                                 if (result != 0)
@@ -174,6 +183,7 @@ namespace MassEffectModder
                                 {
                                     Image image = new Image(data, Path.GetExtension(filename));
                                     errors += replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc, verify);
+                                    textures[index] = foundTexture;
                                 }
                             }
                             else
@@ -264,12 +274,13 @@ namespace MassEffectModder
                             {
                                 string textureName = desc.Split(' ').Last();
                                 FoundTexture f;
+                                int index = -1;
                                 try
                                 {
-                                    f = Misc.ParseLegacyMe3xScriptMod(textures, scriptLegacy, textureName);
-                                    mod.textureCrc = f.crc;
-                                    if (mod.textureCrc == 0)
+                                    index = Misc.ParseLegacyMe3xScriptMod(textures, scriptLegacy, textureName);
+                                    if (index == -1)
                                         throw new Exception();
+                                    f = textures[index];
                                 }
                                 catch
                                 {
@@ -278,14 +289,15 @@ namespace MassEffectModder
                                     errors += "Skipping not compatible content, entry: " + (i + 1) + " - mod: " + filenameMod + Environment.NewLine;
                                     continue;
                                 }
-                                textureName = f.name;
-                                mod.textureName = textureName;
+                                mod.textureCrc = textures[index].crc;
+                                mod.textureName = f.name;
                                 len = fs.ReadInt32();
                                 mod.data = fs.ReadToBuffer(len);
 
                                 PixelFormat pixelFormat = f.pixfmt;
                                 Image image = new Image(mod.data, Image.ImageFormat.DDS);
                                 errors += replaceTexture(image, f.list, cachePackageMgr, f.name, f.crc, verify);
+                                textures[index] = f;
                             }
                         }
                     }
@@ -502,12 +514,21 @@ namespace MassEffectModder
                     {
                         if (modFiles[i].tag == FileTextureTag)
                         {
-                            FoundTexture foundTexture;
-                            foundTexture = textures.Find(s => s.crc == crc);
-                            if (foundTexture.crc != 0)
+                            int index = -1;
+                            for (int t = 0; t < textures.Count; t++)
                             {
+                                if (textures[t].crc == crc)
+                                {
+                                    index = t;
+                                    break;
+                                }
+                            }
+                            if (index != -1)
+                            {
+                                FoundTexture foundTexture = textures[index];
                                 Image image = new Image(dst, Image.ImageFormat.DDS);
                                 errors += replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc, verify);
+                                textures[index] = foundTexture;
                             }
                             else
                             {

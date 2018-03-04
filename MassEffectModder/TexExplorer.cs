@@ -594,11 +594,10 @@ namespace MassEffectModder
                                     else
                                     {
                                         string textureName = desc2.Split(' ').Last();
-                                        FoundTexture f;
-                                        f = Misc.ParseLegacyMe3xScriptMod(_textures, scriptLegacy, textureName);
-                                        mod.textureCrc = f.crc;
-                                        if (mod.textureCrc == 0)
+                                        int index = Misc.ParseLegacyMe3xScriptMod(_textures, scriptLegacy, textureName);
+                                        if (index == -1)
                                             throw new Exception();
+                                        mod.textureCrc = _textures[index].crc;
                                     }
                                 }
                             }
@@ -1203,12 +1202,13 @@ namespace MassEffectModder
                                 {
                                     string textureName = desc.Split(' ').Last();
                                     FoundTexture f;
+                                    int index = -1;
                                     try
                                     {
-                                        f = Misc.ParseLegacyMe3xScriptMod(_textures, scriptLegacy, textureName);
-                                        mod.textureCrc = f.crc;
-                                        if (mod.textureCrc == 0)
+                                        index = Misc.ParseLegacyMe3xScriptMod(_textures, scriptLegacy, textureName);
+                                        if (index == -1)
                                             throw new Exception();
+                                        f = _textures[index];
                                     }
                                     catch
                                     {
@@ -1217,8 +1217,8 @@ namespace MassEffectModder
                                         errors += "Skipping not compatible content, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                         continue;
                                     }
-                                    textureName = f.name;
-                                    mod.textureName = textureName;
+                                    mod.textureCrc = f.crc;
+                                    mod.textureName = f.name;
                                     mod.binaryModType = 0;
                                     len = fs.ReadInt32();
                                     mod.data = fs.ReadToBuffer(len);

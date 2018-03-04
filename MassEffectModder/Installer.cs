@@ -1310,8 +1310,8 @@ namespace MassEffectModder
             {
                 customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
                 log += "Remove mipmaps started..." + Environment.NewLine;
-                errors += mipMaps.removeMipMapsME1(1, textures, null, this, false);
-                errors += mipMaps.removeMipMapsME1(2, textures, null, this, false);
+                errors += mipMaps.removeMipMapsME1Installer(1, textures, this);
+                errors += mipMaps.removeMipMapsME1Installer(2, textures, this);
                 log += "Remove mipmaps finished" + Environment.NewLine + Environment.NewLine;
             }
             else
