@@ -96,7 +96,7 @@ namespace MassEffectModder
                             }
                         }
                         if (found)
-                            break;
+                            continue;
                         RemoveMipsEntry entry = new RemoveMipsEntry();
                         entry.pkgPath = textures[k].list[t].path;
                         entry.exportIDs = new List<int>();
