@@ -272,6 +272,10 @@ namespace MassEffectModder
                     {
                         using (Texture texture = new Texture(package, exportID, package.getExportData(exportID), false))
                         {
+                            if (!texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty))
+                            {
+                                continue;
+                            }
                             do
                             {
                                 texture.mipMapsList.Remove(texture.mipMapsList.First(s => s.storageType == Texture.StorageTypes.empty));
@@ -398,6 +402,10 @@ skip:
                     {
                         using (Texture texture = new Texture(package, exportID, package.getExportData(exportID), false))
                         {
+                            if (!texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty))
+                            {
+                                continue;
+                            }
                             do
                             {
                                 texture.mipMapsList.Remove(texture.mipMapsList.First(s => s.storageType == Texture.StorageTypes.empty));
