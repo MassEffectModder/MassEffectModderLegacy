@@ -266,87 +266,82 @@ namespace MassEffectModder
                 for (int l = 0; l < list[i].exportIDs.Count; l++)
                 {
                     int exportID = list[i].exportIDs[l];
-                    int id = package.getClassNameId(package.exportsTable[exportID].classId);
-                    if (id == package.nameIdTexture2D ||
-                        id == package.nameIdTextureFlipBook)
+                    using (Texture texture = new Texture(package, exportID, package.getExportData(exportID), false))
                     {
-                        using (Texture texture = new Texture(package, exportID, package.getExportData(exportID), false))
+                        if (!texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty))
                         {
-                            if (!texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty))
-                            {
-                                continue;
-                            }
-                            do
-                            {
-                                texture.mipMapsList.Remove(texture.mipMapsList.First(s => s.storageType == Texture.StorageTypes.empty));
-                            } while (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty));
-                            texture.properties.setIntValue("SizeX", texture.mipMapsList.First().width);
-                            texture.properties.setIntValue("SizeY", texture.mipMapsList.First().height);
-                            texture.properties.setIntValue("MipTailBaseIdx", texture.mipMapsList.Count() - 1);
-
-                            FoundTexture foundTexture = new FoundTexture();
-                            int foundListEntry = -1;
-                            string pkgName = GameData.RelativeGameData(package.packagePath).ToLowerInvariant();
-                            for (int k = 0; k < textures.Count; k++)
-                            {
-                                for (int t = 0; t < textures[k].list.Count; t++)
-                                {
-                                    if (textures[k].list[t].exportID == exportID &&
-                                        textures[k].list[t].path.ToLowerInvariant() == pkgName)
-                                    {
-                                        foundTexture = textures[k];
-                                        foundListEntry = t;
-                                        break;
-                                    }
-                                }
-                            }
-                            if (foundListEntry == -1)
-                            {
-                                errors += "Error: Texture " + package.exportsTable[exportID].objectName + " not found in package: " + list[i].pkgPath + ", skipping..." + Environment.NewLine;
-                                goto skip;
-                            }
-
-                            if (foundTexture.list[foundListEntry].linkToMaster != -1)
-                            {
-                                if (phase == 1)
-                                    continue;
-
-                                MatchedTexture foundMasterTex = foundTexture.list[foundTexture.list[foundListEntry].linkToMaster];
-                                Package masterPkg = null;
-                                masterPkg = new Package(GameData.GamePath + foundMasterTex.path);
-                                int masterExportId = foundMasterTex.exportID;
-                                byte[] masterData = masterPkg.getExportData(masterExportId);
-                                masterPkg.DisposeCache();
-                                using (Texture masterTexture = new Texture(masterPkg, masterExportId, masterData, false))
-                                {
-                                    if (texture.mipMapsList.Count != masterTexture.mipMapsList.Count)
-                                    {
-                                        errors += "Error: Texture " + package.exportsTable[exportID].objectName + " in package: " + foundMasterTex.path + " has wrong reference, skipping..." + Environment.NewLine;
-                                        goto skip;
-                                    }
-                                    for (int t = 0; t < texture.mipMapsList.Count; t++)
-                                    {
-                                        Texture.MipMap mipmap = texture.mipMapsList[t];
-                                        if (mipmap.storageType == Texture.StorageTypes.extLZO ||
-                                            mipmap.storageType == Texture.StorageTypes.extZlib ||
-                                            mipmap.storageType == Texture.StorageTypes.extUnc)
-                                        {
-                                            mipmap.dataOffset = masterPkg.exportsTable[masterExportId].dataOffset + (uint)masterTexture.properties.propertyEndOffset + masterTexture.mipMapsList[t].internalOffset;
-                                            texture.mipMapsList[t] = mipmap;
-                                        }
-                                    }
-                                }
-                                masterPkg.Dispose();
-                            }
-skip:
-                            using (MemoryStream newData = new MemoryStream())
-                            {
-                                newData.WriteFromBuffer(texture.properties.toArray());
-                                newData.WriteFromBuffer(texture.toArray(package.exportsTable[exportID].dataOffset + (uint)newData.Position));
-                                package.setExportData(exportID, newData.ToArray());
-                            }
-                            modified = true;
+                            continue;
                         }
+                        do
+                        {
+                            texture.mipMapsList.Remove(texture.mipMapsList.First(s => s.storageType == Texture.StorageTypes.empty));
+                        } while (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty));
+                        texture.properties.setIntValue("SizeX", texture.mipMapsList.First().width);
+                        texture.properties.setIntValue("SizeY", texture.mipMapsList.First().height);
+                        texture.properties.setIntValue("MipTailBaseIdx", texture.mipMapsList.Count() - 1);
+
+                        FoundTexture foundTexture = new FoundTexture();
+                        int foundListEntry = -1;
+                        string pkgName = GameData.RelativeGameData(package.packagePath).ToLowerInvariant();
+                        for (int k = 0; k < textures.Count; k++)
+                        {
+                            for (int t = 0; t < textures[k].list.Count; t++)
+                            {
+                                if (textures[k].list[t].exportID == exportID &&
+                                    textures[k].list[t].path.ToLowerInvariant() == pkgName)
+                                {
+                                    foundTexture = textures[k];
+                                    foundListEntry = t;
+                                    break;
+                                }
+                            }
+                        }
+                        if (foundListEntry == -1)
+                        {
+                            errors += "Error: Texture " + package.exportsTable[exportID].objectName + " not found in package: " + list[i].pkgPath + ", skipping..." + Environment.NewLine;
+                            goto skip;
+                        }
+
+                        if (foundTexture.list[foundListEntry].linkToMaster != -1)
+                        {
+                            if (phase == 1)
+                                continue;
+
+                            MatchedTexture foundMasterTex = foundTexture.list[foundTexture.list[foundListEntry].linkToMaster];
+                            Package masterPkg = null;
+                            masterPkg = new Package(GameData.GamePath + foundMasterTex.path);
+                            int masterExportId = foundMasterTex.exportID;
+                            byte[] masterData = masterPkg.getExportData(masterExportId);
+                            masterPkg.DisposeCache();
+                            using (Texture masterTexture = new Texture(masterPkg, masterExportId, masterData, false))
+                            {
+                                if (texture.mipMapsList.Count != masterTexture.mipMapsList.Count)
+                                {
+                                    errors += "Error: Texture " + package.exportsTable[exportID].objectName + " in package: " + foundMasterTex.path + " has wrong reference, skipping..." + Environment.NewLine;
+                                    goto skip;
+                                }
+                                for (int t = 0; t < texture.mipMapsList.Count; t++)
+                                {
+                                    Texture.MipMap mipmap = texture.mipMapsList[t];
+                                    if (mipmap.storageType == Texture.StorageTypes.extLZO ||
+                                        mipmap.storageType == Texture.StorageTypes.extZlib ||
+                                        mipmap.storageType == Texture.StorageTypes.extUnc)
+                                    {
+                                        mipmap.dataOffset = masterPkg.exportsTable[masterExportId].dataOffset + (uint)masterTexture.properties.propertyEndOffset + masterTexture.mipMapsList[t].internalOffset;
+                                        texture.mipMapsList[t] = mipmap;
+                                    }
+                                }
+                            }
+                            masterPkg.Dispose();
+                        }
+skip:
+                        using (MemoryStream newData = new MemoryStream())
+                        {
+                            newData.WriteFromBuffer(texture.properties.toArray());
+                            newData.WriteFromBuffer(texture.toArray(package.exportsTable[exportID].dataOffset + (uint)newData.Position));
+                            package.setExportData(exportID, newData.ToArray());
+                        }
+                        modified = true;
                     }
                 }
                 if (modified)
@@ -396,32 +391,27 @@ skip:
                 for (int l = 0; l < list[i].exportIDs.Count; l++)
                 {
                     int exportID = list[i].exportIDs[l];
-                    int id = package.getClassNameId(package.exportsTable[exportID].classId);
-                    if (id == package.nameIdTexture2D ||
-                        id == package.nameIdTextureFlipBook)
+                    using (Texture texture = new Texture(package, exportID, package.getExportData(exportID), false))
                     {
-                        using (Texture texture = new Texture(package, exportID, package.getExportData(exportID), false))
+                        if (!texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty))
                         {
-                            if (!texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty))
-                            {
-                                continue;
-                            }
-                            do
-                            {
-                                texture.mipMapsList.Remove(texture.mipMapsList.First(s => s.storageType == Texture.StorageTypes.empty));
-                            } while (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty));
-                            texture.properties.setIntValue("SizeX", texture.mipMapsList.First().width);
-                            texture.properties.setIntValue("SizeY", texture.mipMapsList.First().height);
-                            texture.properties.setIntValue("MipTailBaseIdx", texture.mipMapsList.Count() - 1);
-
-                            using (MemoryStream newData = new MemoryStream())
-                            {
-                                newData.WriteFromBuffer(texture.properties.toArray());
-                                newData.WriteFromBuffer(texture.toArray(package.exportsTable[exportID].dataOffset + (uint)newData.Position));
-                                package.setExportData(exportID, newData.ToArray());
-                            }
-                            modified = true;
+                            continue;
                         }
+                        do
+                        {
+                            texture.mipMapsList.Remove(texture.mipMapsList.First(s => s.storageType == Texture.StorageTypes.empty));
+                        } while (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty));
+                        texture.properties.setIntValue("SizeX", texture.mipMapsList.First().width);
+                        texture.properties.setIntValue("SizeY", texture.mipMapsList.First().height);
+                        texture.properties.setIntValue("MipTailBaseIdx", texture.mipMapsList.Count() - 1);
+
+                        using (MemoryStream newData = new MemoryStream())
+                        {
+                            newData.WriteFromBuffer(texture.properties.toArray());
+                            newData.WriteFromBuffer(texture.toArray(package.exportsTable[exportID].dataOffset + (uint)newData.Position));
+                            package.setExportData(exportID, newData.ToArray());
+                        }
+                        modified = true;
                     }
                 }
                 if (modified)
