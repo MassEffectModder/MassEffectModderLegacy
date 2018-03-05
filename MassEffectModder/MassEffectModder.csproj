@@ -159,6 +159,9 @@
     <EmbeddedResource Include="Resources\MD5EntriesME1.bin" />
     <EmbeddedResource Include="Resources\MD5EntriesME2.bin" />
     <EmbeddedResource Include="Resources\MD5EntriesME3.bin" />
+    <EmbeddedResource Include="Resources\me1map.bin" />
+    <EmbeddedResource Include="Resources\me2map.bin" />
+    <EmbeddedResource Include="Resources\me3map.bin" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -192,9 +195,7 @@
     <EmbeddedResource Include="Dlls\PermissionsGranter.exe" />
     <Content Include="MEM.ico" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
