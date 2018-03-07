@@ -354,7 +354,11 @@ namespace MassEffectModder
                     MatchedTexture matched = new MatchedTexture();
                     matched.exportID = fs.ReadInt32();
                     if (GameData.gameType == MeType.ME1_TYPE)
+                    {
                         matched.linkToMaster = fs.ReadInt16();
+                        if (matched.linkToMaster != -1)
+                            matched.slave = true;
+                    }
                     matched.removeEmptyMips = fs.ReadByte() != 0;
                     matched.numMips = fs.ReadByte();
                     matched.path = pkgs[fs.ReadInt16()];
@@ -625,6 +629,7 @@ namespace MassEffectModder
                                    textures[k].list[j].packageName == basePkgName)
                                 {
                                     slaveTexture.linkToMaster = j;
+                                    slaveTexture.slave = true;
                                     textures[k].list[t] = slaveTexture;
                                     found = true;
                                     break;
@@ -668,22 +673,13 @@ namespace MassEffectModder
                                        textures[k].list[j].packageName == basePkgName)
                                     {
                                         slaveTexture.linkToMaster = j;
+                                        slaveTexture.slave = true;
                                         textures[k].list[t] = slaveTexture;
                                         break;
                                     }
                                 }
                             }
                         }
-                    }
-                }
-                for (int k = 0; k < textures.Count; k++)
-                {
-                    for (int t = 0; t < textures[k].list.Count; t++)
-                    {
-                        if (textures[k].list[t].slave && textures[k].list[t].linkToMaster == - 1)
-                            throw new Exception();
-                        if (!textures[k].list[t].slave && textures[k].list[t].linkToMaster != -1)
-                            throw new Exception();
                     }
                 }
             }
