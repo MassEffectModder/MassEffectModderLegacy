@@ -552,15 +552,9 @@ namespace MassEffectModder
                         }
                         if (found)
                             continue;
-                        if (GameData.gameType == MeType.ME1_TYPE && !textures[k].list[t].slave)
-                        {
-                            for (int s = t + 1; s < textures[k].list.Count; s++)
-                            {
-                                if (textures[k].list[s].linkToMaster != -1)
-                                    throw new Exception();
-                            }
-                        }
-                        textures[k].list.RemoveAt(t--);
+                        MatchedTexture f = textures[k].list[t];
+                        f.path = "";
+                        textures[k].list[t] = f;
                     }
                 }
                 /*
