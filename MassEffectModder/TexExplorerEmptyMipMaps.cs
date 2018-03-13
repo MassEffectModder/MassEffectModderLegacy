@@ -284,6 +284,7 @@ skip:
 
                         FoundTexture foundTexture = new FoundTexture();
                         int foundListEntry = -1;
+                        int foundTextureEntry = -1;
                         string pkgName = GameData.RelativeGameData(package.packagePath).ToLowerInvariant();
                         for (int k = 0; k < textures.Count; k++)
                         {
@@ -293,6 +294,7 @@ skip:
                                     textures[k].list[t].path.ToLowerInvariant() == pkgName)
                                 {
                                     foundTexture = textures[k];
+                                    foundTextureEntry = k;
                                     foundListEntry = t;
                                     break;
                                 }
@@ -336,7 +338,11 @@ skip:
                             }
                             masterPkg.Dispose();
                         }
+                        MatchedTexture m = foundTexture.list[foundListEntry];
+                        m.removeEmptyMips = false;
+                        textures[foundTextureEntry].list[foundListEntry] = m;
 skip:
+
                         using (MemoryStream newData = new MemoryStream())
                         {
                             newData.WriteFromBuffer(texture.properties.toArray());
