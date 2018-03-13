@@ -404,7 +404,7 @@ namespace MassEffectModder
                             foundTexture = textures.Find(s => s.crc == crc);
                             if (foundTexture.crc != 0)
                             {
-                                ListViewItem item = new ListViewItem(foundTexture.name + " (" + Path.GetFileNameWithoutExtension(foundTexture.list[0].path).ToUpperInvariant() + ")");
+                                ListViewItem item = new ListViewItem(foundTexture.name + " (" + Path.GetFileNameWithoutExtension(foundTexture.list.Find(s => s.path != "").path).ToUpperInvariant() + ")");
                                 item.Name = i.ToString();
                                 texExplorer.listViewTextures.Items.Add(item);
                             }

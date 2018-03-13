@@ -891,7 +891,7 @@ namespace MassEffectModder
                 bool found = false;
                 for (int i = 0; i < nodeList.Count; i++)
                 {
-                    if (nodeList[i].Name.ToLowerInvariant() == Path.GetFileNameWithoutExtension(_textures[l].list[0].path).ToLowerInvariant())
+                    if (nodeList[i].Name.ToLowerInvariant() == Path.GetFileNameWithoutExtension(_textures[l].list.Find(s => s.path != "").path).ToLowerInvariant())
                     {
                         nodeList[i].textures.Add(_textures[l]);
                         found = true;
@@ -899,7 +899,7 @@ namespace MassEffectModder
                 }
                 if (!found)
                 {
-                    PackageTreeNode treeNode = new PackageTreeNode(Path.GetFileNameWithoutExtension(_textures[l].list[0].path).ToUpperInvariant());
+                    PackageTreeNode treeNode = new PackageTreeNode(Path.GetFileNameWithoutExtension(_textures[l].list.Find(s => s.path != "").path).ToUpperInvariant());
                     treeNode.textures.Add(_textures[l]);
                     rootNode.Nodes.Add(treeNode);
                     nodeList.Add(treeNode);

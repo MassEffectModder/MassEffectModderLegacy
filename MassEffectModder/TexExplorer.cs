@@ -375,7 +375,7 @@ namespace MassEffectModder
                 }
                 if (found)
                 {
-                    ListViewItem item = new ListViewItem(foundTexture.name + " (" + Path.GetFileNameWithoutExtension(foundTexture.list[0].path).ToUpperInvariant() + ")");
+                    ListViewItem item = new ListViewItem(foundTexture.name + " (" + Path.GetFileNameWithoutExtension(foundTexture.list.Find(s => s.path != "").path).ToUpperInvariant() + ")");
                     item.Name = l.ToString();
                     listViewResults.Items.Add(item);
                 }
@@ -1222,28 +1222,23 @@ namespace MassEffectModder
                                     mod.binaryModType = 0;
                                     len = fs.ReadInt32();
                                     mod.data = fs.ReadToBuffer(len);
-                                    Package pkg = new Package(GameData.GamePath + f.list[0].path);
-                                    Texture texture = new Texture(pkg, f.list[0].exportID, pkg.getExportData(f.list[0].exportID));
-                                    pkg.Dispose();
-                                    string fmt = texture.properties.getProperty("Format").valueName;
-                                    PixelFormat pixelFormat = Image.getEngineFormatType(fmt);
+                                    PixelFormat pixelFormat = f.pixfmt;
                                     Image image = new Image(mod.data, Image.ImageFormat.DDS);
 
                                     if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
-                                        texture.mipMapsList[0].width / texture.mipMapsList[0].height)
+                                        f.width / f.height)
                                     {
                                         errors += "Error in texture: " + textureName + string.Format("_0x{0:X8}", f.crc) + " This texture has wrong aspect ratio, skipping texture, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                         continue;
                                     }
 
                                     if (!image.checkDDSHaveAllMipmaps() ||
-                                        (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1) ||
+                                       (f.list.Find(s => s.path != "").numMips > 1 && image.mipMaps.Count() <= 1) ||
                                         image.pixelFormat != pixelFormat)
                                     {
                                         bool dxt1HasAlpha = false;
                                         byte dxt1Threshold = 128;
-                                        if (texture.properties.exists("CompressionSettings") &&
-                                            texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
+                                        if (f.alphadxt1)
                                         {
                                             dxt1HasAlpha = true;
                                             if (image.pixelFormat == PixelFormat.ARGB ||
@@ -1354,15 +1349,10 @@ namespace MassEffectModder
                                     zip.GoToNextFile(handle);
                                     continue;
                                 }
-                                Package pkg = new Package(GameData.GamePath + foundCrcList[0].list[0].path);
-                                Texture texture = new Texture(pkg, foundCrcList[0].list[0].exportID, pkg.getExportData(foundCrcList[0].list[0].exportID));
-                                pkg.Dispose();
-                                string fmt = texture.properties.getProperty("Format").valueName;
-                                PixelFormat pixelFormat = Image.getEngineFormatType(fmt);
-
+                                PixelFormat pixelFormat = foundCrcList[0].pixfmt;
                                 Image image = new Image(mod.data, Path.GetExtension(filename));
                                 if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
-                                    texture.mipMapsList[0].width / texture.mipMapsList[0].height)
+                                    foundCrcList[0].width / foundCrcList[0].height)
                                 {
                                     errors += "Error in texture: " + textureName + string.Format("_0x{0:X8}", crc) + " This texture has wrong aspect ratio, skipping texture, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                     zip.GoToNextFile(handle);
@@ -1370,13 +1360,12 @@ namespace MassEffectModder
                                 }
 
                                 if (!image.checkDDSHaveAllMipmaps() ||
-                                    (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1) ||
+                                   (foundCrcList[0].list.Find(s => s.path != "").numMips > 1 && image.mipMaps.Count() <= 1) ||
                                     image.pixelFormat != pixelFormat)
                                 {
                                     bool dxt1HasAlpha = false;
                                     byte dxt1Threshold = 128;
-                                    if (texture.properties.exists("CompressionSettings") &&
-                                        texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
+                                    if (foundCrcList[0].alphadxt1)
                                     {
                                         dxt1HasAlpha = true;
                                         if (image.pixelFormat == PixelFormat.ARGB ||
