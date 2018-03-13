@@ -558,6 +558,7 @@ namespace MassEffectModder
                     }
                 }
 
+                mainWindow.updateStatusLabel("Scanning packages...");
                 for (int i = 0; i < GameData.packageFiles.Count; i++)
                 {
                     int index = -1;
