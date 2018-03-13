@@ -532,6 +532,8 @@ namespace MassEffectModder
                 }
             }
 
+            List<string> addedFiles = new List<string>();
+            List<string> modifiedFiles = new List<string>();
             if (!generateBuiltinMapFiles)
             {
                 loadTexturesMap(GameData.gameType, textures);
@@ -557,19 +559,19 @@ namespace MassEffectModder
                         textures[k].list[t] = f;
                     }
                 }
-                /*
-                List<string> addedFiles = new List<string>();
-                List<string> modifiedFiles = new List<string>();
+
                 for (int i = 0; i < GameData.packageFiles.Count; i++)
                 {
                     int index = -1;
                     bool modified = true;
+                    bool foundPkg = false;
                     string package = GameData.RelativeGameData(GameData.packageFiles[i].ToLowerInvariant());
                     long packageSize = new FileInfo(GameData.packageFiles[i]).Length;
                     for (int p = 0; p < md5Entries.Length; p++)
                     {
                         if (package == md5Entries[p].path.ToLowerInvariant())
                         {
+                            foundPkg = true;
                             if (packageSize == md5Entries[p].size)
                             {
                                 modified = false;
@@ -579,27 +581,44 @@ namespace MassEffectModder
                             break;
                         }
                     }
-
-                    byte[] md5 = calculateMD5(packageMainFiles[l]);
-                    bool found = false;
-                    for (int p = 0; p < entries.Count(); p++)
-                    {
-                        if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, entries[p].md5))
-                        {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (found)
-                        continue;
-
-                }*/
+                    if (foundPkg && modified)
+                        modifiedFiles.Add(md5Entries[index].path);
+                    else if (!foundPkg)
+                        addedFiles.Add(GameData.packageFiles[i]);
+                }
             }
 
-            for (int i = 0; i < GameData.packageFiles.Count; i++)
+            int totalPackages = modifiedFiles.Count + addedFiles.Count;
+            int currentPackage = 0;
+            for (int i = 0; i < modifiedFiles.Count; i++, currentPackage++)
             {
-                mainWindow.updateStatusLabel("Finding textures in package " + (i + 1) + " of " + GameData.packageFiles.Count + " - " + GameData.packageFiles[i]);
-                errors += FindTextures(textures, GameData.packageFiles[i], ref log);
+                mainWindow.updateStatusLabel("Finding textures in package " + (currentPackage + 1) + " of " + totalPackages + " - " + modifiedFiles[i]);
+                errors += FindTextures(textures, modifiedFiles[i], true, ref log);
+            }
+
+            for (int i = 0; i < modifiedFiles.Count; i++)
+            {
+                mainWindow.updateStatusLabel("Finding textures in package " + (currentPackage + 1) + " of " + totalPackages + " - " + modifiedFiles[i]);
+                errors += FindTextures(textures, modifiedFiles[i], false, ref log);
+            }
+
+            for (int k = 0; k < textures.Count; k++)
+            {
+                bool found = false;
+                for (int t = 0; t < textures[k].list.Count; t++)
+                {
+                    if (textures[k].list[t].path != "")
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    textures[k].list.Clear();
+                    textures.Remove(textures[k]);
+                    k--;
+                }
             }
 
             if (GameData.gameType == MeType.ME1_TYPE)
@@ -774,7 +793,7 @@ namespace MassEffectModder
             return errors;
         }
 
-        private string FindTextures(List<FoundTexture> textures, string packagePath, ref string log)
+        private string FindTextures(List<FoundTexture> textures, string packagePath, bool modified, ref string log)
         {
             string errors = "";
             Package package = null;
@@ -845,6 +864,8 @@ namespace MassEffectModder
                     FoundTexture foundTexName = textures.Find(s => s.crc == crc);
                     if (foundTexName.crc != 0)
                     {
+                        if (modified && foundTexName.list.Exists(s => (s.exportID == i && s.path == packagePath.ToLowerInvariant())))
+                            continue;
                         if (matchTexture.slave || GameData.gameType != MeType.ME1_TYPE)
                             foundTexName.list.Add(matchTexture);
                         else
@@ -852,6 +873,27 @@ namespace MassEffectModder
                     }
                     else
                     {
+                        if (modified)
+                        {
+                            for (int k = 0; k < textures.Count; k++)
+                            {
+                                bool found = false;
+                                for (int t = 0; t < textures[k].list.Count; t++)
+                                {
+                                    if (textures[k].list[t].exportID == i &&
+                                        textures[k].list[t].path.ToLowerInvariant() == packagePath)
+                                    {
+                                        MatchedTexture f = textures[k].list[t];
+                                        f.path = "";
+                                        textures[k].list[t] = f;
+                                        found = true;
+                                        break;
+                                    }
+                                }
+                                if (found)
+                                    break;
+                            }
+                        }
                         FoundTexture foundTex = new FoundTexture();
                         foundTex.list = new List<MatchedTexture>();
                         foundTex.list.Add(matchTexture);
