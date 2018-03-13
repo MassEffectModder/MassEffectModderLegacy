@@ -538,21 +538,19 @@ namespace MassEffectModder
             {
                 loadTexturesMap(GameData.gameType, textures);
 
+                List<string> sortedFiles = new List<string>();
+                for (int i = 0; i < GameData.packageFiles.Count; i++)
+                {
+                    sortedFiles.Add(GameData.RelativeGameData(GameData.packageFiles[i]).ToLowerInvariant());
+                }
+                sortedFiles.Sort();
+
                 for (int k = 0; k < textures.Count; k++)
                 {
                     for (int t = 0; t < textures[k].list.Count; t++)
                     {
                         string pkgPath = textures[k].list[t].path.ToLowerInvariant();
-                        bool found = false;
-                        for (int i = 0; i < GameData.packageFiles.Count; i++)
-                        {
-                            if (pkgPath == GameData.RelativeGameData(GameData.packageFiles[i]).ToLowerInvariant())
-                            {
-                                found = true;
-                                break;
-                            }
-                        }
-                        if (found)
+                        if (sortedFiles.BinarySearch(pkgPath) >= 0)
                             continue;
                         MatchedTexture f = textures[k].list[t];
                         f.path = "";
