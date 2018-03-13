@@ -165,8 +165,6 @@ namespace MassEffectModder
                             {
                                 for (int t = 0; t < textures[k].list.Count; t++)
                                 {
-                                    if (textures[k].list[t].path == "")
-                                        continue;
                                     if (textures[k].list[t].exportID == l &&
                                         textures[k].list[t].path.ToLowerInvariant() == pkgName)
                                     {
@@ -291,8 +289,6 @@ skip:
                         {
                             for (int t = 0; t < textures[k].list.Count; t++)
                             {
-                                if (textures[k].list[t].path == "")
-                                    continue;
                                 if (textures[k].list[t].exportID == exportID &&
                                     textures[k].list[t].path.ToLowerInvariant() == pkgName)
                                 {
