@@ -583,7 +583,7 @@ namespace MassEffectModder
                     if (foundPkg && modified)
                         modifiedFiles.Add(md5Entries[index].path);
                     else if (!foundPkg)
-                        addedFiles.Add(GameData.packageFiles[i]);
+                        addedFiles.Add(GameData.RelativeGameData(GameData.packageFiles[i]));
                 }
             }
 
