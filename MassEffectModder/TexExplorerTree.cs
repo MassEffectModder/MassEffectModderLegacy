@@ -829,7 +829,7 @@ namespace MassEffectModder
                     string name = package.exportsTable[i].objectName;
                     MatchedTexture matchTexture = new MatchedTexture();
                     matchTexture.exportID = i;
-                    matchTexture.path = GameData.RelativeGameData(packagePath);
+                    matchTexture.path = packagePath;
                     matchTexture.packageName = texture.packageName;
                     matchTexture.removeEmptyMips = texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty);
                     matchTexture.numMips = texture.mipMapsList.FindAll(s => s.storageType != Texture.StorageTypes.empty).Count;
