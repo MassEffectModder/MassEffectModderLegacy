@@ -595,10 +595,10 @@ namespace MassEffectModder
                 errors += FindTextures(textures, modifiedFiles[i], true, ref log);
             }
 
-            for (int i = 0; i < modifiedFiles.Count; i++)
+            for (int i = 0; i < addedFiles.Count; i++, currentPackage++)
             {
-                mainWindow.updateStatusLabel("Finding textures in package " + (currentPackage + 1) + " of " + totalPackages + " - " + modifiedFiles[i]);
-                errors += FindTextures(textures, modifiedFiles[i], false, ref log);
+                mainWindow.updateStatusLabel("Finding textures in package " + (currentPackage + 1) + " of " + totalPackages + " - " + addedFiles[i]);
+                errors += FindTextures(textures, addedFiles[i], false, ref log);
             }
 
             for (int k = 0; k < textures.Count; k++)
@@ -799,7 +799,7 @@ namespace MassEffectModder
 
             try
             {
-                package = new Package(packagePath);
+                package = new Package(GameData.GamePath + packagePath);
             }
             catch (Exception e)
             {
@@ -863,7 +863,7 @@ namespace MassEffectModder
                     FoundTexture foundTexName = textures.Find(s => s.crc == crc);
                     if (foundTexName.crc != 0)
                     {
-                        if (modified && foundTexName.list.Exists(s => (s.exportID == i && s.path == packagePath.ToLowerInvariant())))
+                        if (modified && foundTexName.list.Exists(s => (s.exportID == i && s.path.ToLowerInvariant() == packagePath.ToLowerInvariant())))
                             continue;
                         if (matchTexture.slave || GameData.gameType != MeType.ME1_TYPE)
                             foundTexName.list.Add(matchTexture);
@@ -880,7 +880,7 @@ namespace MassEffectModder
                                 for (int t = 0; t < textures[k].list.Count; t++)
                                 {
                                     if (textures[k].list[t].exportID == i &&
-                                        textures[k].list[t].path.ToLowerInvariant() == packagePath)
+                                        textures[k].list[t].path.ToLowerInvariant() == packagePath.ToLowerInvariant())
                                     {
                                         MatchedTexture f = textures[k].list[t];
                                         f.path = "";
