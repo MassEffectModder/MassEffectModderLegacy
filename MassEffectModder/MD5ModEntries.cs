@@ -24,8 +24,8 @@ namespace MassEffectModder
     static partial class Misc
     {
         const string Mod_ME1FasterElevators = "ME1 Faster Elevators v1.1";
-        const string Mod_ME1Controller = "ME1 Controller v1.2.0";
-        const string Mod_ME1SameSexRomances = "ME1 Same-Sex Romances v2.0/3.0/3.1";
+        const string Mod_ME1Controller = "ME1 Controller v1.2.0-v1.2.2";
+        const string Mod_ME1SameSexRomances = "ME1 Same-Sex Romances v2.0-v3.3";
 
         static public MD5ModFileEntry[] modsEntries = new MD5ModFileEntry[]
         {
@@ -374,6 +374,36 @@ new MD5ModFileEntry
 {
 path = @"\BioGame\CookedPC\Maps\STA\DSG\BIOA_STA60_02a_DSG.SFM",
 md5 = new byte[] { 0x30, 0x0B, 0x96, 0xBC, 0xCB, 0x31, 0x39, 0xCD, 0x96, 0x2D, 0x3E, 0xF8, 0xF5, 0xBE, 0xB7, 0x4F, },
+modName = Mod_ME1SameSexRomances,
+},
+new MD5ModFileEntry
+{
+path = @"\BioGame\CookedPC\Maps\NOR\DS2\BIOA_NOR10_09ashley_DS2.SFM",
+md5 = new byte[] { 0x2D, 0xDD, 0x39, 0x76, 0xC0, 0x83, 0xFA, 0x4E, 0x71, 0x34, 0xAE, 0x1A, 0x85, 0xAB, 0x3F, 0xD7, },
+modName = Mod_ME1SameSexRomances,
+},
+new MD5ModFileEntry
+{
+path = @"\BioGame\CookedPC\Maps\NOR\DS2\BIOA_NOR10_09kaidan_DS2.SFM",
+md5 = new byte[] { 0x09, 0x4F, 0xF8, 0xEF, 0x08, 0xBE, 0x61, 0x88, 0xC3, 0x8A, 0x73, 0x1D, 0x6D, 0x49, 0xF8, 0xCB, },
+modName = Mod_ME1SameSexRomances,
+},
+new MD5ModFileEntry
+{
+path = @"\BioGame\CookedPC\Maps\NOR\DSG\BIOA_NOR10_06wake_DSG.SFM",
+md5 = new byte[] { 0x8C, 0x17, 0x82, 0xCA, 0x2A, 0xF5, 0xCF, 0xF3, 0x4F, 0xD9, 0x9B, 0xA2, 0x07, 0x7D, 0xA2, 0x29, },
+modName = Mod_ME1SameSexRomances,
+},
+new MD5ModFileEntry
+{
+path = @"\BioGame\CookedPC\Maps\NOR\DSG\BIOA_NOR10_08liara_DSG.SFM",
+md5 = new byte[] { 0x9B, 0x54, 0x8E, 0x62, 0x5F, 0xF7, 0x15, 0xED, 0xE4, 0xAE, 0xCC, 0x52, 0xAE, 0x6E, 0xDB, 0xB4, },
+modName = Mod_ME1SameSexRomances,
+},
+new MD5ModFileEntry
+{
+path = @"\BioGame\CookedPC\Maps\NOR\DSG\BIOA_NOR10_06wake_DSG.SFM",
+md5 = new byte[] { 0x40, 0x23, 0x43, 0x73, 0x65, 0x37, 0x06, 0x49, 0xD8, 0x83, 0x6F, 0x1E, 0xB0, 0xB8, 0xA8, 0xB9, },
 modName = Mod_ME1SameSexRomances,
 },
 new MD5ModFileEntry
