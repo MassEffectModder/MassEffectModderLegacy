@@ -29,14 +29,6 @@ namespace MassEffectModder
 {
     public partial class MipMaps
     {
-        struct EmptyMipMaps
-        {
-            public MeType gameType;
-            public string packagePath;
-            public int exportId;
-            public uint crc;
-        }
-
         public struct RemoveMipsEntry
         {
             public string pkgPath;
@@ -73,42 +65,6 @@ namespace MassEffectModder
             catch
             {
             }
-        }
-
-        public List<RemoveMipsEntry> prepareListToRemove(List<FoundTexture> textures)
-        {
-            List<RemoveMipsEntry> list = new List<RemoveMipsEntry>();
-
-            for (int k = 0; k < textures.Count; k++)
-            {
-                for (int t = 0; t < textures[k].list.Count; t++)
-                {
-                    if (textures[k].list[t].path == "")
-                        continue;
-                    if (textures[k].list[t].removeEmptyMips)
-                    {
-                        bool found = false;
-                        for (int e = 0; e < list.Count; e++)
-                        {
-                            if (list[e].pkgPath == textures[k].list[t].path)
-                            {
-                                list[e].exportIDs.Add(textures[k].list[t].exportID);
-                                found = true;
-                                break;
-                            }
-                        }
-                        if (found)
-                            continue;
-                        RemoveMipsEntry entry = new RemoveMipsEntry();
-                        entry.pkgPath = textures[k].list[t].path;
-                        entry.exportIDs = new List<int>();
-                        entry.exportIDs.Add(textures[k].list[t].exportID);
-                        list.Add(entry);
-                    }
-                }
-            }
-
-            return list;
         }
 
         public string removeMipMapsME1Installer(int phase, List<FoundTexture> textures, Installer installer)
@@ -212,7 +168,7 @@ namespace MassEffectModder
                                 }
                                 masterPkg.Dispose();
                             }
-skip:
+                            skip:
                             using (MemoryStream newData = new MemoryStream())
                             {
                                 newData.WriteFromBuffer(texture.properties.toArray());
@@ -235,6 +191,42 @@ skip:
                 package.Dispose();
             }
             return errors;
+        }
+
+        public List<RemoveMipsEntry> prepareListToRemove(List<FoundTexture> textures)
+        {
+            List<RemoveMipsEntry> list = new List<RemoveMipsEntry>();
+
+            for (int k = 0; k < textures.Count; k++)
+            {
+                for (int t = 0; t < textures[k].list.Count; t++)
+                {
+                    if (textures[k].list[t].path == "")
+                        continue;
+                    if (textures[k].list[t].removeEmptyMips)
+                    {
+                        bool found = false;
+                        for (int e = 0; e < list.Count; e++)
+                        {
+                            if (list[e].pkgPath == textures[k].list[t].path)
+                            {
+                                list[e].exportIDs.Add(textures[k].list[t].exportID);
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (found)
+                            continue;
+                        RemoveMipsEntry entry = new RemoveMipsEntry();
+                        entry.pkgPath = textures[k].list[t].path;
+                        entry.exportIDs = new List<int>();
+                        entry.exportIDs.Add(textures[k].list[t].exportID);
+                        list.Add(entry);
+                    }
+                }
+            }
+
+            return list;
         }
 
         public string removeMipMapsME1(int phase, List<FoundTexture> textures, MainWindow mainWindow, bool forceZlib = false)
@@ -342,7 +334,6 @@ skip:
                         m.removeEmptyMips = false;
                         textures[foundTextureEntry].list[foundListEntry] = m;
 skip:
-
                         using (MemoryStream newData = new MemoryStream())
                         {
                             newData.WriteFromBuffer(texture.properties.toArray());
@@ -442,46 +433,5 @@ skip:
             return errors;
         }
 
-        static public bool verifyGameDataEmptyMipMapsRemoval()
-        {
-            EmptyMipMaps[] entries = new EmptyMipMaps[]
-            {
-                new EmptyMipMaps
-                {
-                    gameType = MeType.ME1_TYPE,
-                    packagePath = "\\BioGame\\CookedPC\\Packages\\VFX_Prototype\\v_Explosion_PrototypeTest_01.upk",
-                    exportId = 4888,
-                    crc = 0x9C074E3B,
-                },
-                new EmptyMipMaps
-                {
-                    gameType = MeType.ME2_TYPE,
-                    packagePath = "\\BioGame\\CookedPC\\BioA_CitHub_500Udina.pcc",
-                    exportId = 3655,
-                    crc = 0xE18544C0,
-                },
-                new EmptyMipMaps
-                {
-                    gameType = MeType.ME3_TYPE,
-                    packagePath = "\\BioGame\\CookedPCConsole\\BIOG_UIWorld.pcc",
-                    exportId = 464,
-                    crc = 0x85EFF558,
-                },
-            };
-
-            for (int i = 0; i < entries.Count(); i++)
-            {
-                if (GameData.gameType == entries[i].gameType)
-                {
-                    Package package = new Package(GameData.GamePath + entries[i].packagePath);
-                    Texture texture = new Texture(package, entries[i].exportId, package.getExportData(entries[i].exportId));
-                    package.Dispose();
-                    if (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty))
-                        return false;
-                }
-            }
-
-            return true;
-        }
     }
 }

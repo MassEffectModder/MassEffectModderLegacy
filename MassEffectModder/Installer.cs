@@ -888,13 +888,6 @@ namespace MassEffectModder
                     customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                     return false;
                 }
-
-                if (!MipMaps.verifyGameDataEmptyMipMapsRemoval())
-                {
-                    customLabelFinalStatus.Text = "Game doesn't have empty mips removed, aborting...";
-                    customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
-                    return false;
-                }
             }
             else
             {
