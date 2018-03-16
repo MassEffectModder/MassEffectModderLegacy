@@ -441,16 +441,28 @@ namespace MassEffectModder
             return true;
         }
 
-        bool detectMod(int gameId)
+        bool detectMod(int gameId, ref bool allowInstall)
         {
             string path = GameData.GamePath + @"\BioGame\CookedPC\testVolumeLight_VFX.upk";
             try
             {
                 using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
                 {
-                    fs.Seek(-4, SeekOrigin.End);
-                    if (fs.ReadUInt32() == MEMI_TAG)
+                    fs.Seek(-16, SeekOrigin.End);
+                    int prevMeuitmV = fs.ReadInt32();
+                    int prevAlotV = fs.ReadInt32();
+                    int prevProductV = fs.ReadInt32();
+                    uint memiTag = fs.ReadUInt32();
+                    if (memiTag == MEMI_TAG)
+                    {
+                        if (prevProductV < 10 || prevProductV == 4352 || prevProductV == 16777472) // default before MEM v178
+                            prevProductV = prevAlotV = prevMeuitmV = 0;
+                        if (prevAlotV != 0 || prevMeuitmV == 0)
+                            allowInstall = false;
+                        else
+                            allowInstall = true;
                         return true;
+                    }
                 }
             }
             catch
@@ -848,8 +860,15 @@ namespace MassEffectModder
             }
 
             errors = "";
-            if (detectMod(gameId))
+            bool allowInstall = false;
+            if (detectMod(gameId, ref allowInstall))
             {
+                if (!allowInstall)
+                {
+                    customLabelFinalStatus.Text = "Not detected previous MEUITM installation, aborting...";
+                    customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
+                    return false;
+                }
                 updateMode = true;
                 checkBoxOptionVanilla.CheckedChanged -= checkBoxOptionVanilla_CheckedChanged;
                 checkBoxOptionVanilla.Checked = true;
