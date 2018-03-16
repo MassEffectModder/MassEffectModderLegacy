@@ -33,272 +33,6 @@ namespace MassEffectModder
         public List<FoundTexture> treeScan = null;
         private bool generateBuiltinMapFiles = false; // change to true to enable map files generation
 
-        public string PrepareListOfTexturesInstaller(Installer installer, ref string log)
-        {
-            string errors = "";
-            treeScan = null;
-
-            List<FoundTexture> textures = new List<FoundTexture>();
-            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    Assembly.GetExecutingAssembly().GetName().Name);
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-            string filename = Path.Combine(path, "me" + (int)GameData.gameType + "map.bin");
-            if (File.Exists(filename))
-                File.Delete(filename);
-
-            GameData.packageFiles.Sort();
-            int count = GameData.packageFiles.Count;
-            for (int i = 0; i < count; i++)
-            {
-                if (GameData.packageFiles[i].Contains("_IT.") ||
-                    GameData.packageFiles[i].Contains("_FR.") ||
-                    GameData.packageFiles[i].Contains("_ES.") ||
-                    GameData.packageFiles[i].Contains("_DE.") ||
-                    GameData.packageFiles[i].Contains("_PLPC.") ||
-                    GameData.packageFiles[i].Contains("_DEU.") ||
-                    GameData.packageFiles[i].Contains("_FRA.") ||
-                    GameData.packageFiles[i].Contains("_ITA.") ||
-                    GameData.packageFiles[i].Contains("_POL."))
-                {
-                    GameData.packageFiles.Add(GameData.packageFiles[i]);
-                    GameData.packageFiles.RemoveAt(i--);
-                    count--;
-                }
-            }
-
-            for (int i = 0; i < GameData.packageFiles.Count; i++)
-            {
-                installer.updateStatusScan("Scanning textures " + (i * 100 / GameData.packageFiles.Count) + "% ");
-                errors += FindTexturesInstaller(textures, GameData.packageFiles[i], ref log);
-            }
-
-            for (int k = 0; k < textures.Count; k++)
-            {
-                for (int t = 0; t < textures[k].list.Count; t++)
-                {
-                    uint mipmapOffset = textures[k].list[t].mipmapOffset;
-                    if (textures[k].list[t].slave)
-                    {
-                        MatchedTexture slaveTexture = textures[k].list[t];
-                        string basePkgName = slaveTexture.basePackageName;
-                        if (basePkgName == Path.GetFileNameWithoutExtension(slaveTexture.path).ToUpperInvariant())
-                            throw new Exception();
-                        bool found = false;
-                        for (int j = 0; j < textures[k].list.Count; j++)
-                        {
-                            if (!textures[k].list[j].slave &&
-                               textures[k].list[j].mipmapOffset == mipmapOffset &&
-                               textures[k].list[j].packageName == basePkgName)
-                            {
-                                slaveTexture.linkToMaster = j;
-                                textures[k].list[t] = slaveTexture;
-                                found = true;
-                                break;
-                            }
-                        }
-                        if (!found)
-                        {
-                            log += "Error: not able match 'slave' texture: + " + textures[k].name + " to 'master'.";
-                        }
-                    }
-                }
-                if (!textures[k].list.Exists(s => s.slave) &&
-                    textures[k].list.Exists(s => s.weakSlave))
-                {
-                    List<MatchedTexture> texList = new List<MatchedTexture>();
-                    for (int t = 0; t < textures[k].list.Count; t++)
-                    {
-                        MatchedTexture tex = textures[k].list[t];
-                        if (tex.weakSlave)
-                            texList.Add(tex);
-                        else
-                            texList.Insert(0, tex);
-                    }
-                    FoundTexture f = textures[k];
-                    f.list = texList;
-                    textures[k] = f;
-                    if (textures[k].list[0].weakSlave)
-                        continue;
-
-                    for (int t = 0; t < textures[k].list.Count; t++)
-                    {
-                        if (textures[k].list[t].weakSlave)
-                        {
-                            MatchedTexture slaveTexture = textures[k].list[t];
-                            string basePkgName = slaveTexture.basePackageName;
-                            if (basePkgName == Path.GetFileNameWithoutExtension(slaveTexture.path).ToUpperInvariant())
-                                throw new Exception();
-                            for (int j = 0; j < textures[k].list.Count; j++)
-                            {
-                                if (!textures[k].list[j].weakSlave &&
-                                   textures[k].list[j].packageName == basePkgName)
-                                {
-                                    slaveTexture.linkToMaster = j;
-                                    textures[k].list[t] = slaveTexture;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            using (FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
-            {
-                MemoryStream mem = new MemoryStream();
-                mem.WriteUInt32(TexExplorer.textureMapBinTag);
-                mem.WriteUInt32(TexExplorer.textureMapBinVersion);
-                mem.WriteInt32(textures.Count);
-                for (int i = 0; i < textures.Count; i++)
-                {
-                    mem.WriteInt32(textures[i].name.Length);
-                    mem.WriteStringASCII(textures[i].name);
-                    mem.WriteUInt32(textures[i].crc);
-                    mem.WriteInt32(textures[i].list.Count);
-                    for (int k = 0; k < textures[i].list.Count; k++)
-                    {
-                        mem.WriteInt32(textures[i].list[k].exportID);
-                        mem.WriteInt32(textures[i].list[k].linkToMaster);
-                        mem.WriteInt32(textures[i].list[k].path.Length);
-                        mem.WriteStringASCII(textures[i].list[k].path);
-                    }
-                }
-
-                mem.WriteInt32(GameData.packageFiles.Count);
-                for (int i = 0; i < GameData.packageFiles.Count; i++)
-                {
-                    string s = GameData.RelativeGameData(GameData.packageFiles[i]);
-                    mem.WriteInt32(s.Length);
-                    mem.WriteStringASCII(s);
-                }
-                mem.SeekBegin();
-                fs.WriteFromStream(mem, mem.Length);
-            }
-
-            treeScan = textures;
-
-            path = @"\BioGame\CookedPC\testVolumeLight_VFX.upk".ToLowerInvariant();
-            for (int i = 0; i < GameData.packageFiles.Count; i++)
-            {
-                if (path != "" && GameData.packageFiles[i].ToLowerInvariant().Contains(path))
-                    continue;
-                try
-                {
-                    using (FileStream fs = new FileStream(GameData.packageFiles[i], FileMode.Open, FileAccess.ReadWrite))
-                    {
-                        fs.SeekEnd();
-                        fs.Seek(-Package.MEMendFileMarker.Length, SeekOrigin.Current);
-                        string marker = fs.ReadStringASCII(Package.MEMendFileMarker.Length);
-                        if (marker != Package.MEMendFileMarker)
-                        {
-                            fs.SeekEnd();
-                            fs.WriteStringASCII(Package.MEMendFileMarker);
-                        }
-                    }
-                }
-                catch
-                {
-                    errors += "The file is could not be opened to write marker, skipped: " + GameData.packageFiles[i] + Environment.NewLine;
-                }
-            }
-
-            return errors;
-        }
-
-        private string FindTexturesInstaller(List<FoundTexture> textures, string packagePath, ref string log)
-        {
-            string errors = "";
-            Package package = null;
-
-            try
-            {
-                package = new Package(packagePath);
-            }
-            catch (Exception e)
-            {
-                string err = "";
-                err += "---- Start --------------------------------------------" + Environment.NewLine;
-                err += "Issue with open package file: " + packagePath + Environment.NewLine;
-                err += e.Message + Environment.NewLine + Environment.NewLine;
-                err += e.StackTrace + Environment.NewLine + Environment.NewLine;
-                err += "---- End ----------------------------------------------" + Environment.NewLine + Environment.NewLine;
-                errors += err;
-                log += err;
-                return errors;
-            }
-            for (int i = 0; i < package.exportsTable.Count; i++)
-            {
-                int id = package.getClassNameId(package.exportsTable[i].classId);
-                if (id == package.nameIdTexture2D ||
-                    id == package.nameIdLightMapTexture2D ||
-                    id == package.nameIdShadowMapTexture2D ||
-                    id == package.nameIdTextureFlipBook)
-                {
-                    Texture texture = new Texture(package, i, package.getExportData(i));
-                    if (!texture.hasImageData())
-                        continue;
-
-                    Texture.MipMap mipmap = texture.getTopMipmap();
-                    string name = package.exportsTable[i].objectName;
-                    MatchedTexture matchTexture = new MatchedTexture();
-                    matchTexture.exportID = i;
-                    matchTexture.path = GameData.RelativeGameData(packagePath);
-                    matchTexture.packageName = texture.packageName;
-                    matchTexture.removeEmptyMips = texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty);
-                    matchTexture.numMips = texture.mipMapsList.FindAll(s => s.storageType != Texture.StorageTypes.empty).Count;
-                    if (GameData.gameType == MeType.ME1_TYPE)
-                    {
-                        matchTexture.basePackageName = texture.basePackageName;
-                        matchTexture.slave = texture.slave;
-                        matchTexture.weakSlave = texture.weakSlave;
-                        matchTexture.linkToMaster = -1;
-                        if (matchTexture.slave)
-                            matchTexture.mipmapOffset = mipmap.dataOffset;
-                        else
-                            matchTexture.mipmapOffset = package.exportsTable[i].dataOffset + (uint)texture.properties.propertyEndOffset + mipmap.internalOffset;
-                    }
-
-                    uint crc = 0;
-                    try
-                    {
-                        crc = texture.getCrcTopMipmap();
-                    }
-                    catch
-                    {
-                    }
-                    if (crc == 0)
-                    {
-                        errors += "Error: Texture " + package.exportsTable[i].objectName + " is broken in package: " + packagePath + ", skipping..." + Environment.NewLine;
-                        log += "Error: Texture " + package.exportsTable[i].objectName + " is broken in package: " + packagePath + ", skipping..." + Environment.NewLine;
-                        continue;
-                    }
-
-                    FoundTexture foundTexName = textures.Find(s => s.crc == crc);
-                    if (foundTexName.crc != 0)
-                    {
-                        if (matchTexture.slave)
-                            foundTexName.list.Add(matchTexture);
-                        else
-                            foundTexName.list.Insert(0, matchTexture);
-                    }
-                    else
-                    {
-                        FoundTexture foundTex = new FoundTexture();
-                        foundTex.list = new List<MatchedTexture>();
-                        foundTex.list.Add(matchTexture);
-                        foundTex.name = name;
-                        foundTex.crc = crc;
-                        textures.Add(foundTex);
-                    }
-                }
-            }
-
-            package.Dispose();
-
-            return errors;
-        }
-
         static private void loadTexturesMap(MeType gameId, List<FoundTexture> textures)
         {
             Stream fs;
@@ -368,8 +102,7 @@ namespace MassEffectModder
             }
         }
 
-        public string PrepareListOfTextures(TexExplorer texEplorer,
-            MainWindow mainWindow, ref string log, bool force = false)
+        public string PrepareListOfTextures(TexExplorer texEplorer, MainWindow mainWindow, ref string log)
         {
             string errors = "";
             treeScan = null;
@@ -397,8 +130,6 @@ namespace MassEffectModder
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
             string filename = Path.Combine(path, "me" + (int)GameData.gameType + "map.bin");
-            if (force && File.Exists(filename))
-                File.Delete(filename);
 
             if (File.Exists(filename))
             {
@@ -696,7 +427,6 @@ namespace MassEffectModder
                 }
             }
 
-
             using (FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
             {
                 MemoryStream mem = new MemoryStream();
@@ -910,6 +640,266 @@ namespace MassEffectModder
                                 foundTex.alphadxt1 = true;
                             }
                         }
+                        textures.Add(foundTex);
+                    }
+                }
+            }
+
+            package.Dispose();
+
+            return errors;
+        }
+
+        public string PrepareListOfTexturesInstaller(Installer installer, ref string log)
+        {
+            string errors = "";
+            treeScan = null;
+
+            List<FoundTexture> textures = new List<FoundTexture>();
+            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    Assembly.GetExecutingAssembly().GetName().Name);
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            string filename = Path.Combine(path, "me" + (int)GameData.gameType + "map.bin");
+            if (File.Exists(filename))
+                File.Delete(filename);
+
+            GameData.packageFiles.Sort();
+            int count = GameData.packageFiles.Count;
+            for (int i = 0; i < count; i++)
+            {
+                if (GameData.packageFiles[i].Contains("_IT.") ||
+                    GameData.packageFiles[i].Contains("_FR.") ||
+                    GameData.packageFiles[i].Contains("_ES.") ||
+                    GameData.packageFiles[i].Contains("_DE.") ||
+                    GameData.packageFiles[i].Contains("_PLPC.") ||
+                    GameData.packageFiles[i].Contains("_DEU.") ||
+                    GameData.packageFiles[i].Contains("_FRA.") ||
+                    GameData.packageFiles[i].Contains("_ITA.") ||
+                    GameData.packageFiles[i].Contains("_POL."))
+                {
+                    GameData.packageFiles.Add(GameData.packageFiles[i]);
+                    GameData.packageFiles.RemoveAt(i--);
+                    count--;
+                }
+            }
+
+            for (int i = 0; i < GameData.packageFiles.Count; i++)
+            {
+                installer.updateStatusScan("Scanning textures " + (i * 100 / GameData.packageFiles.Count) + "% ");
+                errors += FindTexturesInstaller(textures, GameData.packageFiles[i], ref log);
+            }
+
+            for (int k = 0; k < textures.Count; k++)
+            {
+                for (int t = 0; t < textures[k].list.Count; t++)
+                {
+                    uint mipmapOffset = textures[k].list[t].mipmapOffset;
+                    if (textures[k].list[t].slave)
+                    {
+                        MatchedTexture slaveTexture = textures[k].list[t];
+                        string basePkgName = slaveTexture.basePackageName;
+                        if (basePkgName == Path.GetFileNameWithoutExtension(slaveTexture.path).ToUpperInvariant())
+                            throw new Exception();
+                        for (int j = 0; j < textures[k].list.Count; j++)
+                        {
+                            if (!textures[k].list[j].slave &&
+                               textures[k].list[j].mipmapOffset == mipmapOffset &&
+                               textures[k].list[j].packageName == basePkgName)
+                            {
+                                slaveTexture.linkToMaster = j;
+                                textures[k].list[t] = slaveTexture;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (!textures[k].list.Exists(s => s.slave) &&
+                    textures[k].list.Exists(s => s.weakSlave))
+                {
+                    List<MatchedTexture> texList = new List<MatchedTexture>();
+                    for (int t = 0; t < textures[k].list.Count; t++)
+                    {
+                        MatchedTexture tex = textures[k].list[t];
+                        if (tex.weakSlave)
+                            texList.Add(tex);
+                        else
+                            texList.Insert(0, tex);
+                    }
+                    FoundTexture f = textures[k];
+                    f.list = texList;
+                    textures[k] = f;
+                    if (textures[k].list[0].weakSlave)
+                        continue;
+
+                    for (int t = 0; t < textures[k].list.Count; t++)
+                    {
+                        if (textures[k].list[t].weakSlave)
+                        {
+                            MatchedTexture slaveTexture = textures[k].list[t];
+                            string basePkgName = slaveTexture.basePackageName;
+                            if (basePkgName == Path.GetFileNameWithoutExtension(slaveTexture.path).ToUpperInvariant())
+                                throw new Exception();
+                            for (int j = 0; j < textures[k].list.Count; j++)
+                            {
+                                if (!textures[k].list[j].weakSlave &&
+                                   textures[k].list[j].packageName == basePkgName)
+                                {
+                                    slaveTexture.linkToMaster = j;
+                                    textures[k].list[t] = slaveTexture;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            using (FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
+            {
+                MemoryStream mem = new MemoryStream();
+                mem.WriteUInt32(TexExplorer.textureMapBinTag);
+                mem.WriteUInt32(TexExplorer.textureMapBinVersion);
+                mem.WriteInt32(textures.Count);
+                for (int i = 0; i < textures.Count; i++)
+                {
+                    mem.WriteInt32(textures[i].name.Length);
+                    mem.WriteStringASCII(textures[i].name);
+                    mem.WriteUInt32(textures[i].crc);
+                    mem.WriteInt32(textures[i].list.Count);
+                    for (int k = 0; k < textures[i].list.Count; k++)
+                    {
+                        mem.WriteInt32(textures[i].list[k].exportID);
+                        mem.WriteInt32(textures[i].list[k].linkToMaster);
+                        mem.WriteInt32(textures[i].list[k].path.Length);
+                        mem.WriteStringASCII(textures[i].list[k].path);
+                    }
+                }
+                mem.WriteInt32(GameData.packageFiles.Count);
+                for (int i = 0; i < GameData.packageFiles.Count; i++)
+                {
+                    string s = GameData.RelativeGameData(GameData.packageFiles[i]);
+                    mem.WriteInt32(s.Length);
+                    mem.WriteStringASCII(s);
+                }
+                mem.SeekBegin();
+
+                fs.WriteFromStream(mem, mem.Length);
+            }
+
+            treeScan = textures;
+
+            path = @"\BioGame\CookedPC\testVolumeLight_VFX.upk".ToLowerInvariant();
+            for (int i = 0; i < GameData.packageFiles.Count; i++)
+            {
+                if (path != "" && GameData.packageFiles[i].ToLowerInvariant().Contains(path))
+                    continue;
+                try
+                {
+                    using (FileStream fs = new FileStream(GameData.packageFiles[i], FileMode.Open, FileAccess.ReadWrite))
+                    {
+                        fs.SeekEnd();
+                        fs.Seek(-Package.MEMendFileMarker.Length, SeekOrigin.Current);
+                        string marker = fs.ReadStringASCII(Package.MEMendFileMarker.Length);
+                        if (marker != Package.MEMendFileMarker)
+                        {
+                            fs.SeekEnd();
+                            fs.WriteStringASCII(Package.MEMendFileMarker);
+                        }
+                    }
+                }
+                catch
+                {
+                    errors += "The file is could not be opened to write marker, skipped: " + GameData.packageFiles[i] + Environment.NewLine;
+                }
+            }
+
+            return errors;
+        }
+
+        private string FindTexturesInstaller(List<FoundTexture> textures, string packagePath, ref string log)
+        {
+            string errors = "";
+            Package package = null;
+
+            try
+            {
+                package = new Package(packagePath);
+            }
+            catch (Exception e)
+            {
+                string err = "";
+                err += "---- Start --------------------------------------------" + Environment.NewLine;
+                err += "Issue with open package file: " + packagePath + Environment.NewLine;
+                err += e.Message + Environment.NewLine + Environment.NewLine;
+                err += e.StackTrace + Environment.NewLine + Environment.NewLine;
+                err += "---- End ----------------------------------------------" + Environment.NewLine + Environment.NewLine;
+                errors += err;
+                log += err;
+                return errors;
+            }
+            for (int i = 0; i < package.exportsTable.Count; i++)
+            {
+                int id = package.getClassNameId(package.exportsTable[i].classId);
+                if (id == package.nameIdTexture2D ||
+                    id == package.nameIdLightMapTexture2D ||
+                    id == package.nameIdShadowMapTexture2D ||
+                    id == package.nameIdTextureFlipBook)
+                {
+                    Texture texture = new Texture(package, i, package.getExportData(i));
+                    if (!texture.hasImageData())
+                        continue;
+
+                    Texture.MipMap mipmap = texture.getTopMipmap();
+                    string name = package.exportsTable[i].objectName;
+                    MatchedTexture matchTexture = new MatchedTexture();
+                    matchTexture.exportID = i;
+                    matchTexture.path = GameData.RelativeGameData(packagePath);
+                    matchTexture.packageName = texture.packageName;
+                    matchTexture.removeEmptyMips = texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty);
+                    matchTexture.numMips = texture.mipMapsList.FindAll(s => s.storageType != Texture.StorageTypes.empty).Count;
+                    if (GameData.gameType == MeType.ME1_TYPE)
+                    {
+                        matchTexture.basePackageName = texture.basePackageName;
+                        matchTexture.slave = texture.slave;
+                        matchTexture.weakSlave = texture.weakSlave;
+                        matchTexture.linkToMaster = -1;
+                        if (matchTexture.slave)
+                            matchTexture.mipmapOffset = mipmap.dataOffset;
+                        else
+                            matchTexture.mipmapOffset = package.exportsTable[i].dataOffset + (uint)texture.properties.propertyEndOffset + mipmap.internalOffset;
+                    }
+
+                    uint crc = 0;
+                    try
+                    {
+                        crc = texture.getCrcTopMipmap();
+                    }
+                    catch
+                    {
+                    }
+                    if (crc == 0)
+                    {
+                        errors += "Error: Texture " + package.exportsTable[i].objectName + " is broken in package: " + packagePath + ", skipping..." + Environment.NewLine;
+                        log += "Error: Texture " + package.exportsTable[i].objectName + " is broken in package: " + packagePath + ", skipping..." + Environment.NewLine;
+                        continue;
+                    }
+
+                    FoundTexture foundTexName = textures.Find(s => s.crc == crc);
+                    if (foundTexName.crc != 0)
+                    {
+                        if (matchTexture.slave)
+                            foundTexName.list.Add(matchTexture);
+                        else
+                            foundTexName.list.Insert(0, matchTexture);
+                    }
+                    else
+                    {
+                        FoundTexture foundTex = new FoundTexture();
+                        foundTex.list = new List<MatchedTexture>();
+                        foundTex.list.Add(matchTexture);
+                        foundTex.name = name;
+                        foundTex.crc = crc;
                         textures.Add(foundTex);
                     }
                 }
