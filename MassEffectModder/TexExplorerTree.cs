@@ -87,7 +87,7 @@ namespace MassEffectModder
                 {
                     MatchedTexture matched = new MatchedTexture();
                     matched.exportID = fs.ReadInt32();
-                    if (GameData.gameType == MeType.ME1_TYPE)
+                    if (gameId == MeType.ME1_TYPE)
                     {
                         matched.linkToMaster = fs.ReadInt16();
                         if (matched.linkToMaster != -1)
