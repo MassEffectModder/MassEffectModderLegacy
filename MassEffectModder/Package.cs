@@ -77,6 +77,7 @@ namespace MassEffectModder
         long dataOffset;
         uint exportsEndOffset = 0;
         public CompressionType compressionType;
+        public Stream packageStream;
         public FileStream packageFile;
         public string packagePath;
         MemoryStream packageData;
@@ -425,13 +426,16 @@ namespace MassEffectModder
             if (!File.Exists(filename))
                 throw new Exception("File not found: " + filename);
 
-            packageFile = new FileStream(filename, FileMode.Open, FileAccess.Read);
+            if (memMode)
+                packageStream = new MemoryStream(File.ReadAllBytes(filename));
+            else
+                packageStream = new FileStream(filename, FileMode.Open, FileAccess.Read);
             try
             {
-                if (packageFile.ReadUInt32() != packageTag)
+                if (packageStream.ReadUInt32() != packageTag)
                     throw new Exception("Wrong PCC tag: " + filename);
 
-                ushort ver = packageFile.ReadUInt16();
+                ushort ver = packageStream.ReadUInt16();
                 if (ver == packageFileVersionME1)
                 {
                     packageHeaderSize = packageHeaderSizeME1;
@@ -450,8 +454,8 @@ namespace MassEffectModder
                 else
                     throw new Exception("Wrong PCC version: " + filename);
 
-                packageFile.SeekBegin();
-                packageHeader = packageFile.ReadToBuffer(packageHeaderSize);
+                packageStream.SeekBegin();
+                packageHeader = packageStream.ReadToBuffer(packageHeaderSize);
             }
             catch
             {
@@ -460,14 +464,14 @@ namespace MassEffectModder
                 throw new Exception("Problem with PCC file header: " + filename);
             }
 
-            compressionType = (CompressionType)packageFile.ReadUInt32();
+            compressionType = (CompressionType)packageStream.ReadUInt32();
 
             if (headerOnly)
                 return;
 
-            numChunks = packageFile.ReadUInt32();
+            numChunks = packageStream.ReadUInt32();
 
-            dataOffset = packageFile.Position;
+            dataOffset = packageStream.Position;
 
             if (compressed)
             {
@@ -475,24 +479,24 @@ namespace MassEffectModder
                 for (int i = 0; i < numChunks; i++)
                 {
                     Chunk chunk = new Chunk();
-                    chunk.uncomprOffset = packageFile.ReadUInt32();
-                    chunk.uncomprSize = packageFile.ReadUInt32();
-                    chunk.comprOffset = packageFile.ReadUInt32();
-                    chunk.comprSize = packageFile.ReadUInt32();
+                    chunk.uncomprOffset = packageStream.ReadUInt32();
+                    chunk.uncomprSize = packageStream.ReadUInt32();
+                    chunk.comprOffset = packageStream.ReadUInt32();
+                    chunk.comprSize = packageStream.ReadUInt32();
                     chunks.Add(chunk);
                 }
             }
-            long filePos = packageFile.Position;
-            someTag = packageFile.ReadUInt32();
+            long filePos = packageStream.Position;
+            someTag = packageStream.ReadUInt32();
             if (version == packageFileVersionME2)
-                packageFile.SkipInt32(); // const 0
+                packageStream.SkipInt32(); // const 0
 
-            loadExtraNames(packageFile);
+            loadExtraNames(packageStream);
 
-            if (compressed && packageFile.Position != chunks[0].comprOffset)
+            if (compressed && packageStream.Position != chunks[0].comprOffset)
                 throw new Exception();
 
-            dataOffset += packageFile.Position - filePos;
+            dataOffset += packageStream.Position - filePos;
 
             if (compressed && dataOffset != chunks[0].uncomprOffset)
                 throw new Exception();
@@ -508,7 +512,7 @@ namespace MassEffectModder
             if (compressed)
                 loadNames(packageData);
             else
-                loadNames(packageFile);
+                loadNames(packageStream);
 
             if (endOfTablesOffset < namesOffset)
             {
@@ -519,7 +523,7 @@ namespace MassEffectModder
             if (compressed)
                 loadImports(packageData);
             else
-                loadImports(packageFile);
+                loadImports(packageStream);
 
             if (endOfTablesOffset < importsOffset)
             {
@@ -530,7 +534,7 @@ namespace MassEffectModder
             if (compressed)
                 loadExports(packageData);
             else
-                loadExports(packageFile);
+                loadExports(packageStream);
 
             //loadImportsNames(); // not used by tool
             //loadExportsNames(); // not used by tool
@@ -562,15 +566,15 @@ namespace MassEffectModder
                         }
                         chunkCache = new MemoryStream();
                         currentChunk = c;
-                        packageFile.JumpTo(chunk.comprOffset);
-                        uint blockTag = packageFile.ReadUInt32(); // block tag
+                        packageStream.JumpTo(chunk.comprOffset);
+                        uint blockTag = packageStream.ReadUInt32(); // block tag
                         if (blockTag != packageTag)
                             throw new Exception("not match");
-                        uint blockSize = packageFile.ReadUInt32(); // max block size
+                        uint blockSize = packageStream.ReadUInt32(); // max block size
                         if (blockSize != maxBlockSize)
                             throw new Exception("not match");
-                        uint compressedChunkSize = packageFile.ReadUInt32(); // compressed chunk size
-                        uint uncompressedChunkSize = packageFile.ReadUInt32();
+                        uint compressedChunkSize = packageStream.ReadUInt32(); // compressed chunk size
+                        uint uncompressedChunkSize = packageStream.ReadUInt32();
                         if (uncompressedChunkSize != chunk.uncomprSize)
                             throw new Exception("not match");
 
@@ -582,8 +586,8 @@ namespace MassEffectModder
                         for (uint b = 0; b < blocksCount; b++)
                         {
                             ChunkBlock block = new ChunkBlock();
-                            block.comprSize = packageFile.ReadUInt32();
-                            block.uncomprSize = packageFile.ReadUInt32();
+                            block.comprSize = packageStream.ReadUInt32();
+                            block.uncomprSize = packageStream.ReadUInt32();
                             blocks.Add(block);
                         }
                         chunk.blocks = blocks;
@@ -591,7 +595,7 @@ namespace MassEffectModder
                         for (int b = 0; b < blocks.Count; b++)
                         {
                             ChunkBlock block = blocks[b];
-                            block.compressedBuffer = packageFile.ReadToBuffer(block.comprSize);
+                            block.compressedBuffer = packageStream.ReadToBuffer(block.comprSize);
                             block.uncompressedBuffer = new byte[maxBlockSize * 2];
                             blocks[b] = block;
                         }
@@ -635,8 +639,8 @@ namespace MassEffectModder
             }
             else
             {
-                packageFile.JumpTo(offset);
-                output.WriteFromStream(packageFile, length);
+                packageStream.JumpTo(offset);
+                output.WriteFromStream(packageStream, length);
             }
         }
 
@@ -767,8 +771,8 @@ namespace MassEffectModder
         {
             if (!mod)
             {
-                packageFile.JumpTo(namesOffset);
-                output.WriteFromStream(packageFile, namesTableEnd - namesOffset);
+                packageStream.JumpTo(namesOffset);
+                output.WriteFromStream(packageStream, namesTableEnd - namesOffset);
             }
             else
             {
@@ -901,8 +905,8 @@ namespace MassEffectModder
         {
             if (!mod)
             {
-                packageFile.JumpTo(importsOffset);
-                output.WriteFromStream(packageFile, importsTableEnd - importsOffset);
+                packageStream.JumpTo(importsOffset);
+                output.WriteFromStream(packageStream, importsTableEnd - importsOffset);
             }
             else
             {
@@ -1012,7 +1016,7 @@ namespace MassEffectModder
             if (forceZlib && packageFileVersion == packageFileVersionME1)
                 modified = true;
 
-            if (packageFile.Length == 0 || !modified && !forceDecompressed && !forceCompressed)
+            if (packageStream.Length == 0 || !modified && !forceDecompressed && !forceCompressed)
                 return false;
 
             if (forceCompressed && forceDecompressed)
@@ -1020,9 +1024,9 @@ namespace MassEffectModder
 
             if (!appendMarker)
             {
-                packageFile.SeekEnd();
-                packageFile.Seek(-MEMendFileMarker.Length, SeekOrigin.Current);
-                string marker = packageFile.ReadStringASCII(MEMendFileMarker.Length);
+                packageStream.SeekEnd();
+                packageStream.Seek(-MEMendFileMarker.Length, SeekOrigin.Current);
+                string marker = packageStream.ReadStringASCII(MEMendFileMarker.Length);
                 if (marker == MEMendFileMarker)
                     appendMarker = true;
             }
@@ -1033,8 +1037,8 @@ namespace MassEffectModder
 
             if (!compressed)
             {
-                packageFile.SeekBegin();
-                tempOutput.WriteFromStream(packageFile, sortedExports[0].dataOffset);
+                packageStream.SeekBegin();
+                tempOutput.WriteFromStream(packageStream, sortedExports[0].dataOffset);
             }
             else
             {
@@ -1147,12 +1151,13 @@ namespace MassEffectModder
                 tempOutput.SeekBegin();
                 tempOutput.Write(packageHeader, 0, packageHeader.Length);
             }
-            packageFile.Close();
+            packageStream.Close();
             if (!memoryMode && Directory.Exists(packagePath + "-exports"))
                 Directory.Delete(packagePath + "-exports", true);
 
             if (filename == null)
-                filename = packageFile.Name;
+                filename = packagePath;
+
             using (FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
             {
                 if (fs == null)
@@ -1327,8 +1332,8 @@ namespace MassEffectModder
                 packageData.Close();
                 packageData.Dispose();
             }
-            packageFile.Close();
-            packageFile.Dispose();
+            packageStream.Close();
+            packageStream.Dispose();
             if (!memoryMode && modified && Directory.Exists(packagePath + "-exports"))
                 Directory.Delete(packagePath + "-exports", true);
         }

@@ -133,7 +133,7 @@ namespace MassEffectModder
 
             restOfData = textureData.ReadToBuffer(textureData.Length - textureData.Position);
 
-            packagePath = package.packageFile.Name;
+            packagePath = package.packagePath;
             packageName = Path.GetFileNameWithoutExtension(packagePath).ToUpper();
             if (GameData.gameType == MeType.ME1_TYPE)
             {

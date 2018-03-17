@@ -148,7 +148,7 @@ namespace MassEffectModder
                 updateStatusLabel("Repack PCC file " + (i + 1) + " of " + GameData.packageFiles.Count);
                 try
                 {
-                    Package package = new Package(GameData.packageFiles[i], true, true);
+                    Package package = new Package(GameData.packageFiles[i], false, true);
                     if (package.compressed && package.compressionType != Package.CompressionType.Zlib)
                     {
                         package.Dispose();
@@ -200,7 +200,7 @@ namespace MassEffectModder
                 updateStatusLabel("Repack PCC file " + (i + 1) + " of " + GameData.packageFiles.Count);
                 try
                 {
-                    Package package = new Package(GameData.packageFiles[i], true, true);
+                    Package package = new Package(GameData.packageFiles[i], false, true);
                     if (!package.compressed)
                     {
                         package.Dispose();
@@ -687,7 +687,7 @@ namespace MassEffectModder
                         {
                             if (Path.GetFileName(mods[i]).ToLowerInvariant() == Path.GetFileName(GameData.packageFiles[v]).ToLowerInvariant())
                             {
-                                modPkg = new Package(mods[i], true);
+                                modPkg = new Package(mods[i]);
                                 vanillaPkg = new Package(GameData.packageFiles[v]);
                                 if (modPkg.exportsTable.Count != vanillaPkg.exportsTable.Count ||
                                     modPkg.namesTable.Count != vanillaPkg.namesTable.Count ||

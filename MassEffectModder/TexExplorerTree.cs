@@ -529,7 +529,7 @@ namespace MassEffectModder
 
             try
             {
-                package = new Package(GameData.GamePath + packagePath);
+                package = new Package(GameData.GamePath + packagePath, true);
             }
             catch (Exception e)
             {
@@ -824,7 +824,7 @@ namespace MassEffectModder
 
             try
             {
-                package = new Package(packagePath);
+                package = new Package(packagePath, true);
             }
             catch (Exception e)
             {

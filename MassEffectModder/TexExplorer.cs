@@ -288,7 +288,7 @@ namespace MassEffectModder
                 if (previewShow)
                 {
                     MatchedTexture nodeTexture = node.textures[index].list[0];
-                    Package package = new Package(GameData.GamePath + nodeTexture.path, true);
+                    Package package = new Package(GameData.GamePath + nodeTexture.path);
                     Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
                     byte[] textureData = texture.getTopImageData();
                     if (textureData != null)
@@ -310,7 +310,7 @@ namespace MassEffectModder
                     for (int index2 = 0; index2 < (detailedInfo ? node.textures[index].list.Count : 1); index2++)
                     {
                         MatchedTexture nodeTexture = node.textures[index].list[index2];
-                        Package package = new Package(GameData.GamePath + nodeTexture.path, true);
+                        Package package = new Package(GameData.GamePath + nodeTexture.path);
                         Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
                         text += "\nTexture instance: " + (index2 + 1) + "\n";
                         text += "  Texture name:  " + package.exportsTable[nodeTexture.exportID].objectName + "\n";
