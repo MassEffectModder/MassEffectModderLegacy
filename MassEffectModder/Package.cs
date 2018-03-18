@@ -1012,10 +1012,6 @@ namespace MassEffectModder
                     compressionType != CompressionType.Zlib)
                 modified = true;
 
-            // WA Allow force back to LZO2
-            if (forceZlib && packageFileVersion == packageFileVersionME1)
-                modified = true;
-
             if (packageStream.Length == 0 || !modified && !forceDecompressed && !forceCompressed)
                 return false;
 
@@ -1201,9 +1197,6 @@ namespace MassEffectModder
 
                     if (forceZlib)
                         compressionType = CompressionType.Zlib; // override compression type to Zlib
-                    // WA Force back to LZO2 compression
-                    if (packageFileVersion == packageFileVersionME1 && compressionType == CompressionType.Zlib)
-                        compressionType = CompressionType.LZO;
                     fs.Write(packageHeader, 0, packageHeader.Length);
                     fs.WriteUInt32((uint)compressionType);
                     fs.WriteUInt32((uint)chunks.Count);
