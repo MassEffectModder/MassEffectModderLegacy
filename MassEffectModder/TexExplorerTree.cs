@@ -263,10 +263,11 @@ namespace MassEffectModder
                 }
             }
 
-            List<string> addedFiles = new List<string>();
-            List<string> modifiedFiles = new List<string>();
             if (!generateBuiltinMapFiles)
             {
+                List<string> addedFiles = new List<string>();
+                List<string> modifiedFiles = new List<string>();
+
                 loadTexturesMap(GameData.gameType, textures);
 
                 List<string> sortedFiles = new List<string>();
@@ -316,38 +317,46 @@ namespace MassEffectModder
                     else if (!foundPkg)
                         addedFiles.Add(GameData.RelativeGameData(GameData.packageFiles[i]));
                 }
-            }
 
-            int totalPackages = modifiedFiles.Count + addedFiles.Count;
-            int currentPackage = 0;
-            for (int i = 0; i < modifiedFiles.Count; i++, currentPackage++)
-            {
-                mainWindow.updateStatusLabel("Finding textures in package " + (currentPackage + 1) + " of " + totalPackages + " - " + modifiedFiles[i]);
-                errors += FindTextures(textures, modifiedFiles[i], true, ref log);
-            }
-
-            for (int i = 0; i < addedFiles.Count; i++, currentPackage++)
-            {
-                mainWindow.updateStatusLabel("Finding textures in package " + (currentPackage + 1) + " of " + totalPackages + " - " + addedFiles[i]);
-                errors += FindTextures(textures, addedFiles[i], false, ref log);
-            }
-
-            for (int k = 0; k < textures.Count; k++)
-            {
-                bool found = false;
-                for (int t = 0; t < textures[k].list.Count; t++)
+                int totalPackages = modifiedFiles.Count + addedFiles.Count;
+                int currentPackage = 0;
+                for (int i = 0; i < modifiedFiles.Count; i++, currentPackage++)
                 {
-                    if (textures[k].list[t].path != "")
+                    mainWindow.updateStatusLabel("Finding textures in package " + (currentPackage + 1) + " of " + totalPackages + " - " + modifiedFiles[i]);
+                    errors += FindTextures(textures, modifiedFiles[i], true, ref log);
+                }
+
+                for (int i = 0; i < addedFiles.Count; i++, currentPackage++)
+                {
+                    mainWindow.updateStatusLabel("Finding textures in package " + (currentPackage + 1) + " of " + totalPackages + " - " + addedFiles[i]);
+                    errors += FindTextures(textures, addedFiles[i], false, ref log);
+                }
+
+                for (int k = 0; k < textures.Count; k++)
+                {
+                    bool found = false;
+                    for (int t = 0; t < textures[k].list.Count; t++)
                     {
-                        found = true;
-                        break;
+                        if (textures[k].list[t].path != "")
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found)
+                    {
+                        textures[k].list.Clear();
+                        textures.Remove(textures[k]);
+                        k--;
                     }
                 }
-                if (!found)
+            }
+            else
+            {
+                for (int i = 0; i < GameData.packageFiles.Count; i++)
                 {
-                    textures[k].list.Clear();
-                    textures.Remove(textures[k]);
-                    k--;
+                    mainWindow.updateStatusLabel("Finding textures in package " + (i + 1) + " of " + GameData.packageFiles.Count + " - " + GameData.packageFiles[i]);
+                    FindTextures(textures, GameData.RelativeGameData(GameData.packageFiles[i]), false, ref log);
                 }
             }
 
