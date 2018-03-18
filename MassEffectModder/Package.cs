@@ -687,6 +687,59 @@ namespace MassEffectModder
             modified = true;
         }
 
+        private void MoveExportDataToEnd(int id)
+        {
+            byte[] data = getExportData(id);
+            ExportEntry export = exportsTable[id];
+            export.dataOffset = exportsEndOffset;
+            exportsEndOffset = export.dataOffset + export.dataSize;
+
+            if (memoryMode)
+            {
+                export.newData = new byte[export.dataSize];
+                Array.Copy(data, export.newData, export.dataSize);
+            }
+            else
+            {
+                string packageDir = Path.GetDirectoryName(packagePath);
+                Directory.CreateDirectory(packagePath + "-exports");
+                string exportFile = packagePath + "-exports\\exportId-" + id;
+                if (File.Exists(exportFile))
+                    File.Delete(exportFile);
+                using (FileStream fs = new FileStream(exportFile, FileMode.Create, FileAccess.Write))
+                {
+                    fs.WriteFromBuffer(data);
+                }
+                export.updatedData = true;
+            }
+
+            exportsTable[id] = export;
+            modified = true;
+        }
+
+        private bool ReserveSpaceBeforeExportData(int space)
+        {
+            List<ExportEntry> sortedExports = exportsTable.OrderBy(s => s.dataOffset).ToList();
+            uint expandDataSize = 0;// endOfTablesOffset - sortedExports[0].dataSize;
+            for (int i = 0; i < sortedExports.Count; i++)
+            {
+                int id = getClassNameId(sortedExports[i].classId);
+                if (id == nameIdTexture2D ||
+                    id == nameIdLightMapTexture2D ||
+                    id == nameIdShadowMapTexture2D ||
+                    id == nameIdTextureFlipBook)
+                {
+                    return false;
+                }
+                expandDataSize += sortedExports[i].dataSize;
+                MoveExportDataToEnd((int)sortedExports[i].id);
+                if (expandDataSize >= space)
+                    return true;
+            }
+
+            return false;
+        }
+
         public int getNameId(string name)
         {
             int i = namesTable.FindIndex(s => s.name == name);
@@ -996,7 +1049,12 @@ namespace MassEffectModder
         {
             if (forceCompressed && packageFileVersion == packageFileVersionME1)
                 forceCompressed = false;
-
+#if false
+            // detect shader cache
+            if (forceCompressed && packageFileVersion)
+                if (exportsTable.Exists(x => x.objectName == "SeekFreeShaderCache" && getClassName(x.classId) == "ShaderCache"))
+                    forceCompressed = false;
+#endif
             if (forceZlib && packageFileVersion == packageFileVersionME2 &&
                     compressionType != CompressionType.Zlib)
                 modified = true;
@@ -1016,10 +1074,8 @@ namespace MassEffectModder
                     appendMarker = true;
             }
 
-            MemoryStream tempOutput = new MemoryStream();
-
             List<ExportEntry> sortedExports = exportsTable.OrderBy(s => s.dataOffset).ToList();
-
+            MemoryStream tempOutput = new MemoryStream();
             if (!compressed)
             {
                 packageStream.SeekBegin();
@@ -1118,6 +1174,7 @@ namespace MassEffectModder
                         else
                             compressionType = CompressionType.LZO;
                     }
+                    endOfTablesOffset = sortedExports[0].dataOffset;
                     compressed = true;
                 }
                 else
