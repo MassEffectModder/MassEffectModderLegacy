@@ -720,16 +720,23 @@ namespace MassEffectModder
         private bool ReserveSpaceBeforeExportData(int space)
         {
             List<ExportEntry> sortedExports = exportsTable.OrderBy(s => s.dataOffset).ToList();
-            uint expandDataSize = 0;// endOfTablesOffset - sortedExports[0].dataSize;
+            if (endOfTablesOffset > sortedExports[0].dataOffset)
+                throw new Exception();
+            uint expandDataSize = sortedExports[0].dataOffset - endOfTablesOffset;
+            if (expandDataSize >= space)
+                return true;
             for (int i = 0; i < sortedExports.Count; i++)
             {
-                int id = getClassNameId(sortedExports[i].classId);
-                if (id == nameIdTexture2D ||
-                    id == nameIdLightMapTexture2D ||
-                    id == nameIdShadowMapTexture2D ||
-                    id == nameIdTextureFlipBook)
+                if (GameData.gameType == MeType.ME1_TYPE)
                 {
-                    return false;
+                    int id = getClassNameId(sortedExports[i].classId);
+                    if (id == nameIdTexture2D ||
+                        id == nameIdLightMapTexture2D ||
+                        id == nameIdShadowMapTexture2D ||
+                        id == nameIdTextureFlipBook)
+                    {
+                        return false;
+                    }
                 }
                 expandDataSize += sortedExports[i].dataSize;
                 MoveExportDataToEnd((int)sortedExports[i].id);
