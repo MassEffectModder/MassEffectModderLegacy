@@ -426,10 +426,7 @@ namespace MassEffectModder
             if (!File.Exists(filename))
                 throw new Exception("File not found: " + filename);
 
-            if (memMode)
-                packageStream = new MemoryStream(File.ReadAllBytes(filename));
-            else
-                packageStream = new FileStream(filename, FileMode.Open, FileAccess.Read);
+            packageStream = new FileStream(filename, FileMode.Open, FileAccess.Read);
             try
             {
                 if (packageStream.ReadUInt32() != packageTag)
