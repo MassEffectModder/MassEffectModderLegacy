@@ -886,9 +886,12 @@ namespace MassEffectModder
         }
 
         static public bool convertDataModtoMem(string inputDir, string memFilePath,
-            MeType gameId, MainWindow mainWindow, List<FoundTexture> textures, ref string errors, bool onlyIndividual = false)
+            MeType gameId, MainWindow mainWindow, ref string errors, bool onlyIndividual = false)
         {
             string[] files = null;
+            List<FoundTexture> textures = new List<FoundTexture>();
+
+            TreeScan.loadTexturesMap(GameData.gameType, textures);
 
             List<string> list;
             List<string> list2;

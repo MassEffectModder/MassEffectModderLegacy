@@ -33,7 +33,7 @@ namespace MassEffectModder
         public List<FoundTexture> treeScan = null;
         private bool generateBuiltinMapFiles = false; // change to true to enable map files generation
 
-        static private void loadTexturesMap(MeType gameId, List<FoundTexture> textures)
+        static public void loadTexturesMap(MeType gameId, List<FoundTexture> textures)
         {
             Stream fs;
             byte[] buffer = null;
