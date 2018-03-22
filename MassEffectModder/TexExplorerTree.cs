@@ -309,7 +309,6 @@ namespace MassEffectModder
                                 break;
                             }
                             index = p;
-                            break;
                         }
                     }
                     if (foundPkg && modified)
