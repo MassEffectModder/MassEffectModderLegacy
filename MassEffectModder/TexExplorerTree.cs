@@ -91,11 +91,15 @@ namespace MassEffectModder
                     {
                         matched.linkToMaster = fs.ReadInt16();
                         if (matched.linkToMaster != -1)
+                        {
                             matched.slave = true;
+                            matched.basePackageName = fs.ReadStringASCIINull();
+                        }
                     }
                     matched.removeEmptyMips = fs.ReadByte() != 0;
                     matched.numMips = fs.ReadByte();
                     matched.path = pkgs[fs.ReadInt16()];
+                    matched.packageName = Path.GetFileNameWithoutExtension(matched.path).ToUpper();
                     texture.list.Add(matched);
                 }
                 textures.Add(texture);
@@ -469,7 +473,11 @@ namespace MassEffectModder
                         if (generateBuiltinMapFiles)
                         {
                             if (GameData.gameType == MeType.ME1_TYPE)
+                            {
                                 mem.WriteInt16((short)textures[i].list[k].linkToMaster);
+                                if (textures[i].list[k].linkToMaster != -1)
+                                    mem.WriteStringASCIINull(textures[i].list[k].basePackageName);
+                            }
                             mem.WriteByte(textures[i].list[k].removeEmptyMips ? (byte)1 : (byte)0);
                             mem.WriteByte((byte)textures[i].list[k].numMips);
                             mem.WriteInt16((short)pkgs.IndexOf(textures[i].list[k].path));
