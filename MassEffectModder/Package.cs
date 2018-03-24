@@ -722,8 +722,12 @@ namespace MassEffectModder
             uint expandDataSize = sortedExports[0].dataOffset - endOfTablesOffset;
             if (expandDataSize >= space)
                 return true;
+            bool tryRun = true;
             for (int i = 0; i < sortedExports.Count; i++)
             {
+                if (sortedExports[i].objectName == "SeekFreeShaderCache" &&
+                        getClassName(sortedExports[i].classId) == "ShaderCache")
+                    return false;
                 if (GameData.gameType == MeType.ME1_TYPE)
                 {
                     int id = getClassNameId(sortedExports[i].classId);
@@ -736,9 +740,19 @@ namespace MassEffectModder
                     }
                 }
                 expandDataSize += sortedExports[i].dataSize;
-                MoveExportDataToEnd((int)sortedExports[i].id);
+                if (!tryRun)
+                    MoveExportDataToEnd((int)sortedExports[i].id);
                 if (expandDataSize >= space)
-                    return true;
+                {
+                    if (!tryRun)
+                        return true;
+                    else
+                    {
+                        expandDataSize = sortedExports[0].dataOffset - endOfTablesOffset;
+                        i = -1;
+                        tryRun = false;
+                    }
+                }
             }
 
             return false;
@@ -1055,7 +1069,7 @@ namespace MassEffectModder
                 forceCompressed = false;
 #if false
             // detect shader cache
-            if (forceCompressed && packageFileVersion)
+            if (forceCompressed && packageFileVersion == packageFileVersionME3)
                 if (exportsTable.Exists(x => x.objectName == "SeekFreeShaderCache" && getClassName(x.classId) == "ShaderCache"))
                     forceCompressed = false;
 #endif
