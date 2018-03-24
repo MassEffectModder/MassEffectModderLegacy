@@ -269,7 +269,7 @@ namespace MassEffectModder
             {
                 return (flags & (uint)PackageFlags.compressed) != 0;
             }
-            set
+            private set
             {
                 if (value)
                     flags |= (uint)PackageFlags.compressed;
