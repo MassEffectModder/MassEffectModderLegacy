@@ -556,6 +556,10 @@ namespace MassEffectModder
             else
                 loadExports(packageStream);
 
+            loadDepends(packageData);
+            if (version == packageFileVersionME3)
+                loadGuids(packageData);
+
             //loadImportsNames(); // not used by tool
             //loadExportsNames(); // not used by tool
         }
@@ -1076,7 +1080,7 @@ namespace MassEffectModder
 
         private void saveDepends(Stream output)
         {
-            for (int i = 0; i < exportsTable.Count; i++)
+            for (int i = 0; i < dependsTable.Count; i++)
                 output.WriteInt32(dependsTable[i]);
         }
 
