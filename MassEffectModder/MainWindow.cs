@@ -433,7 +433,7 @@ namespace MassEffectModder
 
         private void reportIssueToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Process.Start("https://github.com/MassEffectModder/MassEffectModder/issues");
+            Process.Start("https://discord.gg/chhNDG");
         }
 
         void checkGameFiles(MeType gameType)
