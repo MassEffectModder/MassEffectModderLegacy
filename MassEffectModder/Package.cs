@@ -1206,6 +1206,7 @@ namespace MassEffectModder
             bool spaceForImportsAvailable = true;
             bool spaceForExportsAvailable = true;
 
+            endOfTablesOffset = (uint)tempOutput.Position;
             sortedExports = exportsTable.OrderBy(s => s.dataOffset).ToList();
             long namesOffsetTmp = tempOutput.Position;
             saveNames(tempOutput);
@@ -1225,6 +1226,7 @@ namespace MassEffectModder
             {
                 namesOffset = (uint)namesOffsetTmp;
 
+                endOfTablesOffset = (uint)tempOutput.Position;
                 sortedExports = exportsTable.OrderBy(s => s.dataOffset).ToList();
                 long importsOffsetTmp = tempOutput.Position;
                 saveImports(tempOutput);
@@ -1244,6 +1246,7 @@ namespace MassEffectModder
                 {
                     importsOffset = (uint)importsOffsetTmp;
 
+                    endOfTablesOffset = (uint)tempOutput.Position;
                     sortedExports = exportsTable.OrderBy(s => s.dataOffset).ToList();
                     long exportsOffsetTmp = tempOutput.Position;
                     saveExports(tempOutput);
