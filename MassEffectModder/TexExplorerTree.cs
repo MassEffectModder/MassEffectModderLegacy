@@ -528,6 +528,11 @@ namespace MassEffectModder
                 {
                     errors += mipmaps.removeMipMapsME2ME3(textures, mainWindow);
                 }
+
+                if (GameData.gameType == MeType.ME3_TYPE)
+                {
+                    TOCBinFile.UpdateAllTOCBinFiles();
+                }
             }
             treeScan = textures;
 
