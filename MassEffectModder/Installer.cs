@@ -1367,7 +1367,7 @@ namespace MassEffectModder
                 }
             }
 
-            if (splashDemiurge != "")
+            if (splashDemiurge != "" && checkBoxOptionBik.Checked)
             {
                 if (installSplashVideo(splashDemiurge))
                     log += "Splash video mod installed." + Environment.NewLine + Environment.NewLine;
