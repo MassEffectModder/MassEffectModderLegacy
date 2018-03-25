@@ -1211,8 +1211,15 @@ namespace MassEffectModder
             saveNames(tempOutput);
             if (tempOutput.Position > sortedExports[0].dataOffset)
             {
-                if (!ReserveSpaceBeforeExportData((int)(tempOutput.Position - sortedExports[0].dataOffset)))
+                if (ReserveSpaceBeforeExportData((int)(tempOutput.Position - sortedExports[0].dataOffset)))
+                {
+                    tempOutput.JumpTo(namesOffsetTmp);
+                    saveNames(tempOutput);
+                }
+                else
+                {
                     spaceForNamesAvailable = false;
+                }
             }
             if (spaceForNamesAvailable)
             {
@@ -1223,8 +1230,15 @@ namespace MassEffectModder
                 saveImports(tempOutput);
                 if (tempOutput.Position > sortedExports[0].dataOffset)
                 {
-                    if (!ReserveSpaceBeforeExportData((int)(tempOutput.Position - sortedExports[0].dataOffset)))
+                    if (ReserveSpaceBeforeExportData((int)(tempOutput.Position - sortedExports[0].dataOffset)))
+                    {
+                        tempOutput.JumpTo(importsOffsetTmp);
+                        saveImports(tempOutput);
+                    }
+                    else
+                    {
                         spaceForImportsAvailable = false;
+                    }
                 }
                 if (spaceForImportsAvailable)
                 {
@@ -1235,8 +1249,15 @@ namespace MassEffectModder
                     saveExports(tempOutput);
                     if (tempOutput.Position > sortedExports[0].dataOffset)
                     {
-                        if (!ReserveSpaceBeforeExportData((int)(tempOutput.Position - sortedExports[0].dataOffset)))
+                        if (ReserveSpaceBeforeExportData((int)(tempOutput.Position - sortedExports[0].dataOffset)))
+                        {
+                            tempOutput.JumpTo(exportsOffsetTmp);
+                            saveExports(tempOutput);
+                        }
+                        else
+                        {
                             spaceForExportsAvailable = false;
+                        }
                     }
                     if (spaceForExportsAvailable)
                     {
