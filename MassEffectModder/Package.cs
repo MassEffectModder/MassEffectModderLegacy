@@ -1100,7 +1100,12 @@ namespace MassEffectModder
             dependsTable = new List<int>();
             input.JumpTo(dependsOffset);
             for (int i = 0; i < exportsCount; i++)
-                dependsTable.Add(input.ReadInt32());
+            {
+                if (i * sizeof(int) < (input.Length - dependsOffset)) // WA for empty/partial depends entries - EGM ME3 mod
+                    dependsTable.Add(input.ReadInt32());
+                else
+                    dependsTable.Add(0);
+            }
         }
 
         private void saveDepends(Stream output)
