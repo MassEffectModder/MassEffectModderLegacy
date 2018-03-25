@@ -1101,7 +1101,7 @@ namespace MassEffectModder
             input.JumpTo(dependsOffset);
             for (int i = 0; i < exportsCount; i++)
             {
-                if (i * sizeof(int) < (input.Length - dependsOffset)) // WA for empty/partial depends entries - EGM ME3 mod
+                if (i * sizeof(int) < (input.Length - dependsOffset)) // WA for empty/partial depends entries - EGM and UI SP ME3 mod
                     dependsTable.Add(input.ReadInt32());
                 else
                     dependsTable.Add(0);
@@ -1212,15 +1212,15 @@ namespace MassEffectModder
             bool spaceForExportsAvailable = true;
 
             endOfTablesOffset = (uint)tempOutput.Position;
-            sortedExports = exportsTable.OrderBy(s => s.dataOffset).ToList();
             long namesOffsetTmp = tempOutput.Position;
             saveNames(tempOutput);
             if (tempOutput.Position > sortedExports[0].dataOffset)
             {
-                if (ReserveSpaceBeforeExportData((int)(tempOutput.Position - sortedExports[0].dataOffset)))
+                if (ReserveSpaceBeforeExportData((int)(tempOutput.Position - endOfTablesOffset)))
                 {
                     tempOutput.JumpTo(namesOffsetTmp);
                     saveNames(tempOutput);
+                    sortedExports = exportsTable.OrderBy(s => s.dataOffset).ToList();
                 }
                 else
                 {
@@ -1232,15 +1232,15 @@ namespace MassEffectModder
                 namesOffset = (uint)namesOffsetTmp;
 
                 endOfTablesOffset = (uint)tempOutput.Position;
-                sortedExports = exportsTable.OrderBy(s => s.dataOffset).ToList();
                 long importsOffsetTmp = tempOutput.Position;
                 saveImports(tempOutput);
                 if (tempOutput.Position > sortedExports[0].dataOffset)
                 {
-                    if (ReserveSpaceBeforeExportData((int)(tempOutput.Position - sortedExports[0].dataOffset)))
+                    if (ReserveSpaceBeforeExportData((int)(tempOutput.Position - endOfTablesOffset)))
                     {
                         tempOutput.JumpTo(importsOffsetTmp);
                         saveImports(tempOutput);
+                        sortedExports = exportsTable.OrderBy(s => s.dataOffset).ToList();
                     }
                     else
                     {
@@ -1252,12 +1252,11 @@ namespace MassEffectModder
                     importsOffset = (uint)importsOffsetTmp;
 
                     endOfTablesOffset = (uint)tempOutput.Position;
-                    sortedExports = exportsTable.OrderBy(s => s.dataOffset).ToList();
                     long exportsOffsetTmp = tempOutput.Position;
                     saveExports(tempOutput);
                     if (tempOutput.Position > sortedExports[0].dataOffset)
                     {
-                        if (ReserveSpaceBeforeExportData((int)(tempOutput.Position - sortedExports[0].dataOffset)))
+                        if (ReserveSpaceBeforeExportData((int)(tempOutput.Position - endOfTablesOffset)))
                         {
                             tempOutput.JumpTo(exportsOffsetTmp);
                             saveExports(tempOutput);
