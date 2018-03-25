@@ -556,9 +556,18 @@ namespace MassEffectModder
             else
                 loadExports(packageStream);
 
-            loadDepends(packageData);
+            if (compressed)
+                loadDepends(packageData);
+            else
+                loadDepends(packageStream);
+
             if (version == packageFileVersionME3)
-                loadGuids(packageData);
+            {
+                if (compressed)
+                    loadGuids(packageData);
+                else
+                    loadGuids(packageStream);
+            }
 
             //loadImportsNames(); // not used by tool
             //loadExportsNames(); // not used by tool
@@ -876,8 +885,16 @@ namespace MassEffectModder
         {
             if (!namesTableModified)
             {
-                packageStream.JumpTo(namesOffset);
-                output.WriteFromStream(packageStream, namesTableEnd - namesOffset);
+                if (compressed)
+                {
+                    packageData.JumpTo(namesOffset);
+                    output.WriteFromStream(packageData, namesTableEnd - namesOffset);
+                }
+                else
+                {
+                    packageStream.JumpTo(namesOffset);
+                    output.WriteFromStream(packageStream, namesTableEnd - namesOffset);
+                }
             }
             else
             {
@@ -1010,8 +1027,16 @@ namespace MassEffectModder
         {
             if (!importsTableModified)
             {
-                packageStream.JumpTo(importsOffset);
-                output.WriteFromStream(packageStream, importsTableEnd - importsOffset);
+                if (compressed)
+                {
+                    packageData.JumpTo(importsOffset);
+                    output.WriteFromStream(packageData, importsTableEnd - importsOffset);
+                }
+                else
+                {
+                    packageStream.JumpTo(importsOffset);
+                    output.WriteFromStream(packageStream, importsTableEnd - importsOffset);
+                }
             }
             else
             {
@@ -1168,6 +1193,7 @@ namespace MassEffectModder
             saveDepends(tempOutput);
             if (tempOutput.Position > sortedExports[0].dataOffset)
                 throw new Exception();
+
             if (version == packageFileVersionME3)
             {
                 guidsOffset = (uint)tempOutput.Position;
@@ -1262,15 +1288,15 @@ namespace MassEffectModder
 
             if (!spaceForImportsAvailable)
             {
-                exportsOffset = (uint)tempOutput.Position;
-                saveExports(tempOutput);
+                long tmpPos = tempOutput.Position;
+                saveImports(tempOutput);
+                importsOffset = (uint)tmpPos;
             }
 
             if (!spaceForExportsAvailable)
             {
-                long tmpPos = tempOutput.Position;
-                saveImports(tempOutput);
-                importsOffset = (uint)tmpPos;
+                exportsOffset = (uint)tempOutput.Position;
+                saveExports(tempOutput);
             }
 
             if ((forceDecompressed && compressed) ||
