@@ -1245,9 +1245,10 @@ namespace MassEffectModder
                 }
             }
 
+            sortedExports = exportsTable.OrderBy(s => s.dataOffset).ToList();
+
             endOfTablesOffset = sortedExports[0].dataOffset;
 
-            sortedExports = exportsTable.OrderBy(s => s.dataOffset).ToList();
             for (int i = 0; i < exportsCount; i++)
             {
                 ExportEntry export = sortedExports[i];
