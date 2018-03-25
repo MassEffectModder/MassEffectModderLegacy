@@ -1211,7 +1211,7 @@ namespace MassEffectModder
             saveNames(tempOutput);
             if (tempOutput.Position > sortedExports[0].dataOffset)
             {
-                if (ReserveSpaceBeforeExportData((int)(tempOutput.Position - sortedExports[0].dataOffset)))
+                if (!ReserveSpaceBeforeExportData((int)(tempOutput.Position - sortedExports[0].dataOffset)))
                     spaceForNamesAvailable = false;
             }
             if (spaceForNamesAvailable)
@@ -1223,7 +1223,7 @@ namespace MassEffectModder
                 saveImports(tempOutput);
                 if (tempOutput.Position > sortedExports[0].dataOffset)
                 {
-                    if (ReserveSpaceBeforeExportData((int)(tempOutput.Position - sortedExports[0].dataOffset)))
+                    if (!ReserveSpaceBeforeExportData((int)(tempOutput.Position - sortedExports[0].dataOffset)))
                         spaceForImportsAvailable = false;
                 }
                 if (spaceForImportsAvailable)
@@ -1235,7 +1235,7 @@ namespace MassEffectModder
                     saveExports(tempOutput);
                     if (tempOutput.Position > sortedExports[0].dataOffset)
                     {
-                        if (ReserveSpaceBeforeExportData((int)(tempOutput.Position - sortedExports[0].dataOffset)))
+                        if (!ReserveSpaceBeforeExportData((int)(tempOutput.Position - sortedExports[0].dataOffset)))
                             spaceForExportsAvailable = false;
                     }
                     if (spaceForExportsAvailable)
