@@ -632,6 +632,8 @@ skip:
 
                 for (int t = 0; t < node.textures[index].list.Count; t++)
                 {
+                    if (node.textures[index].list[t].path == "")
+                        continue;
                     MatchedTexture matchedTexture = node.textures[index].list[t];
                     _mainWindow.updateStatusLabel("Verify: " + node.textures[index].name + " in " + matchedTexture.path);
                     Package pkg = new Package(GameData.GamePath + matchedTexture.path);

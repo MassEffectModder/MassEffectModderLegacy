@@ -287,7 +287,7 @@ namespace MassEffectModder
                 PackageTreeNode node = (PackageTreeNode)treeViewPackages.SelectedNode;
                 if (previewShow)
                 {
-                    MatchedTexture nodeTexture = node.textures[index].list[0];
+                    MatchedTexture nodeTexture = node.textures[index].list.Find(s => s.path != "");
                     Package package = new Package(GameData.GamePath + nodeTexture.path);
                     Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
                     byte[] textureData = texture.getTopImageData();
@@ -766,6 +766,8 @@ namespace MassEffectModder
                         FoundTexture foundTexture = _textures[k];
                         for (int t = 0; t < foundTexture.list.Count; t++)
                         {
+                            if (foundTexture.list[t].path == "")
+                                continue;
                             MatchedTexture matchedTexture = foundTexture.list[t];
                             if (matchedTexture.crcs != null)
                             {
@@ -1056,7 +1058,7 @@ namespace MassEffectModder
                 PackageTreeNode node = (PackageTreeNode)treeViewPackages.SelectedNode;
                 ListViewItem item = listViewTextures.FocusedItem;
                 int index = Convert.ToInt32(item.Name);
-                MatchedTexture nodeTexture = node.textures[index].list[0];
+                MatchedTexture nodeTexture = node.textures[index].list.Find(s => s.path != "");
                 saveFile.Title = "Please select output DDS file";
                 saveFile.Filter = "DDS file | *.dds";
                 saveFile.FileName = node.textures[index].name + string.Format("_0x{0:X8}", node.textures[index].crc) + ".dds";
@@ -1079,7 +1081,7 @@ namespace MassEffectModder
                 PackageTreeNode node = (PackageTreeNode)treeViewPackages.SelectedNode;
                 ListViewItem item = listViewTextures.FocusedItem;
                 int index = Convert.ToInt32(item.Name);
-                MatchedTexture nodeTexture = node.textures[index].list[0];
+                MatchedTexture nodeTexture = node.textures[index].list.Find(s => s.path != "");
                 saveFile.Title = "Please select output PNG file";
                 saveFile.Filter = "PNG file | *.png";
                 saveFile.FileName = node.textures[index].name + string.Format("_0x{0:X8}", node.textures[index].crc) + ".png";
