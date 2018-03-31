@@ -507,6 +507,7 @@ namespace MassEffectModder
                 {
                     using (FileStream fs = new FileStream(filesToUpdate[i], FileMode.Open, FileAccess.ReadWrite))
                     {
+                        fs.SeekEnd();
                         fs.Seek(-Package.MEMendFileMarker.Length, SeekOrigin.Current);
                         string marker = fs.ReadStringASCII(Package.MEMendFileMarker.Length);
                         if (marker != Package.MEMendFileMarker)
@@ -1263,7 +1264,8 @@ namespace MassEffectModder
             customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
             cachePackageMgr.CloseAllWithSave(false, true);
 
-            AddMarkers((MeType)gameId);
+            if (!updateMode)
+                AddMarkers((MeType)gameId);
 
             if (!applyModTag(gameId, MeuitmVer, 0))
                 errors += "Failed applying stamp for installation!\n";
