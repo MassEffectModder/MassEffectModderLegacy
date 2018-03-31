@@ -43,75 +43,6 @@ namespace MassEffectModder
                 guid = new byte[] { 0x2B, 0x7D, 0x2F, 0x16, 0x63, 0x52, 0x4F, 0x3E, 0x97, 0x5B, 0x0E, 0xF2, 0xC1, 0xEB, 0xC6, 0x5D },
                 name = "Format"
             },
-            new TFCTexture
-            {
-                guid = new byte[] { 0x81, 0xCD, 0x12, 0x5C, 0xBB, 0x72, 0x40, 0x2D, 0x99, 0xB1, 0x63, 0x8D, 0xC0, 0xA7, 0x6E, 0x03 },
-                name = "IntProperty"
-            },
-            new TFCTexture
-            {
-                guid = new byte[] { 0xA5, 0xBE, 0xFF, 0x48, 0xB4, 0x7A, 0x47, 0xB0, 0xB2, 0x07, 0x2B, 0x35, 0x96, 0x39, 0x55, 0xFB },
-                name = "ByteProperty"
-            },
-            new TFCTexture
-            {
-                guid = new byte[] { 0x59, 0xF2, 0x1B, 0x17, 0xD0, 0xFE, 0x42, 0x3E, 0x94, 0x8A, 0x26, 0xBE, 0x26, 0x3C, 0x46, 0x2E },
-                name = "SizeX"
-            },
-            new TFCTexture
-            {
-                guid = new byte[] { 0x0C, 0x70, 0x7A, 0x01, 0xA0, 0xC1, 0x49, 0xB4, 0x97, 0x8D, 0x3B, 0xA4, 0x94, 0x71, 0xBE, 0x43 },
-                name = "SizeY"
-            },
-        };
-
-        TextureGroup[] textureGroups = new TextureGroup[]
-        {
-            new TextureGroup
-            {
-                name = "TEXTUREGROUP_Character",
-                value = 1025
-            },
-            new TextureGroup
-            {
-                name = "TEXTUREGROUP_Character_Diff",
-                value = 0
-            },
-            new TextureGroup
-            {
-                name = "TEXTUREGROUP_World",
-                value = 0
-            },
-            new TextureGroup
-            {
-                name = "TEXTUREGROUP_Promotional",
-                value = 0
-            },
-            new TextureGroup
-            {
-                name = "TEXTUREGROUP_Environment",
-                value = 1025
-            },
-            new TextureGroup
-            {
-                name = "TEXTUREGROUP_WorldNormalMap",
-                value = 0
-            },
-            new TextureGroup
-            {
-                name = "TEXTUREGROUP_LightAndShadowMap",
-                value = 0
-            },
-            new TextureGroup
-            {
-                name = "TEXTUREGROUP_Character_Spec",
-                value = 0
-            },
-            new TextureGroup
-            {
-                name = "TEXTUREGROUP_RenderTarget",
-                value = 0
-            },
         };
 
         public string replaceTexture(Image image, List<MatchedTexture> list, CachePackageMgr cachePackageMgr,
@@ -227,25 +158,12 @@ namespace MassEffectModder
 
                 package.DisposeCache();
 
-                if (!texture.properties.exists("LODGroup"))
-                {
-                    if (package.existsNameId("LODGroup"))
-                    {
-                        TextureGroup newGroup = new TextureGroup();
-                        foreach (TextureGroup group in textureGroups)
-                        {
-                            if (package.existsNameId(group.name))
-                            {
-                                newGroup = group;
-                                break;
-                            }
-                        }
-                        if (newGroup.name != null)
-                        {
-                            texture.properties.addByteValue("LODGroup", newGroup.name, newGroup.value);
-                        }
-                    }
-                }
+                texture.properties.removeProperty("LODGroup");
+                if (!package.existsNameId("LODGroup"))
+                    package.addName("LODGroup");
+                if (!package.existsNameId("TEXTUREGROUP_LightAndShadowMap"))
+                    package.addName("TEXTUREGROUP_LightAndShadowMap");
+                texture.properties.addByteValue("LODGroup", "TEXTUREGROUP_LightAndShadowMap", 0);
 
                 if (cacheCprMipmaps == null)
                 {
@@ -403,10 +321,9 @@ namespace MassEffectModder
                                         mipmap.storageType = Texture.StorageTypes.pccUnc;
                                         if (!texture.properties.exists("NeverStream"))
                                         {
-                                            if (package.existsNameId("NeverStream"))
-                                                texture.properties.addBoolValue("NeverStream", true);
-                                            else
-                                                goto skip;
+                                            if (!package.existsNameId("NeverStream"))
+                                                package.addName("NeverStream");
+                                            texture.properties.addBoolValue("NeverStream", true);
                                         }
                                     }
                                     else
@@ -589,7 +506,6 @@ namespace MassEffectModder
                     nodeTexture.removeEmptyMips = false;
                     list[n] = nodeTexture;
                 }
-skip:
                 package = null;
             }
             masterTextures = null;
