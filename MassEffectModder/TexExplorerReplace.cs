@@ -161,11 +161,18 @@ namespace MassEffectModder
                 texture.properties.removeProperty("LODGroup");
                 if (!package.existsNameId("LODGroup"))
                     package.addName("LODGroup");
-                if (!package.existsNameId("TEXTUREGROUP_LightAndShadowMap"))
-                    package.addName("TEXTUREGROUP_LightAndShadowMap");
-                if (!package.existsNameId("TextureGroup"))
-                    package.addName("TextureGroup");
-                texture.properties.addByteValue("LODGroup", "TEXTUREGROUP_LightAndShadowMap", "TextureGroup", 0);
+                if (GameData.gameType == MeType.ME3_TYPE)
+                {
+                    if (!package.existsNameId("TextureGroup"))
+                        package.addName("TextureGroup");
+                    if (!package.existsNameId("TEXTUREGROUP_ShadowMap"))
+                        package.addName("TEXTUREGROUP_ShadowMap");
+                    texture.properties.addByteValue("LODGroup", "TEXTUREGROUP_ShadowMap", "TextureGroup", 0);
+                }
+                else
+                {
+                    texture.properties.addByteValue("LODGroup", "TEXTUREGROUP_LightAndShadowMap", "", 0);
+                }
 
                 if (cacheCprMipmaps == null)
                 {
