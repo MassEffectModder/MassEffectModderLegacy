@@ -75,7 +75,7 @@ namespace MassEffectModder
                 }
                 Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
                 string fmt = texture.properties.getProperty("Format").valueName;
-                PixelFormat pixelFormat = Image.getEngineFormatType(fmt);
+                PixelFormat pixelFormat = Image.getPixelFormatType(fmt);
 
                 while (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty))
                 {
@@ -125,6 +125,25 @@ namespace MassEffectModder
                         pixelFormat = PixelFormat.ARGB;
                     }
                     image.correctMips(pixelFormat, dxt1HasAlpha, dxt1Threshold);
+                }
+
+                fmt = Image.getEngineFormatType(pixelFormat);
+                if (!package.existsNameId(fmt))
+                    package.addName(fmt);
+                string cmp = "TC_NormalmapUncompressed";
+                if (!package.existsNameId(cmp))
+                    package.addName(cmp);
+                if (!package.existsNameId("CompressionSettings"))
+                    package.addName("CompressionSettings");
+                if (GameData.gameType == MeType.ME3_TYPE)
+                {
+                    texture.properties.setByteValue("Format", fmt, "EPixelFormat");
+                    //texture.properties.setByteValue("CompressionSettings", cmp, "TextureCompressionSettings");
+                }
+                else
+                {
+                    texture.properties.setByteValue("Format", fmt, "");
+                    //texture.properties.setByteValue("CompressionSettings", cmp, "");
                 }
 
                 // remove lower mipmaps from source image which not exist in game data

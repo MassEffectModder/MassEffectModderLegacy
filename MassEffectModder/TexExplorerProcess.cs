@@ -681,7 +681,7 @@ namespace MassEffectModder
                 texture.mipMapsList.Remove(texture.mipMapsList.First(s => s.storageType == Texture.StorageTypes.empty));
             }
             List<MipMap> mipmaps = new List<MipMap>();
-            PixelFormat pixelFormat = Image.getEngineFormatType(texture.properties.getProperty("Format").valueName);
+            PixelFormat pixelFormat = Image.getPixelFormatType(texture.properties.getProperty("Format").valueName);
             for (int i = 0; i < texture.mipMapsList.Count; i++)
             {
                 byte[] data = texture.getMipMapDataByIndex(i);
@@ -706,7 +706,7 @@ namespace MassEffectModder
             Package package = new Package(packagePath);
             Texture texture = new Texture(package, exportID, package.getExportData(exportID));
             package.Dispose();
-            PixelFormat format = Image.getEngineFormatType(texture.properties.getProperty("Format").valueName);
+            PixelFormat format = Image.getPixelFormatType(texture.properties.getProperty("Format").valueName);
             Texture.MipMap mipmap = texture.getTopMipmap();
             byte[] data = texture.getTopImageData();
             if (data == null)

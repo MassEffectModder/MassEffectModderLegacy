@@ -483,6 +483,45 @@ namespace MassEffectModder
             return true;
         }
 
+        static public void AddMarkers(MeType gameType)
+        {
+            string path = "";
+            if (GameData.gameType == MeType.ME1_TYPE)
+            {
+                path = @"\BioGame\CookedPC\testVolumeLight_VFX.upk".ToLowerInvariant();
+            }
+            if (GameData.gameType == MeType.ME2_TYPE)
+            {
+                path = @"\BioGame\CookedPC\BIOC_Materials.pcc".ToLowerInvariant();
+            }
+            List<string> filesToUpdate = new List<string>();
+            for (int i = 0; i < GameData.packageFiles.Count; i++)
+            {
+                if (path != "" && GameData.packageFiles[i].ToLowerInvariant().Contains(path))
+                    continue;
+                filesToUpdate.Add(GameData.packageFiles[i].ToLowerInvariant());
+            }
+            for (int i = 0; i < filesToUpdate.Count; i++)
+            {
+                try
+                {
+                    using (FileStream fs = new FileStream(filesToUpdate[i], FileMode.Open, FileAccess.ReadWrite))
+                    {
+                        fs.Seek(-Package.MEMendFileMarker.Length, SeekOrigin.Current);
+                        string marker = fs.ReadStringASCII(Package.MEMendFileMarker.Length);
+                        if (marker != Package.MEMendFileMarker)
+                        {
+                            fs.SeekEnd();
+                            fs.WriteStringASCII(Package.MEMendFileMarker);
+                        }
+                    }
+                }
+                catch
+                {
+                }
+            }
+        }
+
         private bool installSoftShadowsMod(GameData gameData, string path)
         {
             IntPtr handle = IntPtr.Zero;
@@ -1224,6 +1263,7 @@ namespace MassEffectModder
             customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
             cachePackageMgr.CloseAllWithSave(false, true);
 
+            AddMarkers((MeType)gameId);
 
             if (!applyModTag(gameId, MeuitmVer, 0))
                 errors += "Failed applying stamp for installation!\n";

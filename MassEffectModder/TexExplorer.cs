@@ -289,7 +289,7 @@ namespace MassEffectModder
                     {
                         int width = texture.getTopMipmap().width;
                         int height = texture.getTopMipmap().height;
-                        PixelFormat pixelFormat = Image.getEngineFormatType(texture.properties.getProperty("Format").valueName);
+                        PixelFormat pixelFormat = Image.getPixelFormatType(texture.properties.getProperty("Format").valueName);
                         pictureBoxPreview.Image = Image.convertRawToBitmapARGB(textureData, width, height, pixelFormat);
                         pictureBoxPreview.Show();
                         richTextBoxInfo.Hide();

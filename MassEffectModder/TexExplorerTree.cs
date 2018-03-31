@@ -643,7 +643,7 @@ namespace MassEffectModder
                         {
                             foundTex.width = texture.getTopMipmap().width;
                             foundTex.height = texture.getTopMipmap().height;
-                            foundTex.pixfmt = Image.getEngineFormatType(texture.properties.getProperty("Format").valueName);
+                            foundTex.pixfmt = Image.getPixelFormatType(texture.properties.getProperty("Format").valueName);
                             if (foundTex.pixfmt == PixelFormat.DXT1 &&
                                 texture.properties.exists("CompressionSettings") &&
                                 texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")

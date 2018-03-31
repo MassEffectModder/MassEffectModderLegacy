@@ -555,7 +555,7 @@ namespace MassEffectModder
             }
         }
 
-        public static PixelFormat getEngineFormatType(string format)
+        public static PixelFormat getPixelFormatType(string format)
         {
             switch (format)
             {
@@ -575,6 +575,31 @@ namespace MassEffectModder
                     return PixelFormat.RGB;
                 case "PF_G8":
                     return PixelFormat.G8;
+                default:
+                    throw new Exception("invalid texture format");
+            }
+        }
+
+        public static string getEngineFormatType(PixelFormat format)
+        {
+            switch (format)
+            {
+                case PixelFormat.DXT1:
+                    return "PF_DXT1";
+                case PixelFormat.DXT3:
+                    return "PF_DXT3";
+                case PixelFormat.DXT5:
+                    return "PF_DXT5";
+                case PixelFormat.ATI2:
+                    return "PF_NormalMap_HQ";
+                case PixelFormat.V8U8:
+                    return "PF_V8U8";
+                case PixelFormat.ARGB:
+                    return "PF_A8R8G8B8";
+                case PixelFormat.RGB:
+                    return "PF_R8G8B8";
+                case PixelFormat.G8:
+                    return "PF_G8";
                 default:
                     throw new Exception("invalid texture format");
             }
