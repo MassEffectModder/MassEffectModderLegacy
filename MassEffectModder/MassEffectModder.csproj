@@ -114,7 +114,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TexExplorerCachePkgMgr.cs" />
-    <Compile Include="TexExplorerEmptyMipMaps.cs" />
     <Compile Include="TexExplorerProcess.cs" />
     <Compile Include="TexExplorerReplace.cs" />
     <Compile Include="TexExplorer.cs">

@@ -67,7 +67,7 @@ namespace MassEffectModder
         bool OptionBikVisible;
         bool mute = false;
         int stage = 1;
-        int totalStages = 4;
+        int totalStages = 3;
         System.Media.SoundPlayer musicPlayer;
         CustomLabel customLabelDesc;
         CustomLabel customLabelCurrentStatus;
@@ -845,16 +845,11 @@ namespace MassEffectModder
                 updateMode = true;
             }
 
-            // check game files
-            if (updateMode)
-                totalStages -= 1;
-
-            // scan textures
-            if (updateMode)
-                totalStages -= 1;
-
             if (updateMode)
             {
+                // scan textures
+                totalStages -= 1;
+
                 string mapPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                         Assembly.GetExecutingAssembly().GetName().Name);
                 string mapFile = Path.Combine(mapPath, "me" + gameId + "map.bin");
@@ -871,54 +866,6 @@ namespace MassEffectModder
                     customLabelFinalStatus.Text = "Game inconsistent from previous scan! Reinstall ME" + gameId + " and restart.";
                     customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                     return false;
-                }
-            }
-            else
-            {
-                customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
-                List<string> modList = new List<string>();
-                bool vanilla = Misc.checkGameFiles((MeType)gameId, ref errors, ref modList, null, this);
-                updateLabelPreVanilla("");
-                if (modList.Count != 0)
-                {
-                    FileStream fs = new FileStream(filename, FileMode.OpenOrCreate);
-                    fs.SeekEnd();
-                    fs.WriteStringASCII(Environment.NewLine + "------- Detected mods --------" + Environment.NewLine);
-                    for (int l = 0; l < modList.Count; l++)
-                    {
-                        fs.WriteStringASCII(modList[l] + Environment.NewLine);
-                    }
-                    fs.WriteStringASCII("------------------------------" + Environment.NewLine + Environment.NewLine);
-                    fs.Close();
-                }
-
-                if (!vanilla)
-                {
-                    FileStream fs = new FileStream(filename, FileMode.OpenOrCreate);
-                    fs.SeekEnd();
-                    fs.WriteStringASCII("===========================================================================" + Environment.NewLine);
-                    fs.WriteStringASCII("WARNING: looks like the following file(s) are not vanilla or not recognized" + Environment.NewLine);
-                    fs.WriteStringASCII("===========================================================================" + Environment.NewLine + Environment.NewLine);
-                    fs.WriteStringASCII(errors);
-                    fs.Close();
-                    Process.Start(filename);
-                    customLabelFinalStatus.Text = "Game files are not vanilla or not recognized";
-                    customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
-                    string message = "The installer detected that the following game files\n" +
-                        "are modded (not vanilla) or not recognized by the installer.\n" +
-                        "You can find the list of files in the window that just opened.\n\n" +
-                        "- If you are not sure what you installed,\n" +
-                        "  it is recommended that you revert your game to vanilla\n" +
-                        "  and optionally install the content mods (.UPK, .U, .SFM) you want,\n" +
-                        "  then restart the installation of this mod.\n\n" +
-                        "- If the installer still reports this issue,\n" +
-                        "  do not install unrecognized mod files\n" +
-                        "  and submit a report to add those files to the list of supported mods.\n\n\n" +
-                        "However you can ignore the warning and continue the installation at your own risk!\n";
-                    MessageBox.Show(message, "Warning !");
-                    DialogResult resp = MessageBox.Show("Press Cancel to abort or press Ok button to continue.", "Warning !", MessageBoxButtons.OKCancel);
-                    if (resp == DialogResult.Cancel)
-                        return false;
                 }
             }
 
