@@ -516,24 +516,6 @@ namespace MassEffectModder
                 }
             }
 
-            if (!generateBuiltinMapFiles)
-            {
-                MipMaps mipmaps = new MipMaps();
-                if (GameData.gameType == MeType.ME1_TYPE)
-                {
-                    errors += mipmaps.removeMipMapsME1(1, textures, mainWindow);
-                    errors += mipmaps.removeMipMapsME1(2, textures, mainWindow);
-                }
-                else
-                {
-                    errors += mipmaps.removeMipMapsME2ME3(textures, mainWindow);
-                }
-
-                if (GameData.gameType == MeType.ME3_TYPE)
-                {
-                    TOCBinFile.UpdateAllTOCBinFiles();
-                }
-            }
             treeScan = textures;
 
             var time = Misc.stopTimer();

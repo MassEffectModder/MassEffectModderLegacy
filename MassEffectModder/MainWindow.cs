@@ -294,7 +294,7 @@ namespace MassEffectModder
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
             }
             ConfIni engineConf = new ConfIni(path);
-            LODSettings.updateLOD(gameId, engineConf);
+            LODSettings.removeLOD(gameId, engineConf);
             MessageBox.Show("Game configuration file at " + path + " updated.");
             enableGameDataMenu(true);
         }
