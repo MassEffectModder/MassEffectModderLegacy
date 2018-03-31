@@ -100,11 +100,6 @@ namespace MassEffectModder
             CreateTextureExplorer(MeType.ME3_TYPE).Run();
         }
 
-        private void updateME1ConfigToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            updateMEConfig(MeType.ME1_TYPE);
-        }
-
         public bool GetPackages(GameData gameData)
         {
             if (!Directory.Exists(GameData.GamePath))
@@ -238,11 +233,6 @@ namespace MassEffectModder
             enableGameDataMenu(true);
         }
 
-        private void updateME2ConfigToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            updateMEConfig(MeType.ME2_TYPE);
-        }
-
         private void extractME3DLCPackagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             enableGameDataMenu(false);
@@ -297,11 +287,6 @@ namespace MassEffectModder
             LODSettings.removeLOD(gameId, engineConf);
             MessageBox.Show("Game configuration file at " + path + " updated.");
             enableGameDataMenu(true);
-        }
-
-        private void updateME3ConfigToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            updateMEConfig(MeType.ME3_TYPE);
         }
 
         private void changeGamePathME1ToolStripMenuItem_Click(object sender, EventArgs e)
