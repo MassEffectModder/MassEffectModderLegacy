@@ -53,14 +53,10 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Installer));
             this.buttonNormal = new System.Windows.Forms.Button();
             this.labelFinalStatus = new System.Windows.Forms.Label();
-            this.checkBoxOptionSkipScan = new System.Windows.Forms.CheckBox();
-            this.checkBoxOptionVanilla = new System.Windows.Forms.CheckBox();
             this.buttonSTART = new System.Windows.Forms.Button();
             this.labelCurrentStatus = new System.Windows.Forms.Label();
             this.labelOptions = new System.Windows.Forms.Label();
             this.pictureBoxBG = new System.Windows.Forms.PictureBox();
-            this.labelOptionVanilla = new System.Windows.Forms.Label();
-            this.labelOptionSkipScan = new System.Windows.Forms.Label();
             this.labelDesc = new System.Windows.Forms.Label();
             this.buttonMute = new System.Windows.Forms.Button();
             this.imageListAudio = new System.Windows.Forms.ImageList(this.components);
@@ -114,36 +110,6 @@
             this.labelFinalStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.labelFinalStatus.Visible = false;
             // 
-            // checkBoxOptionSkipScan
-            // 
-            this.checkBoxOptionSkipScan.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.checkBoxOptionSkipScan.AutoSize = true;
-            this.checkBoxOptionSkipScan.BackColor = System.Drawing.Color.Transparent;
-            this.checkBoxOptionSkipScan.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.checkBoxOptionSkipScan.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxOptionSkipScan.Location = new System.Drawing.Point(16, 481);
-            this.checkBoxOptionSkipScan.Name = "checkBoxOptionSkipScan";
-            this.checkBoxOptionSkipScan.Size = new System.Drawing.Size(15, 14);
-            this.checkBoxOptionSkipScan.TabIndex = 52;
-            this.checkBoxOptionSkipScan.TabStop = false;
-            this.checkBoxOptionSkipScan.UseVisualStyleBackColor = false;
-            this.checkBoxOptionSkipScan.CheckedChanged += new System.EventHandler(this.checkBoxOptionSkipScan_CheckedChanged);
-            // 
-            // checkBoxOptionVanilla
-            // 
-            this.checkBoxOptionVanilla.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.checkBoxOptionVanilla.AutoSize = true;
-            this.checkBoxOptionVanilla.BackColor = System.Drawing.Color.Transparent;
-            this.checkBoxOptionVanilla.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.checkBoxOptionVanilla.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxOptionVanilla.Location = new System.Drawing.Point(16, 460);
-            this.checkBoxOptionVanilla.Name = "checkBoxOptionVanilla";
-            this.checkBoxOptionVanilla.Size = new System.Drawing.Size(15, 14);
-            this.checkBoxOptionVanilla.TabIndex = 38;
-            this.checkBoxOptionVanilla.TabStop = false;
-            this.checkBoxOptionVanilla.UseVisualStyleBackColor = false;
-            this.checkBoxOptionVanilla.CheckedChanged += new System.EventHandler(this.checkBoxOptionVanilla_CheckedChanged);
-            // 
             // buttonSTART
             // 
             this.buttonSTART.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -182,7 +148,7 @@
             this.labelOptions.BackColor = System.Drawing.Color.Black;
             this.labelOptions.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelOptions.ForeColor = System.Drawing.Color.White;
-            this.labelOptions.Location = new System.Drawing.Point(12, 371);
+            this.labelOptions.Location = new System.Drawing.Point(12, 412);
             this.labelOptions.Name = "labelOptions";
             this.labelOptions.Size = new System.Drawing.Size(74, 21);
             this.labelOptions.TabIndex = 54;
@@ -201,34 +167,6 @@
             this.pictureBoxBG.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxBG.TabIndex = 29;
             this.pictureBoxBG.TabStop = false;
-            // 
-            // labelOptionVanilla
-            // 
-            this.labelOptionVanilla.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.labelOptionVanilla.AutoSize = true;
-            this.labelOptionVanilla.BackColor = System.Drawing.Color.Black;
-            this.labelOptionVanilla.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.labelOptionVanilla.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.labelOptionVanilla.ForeColor = System.Drawing.Color.White;
-            this.labelOptionVanilla.Location = new System.Drawing.Point(34, 455);
-            this.labelOptionVanilla.Name = "labelOptionVanilla";
-            this.labelOptionVanilla.Size = new System.Drawing.Size(147, 21);
-            this.labelOptionVanilla.TabIndex = 57;
-            this.labelOptionVanilla.Text = "Skip vanilla check";
-            // 
-            // labelOptionSkipScan
-            // 
-            this.labelOptionSkipScan.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.labelOptionSkipScan.AutoSize = true;
-            this.labelOptionSkipScan.BackColor = System.Drawing.Color.Black;
-            this.labelOptionSkipScan.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.labelOptionSkipScan.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.labelOptionSkipScan.ForeColor = System.Drawing.Color.White;
-            this.labelOptionSkipScan.Location = new System.Drawing.Point(34, 476);
-            this.labelOptionSkipScan.Name = "labelOptionSkipScan";
-            this.labelOptionSkipScan.Size = new System.Drawing.Size(187, 21);
-            this.labelOptionSkipScan.TabIndex = 58;
-            this.labelOptionSkipScan.Text = "Skip scan/remove mips";
             // 
             // labelDesc
             // 
@@ -425,7 +363,7 @@
             this.labelOptionIndirectSound.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.labelOptionIndirectSound.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelOptionIndirectSound.ForeColor = System.Drawing.Color.White;
-            this.labelOptionIndirectSound.Location = new System.Drawing.Point(34, 392);
+            this.labelOptionIndirectSound.Location = new System.Drawing.Point(34, 433);
             this.labelOptionIndirectSound.Name = "labelOptionIndirectSound";
             this.labelOptionIndirectSound.Size = new System.Drawing.Size(173, 21);
             this.labelOptionIndirectSound.TabIndex = 73;
@@ -438,7 +376,7 @@
             this.checkBoxOptionIndirectSound.BackColor = System.Drawing.Color.Transparent;
             this.checkBoxOptionIndirectSound.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.checkBoxOptionIndirectSound.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxOptionIndirectSound.Location = new System.Drawing.Point(16, 397);
+            this.checkBoxOptionIndirectSound.Location = new System.Drawing.Point(16, 438);
             this.checkBoxOptionIndirectSound.Name = "checkBoxOptionIndirectSound";
             this.checkBoxOptionIndirectSound.Size = new System.Drawing.Size(15, 14);
             this.checkBoxOptionIndirectSound.TabIndex = 72;
@@ -453,7 +391,7 @@
             this.labelOptionReshade.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.labelOptionReshade.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelOptionReshade.ForeColor = System.Drawing.Color.White;
-            this.labelOptionReshade.Location = new System.Drawing.Point(34, 413);
+            this.labelOptionReshade.Location = new System.Drawing.Point(34, 454);
             this.labelOptionReshade.Name = "labelOptionReshade";
             this.labelOptionReshade.Size = new System.Drawing.Size(127, 21);
             this.labelOptionReshade.TabIndex = 75;
@@ -466,7 +404,7 @@
             this.checkBoxOptionReshade.BackColor = System.Drawing.Color.Transparent;
             this.checkBoxOptionReshade.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.checkBoxOptionReshade.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxOptionReshade.Location = new System.Drawing.Point(16, 418);
+            this.checkBoxOptionReshade.Location = new System.Drawing.Point(16, 459);
             this.checkBoxOptionReshade.Name = "checkBoxOptionReshade";
             this.checkBoxOptionReshade.Size = new System.Drawing.Size(15, 14);
             this.checkBoxOptionReshade.TabIndex = 74;
@@ -481,7 +419,7 @@
             this.labelOptionBik.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.labelOptionBik.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelOptionBik.ForeColor = System.Drawing.Color.White;
-            this.labelOptionBik.Location = new System.Drawing.Point(34, 434);
+            this.labelOptionBik.Location = new System.Drawing.Point(34, 475);
             this.labelOptionBik.Name = "labelOptionBik";
             this.labelOptionBik.Size = new System.Drawing.Size(173, 21);
             this.labelOptionBik.TabIndex = 77;
@@ -494,7 +432,7 @@
             this.checkBoxOptionBik.BackColor = System.Drawing.Color.Transparent;
             this.checkBoxOptionBik.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.checkBoxOptionBik.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxOptionBik.Location = new System.Drawing.Point(16, 439);
+            this.checkBoxOptionBik.Location = new System.Drawing.Point(16, 480);
             this.checkBoxOptionBik.Name = "checkBoxOptionBik";
             this.checkBoxOptionBik.Size = new System.Drawing.Size(15, 14);
             this.checkBoxOptionBik.TabIndex = 76;
@@ -525,13 +463,9 @@
             this.Controls.Add(this.labelModsSelection);
             this.Controls.Add(this.buttonMute);
             this.Controls.Add(this.labelDesc);
-            this.Controls.Add(this.labelOptionSkipScan);
-            this.Controls.Add(this.labelOptionVanilla);
             this.Controls.Add(this.labelOptions);
-            this.Controls.Add(this.checkBoxOptionSkipScan);
             this.Controls.Add(this.labelCurrentStatus);
             this.Controls.Add(this.buttonSTART);
-            this.Controls.Add(this.checkBoxOptionVanilla);
             this.Controls.Add(this.buttonNormal);
             this.Controls.Add(this.labelFinalStatus);
             this.Controls.Add(this.pictureBoxBG);
@@ -549,14 +483,10 @@
         #endregion
         private System.Windows.Forms.Button buttonNormal;
         private System.Windows.Forms.Label labelFinalStatus;
-        private System.Windows.Forms.CheckBox checkBoxOptionVanilla;
-        private System.Windows.Forms.CheckBox checkBoxOptionSkipScan;
         private System.Windows.Forms.Button buttonSTART;
         private System.Windows.Forms.Label labelCurrentStatus;
         private System.Windows.Forms.PictureBox pictureBoxBG;
         private System.Windows.Forms.Label labelOptions;
-        private System.Windows.Forms.Label labelOptionVanilla;
-        private System.Windows.Forms.Label labelOptionSkipScan;
         private System.Windows.Forms.Label labelDesc;
         private System.Windows.Forms.Button buttonMute;
         private System.Windows.Forms.ImageList imageListAudio;

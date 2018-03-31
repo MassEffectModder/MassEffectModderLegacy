@@ -56,21 +56,18 @@ namespace MassEffectModder
         string errors = "";
         string log = "";
         int MeuitmVer;
-        bool allowToSkipScan;
         string softShadowsModPath;
         string splashDemiurge;
         string splashBitmapPath;
         string reshadePath;
         string indirectSoundPath;
         bool meuitmMode = true;
-        bool OptionVanillaVisible;
-        bool OptionSkipScanVisible;
         bool OptionIndirectSoundVisible;
         bool OptionReshadeVisible;
         bool OptionBikVisible;
         bool mute = false;
         int stage = 1;
-        int totalStages = 5;
+        int totalStages = 4;
         System.Media.SoundPlayer musicPlayer;
         CustomLabel customLabelDesc;
         CustomLabel customLabelCurrentStatus;
@@ -170,15 +167,6 @@ namespace MassEffectModder
                 MessageBox.Show("MEUITM version is required, exiting...", "Installer");
                 return false;
             }
-
-            bool allowToSkip = false;
-            string skip = installerIni.Read("AllowSkipCheck", "Main").ToLowerInvariant();
-            if (skip == "true")
-                allowToSkip = true;
-
-            skip = installerIni.Read("AllowSkipScan", "Main").ToLowerInvariant();
-            if (skip == "true")
-                allowToSkipScan = true;
 
             indirectSoundPath = installerIni.Read("IndirectSound", "Main").ToLowerInvariant();
             if (indirectSoundPath != "")
@@ -309,17 +297,7 @@ namespace MassEffectModder
             else
                 OptionReshadeVisible = checkBoxOptionReshade.Visible = labelOptionReshade.Visible = false;
 
-            if (allowToSkip)
-                OptionVanillaVisible = checkBoxOptionVanilla.Visible = labelOptionVanilla.Visible = true;
-            else
-                OptionVanillaVisible = checkBoxOptionVanilla.Visible = labelOptionVanilla.Visible = false;
-            if (allowToSkipScan)
-                OptionSkipScanVisible = checkBoxOptionSkipScan.Visible = labelOptionSkipScan.Visible = true;
-            else
-                OptionSkipScanVisible = checkBoxOptionSkipScan.Visible = labelOptionSkipScan.Visible = false;
             checkBoxOptionIndirectSound.Checked = true;
-            checkBoxOptionVanilla.Checked = false;
-            checkBoxOptionSkipScan.Checked = false;
             checkBoxOptionReshade.Checked = false;
             checkBoxOptionBik.Checked = false;
 
@@ -330,13 +308,9 @@ namespace MassEffectModder
             customLabelFinalStatus.Parent = pictureBoxBG;
             customLabelCurrentStatus.Parent = pictureBoxBG;
             labelOptions.Parent = pictureBoxBG;
-            labelOptionSkipScan.Parent = pictureBoxBG;
-            labelOptionVanilla.Parent = pictureBoxBG;
             labelOptionIndirectSound.Parent = pictureBoxBG;
             labelOptionReshade.Parent = pictureBoxBG;
             labelOptionBik.Parent = pictureBoxBG;
-            checkBoxOptionSkipScan.Parent = pictureBoxBG;
-            checkBoxOptionVanilla.Parent = pictureBoxBG;
             checkBoxOptionIndirectSound.Parent = pictureBoxBG;
             checkBoxOptionReshade.Parent = pictureBoxBG;
             checkBoxOptionBik.Parent = pictureBoxBG;
@@ -345,8 +319,7 @@ namespace MassEffectModder
             comboBoxMod5.Parent = comboBoxMod6.Parent = comboBoxMod7.Parent = comboBoxMod8.Parent = comboBoxMod9.Parent = pictureBoxBG;
             buttonMute.Parent = pictureBoxBG;
 
-            labelOptions.Visible = OptionVanillaVisible || OptionSkipScanVisible || OptionReshadeVisible ||
-                OptionIndirectSoundVisible || OptionBikVisible;
+            labelOptions.Visible = OptionReshadeVisible || OptionIndirectSoundVisible || OptionBikVisible;
 
             string bgFile = installerIni.Read("BackgroundImage", "Main").ToLowerInvariant();
             if (bgFile != "")
@@ -870,26 +843,18 @@ namespace MassEffectModder
                     return false;
                 }
                 updateMode = true;
-                checkBoxOptionVanilla.CheckedChanged -= checkBoxOptionVanilla_CheckedChanged;
-                checkBoxOptionVanilla.Checked = true;
-                checkBoxOptionVanilla.CheckedChanged += checkBoxOptionVanilla_CheckedChanged;
-                OptionVanillaVisible = false;
-                OptionSkipScanVisible = false;
             }
 
             // check game files
-            if ((updateMode || checkBoxOptionVanilla.Checked) || checkBoxOptionSkipScan.Checked)
+            if (updateMode)
                 totalStages -= 1;
 
-            // scan textures, remove mipmaps
-            if (updateMode || checkBoxOptionSkipScan.Checked)
-                totalStages -= 2;
+            // scan textures
+            if (updateMode)
+                totalStages -= 1;
 
-            if (updateMode || checkBoxOptionSkipScan.Checked)
+            if (updateMode)
             {
-                checkBoxOptionVanilla.CheckedChanged -= checkBoxOptionVanilla_CheckedChanged;
-                checkBoxOptionVanilla.Checked = true;
-                checkBoxOptionVanilla.CheckedChanged += checkBoxOptionVanilla_CheckedChanged;
                 string mapPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                         Assembly.GetExecutingAssembly().GetName().Name);
                 string mapFile = Path.Combine(mapPath, "me" + gameId + "map.bin");
@@ -910,53 +875,50 @@ namespace MassEffectModder
             }
             else
             {
-                if (!checkBoxOptionVanilla.Checked)
+                customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
+                List<string> modList = new List<string>();
+                bool vanilla = Misc.checkGameFiles((MeType)gameId, ref errors, ref modList, null, this);
+                updateLabelPreVanilla("");
+                if (modList.Count != 0)
                 {
-                    customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
-                    List<string> modList = new List<string>();
-                    bool vanilla = Misc.checkGameFiles((MeType)gameId, ref errors, ref modList, null, this);
-                    updateLabelPreVanilla("");
-                    if (modList.Count != 0)
+                    FileStream fs = new FileStream(filename, FileMode.OpenOrCreate);
+                    fs.SeekEnd();
+                    fs.WriteStringASCII(Environment.NewLine + "------- Detected mods --------" + Environment.NewLine);
+                    for (int l = 0; l < modList.Count; l++)
                     {
-                        FileStream fs = new FileStream(filename, FileMode.OpenOrCreate);
-                        fs.SeekEnd();
-                        fs.WriteStringASCII(Environment.NewLine + "------- Detected mods --------" + Environment.NewLine);
-                        for (int l = 0; l < modList.Count; l++)
-                        {
-                            fs.WriteStringASCII(modList[l] + Environment.NewLine);
-                        }
-                        fs.WriteStringASCII("------------------------------" + Environment.NewLine + Environment.NewLine);
-                        fs.Close();
+                        fs.WriteStringASCII(modList[l] + Environment.NewLine);
                     }
+                    fs.WriteStringASCII("------------------------------" + Environment.NewLine + Environment.NewLine);
+                    fs.Close();
+                }
 
-                    if (!vanilla)
-                    {
-                        FileStream fs = new FileStream(filename, FileMode.OpenOrCreate);
-                        fs.SeekEnd();
-                        fs.WriteStringASCII("===========================================================================" + Environment.NewLine);
-                        fs.WriteStringASCII("WARNING: looks like the following file(s) are not vanilla or not recognized" + Environment.NewLine);
-                        fs.WriteStringASCII("===========================================================================" + Environment.NewLine + Environment.NewLine);
-                        fs.WriteStringASCII(errors);
-                        fs.Close();
-                        Process.Start(filename);
-                        customLabelFinalStatus.Text = "Game files are not vanilla or not recognized";
-                        customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
-                        string message = "The installer detected that the following game files\n" +
-                            "are modded (not vanilla) or not recognized by the installer.\n" +
-                            "You can find the list of files in the window that just opened.\n\n" +
-                            "- If you are not sure what you installed,\n" +
-                            "  it is recommended that you revert your game to vanilla\n" +
-                            "  and optionally install the content mods (.UPK, .U, .SFM) you want,\n" +
-                            "  then restart the installation of this mod.\n\n" +
-                            "- If the installer still reports this issue,\n" +
-                            "  do not install unrecognized mod files\n" +
-                            "  and submit a report to add those files to the list of supported mods.\n\n\n" +
-                            "However you can ignore the warning and continue the installation at your own risk!\n";
-                        MessageBox.Show(message, "Warning !");
-                        DialogResult resp = MessageBox.Show("Press Cancel to abort or press Ok button to continue.", "Warning !", MessageBoxButtons.OKCancel);
-                        if (resp == DialogResult.Cancel)
-                            return false;
-                    }
+                if (!vanilla)
+                {
+                    FileStream fs = new FileStream(filename, FileMode.OpenOrCreate);
+                    fs.SeekEnd();
+                    fs.WriteStringASCII("===========================================================================" + Environment.NewLine);
+                    fs.WriteStringASCII("WARNING: looks like the following file(s) are not vanilla or not recognized" + Environment.NewLine);
+                    fs.WriteStringASCII("===========================================================================" + Environment.NewLine + Environment.NewLine);
+                    fs.WriteStringASCII(errors);
+                    fs.Close();
+                    Process.Start(filename);
+                    customLabelFinalStatus.Text = "Game files are not vanilla or not recognized";
+                    customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
+                    string message = "The installer detected that the following game files\n" +
+                        "are modded (not vanilla) or not recognized by the installer.\n" +
+                        "You can find the list of files in the window that just opened.\n\n" +
+                        "- If you are not sure what you installed,\n" +
+                        "  it is recommended that you revert your game to vanilla\n" +
+                        "  and optionally install the content mods (.UPK, .U, .SFM) you want,\n" +
+                        "  then restart the installation of this mod.\n\n" +
+                        "- If the installer still reports this issue,\n" +
+                        "  do not install unrecognized mod files\n" +
+                        "  and submit a report to add those files to the list of supported mods.\n\n\n" +
+                        "However you can ignore the warning and continue the installation at your own risk!\n";
+                    MessageBox.Show(message, "Warning !");
+                    DialogResult resp = MessageBox.Show("Press Cancel to abort or press Ok button to continue.", "Warning !", MessageBoxButtons.OKCancel);
+                    if (resp == DialogResult.Cancel)
+                        return false;
                 }
             }
 
@@ -1242,8 +1204,6 @@ namespace MassEffectModder
 
             buttonNormal.Visible = false;
             buttonSTART.Visible = false;
-            checkBoxOptionVanilla.Visible = labelOptionVanilla.Visible = false;
-            checkBoxOptionSkipScan.Visible = labelOptionSkipScan.Visible = false;
             checkBoxOptionIndirectSound.Visible = labelOptionIndirectSound.Visible = false;
             checkBoxOptionReshade.Visible = labelOptionReshade.Visible = false;
             checkBoxOptionBik.Visible = labelOptionBik.Visible = false;
@@ -1275,7 +1235,7 @@ namespace MassEffectModder
             log = "";
             Misc.startTimer();
 
-            if (!updateMode && !checkBoxOptionSkipScan.Checked)
+            if (!updateMode)
             {
                 log += "Prepare game data started..." + Environment.NewLine;
                 log += "Prepare game data finished" + Environment.NewLine + Environment.NewLine;
@@ -1298,7 +1258,7 @@ namespace MassEffectModder
                 customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
 
                 log += "Scan textures started..." + Environment.NewLine;
-                errors += treeScan.PrepareListOfTexturesInstaller(this, ref log);
+                errors += treeScan.PrepareListOfTextures(null, null, this, ref log);
                 textures = treeScan.treeScan;
                 log += "Scan textures finished" + Environment.NewLine + Environment.NewLine;
             }
@@ -1318,19 +1278,6 @@ namespace MassEffectModder
             cachePackageMgr.CloseAllWithSave(false, true);
 
 
-            if (!updateMode && !checkBoxOptionSkipScan.Checked)
-            {
-                customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
-                log += "Remove mipmaps started..." + Environment.NewLine;
-                errors += mipMaps.removeMipMapsME1Installer(1, textures, this);
-                errors += mipMaps.removeMipMapsME1Installer(2, textures, this);
-                log += "Remove mipmaps finished" + Environment.NewLine + Environment.NewLine;
-            }
-            else
-            {
-                log += "Remove mipmaps skipped" + Environment.NewLine + Environment.NewLine;
-            }
-
             if (!applyModTag(gameId, MeuitmVer, 0))
                 errors += "Failed applying stamp for installation!\n";
 
@@ -1340,7 +1287,7 @@ namespace MassEffectModder
             if (!exist)
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
             ConfIni engineConf = new ConfIni(path);
-            LODSettings.updateLOD((MeType)gameId, engineConf);
+            LODSettings.removeLOD((MeType)gameId, engineConf);
             LODSettings.updateGFXSettings((MeType)gameId, engineConf, softShadowsModPath != "", meuitmMode);
             log += "Updating LODs and other settings finished" + Environment.NewLine + Environment.NewLine;
 
@@ -1483,57 +1430,6 @@ namespace MassEffectModder
         {
             exitToModder = true;
             Close();
-        }
-
-        private void checkBoxOptionVanilla_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkBoxOptionVanilla.Checked)
-            {
-                if (MessageBox.Show("This option is for advanced users !\n\n" +
-                    "Disabling the check of the game files prevents the detection of various potential issues.\n\n" +
-                    "If you are not sure press 'Cancel'", "Warning !", MessageBoxButtons.OKCancel) == DialogResult.Cancel)
-                {
-                    checkBoxOptionVanilla.CheckedChanged -= checkBoxOptionVanilla_CheckedChanged;
-                    checkBoxOptionVanilla.Checked = false;
-                    checkBoxOptionVanilla.CheckedChanged += checkBoxOptionVanilla_CheckedChanged;
-                }
-            }
-            else
-            {
-                checkBoxOptionVanilla.CheckedChanged -= checkBoxOptionVanilla_CheckedChanged;
-                checkBoxOptionVanilla.Checked = false;
-                checkBoxOptionVanilla.CheckedChanged += checkBoxOptionVanilla_CheckedChanged;
-            }
-        }
-
-        private void checkBoxOptionSkipScan_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkBoxOptionSkipScan.Checked)
-            {
-                if (MessageBox.Show("This option is for advanced users !\n\n" +
-                    "Disabling the scan of the game files may leads to various potential issues.\n\n" +
-                    "If you are not sure press 'Cancel'", "Warning !", MessageBoxButtons.OKCancel) == DialogResult.Cancel)
-                {
-                    checkBoxOptionSkipScan.CheckedChanged -= checkBoxOptionSkipScan_CheckedChanged;
-                    checkBoxOptionSkipScan.Checked = false;
-                    checkBoxOptionSkipScan.CheckedChanged += checkBoxOptionSkipScan_CheckedChanged;
-                }
-                else
-                {
-                    checkBoxOptionVanilla.CheckedChanged -= checkBoxOptionVanilla_CheckedChanged;
-                    checkBoxOptionVanilla.Checked = true;
-                    checkBoxOptionVanilla.CheckedChanged += checkBoxOptionVanilla_CheckedChanged;
-                }
-            }
-            else
-            {
-                checkBoxOptionSkipScan.CheckedChanged -= checkBoxOptionSkipScan_CheckedChanged;
-                checkBoxOptionSkipScan.Checked = false;
-                checkBoxOptionSkipScan.CheckedChanged += checkBoxOptionSkipScan_CheckedChanged;
-                checkBoxOptionVanilla.CheckedChanged -= checkBoxOptionVanilla_CheckedChanged;
-                checkBoxOptionVanilla.Checked = false;
-                checkBoxOptionVanilla.CheckedChanged += checkBoxOptionVanilla_CheckedChanged;
-            }
         }
 
         private void buttonMute_Click(object sender, EventArgs e)

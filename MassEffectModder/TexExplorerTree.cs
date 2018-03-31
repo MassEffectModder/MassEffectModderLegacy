@@ -106,7 +106,7 @@ namespace MassEffectModder
             }
         }
 
-        public string PrepareListOfTextures(TexExplorer texEplorer, MainWindow mainWindow, ref string log)
+        public string PrepareListOfTextures(TexExplorer texEplorer, MainWindow mainWindow, Installer installer, ref string log)
         {
             string errors = "";
             treeScan = null;
@@ -135,117 +135,119 @@ namespace MassEffectModder
                 Directory.CreateDirectory(path);
             string filename = Path.Combine(path, "me" + (int)GameData.gameType + "map.bin");
 
-            if (File.Exists(filename))
+            if (mainWindow != null)
             {
-                using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.ReadWrite))
+                if (File.Exists(filename))
                 {
-                    uint tag = fs.ReadUInt32();
-                    uint version = fs.ReadUInt32();
-                    if (tag != TexExplorer.textureMapBinTag || version != TexExplorer.textureMapBinVersion)
+                    using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.ReadWrite))
                     {
-                        MessageBox.Show("Detected wrong or old version of textures scan file!" +
-                        "\n\nYou need to restore the game to vanilla state then reinstall optional DLC/PCC mods." +
-                        "\n\nThen from the main menu, select 'Remove Textures Scan File' and start Texture Manager again.");
+                        uint tag = fs.ReadUInt32();
+                        uint version = fs.ReadUInt32();
+                        if (tag != TexExplorer.textureMapBinTag || version != TexExplorer.textureMapBinVersion)
+                        {
+                            MessageBox.Show("Detected wrong or old version of textures scan file!" +
+                                "\n\nYou need to restore the game to vanilla state then reinstall optional DLC/PCC mods." +
+                                "\n\nThen from the main menu, select 'Remove Textures Scan File' and start Texture Manager again.");
+                            mainWindow.updateStatusLabel("");
+                            mainWindow.updateStatusLabel2("");
+                            texEplorer.Close();
+                            fs.Close();
+                            log += "Detected wrong or old version of textures scan file!" + Environment.NewLine;
+                            log += "You need to restore the game to vanilla state then reinstall optional DLC/PCC mods." + Environment.NewLine;
+                            log += "Then from the main menu, select 'Remove Textures Scan File' and start Texture Manager again." + Environment.NewLine;
+                            return "Detected wrong or old version of textures scan file!" + Environment.NewLine +
+                                "You need to restore the game to vanilla state then reinstall optional DLC/PCC mods." + Environment.NewLine +
+                                "Then from the main menu, select 'Remove Textures Scan File' and start Texture Manager again." + Environment.NewLine;
+                        }
+
+                        uint countTexture = fs.ReadUInt32();
+                        for (int i = 0; i < countTexture; i++)
+                        {
+                            FoundTexture texture = new FoundTexture();
+                            int len = fs.ReadInt32();
+                            texture.name = fs.ReadStringASCII(len);
+                            texture.crc = fs.ReadUInt32();
+                            uint countPackages = fs.ReadUInt32();
+                            texture.list = new List<MatchedTexture>();
+                            for (int k = 0; k < countPackages; k++)
+                            {
+                                MatchedTexture matched = new MatchedTexture();
+                                matched.exportID = fs.ReadInt32();
+                                matched.linkToMaster = fs.ReadInt32();
+                                len = fs.ReadInt32();
+                                matched.path = fs.ReadStringASCII(len);
+                                texture.list.Add(matched);
+                            }
+                            textures.Add(texture);
+                        }
+
+                        List<string> packages = new List<string>();
+                        int numPackages = fs.ReadInt32();
+                        for (int i = 0; i < numPackages; i++)
+                        {
+                            int len = fs.ReadInt32();
+                            string pkgPath = fs.ReadStringASCII(len);
+                            pkgPath = GameData.GamePath + pkgPath;
+                            packages.Add(pkgPath);
+                        }
+                        for (int i = 0; i < packages.Count; i++)
+                        {
+                            if (GameData.packageFiles.Find(s => s.Equals(packages[i], StringComparison.OrdinalIgnoreCase)) == null)
+                            {
+                                MessageBox.Show("Detected removal of game files since last game data scan." +
+                                "\n\nYou need to restore the game to vanilla state then reinstall optional DLC/PCC mods." +
+                                "\n\nThen from the main menu, select 'Remove Textures Scan File' and start Texture Manager again.");
+                                return "";
+                            }
+                        }
+                        for (int i = 0; i < GameData.packageFiles.Count; i++)
+                        {
+                            if (packages.Find(s => s.Equals(GameData.packageFiles[i], StringComparison.OrdinalIgnoreCase)) == null)
+                            {
+                                MessageBox.Show("Detected additional game files not present in latest game data scan." +
+                                "\n\nYou need to restore the game to vanilla state then reinstall optional DLC/PCC mods." +
+                                "\n\nThen from the main menu, select 'Remove Textures Scan File' and start Texture Manager again.");
+                                return "";
+                            }
+                        }
+
+                        treeScan = textures;
                         mainWindow.updateStatusLabel("");
                         mainWindow.updateStatusLabel2("");
-                        texEplorer.Close();
-                        fs.Close();
-                        log += "Detected wrong or old version of textures scan file!" + Environment.NewLine;
-                        log += "You need to restore the game to vanilla state then reinstall optional DLC/PCC mods." + Environment.NewLine;
-                        log += "Then from the main menu, select 'Remove Textures Scan File' and start Texture Manager again." + Environment.NewLine;
-                        return "Detected wrong or old version of textures scan file!" + Environment.NewLine +
-                            "You need to restore the game to vanilla state then reinstall optional DLC/PCC mods." + Environment.NewLine +
-                            "Then from the main menu, select 'Remove Textures Scan File' and start Texture Manager again." + Environment.NewLine;
+                        return errors;
                     }
-
-                    uint countTexture = fs.ReadUInt32();
-                    for (int i = 0; i < countTexture; i++)
-                    {
-                        FoundTexture texture = new FoundTexture();
-                        int len = fs.ReadInt32();
-                        texture.name = fs.ReadStringASCII(len);
-                        texture.crc = fs.ReadUInt32();
-                        uint countPackages = fs.ReadUInt32();
-                        texture.list = new List<MatchedTexture>();
-                        for (int k = 0; k < countPackages; k++)
-                        {
-                            MatchedTexture matched = new MatchedTexture();
-                            matched.exportID = fs.ReadInt32();
-                            matched.linkToMaster = fs.ReadInt32();
-                            len = fs.ReadInt32();
-                            matched.path = fs.ReadStringASCII(len);
-                            texture.list.Add(matched);
-                        }
-                        textures.Add(texture);
-                    }
-
-                    List<string> packages = new List<string>();
-                    int numPackages = fs.ReadInt32();
-                    for (int i = 0; i < numPackages; i++)
-                    {
-                        int len = fs.ReadInt32();
-                        string pkgPath = fs.ReadStringASCII(len);
-                        pkgPath = GameData.GamePath + pkgPath;
-                        packages.Add(pkgPath);
-                    }
-                    for (int i = 0; i < packages.Count; i++)
-                    {
-                        if (GameData.packageFiles.Find(s => s.Equals(packages[i], StringComparison.OrdinalIgnoreCase)) == null)
-                        {
-                            MessageBox.Show("Detected removal of game files since last game data scan." +
-                            "\n\nYou need to restore the game to vanilla state then reinstall optional DLC/PCC mods." +
-                            "\n\nThen from the main menu, select 'Remove Textures Scan File' and start Texture Manager again.");
-                            return "";
-                        }
-                    }
-                    for (int i = 0; i < GameData.packageFiles.Count; i++)
-                    {
-                        if (packages.Find(s => s.Equals(GameData.packageFiles[i], StringComparison.OrdinalIgnoreCase)) == null)
-                        {
-                            MessageBox.Show("Detected additional game files not present in latest game data scan." +
-                            "\n\nYou need to restore the game to vanilla state then reinstall optional DLC/PCC mods." +
-                            "\n\nThen from the main menu, select 'Remove Textures Scan File' and start Texture Manager again.");
-                            return "";
-                        }
-                    }
-
-                    treeScan = textures;
-                    mainWindow.updateStatusLabel("");
-                    mainWindow.updateStatusLabel2("");
-                    return errors;
                 }
-            }
 
+                if (mainWindow != null)
+                {
+                    List<string> badMods = Misc.detectBrokenMod(GameData.gameType);
+                    if (badMods.Count != 0)
+                    {
+                        errors = "";
+                        for (int l = 0; l < badMods.Count; l++)
+                        {
+                            errors += badMods[l] + Environment.NewLine;
+                        }
+                        MessageBox.Show("Detected not compatible mods: \n\n" + errors);
+                        return "";
+                    }
+                }
+
+                DialogResult result = MessageBox.Show("Replacing textures and creating mods requires generating a map of the game's textures.\n" +
+                "You only need to do it once.\n\n" +
+                "IMPORTANT! Your game needs to be in vanilla state and have optional DLC/PCC mods installed.\n\n" +
+                "Are you sure you want to proceed?", "Textures mapping", MessageBoxButtons.YesNo);
+                if (result == DialogResult.No)
+                {
+                    texEplorer.Close();
+                    return "";
+                }
+
+                Misc.startTimer();
+            }
 
             if (File.Exists(filename))
                 File.Delete(filename);
-
-            if (mainWindow != null)
-            {
-                List<string> badMods = Misc.detectBrokenMod(GameData.gameType);
-                if (badMods.Count != 0)
-                {
-                    errors = "";
-                    for (int l = 0; l < badMods.Count; l++)
-                    {
-                        errors += badMods[l] + Environment.NewLine;
-                    }
-                    MessageBox.Show("Detected not compatible mods: \n\n" + errors);
-                    return "";
-                }
-            }
-
-            DialogResult result = MessageBox.Show("Replacing textures and creating mods requires generating a map of the game's textures.\n" +
-            "You only need to do it once.\n\n" +
-            "IMPORTANT! Your game needs to be in vanilla state and have optional DLC/PCC mods installed.\n\n" +
-            "Are you sure you want to proceed?", "Textures mapping", MessageBoxButtons.YesNo);
-            if (result == DialogResult.No)
-            {
-                texEplorer.Close();
-                return "";
-            }
-
-            Misc.startTimer();
 
             GameData.packageFiles.Sort();
             int count = GameData.packageFiles.Count;
@@ -294,7 +296,10 @@ namespace MassEffectModder
                     }
                 }
 
-                mainWindow.updateStatusLabel("Scanning packages...");
+                if (installer != null)
+                    installer.updateStatusScan("Scanning packages");
+                if (mainWindow != null)
+                    mainWindow.updateStatusLabel("Scanning packages...");
                 for (int i = 0; i < GameData.packageFiles.Count; i++)
                 {
                     int index = -1;
@@ -325,13 +330,19 @@ namespace MassEffectModder
                 int currentPackage = 0;
                 for (int i = 0; i < modifiedFiles.Count; i++, currentPackage++)
                 {
-                    mainWindow.updateStatusLabel("Finding textures in package " + (currentPackage + 1) + " of " + totalPackages + " - " + modifiedFiles[i]);
+                    if (installer != null)
+                        installer.updateStatusScan("Scanning textures " + ((currentPackage + 1) * 100) / totalPackages + "% ");
+                    if (mainWindow != null)
+                        mainWindow.updateStatusLabel("Finding textures in package " + (currentPackage + 1) + " of " + totalPackages + " - " + modifiedFiles[i]);
                     errors += FindTextures(textures, modifiedFiles[i], true, ref log);
                 }
 
                 for (int i = 0; i < addedFiles.Count; i++, currentPackage++)
                 {
-                    mainWindow.updateStatusLabel("Finding textures in package " + (currentPackage + 1) + " of " + totalPackages + " - " + addedFiles[i]);
+                    if (installer != null)
+                        installer.updateStatusScan("Scanning textures " + ((currentPackage + 1) * 100) / totalPackages + "% ");
+                    if (mainWindow != null)
+                        mainWindow.updateStatusLabel("Finding textures in package " + (currentPackage + 1) + " of " + totalPackages + " - " + addedFiles[i]);
                     errors += FindTextures(textures, addedFiles[i], false, ref log);
                 }
 
@@ -518,9 +529,12 @@ namespace MassEffectModder
 
             treeScan = textures;
 
-            var time = Misc.stopTimer();
-            mainWindow.updateStatusLabel("Done. Process total time: " + Misc.getTimerFormat(time));
-            mainWindow.updateStatusLabel2("");
+            if (mainWindow != null)
+            {
+                var time = Misc.stopTimer();
+                mainWindow.updateStatusLabel("Done. Process total time: " + Misc.getTimerFormat(time));
+                mainWindow.updateStatusLabel2("");
+            }
 
             return errors;
         }
@@ -643,266 +657,6 @@ namespace MassEffectModder
                                 foundTex.alphadxt1 = true;
                             }
                         }
-                        textures.Add(foundTex);
-                    }
-                }
-            }
-
-            package.Dispose();
-
-            return errors;
-        }
-
-        public string PrepareListOfTexturesInstaller(Installer installer, ref string log)
-        {
-            string errors = "";
-            treeScan = null;
-
-            List<FoundTexture> textures = new List<FoundTexture>();
-            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    Assembly.GetExecutingAssembly().GetName().Name);
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-            string filename = Path.Combine(path, "me" + (int)GameData.gameType + "map.bin");
-            if (File.Exists(filename))
-                File.Delete(filename);
-
-            GameData.packageFiles.Sort();
-            int count = GameData.packageFiles.Count;
-            for (int i = 0; i < count; i++)
-            {
-                if (GameData.packageFiles[i].Contains("_IT.") ||
-                    GameData.packageFiles[i].Contains("_FR.") ||
-                    GameData.packageFiles[i].Contains("_ES.") ||
-                    GameData.packageFiles[i].Contains("_DE.") ||
-                    GameData.packageFiles[i].Contains("_PLPC.") ||
-                    GameData.packageFiles[i].Contains("_DEU.") ||
-                    GameData.packageFiles[i].Contains("_FRA.") ||
-                    GameData.packageFiles[i].Contains("_ITA.") ||
-                    GameData.packageFiles[i].Contains("_POL."))
-                {
-                    GameData.packageFiles.Add(GameData.packageFiles[i]);
-                    GameData.packageFiles.RemoveAt(i--);
-                    count--;
-                }
-            }
-
-            for (int i = 0; i < GameData.packageFiles.Count; i++)
-            {
-                installer.updateStatusScan("Scanning textures " + (i * 100 / GameData.packageFiles.Count) + "% ");
-                errors += FindTexturesInstaller(textures, GameData.packageFiles[i], ref log);
-            }
-
-            for (int k = 0; k < textures.Count; k++)
-            {
-                for (int t = 0; t < textures[k].list.Count; t++)
-                {
-                    uint mipmapOffset = textures[k].list[t].mipmapOffset;
-                    if (textures[k].list[t].slave)
-                    {
-                        MatchedTexture slaveTexture = textures[k].list[t];
-                        string basePkgName = slaveTexture.basePackageName;
-                        if (basePkgName == Path.GetFileNameWithoutExtension(slaveTexture.path).ToUpperInvariant())
-                            throw new Exception();
-                        for (int j = 0; j < textures[k].list.Count; j++)
-                        {
-                            if (!textures[k].list[j].slave &&
-                               textures[k].list[j].mipmapOffset == mipmapOffset &&
-                               textures[k].list[j].packageName == basePkgName)
-                            {
-                                slaveTexture.linkToMaster = j;
-                                textures[k].list[t] = slaveTexture;
-                                break;
-                            }
-                        }
-                    }
-                }
-                if (!textures[k].list.Exists(s => s.slave) &&
-                    textures[k].list.Exists(s => s.weakSlave))
-                {
-                    List<MatchedTexture> texList = new List<MatchedTexture>();
-                    for (int t = 0; t < textures[k].list.Count; t++)
-                    {
-                        MatchedTexture tex = textures[k].list[t];
-                        if (tex.weakSlave)
-                            texList.Add(tex);
-                        else
-                            texList.Insert(0, tex);
-                    }
-                    FoundTexture f = textures[k];
-                    f.list = texList;
-                    textures[k] = f;
-                    if (textures[k].list[0].weakSlave)
-                        continue;
-
-                    for (int t = 0; t < textures[k].list.Count; t++)
-                    {
-                        if (textures[k].list[t].weakSlave)
-                        {
-                            MatchedTexture slaveTexture = textures[k].list[t];
-                            string basePkgName = slaveTexture.basePackageName;
-                            if (basePkgName == Path.GetFileNameWithoutExtension(slaveTexture.path).ToUpperInvariant())
-                                throw new Exception();
-                            for (int j = 0; j < textures[k].list.Count; j++)
-                            {
-                                if (!textures[k].list[j].weakSlave &&
-                                   textures[k].list[j].packageName == basePkgName)
-                                {
-                                    slaveTexture.linkToMaster = j;
-                                    textures[k].list[t] = slaveTexture;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            using (FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
-            {
-                MemoryStream mem = new MemoryStream();
-                mem.WriteUInt32(TexExplorer.textureMapBinTag);
-                mem.WriteUInt32(TexExplorer.textureMapBinVersion);
-                mem.WriteInt32(textures.Count);
-                for (int i = 0; i < textures.Count; i++)
-                {
-                    mem.WriteInt32(textures[i].name.Length);
-                    mem.WriteStringASCII(textures[i].name);
-                    mem.WriteUInt32(textures[i].crc);
-                    mem.WriteInt32(textures[i].list.Count);
-                    for (int k = 0; k < textures[i].list.Count; k++)
-                    {
-                        mem.WriteInt32(textures[i].list[k].exportID);
-                        mem.WriteInt32(textures[i].list[k].linkToMaster);
-                        mem.WriteInt32(textures[i].list[k].path.Length);
-                        mem.WriteStringASCII(textures[i].list[k].path);
-                    }
-                }
-                mem.WriteInt32(GameData.packageFiles.Count);
-                for (int i = 0; i < GameData.packageFiles.Count; i++)
-                {
-                    string s = GameData.RelativeGameData(GameData.packageFiles[i]);
-                    mem.WriteInt32(s.Length);
-                    mem.WriteStringASCII(s);
-                }
-                mem.SeekBegin();
-
-                fs.WriteFromStream(mem, mem.Length);
-            }
-
-            treeScan = textures;
-
-            path = @"\BioGame\CookedPC\testVolumeLight_VFX.upk".ToLowerInvariant();
-            for (int i = 0; i < GameData.packageFiles.Count; i++)
-            {
-                if (path != "" && GameData.packageFiles[i].ToLowerInvariant().Contains(path))
-                    continue;
-                try
-                {
-                    using (FileStream fs = new FileStream(GameData.packageFiles[i], FileMode.Open, FileAccess.ReadWrite))
-                    {
-                        fs.SeekEnd();
-                        fs.Seek(-Package.MEMendFileMarker.Length, SeekOrigin.Current);
-                        string marker = fs.ReadStringASCII(Package.MEMendFileMarker.Length);
-                        if (marker != Package.MEMendFileMarker)
-                        {
-                            fs.SeekEnd();
-                            fs.WriteStringASCII(Package.MEMendFileMarker);
-                        }
-                    }
-                }
-                catch
-                {
-                    errors += "The file is could not be opened to write marker, skipped: " + GameData.packageFiles[i] + Environment.NewLine;
-                }
-            }
-
-            return errors;
-        }
-
-        private string FindTexturesInstaller(List<FoundTexture> textures, string packagePath, ref string log)
-        {
-            string errors = "";
-            Package package = null;
-
-            try
-            {
-                package = new Package(packagePath, true);
-            }
-            catch (Exception e)
-            {
-                string err = "";
-                err += "---- Start --------------------------------------------" + Environment.NewLine;
-                err += "Issue with open package file: " + packagePath + Environment.NewLine;
-                err += e.Message + Environment.NewLine + Environment.NewLine;
-                err += e.StackTrace + Environment.NewLine + Environment.NewLine;
-                err += "---- End ----------------------------------------------" + Environment.NewLine + Environment.NewLine;
-                errors += err;
-                log += err;
-                return errors;
-            }
-            for (int i = 0; i < package.exportsTable.Count; i++)
-            {
-                int id = package.getClassNameId(package.exportsTable[i].classId);
-                if (id == package.nameIdTexture2D ||
-                    id == package.nameIdLightMapTexture2D ||
-                    id == package.nameIdShadowMapTexture2D ||
-                    id == package.nameIdTextureFlipBook)
-                {
-                    Texture texture = new Texture(package, i, package.getExportData(i));
-                    if (!texture.hasImageData())
-                        continue;
-
-                    Texture.MipMap mipmap = texture.getTopMipmap();
-                    string name = package.exportsTable[i].objectName;
-                    MatchedTexture matchTexture = new MatchedTexture();
-                    matchTexture.exportID = i;
-                    matchTexture.path = GameData.RelativeGameData(packagePath);
-                    matchTexture.packageName = texture.packageName;
-                    matchTexture.removeEmptyMips = texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty);
-                    matchTexture.numMips = texture.mipMapsList.FindAll(s => s.storageType != Texture.StorageTypes.empty).Count;
-                    if (GameData.gameType == MeType.ME1_TYPE)
-                    {
-                        matchTexture.basePackageName = texture.basePackageName;
-                        matchTexture.slave = texture.slave;
-                        matchTexture.weakSlave = texture.weakSlave;
-                        matchTexture.linkToMaster = -1;
-                        if (matchTexture.slave)
-                            matchTexture.mipmapOffset = mipmap.dataOffset;
-                        else
-                            matchTexture.mipmapOffset = package.exportsTable[i].dataOffset + (uint)texture.properties.propertyEndOffset + mipmap.internalOffset;
-                    }
-
-                    uint crc = 0;
-                    try
-                    {
-                        crc = texture.getCrcTopMipmap();
-                    }
-                    catch
-                    {
-                    }
-                    if (crc == 0)
-                    {
-                        errors += "Error: Texture " + package.exportsTable[i].objectName + " is broken in package: " + packagePath + ", skipping..." + Environment.NewLine;
-                        log += "Error: Texture " + package.exportsTable[i].objectName + " is broken in package: " + packagePath + ", skipping..." + Environment.NewLine;
-                        continue;
-                    }
-
-                    FoundTexture foundTexName = textures.Find(s => s.crc == crc);
-                    if (foundTexName.crc != 0)
-                    {
-                        if (matchTexture.slave)
-                            foundTexName.list.Add(matchTexture);
-                        else
-                            foundTexName.list.Insert(0, matchTexture);
-                    }
-                    else
-                    {
-                        FoundTexture foundTex = new FoundTexture();
-                        foundTex.list = new List<MatchedTexture>();
-                        foundTex.list.Add(matchTexture);
-                        foundTex.name = name;
-                        foundTex.crc = crc;
                         textures.Add(foundTex);
                     }
                 }
