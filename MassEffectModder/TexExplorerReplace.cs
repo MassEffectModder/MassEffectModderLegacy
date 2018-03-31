@@ -163,7 +163,9 @@ namespace MassEffectModder
                     package.addName("LODGroup");
                 if (!package.existsNameId("TEXTUREGROUP_LightAndShadowMap"))
                     package.addName("TEXTUREGROUP_LightAndShadowMap");
-                texture.properties.addByteValue("LODGroup", "TEXTUREGROUP_LightAndShadowMap", 0);
+                if (!package.existsNameId("TextureGroup"))
+                    package.addName("TextureGroup");
+                texture.properties.addByteValue("LODGroup", "TEXTUREGROUP_LightAndShadowMap", "TextureGroup", 0);
 
                 if (cacheCprMipmaps == null)
                 {

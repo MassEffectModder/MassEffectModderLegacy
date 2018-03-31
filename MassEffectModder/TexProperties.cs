@@ -1,7 +1,7 @@
 /*
  * MassEffectModder
  *
- * Copyright (C) 2015-2016 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2015-2018 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,6 +32,7 @@ namespace MassEffectModder
         {
             public string type;
             public string name;
+            public string valueNameType;
             public string valueName;
             public int valueInt;
             public float valueFloat;
@@ -131,14 +132,15 @@ namespace MassEffectModder
                     texProperty.valueInt = BitConverter.ToInt32(texProperty.valueRaw, 0);
                     break;
                 case "ByteProperty":
-                    texProperty.valueName = package.getName(BitConverter.ToInt32(texProperty.valueRaw, 0));
                     if (GameData.gameType == MeType.ME3_TYPE)
                     {
+                        texProperty.valueNameType = package.getName(BitConverter.ToInt32(texProperty.valueRaw, 0));
                         texProperty.valueName = package.getName(BitConverter.ToInt32(texProperty.valueRaw, 8));
                         texProperty.valueInt = BitConverter.ToInt32(texProperty.valueRaw, 12);
                     }
                     else
                     {
+                        texProperty.valueName = package.getName(BitConverter.ToInt32(texProperty.valueRaw, 0));
                         texProperty.valueInt = BitConverter.ToInt32(texProperty.valueRaw, 4);
                     }
                     break;
@@ -185,6 +187,8 @@ namespace MassEffectModder
                     result += texProperty.valueInt + "\n";
                     break;
                 case "ByteProperty":
+                    if (GameData.gameType == MeType.ME3_TYPE)
+                        result += texProperty.valueNameType + ": ";
                     result += texProperty.valueName + ": ";
                     result += texProperty.valueInt + "\n";
                     break;
@@ -242,13 +246,14 @@ namespace MassEffectModder
             texPropertyList[texPropertyList.FindIndex(s => s.name == name)] = texProperty;
         }
 
-        public void setByteValue(string name, string valueName, int valueInt = 0)
+        public void setByteValue(string name, string valueName, string valueNameType, int valueInt = 0)
         {
             TexPropertyEntry texProperty = texPropertyList.Find(s => s.name == name);
             if (texProperty.type != "ByteProperty")
                 throw new Exception();
             if (GameData.gameType == MeType.ME3_TYPE)
             {
+                Buffer.BlockCopy(BitConverter.GetBytes(package.getNameId(valueNameType)), 0, texProperty.valueRaw, 0, sizeof(int));
                 Buffer.BlockCopy(BitConverter.GetBytes(package.getNameId(valueName)), 0, texProperty.valueRaw, 8, sizeof(int));
                 Buffer.BlockCopy(BitConverter.GetBytes(valueInt), 0, texProperty.valueRaw, 12, sizeof(int));
             }
@@ -262,7 +267,7 @@ namespace MassEffectModder
             texPropertyList[texPropertyList.FindIndex(s => s.name == name)] = texProperty;
         }
 
-        public void addByteValue(string name, string valueName, int valueInt = 0)
+        public void addByteValue(string name, string valueName, string valueNameType, int valueInt = 0)
         {
             TexPropertyEntry texProperty = new TexPropertyEntry();
             if (GameData.gameType == MeType.ME3_TYPE)
@@ -276,6 +281,7 @@ namespace MassEffectModder
                 throw new Exception("Not able to add property: " + name);
             if (GameData.gameType == MeType.ME3_TYPE)
             {
+                Buffer.BlockCopy(BitConverter.GetBytes(package.getNameId(valueNameType)), 0, texProperty.valueRaw, 0, sizeof(int));
                 Buffer.BlockCopy(BitConverter.GetBytes(package.getNameId(valueName)), 0, texProperty.valueRaw, 8, sizeof(int));
                 Buffer.BlockCopy(BitConverter.GetBytes(valueInt), 0, texProperty.valueRaw, 12, sizeof(int));
             }
