@@ -387,7 +387,6 @@ namespace MassEffectModder
                             string basePkgName = slaveTexture.basePackageName;
                             if (basePkgName == Path.GetFileNameWithoutExtension(slaveTexture.path).ToUpperInvariant())
                                 throw new Exception();
-                            bool found = false;
                             for (int j = 0; j < textures[k].list.Count; j++)
                             {
                                 if (!textures[k].list[j].slave &&
@@ -397,13 +396,8 @@ namespace MassEffectModder
                                     slaveTexture.linkToMaster = j;
                                     slaveTexture.slave = true;
                                     textures[k].list[t] = slaveTexture;
-                                    found = true;
                                     break;
                                 }
-                            }
-                            if (!found)
-                            {
-                                log += "Error: not able match 'slave' texture: + " + textures[k].name + " to 'master'.";
                             }
                         }
                     }
