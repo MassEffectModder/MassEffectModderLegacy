@@ -1745,7 +1745,7 @@ namespace MassEffectModder
                     fs.WriteStringASCII("},\nsize = " + new FileInfo(packageMainFiles[l]).Length + ",\n},\n");
                 }
 
-                if (!generateMd5Entries && !generateMd5Entries)
+                if (!generateMd5Entries && !generateModsMd5Entries)
                 {
                     errors += "File " + packageMainFiles[l] + " has wrong MD5 checksum: ";
                     for (int i = 0; i < md5.Count(); i++)
@@ -1855,7 +1855,7 @@ namespace MassEffectModder
                         fs.WriteStringASCII("},\nsize = " + new FileInfo(packageDLCFiles[l]).Length + ",\n},\n");
                     }
 
-                    if (!generateMd5Entries && !generateMd5Entries)
+                    if (!generateMd5Entries && !generateModsMd5Entries)
                     {
                         errors += "File " + packageDLCFiles[l] + " has wrong MD5 checksum: ";
                         for (int i = 0; i < md5.Count(); i++)
@@ -1907,7 +1907,7 @@ namespace MassEffectModder
 
                     vanilla = false;
 
-                    if (!generateMd5Entries && !generateMd5Entries)
+                    if (!generateMd5Entries && !generateModsMd5Entries)
                     {
                         errors += "File " + sfarFiles[l] + " has wrong MD5 checksum: ";
                         for (int i = 0; i < md5.Count(); i++)
@@ -1959,7 +1959,7 @@ namespace MassEffectModder
 
                     vanilla = false;
 
-                    if (!generateMd5Entries && !generateMd5Entries)
+                    if (!generateMd5Entries && !generateModsMd5Entries)
                     {
                         errors += "File " + tfcFiles[l] + " has wrong MD5 checksum: ";
                         for (int i = 0; i < md5.Count(); i++)
