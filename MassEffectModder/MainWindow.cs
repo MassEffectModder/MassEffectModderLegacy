@@ -258,37 +258,6 @@ namespace MassEffectModder
             enableGameDataMenu(true);
         }
 
-        void updateMEConfig(MeType gameId)
-        {
-            enableGameDataMenu(false);
-            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    Assembly.GetExecutingAssembly().GetName().Name);
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-            string filename = Path.Combine(path, "me" + (int)gameId + "map.bin");
-            if (!File.Exists(filename))
-            {
-                MessageBox.Show("Unable to update LOD settings.\nYou must scan your game using Texture Manager first always!");
-                enableGameDataMenu(true);
-                return;
-            }
-            GameData gameData = new GameData(gameId, _configIni);
-            path = gameData.EngineConfigIniPath;
-            bool exist = File.Exists(path);
-            if (!exist)
-            {
-                if (gameId == MeType.ME1_TYPE)
-                {
-                    MessageBox.Show("Missing game configuration file.\nYou need atleast once launch the game first.");
-                }
-                Directory.CreateDirectory(Path.GetDirectoryName(path));
-            }
-            ConfIni engineConf = new ConfIni(path);
-            LODSettings.removeLOD(gameId, engineConf);
-            MessageBox.Show("Game configuration file at " + path + " updated.");
-            enableGameDataMenu(true);
-        }
-
         private void changeGamePathME1ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             enableGameDataMenu(false);
