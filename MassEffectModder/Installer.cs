@@ -1270,7 +1270,7 @@ namespace MassEffectModder
             if (!applyModTag(gameId, MeuitmVer, 0))
                 errors += "Failed applying stamp for installation!\n";
 
-            log += "Updating LODs and other settings started..." + Environment.NewLine;
+            log += "Updating GFX settings started..." + Environment.NewLine;
             string path = gameData.EngineConfigIniPath;
             bool exist = File.Exists(path);
             if (!exist)
@@ -1278,7 +1278,7 @@ namespace MassEffectModder
             ConfIni engineConf = new ConfIni(path);
             LODSettings.removeLOD((MeType)gameId, engineConf);
             LODSettings.updateGFXSettings((MeType)gameId, engineConf, softShadowsModPath != "", meuitmMode);
-            log += "Updating LODs and other settings finished" + Environment.NewLine + Environment.NewLine;
+            log += "Updating GFX settings finished" + Environment.NewLine + Environment.NewLine;
 
 
             if (gameId == 1 && softShadowsModPath != "")
@@ -1345,11 +1345,6 @@ namespace MassEffectModder
             customLabelCurrentStatus.ForeColor = Color.FromKnownColor(KnownColor.White);
             customLabelDesc.Text = "";
             buttonNormal.Visible = true;
-
-            log += "==========================================" + Environment.NewLine;
-            log += "LOD settings:" + Environment.NewLine;
-            LODSettings.readLOD((MeType)gameId, engineConf, ref log);
-            log += "==========================================" + Environment.NewLine;
 
             string filename = "install-log.txt";
             if (File.Exists(filename))
