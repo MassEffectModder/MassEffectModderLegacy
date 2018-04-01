@@ -127,7 +127,7 @@ namespace MassEffectModder
                     image.correctMips(pixelFormat, dxt1HasAlpha, dxt1Threshold);
                 }
 
-                fmt = Image.getEngineFormatType(pixelFormat);
+                /*fmt = Image.getEngineFormatType(pixelFormat);
                 if (!package.existsNameId(fmt))
                     package.addName(fmt);
                 string cmp = "TC_NormalmapUncompressed";
@@ -144,7 +144,7 @@ namespace MassEffectModder
                 {
                     texture.properties.setByteValue("Format", fmt, "");
                     //texture.properties.setByteValue("CompressionSettings", cmp, "");
-                }
+                }*/
 
                 // remove lower mipmaps from source image which not exist in game data
                 for (int t = 0; t < image.mipMaps.Count(); t++)

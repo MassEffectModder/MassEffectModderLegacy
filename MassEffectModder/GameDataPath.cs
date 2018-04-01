@@ -58,10 +58,10 @@ namespace MassEffectModder
             string entry = "Path";
 
             if (type == MeType.ME2_TYPE)
-                registryKey += @" 2";
+                registryKey += " 2";
             else if (type == MeType.ME3_TYPE)
             {
-                registryKey += @" 3";
+                registryKey += " 3";
                 entry = "Install Dir";
             }
 
