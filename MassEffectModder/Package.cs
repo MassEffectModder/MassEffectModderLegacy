@@ -1138,19 +1138,14 @@ namespace MassEffectModder
         }
 
         public bool SaveToFile(bool forceZlib = false, bool forceCompressed = false,
-            bool forceDecompressed = false, string filename = null, bool appendMarker = true)
+            bool forceDecompressed = false, bool appendMarker = true)
         {
             if (packageFileVersion == packageFileVersionME1)
             {
                 forceCompressed = false;
                 forceZlib = false;
             }
-#if false
-            // detect shader cache
-            if (forceCompressed && packageFileVersion == packageFileVersionME3)
-                if (exportsTable.Exists(x => x.objectName == "SeekFreeShaderCache" && getClassName(x.classId) == "ShaderCache"))
-                    forceCompressed = false;
-#endif
+
             if (forceZlib && packageFileVersion == packageFileVersionME2 &&
                     compressionType != CompressionType.Zlib)
                 modified = true;
@@ -1358,13 +1353,10 @@ namespace MassEffectModder
             if (!memoryMode && Directory.Exists(packagePath + "-exports"))
                 Directory.Delete(packagePath + "-exports", true);
 
-            if (filename == null)
-                filename = packagePath;
-
-            using (FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
+            using (FileStream fs = new FileStream(packagePath, FileMode.Create, FileAccess.Write))
             {
                 if (fs == null)
-                    throw new Exception("Failed to write to file: " + filename);
+                    throw new Exception("Failed to write to file: " + packagePath);
 
                 if (!compressed)
                 {

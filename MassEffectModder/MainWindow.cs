@@ -157,7 +157,7 @@ namespace MassEffectModder
                     {
                         package.Dispose();
                         package = new Package(GameData.packageFiles[i]);
-                        package.SaveToFile(true, true, false, null, false);
+                        package.SaveToFile(true, true, false, false);
                     }
                     package.Dispose();
                 }

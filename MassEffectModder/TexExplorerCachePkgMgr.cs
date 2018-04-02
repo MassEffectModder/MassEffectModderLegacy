@@ -79,7 +79,7 @@ namespace MassEffectModder
                     mainWindow.updateStatusLabel2("Saving package " + (i + 1) + " of " + packages.Count);
                 if (_installer != null)
                     _installer.updateStatusStore("Saving packages " + (i * 100 / packages.Count) + "%");
-                pkg.SaveToFile(forceZlib, false, false, null, appendMarker);
+                pkg.SaveToFile(forceZlib, false, false, appendMarker);
                 pkg.Dispose();
             }
 
