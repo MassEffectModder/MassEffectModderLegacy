@@ -904,6 +904,7 @@ namespace MassEffectModder
             }
             diskUsage = (long)(diskUsage * 2.5);
 
+            bool unpackDLC = false;
             if (gameId == (int)MeType.ME3_TYPE)
             {
                 if (Directory.Exists(GameData.DLCData))
@@ -915,6 +916,8 @@ namespace MassEffectModder
                         if (File.Exists(Path.Combine(Path.GetDirectoryName(sfarFiles[i]), "Mount.dlc")))
                             sfarFiles.RemoveAt(i--);
                     }
+                    if (sfarFiles.Count != 0)
+                        unpackDLC = true;
                     for (int i = 0; i < sfarFiles.Count; i++)
                     {
                         diskUsageDLC += new FileInfo(sfarFiles[i]).Length;
@@ -969,7 +972,7 @@ namespace MassEffectModder
             }
 
             // unpack DLC
-            if (gameId != 3 || (updateMode && gameId == 3))
+            if (gameId != 3 || !unpackDLC || (updateMode && gameId == 3))
                 totalStages -= 1;
 
             // scan textures
