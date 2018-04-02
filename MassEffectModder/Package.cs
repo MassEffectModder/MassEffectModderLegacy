@@ -1137,36 +1137,20 @@ namespace MassEffectModder
             }
         }
 
-        public bool SaveToFile(bool forceZlib = false, bool forceCompressed = false,
-            bool forceDecompressed = false, bool appendMarker = true)
+        public bool SaveToFile(bool forceCompressed = false, bool forceDecompressed = false, bool appendMarker = true)
         {
             if (packageFileVersion == packageFileVersionME1)
-            {
                 forceCompressed = false;
-                forceZlib = false;
-            }
 
-            if (forceZlib && packageFileVersion == packageFileVersionME2 &&
-                    compressionType != CompressionType.Zlib)
-                modified = true;
-
-            if (packageStream.Length == 0 || !modified && !forceDecompressed && !forceCompressed)
+            if (!modified && !forceDecompressed && !forceCompressed)
                 return false;
 
             if (forceCompressed && forceDecompressed)
                 throw new Exception("force de/compression can't be both enabled!");
 
             CompressionType targetCompression = compressionType;
-            if (forceCompressed && !compressed || forceZlib)
-            {
-                if (compressionType == CompressionType.None)
-                {
-                    if (packageFileVersion == packageFileVersionME3 || forceZlib)
-                        targetCompression = CompressionType.Zlib;
-                    else
-                        targetCompression = CompressionType.LZO;
-                }
-            }
+            if (forceCompressed)
+                targetCompression = CompressionType.Zlib;
 
             if (!appendMarker)
             {
