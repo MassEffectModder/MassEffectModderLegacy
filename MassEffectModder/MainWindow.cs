@@ -125,82 +125,39 @@ namespace MassEffectModder
             return true;
         }
 
-        public void repackME2()
+        private void repackME2ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            enableGameDataMenu(false);
+            repackME23(MeType.ME2_TYPE);
+            enableGameDataMenu(true);
+        }
+
+        public void repackME23(MeType gameId)
         {
             string errors = "";
-            GameData gameData = new GameData(MeType.ME2_TYPE, _configIni);
+            GameData gameData = new GameData(gameId, _configIni);
             if (!Directory.Exists(GameData.GamePath))
             {
                 MessageBox.Show("Game path is wrong!");
                 return;
             }
             GetPackages(gameData);
-            string path = @"\BioGame\CookedPC\BIOC_Materials.pcc".ToLowerInvariant();
+            string path = "";
+            if (gameId == MeType.ME2_TYPE)
+                path = @"\BioGame\CookedPC\BIOC_Materials.pcc".ToLowerInvariant();
             for (int i = 0; i < GameData.packageFiles.Count; i++)
             {
-                if (GameData.packageFiles[i].ToLowerInvariant().Contains(path))
+                if (path != "" && GameData.packageFiles[i].ToLowerInvariant().Contains(path))
                     continue;
                 updateStatusLabel("Repack PCC file " + (i + 1) + " of " + GameData.packageFiles.Count);
                 try
                 {
                     Package package = new Package(GameData.packageFiles[i], false, true);
-                    if (package.compressed && package.compressionType != Package.CompressionType.Zlib)
+                    if (!package.compressed || package.compressed && package.compressionType != Package.CompressionType.Zlib)
                     {
                         package.Dispose();
                         package = new Package(GameData.packageFiles[i]);
                         package.SaveToFile(true, true, false, null, false);
-                    }
-                    package.Dispose();
-                }
-                catch
-                {
-                    errors += "The file is propably broken, skipped: " + GameData.packageFiles[i] + Environment.NewLine;
-                }
-            }
-            if (errors != "")
-            {
-                string filename = "pcc-errors.txt";
-                if (File.Exists(filename))
-                    File.Delete(filename);
-                using (FileStream fs = new FileStream(filename, FileMode.CreateNew))
-                {
-                    fs.WriteStringASCII(errors);
-                }
-                MessageBox.Show("WARNING: Some errors have occured!");
-                Process.Start(filename);
-            }
-            updateStatusLabel("Done");
-            updateStatusLabel2("");
-        }
-
-        private void repackME2ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            enableGameDataMenu(false);
-            repackME2();
-            enableGameDataMenu(true);
-        }
-
-        public void repackME3()
-        {
-            string errors = "";
-            GameData gameData = new GameData(MeType.ME3_TYPE, _configIni);
-            if (!Directory.Exists(GameData.GamePath))
-            {
-                MessageBox.Show("Game path is wrong!");
-                return;
-            }
-            GetPackages(gameData);
-            for (int i = 0; i < GameData.packageFiles.Count; i++)
-            {
-                updateStatusLabel("Repack PCC file " + (i + 1) + " of " + GameData.packageFiles.Count);
-                try
-                {
-                    Package package = new Package(GameData.packageFiles[i], false, true);
-                    if (!package.compressed)
-                    {
-                        package.Dispose();
-                        package = new Package(GameData.packageFiles[i]);
-                        package.SaveToFile(false, true, false, null, false);
                     }
                     package.Dispose();
                 }
@@ -229,7 +186,7 @@ namespace MassEffectModder
         private void repackME3ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             enableGameDataMenu(false);
-            repackME3();
+            repackME23(MeType.ME3_TYPE);
             enableGameDataMenu(true);
         }
 
