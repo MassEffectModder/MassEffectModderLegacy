@@ -42,6 +42,7 @@ namespace MassEffectModder
         byte[] FileListHash = new byte[] { 0xb5, 0x50, 0x19, 0xcb, 0xf9, 0xd3, 0xda, 0x65, 0xd5, 0x5b, 0x32, 0x1c, 0x00, 0x19, 0x69, 0x7c };
         const long MaxBlockSize = 0x00010000;
         MainWindow mainWindow;
+        Installer installer;
         int filenamesIndex;
         uint filesCount;
         List<FileEntry> filesList;
@@ -66,9 +67,29 @@ namespace MassEffectModder
             }
         }
 
-        public ME3DLC(MainWindow main)
+        public ME3DLC(MainWindow main, Installer inst)
         {
             mainWindow = main;
+            installer = inst;
+        }
+
+        static private int getNumberOfFiles(string path)
+        {
+            if (!File.Exists(path))
+                throw new Exception("filename missing");
+            using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read))
+            {
+                uint tag = stream.ReadUInt32();
+                if (tag != SfarTag)
+                    throw new Exception("Wrong SFAR tag");
+                uint sfarVersion = stream.ReadUInt32();
+                if (sfarVersion != SfarVersion)
+                    throw new Exception("Wrong SFAR version");
+
+                uint dataOffset = stream.ReadUInt32();
+                uint entriesOffset = stream.ReadUInt32();
+                return stream.ReadInt32();
+            }
         }
 
         private void loadHeader(MemoryStream stream)
@@ -147,7 +168,7 @@ namespace MassEffectModder
                 throw new Exception("filenames entry not found");
         }
 
-        public void extract(string SFARfilename, string outPath)
+        public void extract(string SFARfilename, string outPath, ref int currentProgress, int totalNumber)
         {
             if (!File.Exists(SFARfilename))
                 throw new Exception("filename missing");
@@ -175,6 +196,7 @@ namespace MassEffectModder
             {
                 loadHeader(stream);
 
+                int lastProgress = -1;
                 for (int i = 0; i < filesCount; i++)
                 {
                     if (filenamesIndex == i)
@@ -185,6 +207,15 @@ namespace MassEffectModder
                     if (mainWindow != null)
                         mainWindow.updateStatusLabel2("File " + (i + 1) + " of " + filesList.Count() + " - " + Path.GetFileName(filesList[i].filenamePath));
 
+                    if (installer != null)
+                    {
+                        int newProgress = (100 * currentProgress) / totalNumber;
+                        if (lastProgress != newProgress)
+                        {
+                            installer.updateStatusPrepare("Unpacking DLC " + ((currentProgress + 1) * 100 / totalNumber) + "%");
+                            lastProgress = newProgress;
+                        }
+                    }
                     int pos = filesList[i].filenamePath.IndexOf("\\BIOGame\\DLC\\", StringComparison.OrdinalIgnoreCase);
                     string filename = filesList[i].filenamePath.Substring(pos + ("\\BIOGame\\DLC\\").Length).Replace('/', '\\');
                     string dir = Path.GetDirectoryName(outPath);
@@ -242,7 +273,7 @@ namespace MassEffectModder
             }
         }
 
-        static public void unpackAllDLC(MainWindow mainWindow)
+        static public void unpackAllDLC(MainWindow mainWindow, Installer installer)
         {
             if (!Directory.Exists(GameData.DLCData))
             {
@@ -264,6 +295,14 @@ namespace MassEffectModder
                 return;
             }
 
+            int totalNumFiles = 0;
+            int currentProgress = 0;
+            for (int i = 0; i < sfarFiles.Count; i++)
+            {
+                string DLCname = Path.GetFileName(Path.GetDirectoryName(Path.GetDirectoryName(sfarFiles[i])));
+                totalNumFiles += getNumberOfFiles(sfarFiles[i]);
+            }
+
             long diskFreeSpace = Misc.getDiskFreeSpace(GameData.GamePath);
             long diskUsage = 0;
             for (int i = 0; i < sfarFiles.Count; i++)
@@ -281,14 +320,13 @@ namespace MassEffectModder
             {
                 string DLCname = Path.GetFileName(Path.GetDirectoryName(Path.GetDirectoryName(sfarFiles[i])));
 				string outPath = Path.Combine(GameData.DLCData, DLCname);
-                ME3DLC dlc = new ME3DLC(mainWindow);
+                ME3DLC dlc = new ME3DLC(mainWindow, installer);
                 if (mainWindow != null)
                 {
                     mainWindow.updateStatusLabel("SFAR extracting - DLC " + (i + 1) + " of " + sfarFiles.Count);
                 }
-                dlc.extract(sfarFiles[i], outPath);
+                dlc.extract(sfarFiles[i], outPath, ref currentProgress, totalNumFiles);
             }
-
         }
     }
 }

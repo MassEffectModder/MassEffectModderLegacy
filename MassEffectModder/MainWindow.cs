@@ -208,7 +208,7 @@ namespace MassEffectModder
             }
 
             Misc.startTimer();
-            ME3DLC.unpackAllDLC(this);
+            ME3DLC.unpackAllDLC(this, null);
             var time = Misc.stopTimer();
             updateStatusLabel("DLCs extracted. Process total time: " + Misc.getTimerFormat(time));
             updateStatusLabel2("");

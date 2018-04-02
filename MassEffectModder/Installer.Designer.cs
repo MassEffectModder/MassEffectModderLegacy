@@ -77,6 +77,8 @@
             this.checkBoxOptionReshade = new System.Windows.Forms.CheckBox();
             this.labelOptionBik = new System.Windows.Forms.Label();
             this.checkBoxOptionBik = new System.Windows.Forms.CheckBox();
+            this.labelOptionRepack = new System.Windows.Forms.Label();
+            this.checkBoxOptionRepack = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxBG)).BeginInit();
             this.SuspendLayout();
             // 
@@ -148,7 +150,7 @@
             this.labelOptions.BackColor = System.Drawing.Color.Black;
             this.labelOptions.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelOptions.ForeColor = System.Drawing.Color.White;
-            this.labelOptions.Location = new System.Drawing.Point(12, 412);
+            this.labelOptions.Location = new System.Drawing.Point(12, 381);
             this.labelOptions.Name = "labelOptions";
             this.labelOptions.Size = new System.Drawing.Size(74, 21);
             this.labelOptions.TabIndex = 54;
@@ -363,7 +365,7 @@
             this.labelOptionIndirectSound.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.labelOptionIndirectSound.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelOptionIndirectSound.ForeColor = System.Drawing.Color.White;
-            this.labelOptionIndirectSound.Location = new System.Drawing.Point(34, 433);
+            this.labelOptionIndirectSound.Location = new System.Drawing.Point(34, 423);
             this.labelOptionIndirectSound.Name = "labelOptionIndirectSound";
             this.labelOptionIndirectSound.Size = new System.Drawing.Size(173, 21);
             this.labelOptionIndirectSound.TabIndex = 73;
@@ -376,7 +378,7 @@
             this.checkBoxOptionIndirectSound.BackColor = System.Drawing.Color.Transparent;
             this.checkBoxOptionIndirectSound.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.checkBoxOptionIndirectSound.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxOptionIndirectSound.Location = new System.Drawing.Point(16, 438);
+            this.checkBoxOptionIndirectSound.Location = new System.Drawing.Point(16, 428);
             this.checkBoxOptionIndirectSound.Name = "checkBoxOptionIndirectSound";
             this.checkBoxOptionIndirectSound.Size = new System.Drawing.Size(15, 14);
             this.checkBoxOptionIndirectSound.TabIndex = 72;
@@ -391,7 +393,7 @@
             this.labelOptionReshade.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.labelOptionReshade.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelOptionReshade.ForeColor = System.Drawing.Color.White;
-            this.labelOptionReshade.Location = new System.Drawing.Point(34, 454);
+            this.labelOptionReshade.Location = new System.Drawing.Point(34, 444);
             this.labelOptionReshade.Name = "labelOptionReshade";
             this.labelOptionReshade.Size = new System.Drawing.Size(127, 21);
             this.labelOptionReshade.TabIndex = 75;
@@ -404,7 +406,7 @@
             this.checkBoxOptionReshade.BackColor = System.Drawing.Color.Transparent;
             this.checkBoxOptionReshade.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.checkBoxOptionReshade.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxOptionReshade.Location = new System.Drawing.Point(16, 459);
+            this.checkBoxOptionReshade.Location = new System.Drawing.Point(16, 449);
             this.checkBoxOptionReshade.Name = "checkBoxOptionReshade";
             this.checkBoxOptionReshade.Size = new System.Drawing.Size(15, 14);
             this.checkBoxOptionReshade.TabIndex = 74;
@@ -419,7 +421,7 @@
             this.labelOptionBik.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.labelOptionBik.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelOptionBik.ForeColor = System.Drawing.Color.White;
-            this.labelOptionBik.Location = new System.Drawing.Point(34, 475);
+            this.labelOptionBik.Location = new System.Drawing.Point(34, 465);
             this.labelOptionBik.Name = "labelOptionBik";
             this.labelOptionBik.Size = new System.Drawing.Size(173, 21);
             this.labelOptionBik.TabIndex = 77;
@@ -432,18 +434,48 @@
             this.checkBoxOptionBik.BackColor = System.Drawing.Color.Transparent;
             this.checkBoxOptionBik.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.checkBoxOptionBik.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxOptionBik.Location = new System.Drawing.Point(16, 480);
+            this.checkBoxOptionBik.Location = new System.Drawing.Point(16, 470);
             this.checkBoxOptionBik.Name = "checkBoxOptionBik";
             this.checkBoxOptionBik.Size = new System.Drawing.Size(15, 14);
             this.checkBoxOptionBik.TabIndex = 76;
             this.checkBoxOptionBik.TabStop = false;
             this.checkBoxOptionBik.UseVisualStyleBackColor = false;
             // 
+            // labelOptionRepack
+            // 
+            this.labelOptionRepack.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.labelOptionRepack.AutoSize = true;
+            this.labelOptionRepack.BackColor = System.Drawing.Color.Black;
+            this.labelOptionRepack.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.labelOptionRepack.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.labelOptionRepack.ForeColor = System.Drawing.Color.White;
+            this.labelOptionRepack.Location = new System.Drawing.Point(34, 402);
+            this.labelOptionRepack.Name = "labelOptionRepack";
+            this.labelOptionRepack.Size = new System.Drawing.Size(151, 21);
+            this.labelOptionRepack.TabIndex = 79;
+            this.labelOptionRepack.Text = "Repack Game Files";
+            // 
+            // checkBoxOptionRepack
+            // 
+            this.checkBoxOptionRepack.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.checkBoxOptionRepack.AutoSize = true;
+            this.checkBoxOptionRepack.BackColor = System.Drawing.Color.Transparent;
+            this.checkBoxOptionRepack.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.checkBoxOptionRepack.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.checkBoxOptionRepack.Location = new System.Drawing.Point(16, 407);
+            this.checkBoxOptionRepack.Name = "checkBoxOptionRepack";
+            this.checkBoxOptionRepack.Size = new System.Drawing.Size(15, 14);
+            this.checkBoxOptionRepack.TabIndex = 78;
+            this.checkBoxOptionRepack.TabStop = false;
+            this.checkBoxOptionRepack.UseVisualStyleBackColor = false;
+            // 
             // Installer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(958, 539);
+            this.Controls.Add(this.labelOptionRepack);
+            this.Controls.Add(this.checkBoxOptionRepack);
             this.Controls.Add(this.labelOptionBik);
             this.Controls.Add(this.checkBoxOptionBik);
             this.Controls.Add(this.labelOptionReshade);
@@ -507,5 +539,7 @@
         private System.Windows.Forms.CheckBox checkBoxOptionReshade;
         private System.Windows.Forms.Label labelOptionBik;
         private System.Windows.Forms.CheckBox checkBoxOptionBik;
+        private System.Windows.Forms.Label labelOptionRepack;
+        private System.Windows.Forms.CheckBox checkBoxOptionRepack;
     }
 }

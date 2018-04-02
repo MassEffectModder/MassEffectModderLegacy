@@ -61,13 +61,14 @@ namespace MassEffectModder
         string splashBitmapPath;
         string reshadePath;
         string indirectSoundPath;
-        bool meuitmMode = true;
+        bool meuitmMode = false;
+        bool OptionRepackVisible;
         bool OptionIndirectSoundVisible;
         bool OptionReshadeVisible;
         bool OptionBikVisible;
         bool mute = false;
         int stage = 1;
-        int totalStages = 3;
+        int totalStages = 5;
         System.Media.SoundPlayer musicPlayer;
         CustomLabel customLabelDesc;
         CustomLabel customLabelCurrentStatus;
@@ -136,24 +137,27 @@ namespace MassEffectModder
 
             installerIni = new ConfIni(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "installer.ini"));
             string gameIdStr = installerIni.Read("GameId", "Main");
-            if (gameIdStr.ToLowerInvariant() != "me1")
+            if (gameIdStr.ToLowerInvariant() == "me1")
+                gameId = 1;
+            else if (gameIdStr.ToLowerInvariant() == "me2")
+                gameId = 2;
+            else if (gameIdStr.ToLowerInvariant() == "me3")
+                gameId = 3;
+            else
             {
-                MessageBox.Show("Installer only support MEUITM, exiting...", "Installer");
-                return false;
-            }
-
-            string meuitm = installerIni.Read("MEUITM", "Main").ToLowerInvariant();
-            if (meuitm != "true")
-            {
-                MessageBox.Show("Installer only support MEUITM, exiting...", "Installer");
+                MessageBox.Show("Game ID not recognized in installer.ini, exiting...", "Installer");
                 return false;
             }
 
             string baseModNameStr = installerIni.Read("BaseModName", "Main");
             if (baseModNameStr != "")
+            {
                 Text = "MEM Installer v" + Application.ProductVersion + " for " + baseModNameStr;
+                if (gameId == 1 && baseModNameStr.Contains("MEUITM"))
+                    meuitmMode = true;
+            }
             else
-                Text += " for MEUITM";
+                Text += " for ME" + gameId;
 
             if (runAsAdmin)
                 Text += " (run as Administrator)";
@@ -164,9 +168,14 @@ namespace MassEffectModder
             }
             catch (Exception)
             {
-                MessageBox.Show("MEUITM version is required, exiting...", "Installer");
-                return false;
+                MeuitmVer = 0;
             }
+
+            string meuitm = installerIni.Read("MEUITM", "Main").ToLowerInvariant();
+            if (gameId == 1 && (meuitm == "true" || MeuitmVer != 0))
+                meuitmMode = true;
+            if (meuitmMode && MeuitmVer == 0)
+                MeuitmVer = 1;
 
             indirectSoundPath = installerIni.Read("IndirectSound", "Main").ToLowerInvariant();
             if (indirectSoundPath != "")
@@ -183,6 +192,24 @@ namespace MassEffectModder
                 if (!File.Exists(splashDemiurge) || Path.GetExtension(splashDemiurge).ToLowerInvariant() != ".bik")
                 {
                     splashDemiurge = "";
+                }
+            }
+
+            splashBitmapPath = installerIni.Read("SplashBitmap", "Main").ToLowerInvariant();
+            if (splashBitmapPath != "")
+            {
+                if (!File.Exists(splashBitmapPath) || Path.GetExtension(splashBitmapPath).ToLowerInvariant() != ".bmp")
+                {
+                    splashBitmapPath = "";
+                }
+            }
+
+            reshadePath = installerIni.Read("ReShade", "Main").ToLowerInvariant();
+            if (reshadePath != "")
+            {
+                if (!File.Exists(reshadePath) || Path.GetExtension(reshadePath).ToLowerInvariant() != ".zip")
+                {
+                    reshadePath = "";
                 }
             }
 
@@ -284,20 +311,25 @@ namespace MassEffectModder
 
             customLabelDesc.Text = customLabelCurrentStatus.Text = customLabelFinalStatus.Text = "";
 
-            if (splashDemiurge != "")
+            if (gameId == 2 || gameId == 3)
+                OptionRepackVisible = checkBoxOptionRepack.Visible = labelOptionRepack.Visible = true;
+            else
+                OptionRepackVisible = checkBoxOptionRepack.Visible = labelOptionRepack.Visible = false;
+            if (gameId == 1 && splashDemiurge != "")
                 OptionBikVisible = checkBoxOptionBik.Visible = labelOptionBik.Visible = true;
             else
                 OptionBikVisible = checkBoxOptionBik.Visible = labelOptionBik.Visible = false;
-            if (indirectSoundPath != "")
+            if (gameId == 1 && indirectSoundPath != "")
                 OptionIndirectSoundVisible = checkBoxOptionIndirectSound.Visible = labelOptionIndirectSound.Visible = true;
             else
                 OptionIndirectSoundVisible = checkBoxOptionIndirectSound.Visible = labelOptionIndirectSound.Visible = false;
-            if (reshadePath != "")
+            if (gameId == 1 && reshadePath != "")
                 OptionReshadeVisible = checkBoxOptionReshade.Visible = labelOptionReshade.Visible = true;
             else
                 OptionReshadeVisible = checkBoxOptionReshade.Visible = labelOptionReshade.Visible = false;
 
-            checkBoxOptionIndirectSound.Checked = true;
+            if (gameId == 1)
+                checkBoxOptionIndirectSound.Checked = true;
             checkBoxOptionReshade.Checked = false;
             checkBoxOptionBik.Checked = false;
 
@@ -308,9 +340,11 @@ namespace MassEffectModder
             customLabelFinalStatus.Parent = pictureBoxBG;
             customLabelCurrentStatus.Parent = pictureBoxBG;
             labelOptions.Parent = pictureBoxBG;
+            labelOptionRepack.Parent = pictureBoxBG;
             labelOptionIndirectSound.Parent = pictureBoxBG;
             labelOptionReshade.Parent = pictureBoxBG;
             labelOptionBik.Parent = pictureBoxBG;
+            checkBoxOptionRepack.Parent = pictureBoxBG;
             checkBoxOptionIndirectSound.Parent = pictureBoxBG;
             checkBoxOptionReshade.Parent = pictureBoxBG;
             checkBoxOptionBik.Parent = pictureBoxBG;
@@ -319,7 +353,7 @@ namespace MassEffectModder
             comboBoxMod5.Parent = comboBoxMod6.Parent = comboBoxMod7.Parent = comboBoxMod8.Parent = comboBoxMod9.Parent = pictureBoxBG;
             buttonMute.Parent = pictureBoxBG;
 
-            labelOptions.Visible = OptionReshadeVisible || OptionIndirectSoundVisible || OptionBikVisible;
+            labelOptions.Visible = OptionRepackVisible || OptionReshadeVisible || OptionIndirectSoundVisible || OptionBikVisible;
 
             string bgFile = installerIni.Read("BackgroundImage", "Main").ToLowerInvariant();
             if (bgFile != "")
@@ -338,8 +372,9 @@ namespace MassEffectModder
             }
             if (pictureBoxBG.Image == null)
             {
-                MessageBox.Show("Installer require background image, exiting...", "Installer");
-                return false;
+                Assembly assembly = Assembly.GetExecutingAssembly();
+                string res = assembly.GetName().Name + ".Resources.me" + gameId + "_bg.jpg";
+                pictureBoxBG.Image = new Bitmap(assembly.GetManifestResourceStream(res));
             }
 
             softShadowsModPath = installerIni.Read("SoftShadowsMod", "Main").ToLowerInvariant();
@@ -351,28 +386,12 @@ namespace MassEffectModder
                 }
             }
 
-            splashBitmapPath = installerIni.Read("SplashBitmap", "Main").ToLowerInvariant();
-            if (splashBitmapPath != "")
-            {
-                if (!File.Exists(splashBitmapPath) || Path.GetExtension(splashBitmapPath).ToLowerInvariant() != ".bmp")
-                {
-                    splashBitmapPath = "";
-                }
-            }
-
-            reshadePath = installerIni.Read("ReShade", "Main").ToLowerInvariant();
-            if (reshadePath != "")
-            {
-                if (!File.Exists(reshadePath) || Path.GetExtension(reshadePath).ToLowerInvariant() != ".zip")
-                {
-                    reshadePath = "";
-                }
-            }
-
-            MessageBox.Show("Before starting the installation,\nmake sure real time scanning is turned off.\n" +
+            string msg = "Before starting the installation,\nmake sure real time scanning is turned off.\n" +
                 "Antivirus software can interfere with the install process\n" +
-                "and crash the installer.\n\nAntivirus software can also add MassEffect.exe into the blocked list.",
-                "Warning !");
+                "and crash the installer.\n\n";
+            if (gameId == 1)
+                msg += "Antivirus software can also add MassEffect.exe into the blocked list.";
+            MessageBox.Show(msg, "Warning !");
 
             string musicFile = installerIni.Read("MusicSource", "Main").ToLowerInvariant();
             if (musicFile != "" && File.Exists(musicFile))
@@ -416,7 +435,19 @@ namespace MassEffectModder
 
         bool detectMod(int gameId, ref bool allowInstall)
         {
-            string path = GameData.GamePath + @"\BioGame\CookedPC\testVolumeLight_VFX.upk";
+            string path = "";
+            if (gameId == (int)MeType.ME1_TYPE)
+            {
+                path = GameData.GamePath + @"\BioGame\CookedPC\testVolumeLight_VFX.upk";
+            }
+            if (gameId == (int)MeType.ME2_TYPE)
+            {
+                path = GameData.GamePath + @"\BioGame\CookedPC\BIOC_Materials.pcc";
+            }
+            if (gameId == (int)MeType.ME3_TYPE)
+            {
+                path = GameData.GamePath + @"\BIOGame\CookedPCConsole\adv_combat_tutorial_xbox_D_Int.afc";
+            }
             try
             {
                 using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
@@ -448,7 +479,19 @@ namespace MassEffectModder
 
         static public bool applyModTag(int gameId, int MeuitmV, int AlotV)
         {
-            string path = GameData.GamePath + @"\BioGame\CookedPC\testVolumeLight_VFX.upk";
+            string path = "";
+            if (gameId == (int)MeType.ME1_TYPE)
+            {
+                path = GameData.GamePath + @"\BioGame\CookedPC\testVolumeLight_VFX.upk";
+            }
+            if (gameId == (int)MeType.ME2_TYPE)
+            {
+                path = GameData.GamePath + @"\BioGame\CookedPC\BIOC_Materials.pcc";
+            }
+            if (gameId == (int)MeType.ME3_TYPE)
+            {
+                path = GameData.GamePath + @"\BIOGame\CookedPCConsole\adv_combat_tutorial_xbox_D_Int.afc";
+            }
             try
             {
                 using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.ReadWrite))
@@ -743,7 +786,7 @@ namespace MassEffectModder
                 File.Delete(filename);
 
             ulong memorySize = ((new ComputerInfo().TotalPhysicalMemory / 1024 / 1024) + 1023) / 1024;
-            if (memorySize <= 4)
+            if (memorySize < 8)
             {
                 MessageBox.Show("Detected small amount of physical RAM (8GB is recommended).\nInstallation may take a long time.", "Installer");
             }
@@ -815,11 +858,32 @@ namespace MassEffectModder
                 customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                 return false;
             }
-            if (!File.Exists(GameData.GamePath + "\\BioGame\\CookedPC\\Startup_int.upk"))
+            if (gameId == (int)MeType.ME1_TYPE)
             {
-                customLabelFinalStatus.Text = "ME1 game not found, aborting...";
-                customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
-                return false;
+                if (!File.Exists(GameData.GamePath + "\\BioGame\\CookedPC\\Startup_int.upk"))
+                {
+                    customLabelFinalStatus.Text = "ME1 game not found, aborting...";
+                    customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
+                    return false;
+                }
+            }
+            if (gameId == (int)MeType.ME2_TYPE)
+            {
+                if (!File.Exists(GameData.GamePath + "\\BioGame\\CookedPC\\Textures.tfc"))
+                {
+                    customLabelFinalStatus.Text = "ME2 game not found, aborting...";
+                    customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
+                    return false;
+                }
+            }
+            if (gameId == (int)MeType.ME3_TYPE)
+            {
+                if (!File.Exists(GameData.GamePath + "\\BIOGame\\PCConsoleTOC.bin"))
+                {
+                    customLabelFinalStatus.Text = "ME3 game not found, aborting...";
+                    customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
+                    return false;
+                }
             }
 
             bool writeAccess = Misc.CheckAndCorrectAccessToGame((MeType)gameId);
@@ -839,6 +903,25 @@ namespace MassEffectModder
                 diskUsage += new FileInfo(memFiles[i]).Length;
             }
             diskUsage = (long)(diskUsage * 2.5);
+
+            if (gameId == (int)MeType.ME3_TYPE)
+            {
+                if (Directory.Exists(GameData.DLCData))
+                {
+                    long diskUsageDLC = 0;
+                    List<string> sfarFiles = Directory.GetFiles(GameData.DLCData, "Default.sfar", SearchOption.AllDirectories).ToList();
+                    for (int i = 0; i < sfarFiles.Count; i++)
+                    {
+                        if (File.Exists(Path.Combine(Path.GetDirectoryName(sfarFiles[i]), "Mount.dlc")))
+                            sfarFiles.RemoveAt(i--);
+                    }
+                    for (int i = 0; i < sfarFiles.Count; i++)
+                    {
+                        diskUsageDLC += new FileInfo(sfarFiles[i]).Length;
+                    }
+                    diskUsage = (long)(diskUsageDLC * 2.1);
+                }
+            }
 
             if (diskUsage > diskFreeSpace)
             {
@@ -885,11 +968,27 @@ namespace MassEffectModder
                 updateMode = true;
             }
 
-            if (updateMode)
-            {
-                // scan textures
+            // unpack DLC
+            if (gameId != 3 || (updateMode && gameId == 3))
                 totalStages -= 1;
 
+            // scan textures
+            if (updateMode)
+                totalStages -= 1;
+
+            // recompress game files
+            if (!checkBoxOptionRepack.Checked || updateMode)
+                totalStages -= 1;
+
+            if (GameData.gameType == MeType.ME3_TYPE)
+            {
+                customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
+                ME3DLC.unpackAllDLC(null, this);
+                gameData.getPackages(true, true);
+            }
+
+            if (updateMode)
+            {
                 string mapPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                         Assembly.GetExecutingAssembly().GetName().Name);
                 string mapFile = Path.Combine(mapPath, "me" + gameId + "map.bin");
@@ -909,7 +1008,9 @@ namespace MassEffectModder
                 }
             }
 
-            if (!File.Exists(gameData.EngineConfigIniPath))
+            string path = gameData.EngineConfigIniPath;
+            bool exist = File.Exists(path);
+            if (!exist && gameId == 1)
             {
                 MessageBox.Show("Missing game configuration file.\nYou need atleast once launch the game first.");
                 return false;
@@ -1191,11 +1292,15 @@ namespace MassEffectModder
 
             buttonNormal.Visible = false;
             buttonSTART.Visible = false;
+            checkBoxOptionRepack.Visible = labelOptionRepack.Visible = false;
             checkBoxOptionIndirectSound.Visible = labelOptionIndirectSound.Visible = false;
             checkBoxOptionReshade.Visible = labelOptionReshade.Visible = false;
             checkBoxOptionBik.Visible = labelOptionBik.Visible = false;
             labelOptions.Visible = false;
-            customLabelDesc.Text = "Installing MEUITM for Mass Effect";
+            if (meuitmMode)
+                customLabelDesc.Text = "Installing MEUITM for Mass Effect";
+            else
+                customLabelDesc.Text = "Installing for Mass Effect " + gameId;
             comboBoxMod0.Visible = comboBoxMod1.Visible = comboBoxMod2.Visible = comboBoxMod3.Visible = false;
             comboBoxMod4.Visible = comboBoxMod5.Visible = comboBoxMod6.Visible = comboBoxMod7.Visible = false;
             comboBoxMod8.Visible = comboBoxMod9.Visible = false;
@@ -1225,6 +1330,8 @@ namespace MassEffectModder
             if (!updateMode)
             {
                 log += "Prepare game data started..." + Environment.NewLine;
+                if (GameData.gameType != MeType.ME1_TYPE)
+                    gameData.getTfcTextures();
                 log += "Prepare game data finished" + Environment.NewLine + Environment.NewLine;
 
                 if (Directory.Exists(GameData.DLCData))
@@ -1252,6 +1359,8 @@ namespace MassEffectModder
             else
             {
                 log += "Prepare game data skipped" + Environment.NewLine + Environment.NewLine;
+                if (GameData.gameType != MeType.ME1_TYPE)
+                    gameData.getTfcTextures();
                 log += "Scan textures skipped" + Environment.NewLine + Environment.NewLine;
             }
 
@@ -1262,7 +1371,35 @@ namespace MassEffectModder
 
 
             customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
-            cachePackageMgr.CloseAllWithSave(false, true);
+            cachePackageMgr.CloseAllWithSave(checkBoxOptionRepack.Checked);
+
+            if (checkBoxOptionRepack.Checked && !updateMode)
+            {
+                customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
+                log += "Repack started..." + Environment.NewLine;
+                string pkg = "";
+                if (gameId == (int)MeType.ME2_TYPE)
+                    pkg = @"\BioGame\CookedPC\BIOC_Materials.pcc".ToLowerInvariant();
+                for (int i = 0; i < GameData.packageFiles.Count; i++)
+                {
+                    if (pkg != "" && GameData.packageFiles[i].ToLowerInvariant().Contains(pkg))
+                        continue;
+                    updateStatusRepack("Repack game files " + ((i + 1) * 100 / GameData.packageFiles.Count) + "%");
+                    Package package = new Package(GameData.packageFiles[i], true, true);
+                    if (!package.compressed || package.compressed && package.compressionType != Package.CompressionType.Zlib)
+                    {
+                        package.Dispose();
+                        package = new Package(GameData.packageFiles[i]);
+                        package.SaveToFile(true);
+                    }
+                    package.Dispose();
+                }
+                log += "Repack finished" + Environment.NewLine + Environment.NewLine;
+            }
+            else
+            {
+                log += "Repack skipped" + Environment.NewLine + Environment.NewLine;
+            }
 
             if (!updateMode)
                 AddMarkers((MeType)gameId);
@@ -1292,7 +1429,7 @@ namespace MassEffectModder
                 }
             }
 
-            if (splashBitmapPath != "")
+            if (gameId == 1 && splashBitmapPath != "")
             {
                 if (installSplashScreen(splashBitmapPath))
                     log += "Splash screen mod installed." + Environment.NewLine + Environment.NewLine;
@@ -1303,7 +1440,7 @@ namespace MassEffectModder
                 }
             }
 
-            if (splashDemiurge != "" && checkBoxOptionBik.Checked)
+            if (gameId == 1 && splashDemiurge != "" && checkBoxOptionBik.Checked)
             {
                 if (installSplashVideo(splashDemiurge))
                     log += "Splash video mod installed." + Environment.NewLine + Environment.NewLine;
@@ -1314,7 +1451,7 @@ namespace MassEffectModder
                 }
             }
 
-            if (indirectSoundPath != "" && checkBoxOptionIndirectSound.Checked)
+            if (gameId == 1 && indirectSoundPath != "" && checkBoxOptionIndirectSound.Checked)
             {
                 if (installIndirectSoundPath(indirectSoundPath))
                     log += "Indirect Sound installed." + Environment.NewLine + Environment.NewLine;
@@ -1324,10 +1461,10 @@ namespace MassEffectModder
                     errors += "Indirect Sound failed to install!\n";
                 }
             }
-            if (File.Exists(GameData.GamePath + "\\Binaries\\dsound.dll"))
+            if (gameId == 1 && File.Exists(GameData.GamePath + "\\Binaries\\dsound.dll"))
                 engineConf.Write("DeviceName", "Generic Hardware", "ISACTAudio.ISACTAudioDevice");
 
-            if (reshadePath != "" && checkBoxOptionReshade.Checked)
+            if (gameId == 1 && reshadePath != "" && checkBoxOptionReshade.Checked)
             {
                 if (installReshadePath(reshadePath))
                     log += "ReShader installed." + Environment.NewLine + Environment.NewLine;
@@ -1387,7 +1524,7 @@ namespace MassEffectModder
             Application.DoEvents();
         }
 
-        public void updateStatusMipMaps(string text)
+        public void updateStatusRepack(string text)
         {
             customLabelCurrentStatus.Text = text;
             Application.DoEvents();
