@@ -461,7 +461,7 @@ namespace MassEffectModder
                     {
                         if (prevProductV < 10 || prevProductV == 4352 || prevProductV == 16777472) // default before MEM v178
                             prevProductV = prevAlotV = prevMeuitmV = 0;
-                        if (prevAlotV != 0 || prevMeuitmV == 0)
+                        if (prevAlotV != 0)
                             allowInstall = false;
                         else
                             allowInstall = true;
