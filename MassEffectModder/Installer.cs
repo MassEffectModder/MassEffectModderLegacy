@@ -53,6 +53,7 @@ namespace MassEffectModder
         MipMaps mipMaps;
         TreeScan treeScan;
         bool updateMode;
+        bool unpackDLC;
         string errors = "";
         string log = "";
         int MeuitmVer;
@@ -904,7 +905,7 @@ namespace MassEffectModder
             }
             diskUsage = (long)(diskUsage * 2.5);
 
-            bool unpackDLC = false;
+            unpackDLC = false;
             if (gameId == (int)MeType.ME3_TYPE)
             {
                 if (Directory.Exists(GameData.DLCData))
@@ -964,7 +965,7 @@ namespace MassEffectModder
             {
                 if (!allowInstall)
                 {
-                    customLabelFinalStatus.Text = "Not detected previous MEUITM installation, aborting...";
+                    customLabelFinalStatus.Text = "Not compatible previous installation, aborting...";
                     customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
                     return false;
                 }
@@ -982,13 +983,6 @@ namespace MassEffectModder
             // recompress game files
             if (!checkBoxOptionRepack.Checked || updateMode)
                 totalStages -= 1;
-
-            if (GameData.gameType == MeType.ME3_TYPE)
-            {
-                customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
-                ME3DLC.unpackAllDLC(null, this);
-                gameData.getPackages(true, true);
-            }
 
             if (updateMode)
             {
@@ -1332,6 +1326,13 @@ namespace MassEffectModder
 
             if (!updateMode)
             {
+                if (gameId == 3 && unpackDLC)
+                {
+                    customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
+                    ME3DLC.unpackAllDLC(null, this);
+                    gameData.getPackages(true, true);
+                }
+
                 log += "Prepare game data started..." + Environment.NewLine;
                 if (GameData.gameType != MeType.ME1_TYPE)
                     gameData.getTfcTextures();
