@@ -981,7 +981,7 @@ namespace MassEffectModder
                 totalStages -= 1;
 
             // recompress game files
-            if (!checkBoxOptionRepack.Checked || updateMode)
+            if (!checkBoxOptionRepack.Checked)
                 totalStages -= 1;
 
             if (updateMode)
@@ -1377,7 +1377,7 @@ namespace MassEffectModder
             customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
             cachePackageMgr.CloseAllWithSave(checkBoxOptionRepack.Checked);
 
-            if (checkBoxOptionRepack.Checked && !updateMode)
+            if (checkBoxOptionRepack.Checked)
             {
                 customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
                 log += "Repack started..." + Environment.NewLine;
