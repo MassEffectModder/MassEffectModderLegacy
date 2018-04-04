@@ -1250,7 +1250,7 @@ namespace MassEffectModder
                                             {
                                                 errors += "Warning for texture: " + textureName + ". This texture converted from full alpha to no alpha.";
                                             }
-                                            pixelFormat = PixelFormat.ARGB;
+                                            //pixelFormat = PixelFormat.ARGB;
                                         }
                                         image.correctMips(pixelFormat, dxt1HasAlpha, dxt1Threshold);
                                         mod.data = image.StoreImageToDDS();
@@ -1386,7 +1386,7 @@ namespace MassEffectModder
                                         {
                                             errors += "Warning for texture: " + textureName + ". This texture converted from full alpha to no alpha.";
                                         }
-                                        pixelFormat = PixelFormat.ARGB;
+                                        //pixelFormat = PixelFormat.ARGB;
                                     }
                                     image.correctMips(pixelFormat, dxt1HasAlpha, dxt1Threshold);
                                     mod.data = image.StoreImageToDDS();
