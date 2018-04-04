@@ -101,28 +101,34 @@ namespace MassEffectModder
                 {
                     bool dxt1HasAlpha = false;
                     byte dxt1Threshold = 128;
-                    if (pixelFormat == PixelFormat.DXT1 && texture.properties.exists("CompressionSettings"))
-                    {
-                        if (texture.properties.exists("CompressionSettings") &&
-                            texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
-                        {
-                            dxt1HasAlpha = true;
-                            if (image.pixelFormat == PixelFormat.ARGB ||
-                                image.pixelFormat == PixelFormat.DXT3 ||
-                                image.pixelFormat == PixelFormat.DXT5)
-                            {
-                                errors += "Warning for texture: " + textureName + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
-                            }
-                        }
-                    }
                     if ((pixelFormat == PixelFormat.DXT5 || pixelFormat == PixelFormat.DXT1 || pixelFormat == PixelFormat.ATI2) &&
                          (image.pixelFormat == PixelFormat.RGB || image.pixelFormat == PixelFormat.ARGB))
                     {
-                        if (image.pixelFormat == PixelFormat.RGB && pixelFormat == PixelFormat.DXT5)
+                        if (image.pixelFormat == PixelFormat.RGB && texture.properties.exists("CompressionSettings") &&
+                            texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
                         {
-                            errors += "Warning for texture: " + textureName + ". This texture converted from full alpha to no alpha.";
+                            errors += "Warning for texture: " + textureName + ". This texture need binary alpha.";
                         }
-                        pixelFormat = PixelFormat.ARGB;
+                        if (pixelFormat == PixelFormat.DXT5 || texture.properties.exists("CompressionSettings") &&
+                            texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
+                        {
+                            pixelFormat = PixelFormat.ARGB;
+                        }
+                        else
+                        {
+                            pixelFormat = PixelFormat.RGB;
+                        }
+                    }
+                    else if (pixelFormat == PixelFormat.DXT1 && texture.properties.exists("CompressionSettings") &&
+                        texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
+                    {
+                        dxt1HasAlpha = true;
+                        if (image.pixelFormat == PixelFormat.ARGB ||
+                            image.pixelFormat == PixelFormat.DXT3 ||
+                            image.pixelFormat == PixelFormat.DXT5)
+                        {
+                            errors += "Warning for texture: " + textureName + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
+                        }
                     }
                     image.correctMips(pixelFormat, dxt1HasAlpha, dxt1Threshold);
                 }
