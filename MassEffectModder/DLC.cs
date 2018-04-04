@@ -196,8 +196,7 @@ namespace MassEffectModder
             {
                 loadHeader(stream);
 
-                int lastProgress = -1;
-                for (int i = 0; i < filesCount; i++)
+                for (int i = 0; i < filesCount; i++, currentProgress++)
                 {
                     if (filenamesIndex == i)
                         continue;
@@ -206,16 +205,9 @@ namespace MassEffectModder
 
                     if (mainWindow != null)
                         mainWindow.updateStatusLabel2("File " + (i + 1) + " of " + filesList.Count() + " - " + Path.GetFileName(filesList[i].filenamePath));
-
                     if (installer != null)
-                    {
-                        int newProgress = (100 * currentProgress) / totalNumber;
-                        if (lastProgress != newProgress)
-                        {
-                            installer.updateStatusPrepare("Unpacking DLC " + ((currentProgress + 1) * 100 / totalNumber) + "%");
-                            lastProgress = newProgress;
-                        }
-                    }
+                        installer.updateStatusPrepare("Unpacking DLC " + ((currentProgress + 1) * 100 / totalNumber) + "%");
+
                     int pos = filesList[i].filenamePath.IndexOf("\\BIOGame\\DLC\\", StringComparison.OrdinalIgnoreCase);
                     string filename = filesList[i].filenamePath.Substring(pos + ("\\BIOGame\\DLC\\").Length).Replace('/', '\\');
                     string dir = Path.GetDirectoryName(outPath);
@@ -303,17 +295,20 @@ namespace MassEffectModder
                 totalNumFiles += getNumberOfFiles(sfarFiles[i]);
             }
 
-            long diskFreeSpace = Misc.getDiskFreeSpace(GameData.GamePath);
-            long diskUsage = 0;
-            for (int i = 0; i < sfarFiles.Count; i++)
+            if (mainWindow != null)
             {
-                diskUsage += new FileInfo(sfarFiles[i]).Length;
-            }
-            diskUsage = (long)(diskUsage * 2.5);
-            if (diskUsage > diskFreeSpace)
-            {
-                if (mainWindow != null)
-                    MessageBox.Show("You have not enough disk space remaining. You need about " + Misc.getBytesFormat(diskUsage) + " free.");
+                long diskFreeSpace = Misc.getDiskFreeSpace(GameData.GamePath);
+                long diskUsage = 0;
+                for (int i = 0; i < sfarFiles.Count; i++)
+                {
+                    diskUsage += new FileInfo(sfarFiles[i]).Length;
+                }
+                diskUsage = (long)(diskUsage * 2.5);
+                if (diskUsage > diskFreeSpace)
+                {
+                    if (mainWindow != null)
+                        MessageBox.Show("You have not enough disk space remaining. You need about " + Misc.getBytesFormat(diskUsage) + " free.");
+                }
             }
 
             for (int i = 0; i < sfarFiles.Count; i++)
