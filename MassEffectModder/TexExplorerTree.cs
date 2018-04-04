@@ -296,7 +296,7 @@ namespace MassEffectModder
                 }
 
                 if (installer != null)
-                    installer.updateStatusScan("Scanning packages");
+                    installer.updateProgressStatus("Scanning packages");
                 if (mainWindow != null)
                     mainWindow.updateStatusLabel("Scanning packages...");
                 for (int i = 0; i < GameData.packageFiles.Count; i++)
@@ -330,7 +330,7 @@ namespace MassEffectModder
                 for (int i = 0; i < modifiedFiles.Count; i++, currentPackage++)
                 {
                     if (installer != null)
-                        installer.updateStatusScan("Scanning textures " + ((currentPackage + 1) * 100) / totalPackages + "% ");
+                        installer.updateProgressStatus("Scanning textures " + ((currentPackage + 1) * 100) / totalPackages + "% ");
                     if (mainWindow != null)
                         mainWindow.updateStatusLabel("Finding textures in package " + (currentPackage + 1) + " of " + totalPackages + " - " + modifiedFiles[i]);
                     errors += FindTextures(textures, modifiedFiles[i], true, ref log);
@@ -339,7 +339,7 @@ namespace MassEffectModder
                 for (int i = 0; i < addedFiles.Count; i++, currentPackage++)
                 {
                     if (installer != null)
-                        installer.updateStatusScan("Scanning textures " + ((currentPackage + 1) * 100) / totalPackages + "% ");
+                        installer.updateProgressStatus("Scanning textures " + ((currentPackage + 1) * 100) / totalPackages + "% ");
                     if (mainWindow != null)
                         mainWindow.updateStatusLabel("Finding textures in package " + (currentPackage + 1) + " of " + totalPackages + " - " + addedFiles[i]);
                     errors += FindTextures(textures, addedFiles[i], false, ref log);

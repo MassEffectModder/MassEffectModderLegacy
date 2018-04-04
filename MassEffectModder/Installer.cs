@@ -1187,7 +1187,7 @@ namespace MassEffectModder
                         dst = MipMaps.decompressData(fs, size);
                         dstLen = dst.Length;
 
-                        updateStatusTextures("Installing textures " + (currentNumberOfTotalMods * 100 / totalNumberOfMods) + "%");
+                        updateProgressStatus("Installing textures " + (currentNumberOfTotalMods * 100 / totalNumberOfMods) + "%");
 
                         if (modFiles[l].tag == MipMaps.FileTextureTag)
                         {
@@ -1388,7 +1388,7 @@ namespace MassEffectModder
                 {
                     if (pkg != "" && GameData.packageFiles[i].ToLowerInvariant().Contains(pkg))
                         continue;
-                    updateStatusRepack("Repack game files " + ((i + 1) * 100 / GameData.packageFiles.Count) + "%");
+                    updateProgressStatus("Repack game files " + ((i + 1) * 100 / GameData.packageFiles.Count) + "%");
                     Package package = new Package(GameData.packageFiles[i], true, true);
                     if (!package.compressed || package.compressed && package.compressionType != Package.CompressionType.Zlib)
                     {
@@ -1510,45 +1510,16 @@ namespace MassEffectModder
             }
         }
 
-        public void updateLabelPreVanilla(string text)
-        {
-            customLabelCurrentStatus.Text = text;
-            Application.DoEvents();
-        }
-
         public void updateStatusPrepare(string text)
         {
             customLabelCurrentStatus.Text = text;
             Application.DoEvents();
         }
 
-        public void updateStatusScan(string text)
+        public void updateProgressStatus(string text)
         {
             customLabelCurrentStatus.Text = text;
             Application.DoEvents();
-        }
-
-        public void updateStatusRepack(string text)
-        {
-            customLabelCurrentStatus.Text = text;
-            Application.DoEvents();
-        }
-
-        public void updateStatusTextures(string text)
-        {
-            customLabelCurrentStatus.Text = text;
-            Application.DoEvents();
-        }
-
-        public void updateStatusStore(string text)
-        {
-            customLabelCurrentStatus.Text = text;
-            Application.DoEvents();
-        }
-
-        private void buttonExit_Click(object sender, EventArgs e)
-        {
-            Close();
         }
 
         private void buttonNormal_Click(object sender, EventArgs e)
