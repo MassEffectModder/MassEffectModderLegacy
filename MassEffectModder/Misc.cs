@@ -533,7 +533,7 @@ namespace MassEffectModder
             else if (size / 1024 / 1024 / 1024 == 0)
                 return string.Format("{0:0.00} MB", size / 1024 / 1024.0);
             else
-                return string.Format("{0:0.00} GB", size / 1024/ 1024 / 1024.0);
+                return string.Format("{0:0.00} GB", size / 1024 / 1024 / 1024.0);
         }
 
         static Stopwatch timer;
