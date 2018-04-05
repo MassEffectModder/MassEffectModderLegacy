@@ -42,6 +42,16 @@ namespace MassEffectModder
             public int index;
             public bool fetched;
         }
+
+        public enum TextureTypes
+        {
+            Normal = 0,
+            Normalmap,
+            OneBitAlpha,
+            GreyScale,
+            Displacementmap,
+        }
+
         public List<TexPropertyEntry> texPropertyList;
         public int propertyEndOffset;
         uint headerData = 0;
@@ -228,59 +238,96 @@ namespace MassEffectModder
 
         public void setIntValue(string name, int value)
         {
-            TexPropertyEntry texProperty = texPropertyList.Find(s => s.name == name);
-            if (texProperty.type != "IntProperty")
-                throw new Exception();
+            TexPropertyEntry texProperty;
+            if (exists(name))
+            {
+                texProperty = texPropertyList.Find(s => s.name == name);
+                if (texProperty.type != "IntProperty")
+                    throw new Exception();
+            }
+            else
+            {
+                texProperty = new TexPropertyEntry();
+                texProperty.valueRaw = new byte[4];
+                texProperty.type = "IntProperty";
+                if (!package.existsNameId(texProperty.type))
+                    package.addName(texProperty.type);
+            }
+
+            if (!package.existsNameId(name))
+                package.addName(name);
+            texProperty.name = name;
+            texProperty.fetched = true;
+
             Buffer.BlockCopy(BitConverter.GetBytes(value), 0, texProperty.valueRaw, 0, sizeof(int));
             texProperty.valueInt = value;
-            texPropertyList[texPropertyList.FindIndex(s => s.name == name)] = texProperty;
+            if (exists(name))
+                texPropertyList[texPropertyList.FindIndex(s => s.name == name)] = texProperty;
+            else
+                texPropertyList.Insert(0, texProperty);
         }
 
         public void setFloatValue(string name, float value)
         {
-            TexPropertyEntry texProperty = texPropertyList.Find(s => s.name == name);
-            if (texProperty.type != "FloatProperty")
-                throw new Exception();
+            TexPropertyEntry texProperty;
+            if (exists(name))
+            {
+                texProperty = texPropertyList.Find(s => s.name == name);
+                if (texProperty.type != "FloatProperty")
+                    throw new Exception();
+            }
+            else
+            {
+                texProperty = new TexPropertyEntry();
+                texProperty.valueRaw = new byte[4];
+                texProperty.type = "FloatProperty";
+                if (!package.existsNameId(texProperty.type))
+                    package.addName(texProperty.type);
+            }
+
+            if (!package.existsNameId(name))
+                package.addName(name);
+            texProperty.name = name;
+            texProperty.fetched = true;
+
             Buffer.BlockCopy(BitConverter.GetBytes(value), 0, texProperty.valueRaw, 0, sizeof(float));
             texProperty.valueFloat = value;
-            texPropertyList[texPropertyList.FindIndex(s => s.name == name)] = texProperty;
+            if (exists(name))
+                texPropertyList[texPropertyList.FindIndex(s => s.name == name)] = texProperty;
+            else
+                texPropertyList.Insert(0, texProperty);
         }
 
         public void setByteValue(string name, string valueName, string valueNameType, int valueInt = 0)
         {
-            TexPropertyEntry texProperty = texPropertyList.Find(s => s.name == name);
-            if (texProperty.type != "ByteProperty")
-                throw new Exception();
-            if (GameData.gameType == MeType.ME3_TYPE)
+            TexPropertyEntry texProperty;
+            if (exists(name))
             {
-                Buffer.BlockCopy(BitConverter.GetBytes(package.getNameId(valueNameType)), 0, texProperty.valueRaw, 0, sizeof(int));
-                Buffer.BlockCopy(BitConverter.GetBytes(package.getNameId(valueName)), 0, texProperty.valueRaw, 8, sizeof(int));
-                Buffer.BlockCopy(BitConverter.GetBytes(valueInt), 0, texProperty.valueRaw, 12, sizeof(int));
+                texProperty = texPropertyList.Find(s => s.name == name);
+                if (texProperty.type != "ByteProperty")
+                    throw new Exception();
             }
             else
             {
-                Buffer.BlockCopy(BitConverter.GetBytes(package.getNameId(valueName)), 0, texProperty.valueRaw, 0, sizeof(int));
-                Buffer.BlockCopy(BitConverter.GetBytes(valueInt), 0, texProperty.valueRaw, 4, sizeof(int));
+                texProperty = new TexPropertyEntry();
+                if (GameData.gameType == MeType.ME3_TYPE)
+                    texProperty.valueRaw = new byte[16];
+                else
+                    texProperty.valueRaw = new byte[8];
+                texProperty.type = "ByteProperty";
+                if (!package.existsNameId(texProperty.type))
+                    package.addName(texProperty.type);
             }
-            texProperty.valueName = valueName;
-            texProperty.valueInt = valueInt;
-            texPropertyList[texPropertyList.FindIndex(s => s.name == name)] = texProperty;
-        }
 
-        public void addByteValue(string name, string valueName, string valueNameType, int valueInt = 0)
-        {
-            TexPropertyEntry texProperty = new TexPropertyEntry();
-            if (GameData.gameType == MeType.ME3_TYPE)
-                texProperty.valueRaw = new byte[16];
-            else
-                texProperty.valueRaw = new byte[8];
-            texProperty.type = "ByteProperty";
+            if (!package.existsNameId(name))
+                package.addName(name);
             texProperty.name = name;
             texProperty.fetched = true;
-            if (!package.existsNameId(name))
-                throw new Exception("Not able to add property: " + name);
+
             if (GameData.gameType == MeType.ME3_TYPE)
             {
+                if (!package.existsNameId(valueNameType))
+                    package.addName(valueNameType);
                 Buffer.BlockCopy(BitConverter.GetBytes(package.getNameId(valueNameType)), 0, texProperty.valueRaw, 0, sizeof(int));
                 Buffer.BlockCopy(BitConverter.GetBytes(package.getNameId(valueName)), 0, texProperty.valueRaw, 8, sizeof(int));
                 Buffer.BlockCopy(BitConverter.GetBytes(valueInt), 0, texProperty.valueRaw, 12, sizeof(int));
@@ -290,83 +337,123 @@ namespace MassEffectModder
                 Buffer.BlockCopy(BitConverter.GetBytes(package.getNameId(valueName)), 0, texProperty.valueRaw, 0, sizeof(int));
                 Buffer.BlockCopy(BitConverter.GetBytes(valueInt), 0, texProperty.valueRaw, 4, sizeof(int));
             }
+            if (!package.existsNameId(valueName))
+                package.addName(valueName);
             texProperty.valueName = valueName;
             texProperty.valueInt = valueInt;
-            texPropertyList.Insert(0, texProperty);
+            if (texPropertyList.Exists(s => s.name == name))
+                texPropertyList[texPropertyList.FindIndex(s => s.name == name)] = texProperty;
+            else
+                texPropertyList.Insert(0, texProperty);
         }
 
         public void setBoolValue(string name, bool value)
         {
-            TexPropertyEntry texProperty = texPropertyList.Find(s => s.name == name);
-            if (texProperty.type != "BoolProperty")
-                throw new Exception();
-            if (value)
-                texProperty.valueRaw[0] = 1;
+            TexPropertyEntry texProperty;
+            if (exists(name))
+            {
+                texProperty = texPropertyList.Find(s => s.name == name);
+                if (texProperty.type != "BoolProperty")
+                    throw new Exception();
+            }
             else
-                texProperty.valueRaw[0] = 0;
-            texProperty.valueBool = value;
-            texPropertyList[texPropertyList.FindIndex(s => s.name == name)] = texProperty;
-        }
+            {
+                texProperty = new TexPropertyEntry();
+                if (GameData.gameType == MeType.ME3_TYPE)
+                    texProperty.valueRaw = new byte[1];
+                else
+                    texProperty.valueRaw = new byte[4];
+                texProperty.type = "BoolProperty";
+                if (!package.existsNameId(texProperty.type))
+                    package.addName(texProperty.type);
+            }
 
-        public void addBoolValue(string name, bool value)
-        {
-            TexPropertyEntry texProperty = new TexPropertyEntry();
-            if (GameData.gameType == MeType.ME3_TYPE)
-                texProperty.valueRaw = new byte[1];
-            else
-                texProperty.valueRaw = new byte[4];
             if (!package.existsNameId(name))
-                throw new Exception("Not able to add property: " + name);
-            texProperty.type = "BoolProperty";
+                package.addName(name);
             texProperty.name = name;
             texProperty.fetched = true;
+
             if (value)
                 texProperty.valueRaw[0] = 1;
             else
                 texProperty.valueRaw[0] = 0;
             texProperty.valueBool = value;
-            texPropertyList.Insert(0, texProperty);
+
+            if (texPropertyList.Exists(s => s.name == name))
+                texPropertyList[texPropertyList.FindIndex(s => s.name == name)] = texProperty;
+            else
+                texPropertyList.Insert(0, texProperty);
         }
 
         public void setNameValue(string name, string valueName, int valueInt = 0)
         {
-            TexPropertyEntry texProperty = texPropertyList.Find(s => s.name == name);
-            if (texProperty.type != "NameProperty")
-                throw new Exception();
-            Buffer.BlockCopy(BitConverter.GetBytes(package.getNameId(valueName)), 0, texProperty.valueRaw, 0, sizeof(int));
-            Buffer.BlockCopy(BitConverter.GetBytes(valueInt), 0, texProperty.valueRaw, 4, sizeof(int));
-            texProperty.valueName = valueName;
-            texProperty.valueInt = valueInt;
-            texPropertyList[texPropertyList.FindIndex(s => s.name == name)] = texProperty;
-        }
+            TexPropertyEntry texProperty;
+            if (exists(name))
+            {
+                texProperty = texPropertyList.Find(s => s.name == name);
+                if (texProperty.type != "NameProperty")
+                    throw new Exception();
+            }
+            else
+            {
+                texProperty = new TexPropertyEntry();
+                texProperty.valueRaw = new byte[8];
+                texProperty.type = "NameProperty";
+                if (!package.existsNameId(texProperty.type))
+                    package.addName(texProperty.type);
+            }
 
-        public void addNameValue(string name, string valueName, int valueInt = 0)
-        {
-            TexPropertyEntry texProperty = new TexPropertyEntry();
-            texProperty.type = "NameProperty";
             if (!package.existsNameId(name))
-                throw new Exception("Not able to add property: " + name);
+                package.addName(name);
             texProperty.name = name;
             texProperty.fetched = true;
-            texProperty.valueRaw = new byte[8];
+
+            if (!package.existsNameId(valueName))
+                package.addName(valueName);
             Buffer.BlockCopy(BitConverter.GetBytes(package.getNameId(valueName)), 0, texProperty.valueRaw, 0, sizeof(int));
             Buffer.BlockCopy(BitConverter.GetBytes(valueInt), 0, texProperty.valueRaw, 4, sizeof(int));
             texProperty.valueName = valueName;
             texProperty.valueInt = valueInt;
-            texPropertyList.Insert(0, texProperty);
+
+            if (exists(name))
+                texPropertyList[texPropertyList.FindIndex(s => s.name == name)] = texProperty;
+            else
+                texPropertyList.Insert(0, texProperty);
         }
 
         public void setStructValue(string name, string valueName, byte[] valueStruct)
         {
-            fetchValue(name);
-            TexPropertyEntry texProperty = texPropertyList.Find(s => s.name == name);
-            if (texProperty.type != "StructProperty" || texProperty.valueStruct.Length != valueStruct.Length)
+            TexPropertyEntry texProperty;
+            if (exists(name))
+            {
+                texProperty = texPropertyList.Find(s => s.name == name);
+                if (texProperty.type != "StructProperty" || texProperty.valueStruct.Length != valueStruct.Length)
+                    throw new Exception();
+                fetchValue(name);
+            }
+            else
+            {
+                // missing implementation
                 throw new Exception();
+            }
+
+            if (!package.existsNameId(name))
+                package.addName(name);
+            texProperty.name = name;
+            texProperty.fetched = true;
+
+            if (!package.existsNameId(valueName))
+                package.addName(valueName);
+
             Buffer.BlockCopy(BitConverter.GetBytes(package.getNameId(valueName)), 0, texProperty.valueRaw, 0, sizeof(int));
             Buffer.BlockCopy(valueStruct, 0, texProperty.valueRaw, 8, valueStruct.Length);
             texProperty.valueName = valueName;
             Buffer.BlockCopy(valueStruct, 0, texProperty.valueStruct, 0, valueStruct.Length);
-            texPropertyList[texPropertyList.FindIndex(s => s.name == name)] = texProperty;
+
+            if (exists(name))
+                texPropertyList[texPropertyList.FindIndex(s => s.name == name)] = texProperty;
+            else
+                texPropertyList.Insert(0, texProperty);
         }
 
         public byte[] toArray()

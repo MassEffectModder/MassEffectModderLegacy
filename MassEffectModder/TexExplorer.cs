@@ -64,7 +64,7 @@ namespace MassEffectModder
         public uint crc;
         public List<MatchedTexture> list;
         public PixelFormat pixfmt;
-        public bool alphadxt1;
+        public TexProperty.TextureTypes flags;
         public int width, height;
     }
 
@@ -1227,23 +1227,15 @@ namespace MassEffectModder
                                         continue;
                                     }
 
+                                    PixelFormat newPixelFormat = Misc.changeTextureType(pixelFormat, image.pixelFormat, f.flags);
                                     if (!image.checkDDSHaveAllMipmaps() ||
                                        (f.list.Find(s => s.path != "").numMips > 1 && image.mipMaps.Count() <= 1) ||
+                                        newPixelFormat != pixelFormat ||
                                         image.pixelFormat != pixelFormat)
                                     {
                                         bool dxt1HasAlpha = false;
                                         byte dxt1Threshold = 128;
-                                        if ((pixelFormat == PixelFormat.DXT5 || pixelFormat == PixelFormat.DXT1 || pixelFormat == PixelFormat.ATI2) &&
-                                             (image.pixelFormat == PixelFormat.RGB || image.pixelFormat == PixelFormat.ARGB))
-                                        {
-                                            if (image.pixelFormat == PixelFormat.RGB && f.alphadxt1)
-                                                errors += "Warning for texture: " + textureName + ". This texture need binary alpha.";
-                                            if (pixelFormat == PixelFormat.DXT5 || f.alphadxt1)
-                                                pixelFormat = PixelFormat.ARGB;
-                                            else
-                                                pixelFormat = PixelFormat.RGB;
-                                        }
-                                        else if (f.alphadxt1)
+                                        if (f.flags == TexProperty.TextureTypes.OneBitAlpha)
                                         {
                                             dxt1HasAlpha = true;
                                             if (image.pixelFormat == PixelFormat.ARGB ||
@@ -1364,33 +1356,22 @@ namespace MassEffectModder
                                     continue;
                                 }
 
+                                PixelFormat newPixelFormat = Misc.changeTextureType(pixelFormat, image.pixelFormat, foundCrcList[0].flags);
                                 if (!image.checkDDSHaveAllMipmaps() ||
                                    (foundCrcList[0].list.Find(s => s.path != "").numMips > 1 && image.mipMaps.Count() <= 1) ||
+                                    newPixelFormat != pixelFormat ||
                                     image.pixelFormat != pixelFormat)
                                 {
                                     bool dxt1HasAlpha = false;
                                     byte dxt1Threshold = 128;
-                                    if ((pixelFormat == PixelFormat.DXT5 || pixelFormat == PixelFormat.DXT1 || pixelFormat == PixelFormat.ATI2) &&
-                                         (image.pixelFormat == PixelFormat.RGB || image.pixelFormat == PixelFormat.ARGB))
+                                    if (foundCrcList[0].flags == TexProperty.TextureTypes.OneBitAlpha)
                                     {
-                                        if (image.pixelFormat == PixelFormat.RGB && foundCrcList[0].alphadxt1)
-                                            errors += "Warning for texture: " + textureName + ". This texture need binary alpha.";
-                                        if (pixelFormat == PixelFormat.DXT5 || foundCrcList[0].alphadxt1)
-                                            pixelFormat = PixelFormat.ARGB;
-                                        else
-                                            pixelFormat = PixelFormat.RGB;
-                                    }
-                                    else
-                                    {
-                                        if (foundCrcList[0].alphadxt1)
+                                        dxt1HasAlpha = true;
+                                        if (image.pixelFormat == PixelFormat.ARGB ||
+                                            image.pixelFormat == PixelFormat.DXT3 ||
+                                            image.pixelFormat == PixelFormat.DXT5)
                                         {
-                                            dxt1HasAlpha = true;
-                                            if (image.pixelFormat == PixelFormat.ARGB ||
-                                                image.pixelFormat == PixelFormat.DXT3 ||
-                                                image.pixelFormat == PixelFormat.DXT5)
-                                            {
-                                                errors += "Warning for texture: " + textureName + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
-                                            }
+                                            errors += "Warning for texture: " + textureName + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
                                         }
                                     }
                                     image.correctMips(pixelFormat, dxt1HasAlpha, dxt1Threshold);

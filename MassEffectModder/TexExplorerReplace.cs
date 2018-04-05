@@ -45,6 +45,44 @@ namespace MassEffectModder
             },
         };
 
+        public PixelFormat changeTextureType(PixelFormat gamePixelFormat, PixelFormat texturePixelFormat,
+                ref Package package, ref Texture texture)
+        {
+            if ((gamePixelFormat == PixelFormat.DXT5 || gamePixelFormat == PixelFormat.DXT1 || gamePixelFormat == PixelFormat.ATI2) &&
+                (texturePixelFormat == PixelFormat.RGB || texturePixelFormat == PixelFormat.ARGB || texturePixelFormat == PixelFormat.ATI2))
+            {
+                if (texturePixelFormat == PixelFormat.ARGB && texture.properties.exists("CompressionSettings") &&
+                    texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
+                {
+                    gamePixelFormat = PixelFormat.ARGB;
+                    texture.properties.setByteValue("Format", Image.getEngineFormatType(gamePixelFormat), "EPixelFormat");
+                    texture.properties.removeProperty("CompressionSettings");
+                }
+                else if (texturePixelFormat == PixelFormat.ATI2 &&
+                    texture.properties.exists("CompressionSettings") &&
+                    texture.properties.getProperty("CompressionSettings").valueName == "TC_Normalmap")
+                {
+                    gamePixelFormat = PixelFormat.ATI2;
+                    texture.properties.setByteValue("Format", Image.getEngineFormatType(gamePixelFormat), "EPixelFormat");
+                    texture.properties.setByteValue("CompressionSettings", "TC_NormalmapHQ", "TextureCompressionSettings");
+                }
+                else if (gamePixelFormat == PixelFormat.DXT5 && texturePixelFormat == PixelFormat.ARGB &&
+                    !texture.properties.exists("CompressionSettings"))
+                {
+                    gamePixelFormat = PixelFormat.ARGB;
+                    texture.properties.setByteValue("Format", Image.getEngineFormatType(gamePixelFormat), "EPixelFormat");
+                }
+                else if (gamePixelFormat == PixelFormat.DXT1 && texturePixelFormat == PixelFormat.RGB &&
+                    !texture.properties.exists("CompressionSettings"))
+                {
+                    gamePixelFormat = PixelFormat.RGB;
+                    texture.properties.setByteValue("Format", Image.getEngineFormatType(gamePixelFormat), "EPixelFormat");
+                }
+            }
+
+            return gamePixelFormat;
+        }
+
         public string replaceTexture(Image image, List<MatchedTexture> list, CachePackageMgr cachePackageMgr,
             string textureName, uint crc, bool verify)
         {
@@ -95,31 +133,15 @@ namespace MassEffectModder
                         texture.mipMapsList.RemoveAt(i);
                 }
 
+                PixelFormat newPixelFormat = changeTextureType(pixelFormat, image.pixelFormat, ref package, ref texture);
                 if (!image.checkDDSHaveAllMipmaps() ||
                     (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1) ||
+                    newPixelFormat != pixelFormat ||
                     image.pixelFormat != pixelFormat)
                 {
                     bool dxt1HasAlpha = false;
                     byte dxt1Threshold = 128;
-                    if ((pixelFormat == PixelFormat.DXT5 || pixelFormat == PixelFormat.DXT1 || pixelFormat == PixelFormat.ATI2) &&
-                         (image.pixelFormat == PixelFormat.RGB || image.pixelFormat == PixelFormat.ARGB))
-                    {
-                        if (image.pixelFormat == PixelFormat.RGB && texture.properties.exists("CompressionSettings") &&
-                            texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
-                        {
-                            errors += "Warning for texture: " + textureName + ". This texture need binary alpha.";
-                        }
-                        if (pixelFormat == PixelFormat.DXT5 || texture.properties.exists("CompressionSettings") &&
-                            texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
-                        {
-                            pixelFormat = PixelFormat.ARGB;
-                        }
-                        else
-                        {
-                            pixelFormat = PixelFormat.RGB;
-                        }
-                    }
-                    else if (pixelFormat == PixelFormat.DXT1 && texture.properties.exists("CompressionSettings") &&
+                    if (pixelFormat == PixelFormat.DXT1 && texture.properties.exists("CompressionSettings") &&
                         texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
                     {
                         dxt1HasAlpha = true;
@@ -132,25 +154,6 @@ namespace MassEffectModder
                     }
                     image.correctMips(pixelFormat, dxt1HasAlpha, dxt1Threshold);
                 }
-
-                /*fmt = Image.getEngineFormatType(pixelFormat);
-                if (!package.existsNameId(fmt))
-                    package.addName(fmt);
-                string cmp = "TC_NormalmapUncompressed";
-                if (!package.existsNameId(cmp))
-                    package.addName(cmp);
-                if (!package.existsNameId("CompressionSettings"))
-                    package.addName("CompressionSettings");
-                if (GameData.gameType == MeType.ME3_TYPE)
-                {
-                    texture.properties.setByteValue("Format", fmt, "EPixelFormat");
-                    //texture.properties.setByteValue("CompressionSettings", cmp, "TextureCompressionSettings");
-                }
-                else
-                {
-                    texture.properties.setByteValue("Format", fmt, "");
-                    //texture.properties.setByteValue("CompressionSettings", cmp, "");
-                }*/
 
                 // remove lower mipmaps from source image which not exist in game data
                 for (int t = 0; t < image.mipMaps.Count(); t++)
@@ -192,23 +195,10 @@ namespace MassEffectModder
 
                 package.DisposeCache();
 
-                texture.properties.removeProperty("LODGroup");
-                if (!package.existsNameId("LODGroup"))
-                    package.addName("LODGroup");
                 if (GameData.gameType == MeType.ME3_TYPE)
-                {
-                    if (!package.existsNameId("TextureGroup"))
-                        package.addName("TextureGroup");
-                    if (!package.existsNameId("TEXTUREGROUP_ShadowMap"))
-                        package.addName("TEXTUREGROUP_ShadowMap");
-                    texture.properties.addByteValue("LODGroup", "TEXTUREGROUP_ShadowMap", "TextureGroup", 0);
-                }
+                    texture.properties.setByteValue("LODGroup", "TEXTUREGROUP_ShadowMap", "TextureGroup");
                 else
-                {
-                    if (!package.existsNameId("TEXTUREGROUP_LightAndShadowMap"))
-                        package.addName("TEXTUREGROUP_LightAndShadowMap");
-                    texture.properties.addByteValue("LODGroup", "TEXTUREGROUP_LightAndShadowMap", "", 0);
-                }
+                    texture.properties.setByteValue("LODGroup", "TEXTUREGROUP_LightAndShadowMap", "");
 
                 if (cacheCprMipmaps == null)
                 {
@@ -364,12 +354,7 @@ namespace MassEffectModder
                                     if (texture.mipMapsList.Count < 6)
                                     {
                                         mipmap.storageType = Texture.StorageTypes.pccUnc;
-                                        if (!texture.properties.exists("NeverStream"))
-                                        {
-                                            if (!package.existsNameId("NeverStream"))
-                                                package.addName("NeverStream");
-                                            texture.properties.addBoolValue("NeverStream", true);
-                                        }
+                                        texture.properties.setBoolValue("NeverStream", true);
                                     }
                                     else
                                     {

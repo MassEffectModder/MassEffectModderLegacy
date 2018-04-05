@@ -80,7 +80,7 @@ namespace MassEffectModder
                 texture.width = fs.ReadInt16();
                 texture.height = fs.ReadInt16();
                 texture.pixfmt = (PixelFormat)fs.ReadByte();
-                texture.alphadxt1 = fs.ReadByte() != 0;
+                texture.flags = (TexProperty.TextureTypes)fs.ReadByte();
                 int countPackages = fs.ReadInt16();
                 texture.list = new List<MatchedTexture>();
                 for (int k = 0; k < countPackages; k++)
@@ -463,7 +463,7 @@ namespace MassEffectModder
                         mem.WriteInt16((short)textures[i].width);
                         mem.WriteInt16((short)textures[i].height);
                         mem.WriteByte((byte)textures[i].pixfmt);
-                        mem.WriteByte(textures[i].alphadxt1 ? (byte)1 : (byte)0);
+                        mem.WriteByte((byte)textures[i].flags);
 
                         mem.WriteInt16((short)textures[i].list.Count);
                     }
@@ -641,11 +641,30 @@ namespace MassEffectModder
                             foundTex.width = texture.getTopMipmap().width;
                             foundTex.height = texture.getTopMipmap().height;
                             foundTex.pixfmt = Image.getPixelFormatType(texture.properties.getProperty("Format").valueName);
-                            if (foundTex.pixfmt == PixelFormat.DXT1 &&
-                                texture.properties.exists("CompressionSettings") &&
-                                texture.properties.getProperty("CompressionSettings").valueName == "TC_OneBitAlpha")
+                            if (texture.properties.exists("CompressionSettings"))
                             {
-                                foundTex.alphadxt1 = true;
+                                string cmp = texture.properties.getProperty("CompressionSettings").valueName;
+                                if (cmp == "TC_OneBitAlpha")
+                                    foundTex.flags = TexProperty.TextureTypes.OneBitAlpha;
+                                else if (cmp == "TC_Displacementmap")
+                                    foundTex.flags = TexProperty.TextureTypes.Displacementmap;
+                                else if (cmp == "TC_Grayscale")
+                                    foundTex.flags = TexProperty.TextureTypes.GreyScale;
+                                else if (cmp == "TC_Normalmap" ||
+                                    cmp == "TC_NormalmapHQ" ||
+                                    cmp == "TC_NormalmapAlpha" ||
+                                    cmp == "TC_NormalmapUncompressed")
+                                {
+                                    foundTex.flags = TexProperty.TextureTypes.Normalmap;
+                                }
+                                else
+                                {
+                                    throw new Exception();
+                                }
+                            }
+                            else
+                            {
+                                foundTex.flags = TexProperty.TextureTypes.Normal;
                             }
                         }
                         textures.Add(foundTex);
