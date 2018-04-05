@@ -719,7 +719,7 @@ namespace MassEffectModder
         }
 
         static public bool convertDataModtoMem(string inputDir, string memFilePath,
-            MeType gameId, MainWindow mainWindow, ref string errors, bool onlyIndividual = false)
+            MeType gameId, MainWindow mainWindow, ref string errors, bool markToConvert, bool onlyIndividual = false)
         {
             string[] files = null;
             List<FoundTexture> textures = new List<FoundTexture>();
@@ -823,6 +823,11 @@ namespace MassEffectModder
                                 outFs.WriteStringASCIINull(fs.ReadStringASCIINull());
                                 outFs.WriteUInt32(fs.ReadUInt32());
                             }
+                            else if (fileMod.tag == MipMaps.FileTextureTag2)
+                            {
+                                outFs.WriteStringASCIINull(fs.ReadStringASCIINull());
+                                outFs.WriteUInt32(fs.ReadUInt32());
+                            }
                             else if (fileMod.tag == MipMaps.FileBinaryTag)
                             {
                                 outFs.WriteInt32(fs.ReadInt32());
@@ -833,6 +838,9 @@ namespace MassEffectModder
                                 outFs.WriteInt32(fs.ReadInt32());
                                 outFs.WriteStringASCIINull(fs.ReadStringASCIINull());
                             }
+                            else
+                                throw new Exception();
+
                             outFs.WriteFromStream(fs, fileMod.size);
                             fs.JumpTo(prevPos);
                             modFiles.Add(fileMod);
@@ -941,6 +949,7 @@ namespace MassEffectModder
                                         mod.data = image.StoreImageToDDS();
                                     }
                                 }
+                                mod.markConvert = markToConvert;
                                 mods.Add(mod);
                             }
                         }
@@ -1135,6 +1144,7 @@ namespace MassEffectModder
                                     image.correctMips(pixelFormat, dxt1HasAlpha, dxt1Threshold);
                                     mod.data = image.StoreImageToDDS();
                                 }
+                                mod.markConvert = markToConvert;
                                 mods.Add(mod);
                             }
                             catch
@@ -1188,6 +1198,10 @@ namespace MassEffectModder
                         continue;
                     }
 
+                    idx = filename.IndexOf("-memconvert.");
+                    if (idx > 0)
+                        markToConvert = true;
+
                     using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
                     {
                         PixelFormat pixelFormat = foundCrcList[0].pixfmt;
@@ -1226,6 +1240,7 @@ namespace MassEffectModder
                         mod.textureName = foundCrcList[0].name;
                         mod.binaryModType = 0;
                         mod.textureCrc = crc;
+                        mod.markConvert = markToConvert;
                         mods.Add(mod);
                     }
                 }
@@ -1267,6 +1282,10 @@ namespace MassEffectModder
                         continue;
                     }
 
+                    idx = filename.IndexOf("-memconvert.");
+                    if (idx > 0)
+                        markToConvert = true;
+
                     Image image = new Image(file, Image.ImageFormat.Unknown).convertToARGB();
                     if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
                         foundCrcList[0].width / foundCrcList[0].height)
@@ -1293,6 +1312,7 @@ namespace MassEffectModder
                     mod.textureName = foundCrcList[0].name;
                     mod.binaryModType = 0;
                     mod.textureCrc = crc;
+                    mod.markConvert = markToConvert;
                     mods.Add(mod);
                 }
 
@@ -1340,7 +1360,10 @@ namespace MassEffectModder
                     }
                     else
                     {
-                        fileMod.tag = MipMaps.FileTextureTag;
+                        if (mods[l].markConvert)
+                            fileMod.tag = MipMaps.FileTextureTag2;
+                        else
+                            fileMod.tag = MipMaps.FileTextureTag;
                         fileMod.name = mods[l].textureName + string.Format("_0x{0:X8}", mods[l].textureCrc) + ".dds";
                         outFs.WriteStringASCIINull(mods[l].textureName);
                         outFs.WriteUInt32(mods[l].textureCrc);

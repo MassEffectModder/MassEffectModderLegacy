@@ -96,6 +96,7 @@ namespace MassEffectModder
             public int binaryModType;
             public string textureName;
             public uint textureCrc;
+            public bool markConvert;
             public long offset;
             public long size;
         };
@@ -429,7 +430,7 @@ namespace MassEffectModder
             _mainWindow.updateStatusLabel("Replacing texture...");
             _mainWindow.updateStatusLabel2("");
             Misc.startTimer();
-            replaceTexture();
+            replaceTexture(false);
             var time = Misc.stopTimer();
             _mainWindow.updateStatusLabel("Done. Process total time: " + Misc.getTimerFormat(time));
             _mainWindow.updateStatusLabel2("");
@@ -442,7 +443,7 @@ namespace MassEffectModder
             _mainWindow.updateStatusLabel("Replacing texture...");
             _mainWindow.updateStatusLabel2("");
             Misc.startTimer();
-            replaceTexture();
+            replaceTexture(false);
             var time = Misc.stopTimer();
             _mainWindow.updateStatusLabel("Done. Process total time: " + Misc.getTimerFormat(time));
             _mainWindow.updateStatusLabel2("");
@@ -485,7 +486,16 @@ namespace MassEffectModder
         {
             _mainWindow.updateStatusLabel("Replacing texture...");
             _mainWindow.updateStatusLabel2("");
-            replaceTexture();
+            replaceTexture(false);
+            _mainWindow.updateStatusLabel("Done.");
+            _mainWindow.updateStatusLabel2("");
+        }
+
+        private void replaceTextureToolStripMenuItemConvert_Click(object sender, EventArgs e)
+        {
+            _mainWindow.updateStatusLabel("Replacing texture (convert mode) ...");
+            _mainWindow.updateStatusLabel2("");
+            replaceTexture(true);
             _mainWindow.updateStatusLabel("Done.");
             _mainWindow.updateStatusLabel2("");
         }
@@ -903,6 +913,16 @@ namespace MassEffectModder
 
         private void createMODToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            createMODToolStripMenuItem(false);
+        }
+
+        private void packMODToolStripMenuItemConvert_Click(object sender, EventArgs e)
+        {
+            createMODToolStripMenuItem(true);
+        }
+
+        private void createMODToolStripMenuItem(bool markConvert)
+        {
             EnableMenuOptions(false);
 
             using (FolderBrowserDialog modFile = new FolderBrowserDialog())
@@ -930,7 +950,7 @@ namespace MassEffectModder
                         string errors = "";
                         Misc.convertDataModtoMem(modFile.SelectedPath,
                             Path.Combine(Path.GetDirectoryName(modFile.SelectedPath), Path.GetFileName(modFile.SelectedPath)) + ".mem",
-                            GameData.gameType, _mainWindow, ref errors, true);
+                            GameData.gameType, _mainWindow, ref errors, markConvert, true);
                         var time = Misc.stopTimer();
                         richTextBoxInfo.Text = errors;
                         if (richTextBoxInfo.Text != "")

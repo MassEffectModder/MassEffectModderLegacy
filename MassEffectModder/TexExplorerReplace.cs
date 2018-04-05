@@ -84,7 +84,7 @@ namespace MassEffectModder
         }
 
         public string replaceTexture(Image image, List<MatchedTexture> list, CachePackageMgr cachePackageMgr,
-            string textureName, uint crc, bool verify)
+            string textureName, uint crc, bool verify, bool markConvert)
         {
             var masterTextures = new Dictionary<Texture, int>();
             Texture arcTexture = null, cprTexture = null;
@@ -133,7 +133,10 @@ namespace MassEffectModder
                         texture.mipMapsList.RemoveAt(i);
                 }
 
-                PixelFormat newPixelFormat = changeTextureType(pixelFormat, image.pixelFormat, ref package, ref texture);
+                PixelFormat newPixelFormat = image.pixelFormat;
+                if (markConvert)
+                    newPixelFormat = changeTextureType(pixelFormat, image.pixelFormat, ref package, ref texture);
+
                 if (!image.checkDDSHaveAllMipmaps() ||
                     (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1) ||
                     newPixelFormat != pixelFormat ||
@@ -542,7 +545,7 @@ namespace MassEffectModder
 
     public partial class TexExplorer : Form
     {
-        private void replaceTexture()
+        private void replaceTexture(bool markConvert)
         {
             if (listViewTextures.SelectedItems.Count == 0)
                 return;
@@ -567,7 +570,7 @@ namespace MassEffectModder
 
                 string errors = "";
                 MipMaps mipMaps = new MipMaps();
-                errors = mipMaps.replaceTexture(image, node.textures[index].list, cachePackageMgr,  node.textures[index].name, node.textures[index].crc, true);
+                errors = mipMaps.replaceTexture(image, node.textures[index].list, cachePackageMgr,  node.textures[index].name, node.textures[index].crc, true, markConvert);
 
                 cachePackageMgr.CloseAllWithSave(false, false);
 

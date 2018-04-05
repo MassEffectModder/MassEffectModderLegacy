@@ -53,6 +53,7 @@ namespace MassEffectModder
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TexExplorer));
             this.contextMenuStripTextures = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.replaceTextureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.replaceTextureToolStripMenuItemConvert = new System.Windows.Forms.ToolStripMenuItem();
             this.extractToDDSFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extractToPNGFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -81,6 +82,7 @@ namespace MassEffectModder
             this.loadMODsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearMODsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.packMODToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.packMODToolStripMenuItemConvert = new System.Windows.Forms.ToolStripMenuItem();
             this.createMODBatchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.convertME3ExplorermodForMEMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -104,25 +106,33 @@ namespace MassEffectModder
             // 
             this.contextMenuStripTextures.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.replaceTextureToolStripMenuItem,
+            this.replaceTextureToolStripMenuItemConvert,
             this.extractToDDSFileToolStripMenuItem,
             this.extractToPNGFileToolStripMenuItem,
             this.viewToolStripMenuItem});
             this.contextMenuStripTextures.Name = "contextMenuStripTextures";
-            this.contextMenuStripTextures.Size = new System.Drawing.Size(212, 92);
+            this.contextMenuStripTextures.Size = new System.Drawing.Size(244, 114);
             // 
             // replaceTextureToolStripMenuItem
             // 
             this.replaceTextureToolStripMenuItem.Name = "replaceTextureToolStripMenuItem";
             this.replaceTextureToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
-            this.replaceTextureToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.replaceTextureToolStripMenuItem.Size = new System.Drawing.Size(243, 22);
             this.replaceTextureToolStripMenuItem.Text = "Replace Texture";
             this.replaceTextureToolStripMenuItem.Click += new System.EventHandler(this.replaceTextureToolStripMenuItem_Click);
+            // 
+            // replaceTextureToolStripMenuItemConvert
+            // 
+            this.replaceTextureToolStripMenuItemConvert.Name = "replaceTextureToolStripMenuItemConvert";
+            this.replaceTextureToolStripMenuItemConvert.Size = new System.Drawing.Size(243, 22);
+            this.replaceTextureToolStripMenuItemConvert.Text = "Replace Texture (Convert mode)";
+            this.replaceTextureToolStripMenuItemConvert.Click += new System.EventHandler(this.replaceTextureToolStripMenuItemConvert_Click);
             // 
             // extractToDDSFileToolStripMenuItem
             // 
             this.extractToDDSFileToolStripMenuItem.Name = "extractToDDSFileToolStripMenuItem";
             this.extractToDDSFileToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
-            this.extractToDDSFileToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.extractToDDSFileToolStripMenuItem.Size = new System.Drawing.Size(243, 22);
             this.extractToDDSFileToolStripMenuItem.Text = "Extract to DDS file";
             this.extractToDDSFileToolStripMenuItem.Click += new System.EventHandler(this.extractToDDSFileToolStripMenuItem_Click);
             // 
@@ -130,7 +140,7 @@ namespace MassEffectModder
             // 
             this.extractToPNGFileToolStripMenuItem.Name = "extractToPNGFileToolStripMenuItem";
             this.extractToPNGFileToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
-            this.extractToPNGFileToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.extractToPNGFileToolStripMenuItem.Size = new System.Drawing.Size(243, 22);
             this.extractToPNGFileToolStripMenuItem.Text = "Extract to PNG file";
             this.extractToPNGFileToolStripMenuItem.Click += new System.EventHandler(this.extractToPNGFileToolStripMenuItem_Click);
             // 
@@ -141,7 +151,7 @@ namespace MassEffectModder
             this.infoTextureToolStripMenuItem,
             this.info2TextureToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
-            this.viewToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(243, 22);
             this.viewToolStripMenuItem.Text = "View";
             // 
             // previewTextureToolStripMenuItem
@@ -379,6 +389,7 @@ namespace MassEffectModder
             this.loadMODsToolStripMenuItem,
             this.clearMODsToolStripMenuItem,
             this.packMODToolStripMenuItem,
+            this.packMODToolStripMenuItemConvert,
             this.createMODBatchToolStripMenuItem,
             this.toolStripSeparator1,
             this.convertME3ExplorermodForMEMToolStripMenuItem,
@@ -407,6 +418,13 @@ namespace MassEffectModder
             this.packMODToolStripMenuItem.Size = new System.Drawing.Size(247, 22);
             this.packMODToolStripMenuItem.Text = "Create MOD";
             this.packMODToolStripMenuItem.Click += new System.EventHandler(this.createMODToolStripMenuItem_Click);
+            // 
+            // packMODToolStripMenuItemConvert
+            // 
+            this.packMODToolStripMenuItemConvert.Name = "packMODToolStripMenuItemConvert";
+            this.packMODToolStripMenuItemConvert.Size = new System.Drawing.Size(247, 22);
+            this.packMODToolStripMenuItemConvert.Text = "Create MOD (Convert mode)";
+            this.packMODToolStripMenuItemConvert.Click += new System.EventHandler(this.packMODToolStripMenuItemConvert_Click);
             // 
             // createMODBatchToolStripMenuItem
             // 
@@ -508,5 +526,7 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem applyModsWithVerificationToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem replaceTextureToolStripMenuItemConvert;
+        private System.Windows.Forms.ToolStripMenuItem packMODToolStripMenuItemConvert;
     }
 }

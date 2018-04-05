@@ -37,6 +37,7 @@ namespace MassEffectModder
         const int SizeOfChunkBlock = 8;
         const int SizeOfChunk = 8;
         public const uint FileTextureTag = 0x53444446;
+        public const uint FileTextureTag2 = 0x53444443;
         public const uint FileBinaryTag = 0x4E494246;
         public const uint FileXdeltaTag = 0x4E494258;
 
@@ -372,7 +373,7 @@ namespace MassEffectModder
                         i = previewIndex;
                     fs.JumpTo(modFiles[i].offset);
                     size = modFiles[i].size;
-                    if (modFiles[i].tag == FileTextureTag)
+                    if (modFiles[i].tag == FileTextureTag || modFiles[i].tag == FileTextureTag2)
                     {
                         name = fs.ReadStringASCIINull();
                         crc = fs.ReadUInt32();
@@ -398,7 +399,7 @@ namespace MassEffectModder
 
                     if (previewIndex == -1 && !extract && !replace)
                     {
-                        if (modFiles[i].tag == FileTextureTag)
+                        if (modFiles[i].tag == FileTextureTag || modFiles[i].tag == FileTextureTag2)
                         {
                             FoundTexture foundTexture;
                             foundTexture = textures.Find(s => s.crc == crc);
@@ -446,6 +447,14 @@ namespace MassEffectModder
                         if (modFiles[i].tag == FileTextureTag)
                         {
                             string filename = name + "_" + string.Format("0x{0:X8}", crc) + ".dds";
+                            using (FileStream output = new FileStream(Path.Combine(outDir, Path.GetFileName(filename)), FileMode.Create, FileAccess.Write))
+                            {
+                                output.Write(dst, 0, (int)dstLen);
+                            }
+                        }
+                        else if (modFiles[i].tag == FileTextureTag2)
+                        {
+                            string filename = name + "_" + string.Format("0x{0:X8}", crc) + "-memconvert.dds";
                             using (FileStream output = new FileStream(Path.Combine(outDir, Path.GetFileName(filename)), FileMode.Create, FileAccess.Write))
                             {
                                 output.Write(dst, 0, (int)dstLen);
@@ -512,7 +521,7 @@ namespace MassEffectModder
                     }
                     else if (replace)
                     {
-                        if (modFiles[i].tag == FileTextureTag)
+                        if (modFiles[i].tag == FileTextureTag || modFiles[i].tag == FileTextureTag2)
                         {
                             int index = -1;
                             for (int t = 0; t < textures.Count; t++)
@@ -527,7 +536,7 @@ namespace MassEffectModder
                             {
                                 FoundTexture foundTexture = textures[index];
                                 Image image = new Image(dst, Image.ImageFormat.DDS);
-                                errors += replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc, verify);
+                                errors += replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc, verify, modFiles[i].tag == FileTextureTag2);
                                 textures[index] = foundTexture;
                             }
                             else
