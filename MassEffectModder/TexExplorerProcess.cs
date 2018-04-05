@@ -183,7 +183,7 @@ namespace MassEffectModder
                                 else
                                 {
                                     Image image = new Image(data, Path.GetExtension(filename));
-                                    errors += replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc, verify);
+                                    errors += replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc, verify, false);
                                     textures[index] = foundTexture;
                                 }
                             }
@@ -297,7 +297,7 @@ namespace MassEffectModder
 
                                 PixelFormat pixelFormat = f.pixfmt;
                                 Image image = new Image(mod.data, Image.ImageFormat.DDS);
-                                errors += replaceTexture(image, f.list, cachePackageMgr, f.name, f.crc, verify);
+                                errors += replaceTexture(image, f.list, cachePackageMgr, f.name, f.crc, verify, false);
                                 textures[index] = f;
                             }
                         }

@@ -88,6 +88,7 @@ namespace MassEffectModder
             this.convertME3ExplorermodForMEMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.batchConvertME3ExplorermodForMEMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.searchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.convertME3ExplorermodForMEMToolStripMenuItemConvert = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStripTextures.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -393,6 +394,7 @@ namespace MassEffectModder
             this.createMODBatchToolStripMenuItem,
             this.toolStripSeparator1,
             this.convertME3ExplorermodForMEMToolStripMenuItem,
+            this.convertME3ExplorermodForMEMToolStripMenuItemConvert,
             this.batchConvertME3ExplorermodForMEMToolStripMenuItem});
             this.MODsToolStripMenuItem.Name = "MODsToolStripMenuItem";
             this.MODsToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
@@ -401,54 +403,54 @@ namespace MassEffectModder
             // loadMODsToolStripMenuItem
             // 
             this.loadMODsToolStripMenuItem.Name = "loadMODsToolStripMenuItem";
-            this.loadMODsToolStripMenuItem.Size = new System.Drawing.Size(247, 22);
+            this.loadMODsToolStripMenuItem.Size = new System.Drawing.Size(303, 22);
             this.loadMODsToolStripMenuItem.Text = "Load MODs";
             this.loadMODsToolStripMenuItem.Click += new System.EventHandler(this.loadMODsToolStripMenuItem_Click);
             // 
             // clearMODsToolStripMenuItem
             // 
             this.clearMODsToolStripMenuItem.Name = "clearMODsToolStripMenuItem";
-            this.clearMODsToolStripMenuItem.Size = new System.Drawing.Size(247, 22);
+            this.clearMODsToolStripMenuItem.Size = new System.Drawing.Size(303, 22);
             this.clearMODsToolStripMenuItem.Text = "Clear MODs";
             this.clearMODsToolStripMenuItem.Click += new System.EventHandler(this.clearMODsToolStripMenuItem_Click);
             // 
             // packMODToolStripMenuItem
             // 
             this.packMODToolStripMenuItem.Name = "packMODToolStripMenuItem";
-            this.packMODToolStripMenuItem.Size = new System.Drawing.Size(247, 22);
+            this.packMODToolStripMenuItem.Size = new System.Drawing.Size(303, 22);
             this.packMODToolStripMenuItem.Text = "Create MOD";
             this.packMODToolStripMenuItem.Click += new System.EventHandler(this.createMODToolStripMenuItem_Click);
             // 
             // packMODToolStripMenuItemConvert
             // 
             this.packMODToolStripMenuItemConvert.Name = "packMODToolStripMenuItemConvert";
-            this.packMODToolStripMenuItemConvert.Size = new System.Drawing.Size(247, 22);
+            this.packMODToolStripMenuItemConvert.Size = new System.Drawing.Size(303, 22);
             this.packMODToolStripMenuItemConvert.Text = "Create MOD (Convert mode)";
             this.packMODToolStripMenuItemConvert.Click += new System.EventHandler(this.packMODToolStripMenuItemConvert_Click);
             // 
             // createMODBatchToolStripMenuItem
             // 
             this.createMODBatchToolStripMenuItem.Name = "createMODBatchToolStripMenuItem";
-            this.createMODBatchToolStripMenuItem.Size = new System.Drawing.Size(247, 22);
+            this.createMODBatchToolStripMenuItem.Size = new System.Drawing.Size(303, 22);
             this.createMODBatchToolStripMenuItem.Text = "Create multiple MODs";
             this.createMODBatchToolStripMenuItem.Click += new System.EventHandler(this.createMODBatchToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(244, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(300, 6);
             // 
             // convertME3ExplorermodForMEMToolStripMenuItem
             // 
             this.convertME3ExplorermodForMEMToolStripMenuItem.Name = "convertME3ExplorermodForMEMToolStripMenuItem";
-            this.convertME3ExplorermodForMEMToolStripMenuItem.Size = new System.Drawing.Size(247, 22);
+            this.convertME3ExplorermodForMEMToolStripMenuItem.Size = new System.Drawing.Size(303, 22);
             this.convertME3ExplorermodForMEMToolStripMenuItem.Text = "Convert .mod .tpf to .mem";
             this.convertME3ExplorermodForMEMToolStripMenuItem.Click += new System.EventHandler(this.convertME3ExplorermodForMEMToolStripMenuItem_Click);
             // 
             // batchConvertME3ExplorermodForMEMToolStripMenuItem
             // 
             this.batchConvertME3ExplorermodForMEMToolStripMenuItem.Name = "batchConvertME3ExplorermodForMEMToolStripMenuItem";
-            this.batchConvertME3ExplorermodForMEMToolStripMenuItem.Size = new System.Drawing.Size(247, 22);
+            this.batchConvertME3ExplorermodForMEMToolStripMenuItem.Size = new System.Drawing.Size(303, 22);
             this.batchConvertME3ExplorermodForMEMToolStripMenuItem.Text = "Batch convert .mod .tpf to .mem";
             this.batchConvertME3ExplorermodForMEMToolStripMenuItem.Click += new System.EventHandler(this.batchConvertME3ExplorermodForMEMToolStripMenuItem_Click);
             // 
@@ -459,6 +461,13 @@ namespace MassEffectModder
             this.searchToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
             this.searchToolStripMenuItem.Text = "Search";
             this.searchToolStripMenuItem.Click += new System.EventHandler(this.searchToolStripMenuItem_Click);
+            // 
+            // convertME3ExplorermodForMEMToolStripMenuItemConvert
+            // 
+            this.convertME3ExplorermodForMEMToolStripMenuItemConvert.Name = "convertME3ExplorermodForMEMToolStripMenuItemConvert";
+            this.convertME3ExplorermodForMEMToolStripMenuItemConvert.Size = new System.Drawing.Size(303, 22);
+            this.convertME3ExplorermodForMEMToolStripMenuItemConvert.Text = "Convert .mod .tpf to .mem (Convert mode)";
+            this.convertME3ExplorermodForMEMToolStripMenuItemConvert.Click += new System.EventHandler(this.convertME3ExplorermodForMEMToolStripMenuItemConvert_Click);
             // 
             // TexExplorer
             // 
@@ -528,5 +537,6 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem replaceTextureToolStripMenuItemConvert;
         private System.Windows.Forms.ToolStripMenuItem packMODToolStripMenuItemConvert;
+        private System.Windows.Forms.ToolStripMenuItem convertME3ExplorermodForMEMToolStripMenuItemConvert;
     }
 }

@@ -1106,7 +1106,7 @@ namespace MassEffectModder
             EnableMenuOptions(true);
         }
 
-        private string convertDataModtoMem(bool batch = false)
+        private string convertDataModtoMem(bool markConvert, bool batch = false)
         {
             string errors = "";
             string[] files = null;
@@ -1269,6 +1269,7 @@ namespace MassEffectModder
                                         mod.data = image.StoreImageToDDS();
                                     }
                                 }
+                                mod.markConvert = markConvert;
                                 mods.Add(mod);
                             }
                         }
@@ -1398,6 +1399,7 @@ namespace MassEffectModder
                                     mod.data = image.StoreImageToDDS();
                                 }
 
+                                mod.markConvert = markConvert;
                                 mods.Add(mod);
                             }
                             catch
@@ -1520,7 +1522,10 @@ namespace MassEffectModder
                     }
                     else
                     {
-                        fileMod.tag = MipMaps.FileTextureTag;
+                        if (mods[l].markConvert)
+                            fileMod.tag = MipMaps.FileTextureTag2;
+                        else
+                            fileMod.tag = MipMaps.FileTextureTag;
                         fileMod.name = mods[l].textureName + string.Format("_0x{0:X8}", mods[l].textureCrc) + ".dds";
                         outFs.WriteStringASCIINull(mods[l].textureName);
                         outFs.WriteUInt32(mods[l].textureCrc);
@@ -1560,7 +1565,26 @@ namespace MassEffectModder
         private void convertME3ExplorermodForMEMToolStripMenuItem_Click(object sender, EventArgs e)
         {
             EnableMenuOptions(false);
-            string errors = convertDataModtoMem();
+            string errors = convertDataModtoMem(false);
+            if (errors != "")
+            {
+                string filename = "mod-errors.txt";
+                if (File.Exists(filename))
+                    File.Delete(filename);
+                using (FileStream fs = new FileStream(filename, FileMode.CreateNew))
+                {
+                    fs.WriteStringASCII(errors);
+                }
+                MessageBox.Show("WARNING: Some errors have occured!");
+                Process.Start(filename);
+            }
+            EnableMenuOptions(true);
+        }
+
+        private void convertME3ExplorermodForMEMToolStripMenuItemConvert_Click(object sender, EventArgs e)
+        {
+            EnableMenuOptions(false);
+            string errors = convertDataModtoMem(true);
             if (errors != "")
             {
                 string filename = "mod-errors.txt";

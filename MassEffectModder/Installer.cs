@@ -1166,7 +1166,7 @@ namespace MassEffectModder
                         byte[] dst = null;
                         fs.JumpTo(modFiles[l].offset);
                         size = modFiles[l].size;
-                        if (modFiles[l].tag == MipMaps.FileTextureTag)
+                        if (modFiles[l].tag == MipMaps.FileTextureTag || modFiles[l].tag == MipMaps.FileTextureTag2)
                         {
                             name = fs.ReadStringASCIINull();
                             crc = fs.ReadUInt32();
@@ -1189,7 +1189,7 @@ namespace MassEffectModder
 
                         updateProgressStatus("Installing textures " + (currentNumberOfTotalMods * 100 / totalNumberOfMods) + "%");
 
-                        if (modFiles[l].tag == MipMaps.FileTextureTag)
+                        if (modFiles[l].tag == MipMaps.FileTextureTag || modFiles[l].tag == MipMaps.FileTextureTag2)
                         {
                             FoundTexture foundTexture;
                             foundTexture = textures.Find(s => s.crc == crc);
@@ -1202,7 +1202,7 @@ namespace MassEffectModder
                                     log += "Error in texture: " + name + string.Format("_0x{0:X8}", crc) + " Texture skipped. This texture has not all the required mipmaps" + Environment.NewLine;
                                     continue;
                                 }
-                                errors += mipMaps.replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc, false);
+                                errors += mipMaps.replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc, false, modFiles[l].tag == MipMaps.FileTextureTag2);
                             }
                             else
                             {
