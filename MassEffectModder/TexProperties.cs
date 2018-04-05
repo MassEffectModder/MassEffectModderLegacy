@@ -324,6 +324,8 @@ namespace MassEffectModder
             texProperty.name = name;
             texProperty.fetched = true;
 
+            if (!package.existsNameId(valueName))
+                package.addName(valueName);
             if (GameData.gameType == MeType.ME3_TYPE)
             {
                 if (!package.existsNameId(valueNameType))
@@ -337,8 +339,6 @@ namespace MassEffectModder
                 Buffer.BlockCopy(BitConverter.GetBytes(package.getNameId(valueName)), 0, texProperty.valueRaw, 0, sizeof(int));
                 Buffer.BlockCopy(BitConverter.GetBytes(valueInt), 0, texProperty.valueRaw, 4, sizeof(int));
             }
-            if (!package.existsNameId(valueName))
-                package.addName(valueName);
             texProperty.valueName = valueName;
             texProperty.valueInt = valueInt;
             if (texPropertyList.Exists(s => s.name == name))
