@@ -1415,6 +1415,21 @@ namespace MassEffectModder
             }
         }
 
+        static public byte[] calculateMD5Fast(string filePath)
+        {
+            long size = new FileInfo(filePath).Length;
+            size = Math.Min(4000, size);
+            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            {
+                byte[] buffer = fs.ReadToBuffer(size);
+                using (MD5 md5 = MD5.Create())
+                {
+                    md5.Initialize();
+                    return md5.ComputeHash(buffer, 0, (int)size);
+                }
+            }
+        }
+
         static public List<string> detectBrokenMod(MeType gameType)
         {
             List<string> packageMainFiles = null;
