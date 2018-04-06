@@ -108,7 +108,6 @@ namespace MassEffectModder
                     errors += e.Message + Environment.NewLine + Environment.NewLine;
                     errors += e.StackTrace + Environment.NewLine + Environment.NewLine;
                     errors += "---- End ----------------------------------------------" + Environment.NewLine + Environment.NewLine;
-                    Console.WriteLine(errors);
                     break;
                 }
                 Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
