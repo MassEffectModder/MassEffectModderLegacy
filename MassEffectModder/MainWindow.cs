@@ -161,8 +161,10 @@ namespace MassEffectModder
                     }
                     package.Dispose();
                 }
-                catch
+                catch (Exception e)
                 {
+                    if (e.Message.Contains("Problem with PCC file header:"))
+                        continue;
                     errors += "The file is propably broken, skipped: " + GameData.packageFiles[i] + Environment.NewLine;
                 }
             }

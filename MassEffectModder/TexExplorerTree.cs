@@ -542,6 +542,8 @@ namespace MassEffectModder
             }
             catch (Exception e)
             {
+                if (e.Message.Contains("Problem with PCC file header:"))
+                    return errors;
                 string err = "";
                 err += "---- Start --------------------------------------------" + Environment.NewLine;
                 err += "Issue with open package file: " + packagePath + Environment.NewLine;

@@ -1389,14 +1389,23 @@ namespace MassEffectModder
                     if (pkg != "" && GameData.packageFiles[i].ToLowerInvariant().Contains(pkg))
                         continue;
                     updateProgressStatus("Repack game files " + ((i + 1) * 100 / GameData.packageFiles.Count) + "%");
-                    Package package = new Package(GameData.packageFiles[i], true, true);
-                    if (!package.compressed || package.compressed && package.compressionType != Package.CompressionType.Zlib)
+                    try
                     {
+                        Package package = new Package(GameData.packageFiles[i], true, true);
+                        if (!package.compressed || package.compressed && package.compressionType != Package.CompressionType.Zlib)
+                        {
+                            package.Dispose();
+                            package = new Package(GameData.packageFiles[i]);
+                            package.SaveToFile(true);
+                        }
                         package.Dispose();
-                        package = new Package(GameData.packageFiles[i]);
-                        package.SaveToFile(true);
                     }
-                    package.Dispose();
+                    catch (Exception ex)
+                    {
+                        if (ex.Message.Contains("Problem with PCC file header:"))
+                            continue;
+                    }
+
                 }
                 log += "Repack finished" + Environment.NewLine + Environment.NewLine;
             }
