@@ -332,7 +332,7 @@ namespace MassEffectModder
                     StringComparison.OrdinalIgnoreCase) ||
                     s.EndsWith(".u", StringComparison.OrdinalIgnoreCase) ||
                     s.EndsWith(".sfm", StringComparison.OrdinalIgnoreCase)).ToList();
-                if (packageFiles.FindAll(s => s.Contains("_PLPC.upk")).Count() > 10)
+                if (packageFiles.FindAll(s => s.Contains("_PLPC.")).Count() > 10)
                     PolishME1Game = true;
 
                 if (Directory.Exists(DLCData))
