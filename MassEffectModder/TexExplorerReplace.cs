@@ -154,7 +154,7 @@ namespace MassEffectModder
                             errors += "Warning for texture: " + textureName + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
                         }
                     }
-                    image.correctMips(pixelFormat, dxt1HasAlpha, dxt1Threshold);
+                    image.correctMips(newPixelFormat, dxt1HasAlpha, dxt1Threshold);
                 }
 
                 // remove lower mipmaps from source image which not exist in game data
