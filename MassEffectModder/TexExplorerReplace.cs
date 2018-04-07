@@ -127,7 +127,7 @@ namespace MassEffectModder
                         texture.mipMapsList.RemoveAt(i);
                 }
 
-                PixelFormat newPixelFormat = image.pixelFormat;
+                PixelFormat newPixelFormat = pixelFormat;
                 if (markConvert)
                     newPixelFormat = changeTextureType(pixelFormat, image.pixelFormat, ref package, ref texture);
 

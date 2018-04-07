@@ -1253,9 +1253,9 @@ namespace MassEffectModder
                                         continue;
                                     }
 
-                                    PixelFormat newPixelFormat = image.pixelFormat;
+                                    PixelFormat newPixelFormat = pixelFormat;
                                     if (markConvert)
-                                        newPixelFormat = Misc.changeTextureType(image.pixelFormat, image.pixelFormat, f.flags);
+                                        newPixelFormat = Misc.changeTextureType(pixelFormat, image.pixelFormat, f.flags);
                                     if (!image.checkDDSHaveAllMipmaps() ||
                                        (f.list.Find(s => s.path != "").numMips > 1 && image.mipMaps.Count() <= 1) ||
                                        (markConvert && image.pixelFormat != newPixelFormat) ||
@@ -1385,9 +1385,9 @@ namespace MassEffectModder
                                     continue;
                                 }
 
-                                PixelFormat newPixelFormat = image.pixelFormat;
+                                PixelFormat newPixelFormat = pixelFormat;
                                 if (markConvert)
-                                    newPixelFormat = Misc.changeTextureType(image.pixelFormat, image.pixelFormat, foundCrcList[0].flags);
+                                    newPixelFormat = Misc.changeTextureType(pixelFormat, image.pixelFormat, foundCrcList[0].flags);
 
                                 if (!image.checkDDSHaveAllMipmaps() ||
                                    (foundCrcList[0].list.Find(s => s.path != "").numMips > 1 && image.mipMaps.Count() <= 1) ||

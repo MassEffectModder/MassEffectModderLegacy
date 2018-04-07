@@ -923,7 +923,7 @@ namespace MassEffectModder
                                         continue;
                                     }
 
-                                    PixelFormat newPixelFormat = image.pixelFormat;
+                                    PixelFormat newPixelFormat = pixelFormat;
                                     if (markToConvert)
                                         newPixelFormat = changeTextureType(pixelFormat, image.pixelFormat, f.flags);
 
@@ -1122,7 +1122,7 @@ namespace MassEffectModder
                                     continue;
                                 }
 
-                                PixelFormat newPixelFormat = image.pixelFormat;
+                                PixelFormat newPixelFormat = pixelFormat;
                                 if (markToConvert)
                                     newPixelFormat = changeTextureType(pixelFormat, image.pixelFormat, foundCrcList[0].flags);
 
@@ -1217,7 +1217,7 @@ namespace MassEffectModder
                             continue;
                         }
 
-                        PixelFormat newPixelFormat = image.pixelFormat;
+                        PixelFormat newPixelFormat = pixelFormat;
                         if (markToConvert)
                             newPixelFormat = changeTextureType(pixelFormat, image.pixelFormat, foundCrcList[0].flags);
 
@@ -1291,6 +1291,7 @@ namespace MassEffectModder
                     if (idx > 0)
                         markToConvert = true;
 
+                    PixelFormat pixelFormat = foundCrcList[0].pixfmt;
                     Image image = new Image(file, Image.ImageFormat.Unknown).convertToARGB();
                     if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
                         foundCrcList[0].width / foundCrcList[0].height)
@@ -1299,9 +1300,9 @@ namespace MassEffectModder
                         continue;
                     }
 
-                    PixelFormat newPixelFormat = image.pixelFormat;
+                    PixelFormat newPixelFormat = pixelFormat;
                     if (markToConvert)
-                        newPixelFormat = changeTextureType(image.pixelFormat, image.pixelFormat, foundCrcList[0].flags);
+                        newPixelFormat = changeTextureType(pixelFormat, image.pixelFormat, foundCrcList[0].flags);
 
                     bool dxt1HasAlpha = false;
                     byte dxt1Threshold = 128;
