@@ -1,7 +1,7 @@
 /*
  * MassEffectModder
  *
- * Copyright (C) 2014-2017 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2014-2018 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,10 +19,12 @@
  *
  */
 
+using Microsoft.VisualBasic.Devices;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime;
 using System.Windows.Forms;
 
 namespace MassEffectModder
@@ -72,6 +74,12 @@ namespace MassEffectModder
 
         public void CloseAllWithSave(bool repack = false, bool appendMarker = true)
         {
+            int skipCounter = 0;
+            bool lowMemoryMode = false;
+            ulong memorySize = ((new ComputerInfo().TotalPhysicalMemory / 1024 / 1024) + 1023) / 1024;
+            if (memorySize <= 12)
+                lowMemoryMode = true;
+
             for (int i = 0; i < packages.Count; i++)
             {
                 Package pkg = packages[i];
@@ -79,6 +87,14 @@ namespace MassEffectModder
                     mainWindow.updateStatusLabel2("Saving package " + (i + 1) + " of " + packages.Count);
                 if (_installer != null)
                     _installer.updateProgressStatus("Saving packages " + ((i + 1) * 100 / packages.Count) + "%");
+                if (skipCounter > 10 && lowMemoryMode)
+                {
+                    GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
+                    GC.Collect();
+                    skipCounter = 0;
+                }
+                skipCounter++;
+
                 pkg.SaveToFile(repack, false, appendMarker);
                 pkg.Dispose();
             }
