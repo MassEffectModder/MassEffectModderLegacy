@@ -535,6 +535,14 @@ namespace MassEffectModder
 
             return errors;
         }
+
+        public string replaceTexturesFromList()
+        {
+            MessageBox.Show("Nothing yet. WIP");
+
+            return "";
+        }
+
     }
 
     public partial class TexExplorer : Form

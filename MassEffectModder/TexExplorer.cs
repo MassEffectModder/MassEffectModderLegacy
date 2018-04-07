@@ -721,6 +721,57 @@ namespace MassEffectModder
             clearMODsView();
         }
 
+        private void applyModToolStripMenuItemExperimental_Click(object sender, EventArgs e)
+        {
+            if (listViewMods.SelectedItems.Count == 0)
+                return;
+
+            EnableMenuOptions(false);
+            richTextBoxInfo.Text = "";
+            string log = "";
+            string errors = "";
+
+            long diskFreeSpace = Misc.getDiskFreeSpace(GameData.GamePath);
+            long diskUsage = 0;
+            foreach (ListViewItem item in listViewMods.SelectedItems)
+            {
+                diskUsage += new FileInfo(item.Name).Length;
+            }
+            diskUsage = (long)(diskUsage * 2.5);
+            if (diskUsage < diskFreeSpace)
+            {
+                Misc.startTimer();
+                foreach (ListViewItem item in listViewMods.SelectedItems)
+                {
+                    errors += mipMaps.newReplaceTextureMod(item.Name, _textures, cachePackageMgr, this, false, ref log);
+                    _mainWindow.updateStatusLabel("MOD: " + item.Text + " preparing...");
+                    listViewMods.Items.Remove(item);
+                }
+                _mainWindow.updateStatusLabel("");
+
+                errors += mipMaps.replaceTexturesFromList();
+
+                var time = Misc.stopTimer();
+                if (listViewMods.Items.Count == 0)
+                    clearMODsView();
+                _mainWindow.updateStatusLabel("MODs applied. Process total time: " + Misc.getTimerFormat(time));
+                _mainWindow.updateStatusLabel2("");
+                if (errors != "")
+                {
+                    richTextBoxInfo.Text = errors;
+                    richTextBoxInfo.Show();
+                    pictureBoxPreview.Hide();
+                    MessageBox.Show("WARNING: Some errors have occured!");
+                }
+            }
+            else
+            {
+                MessageBox.Show("You have not enough disk space remaining. You need about " + Misc.getBytesFormat(diskUsage) + " free.");
+            }
+
+            EnableMenuOptions(true);
+        }
+
         private void applyModToolStripMenuItem_Click(object sender, EventArgs e)
         {
             applyModToolStripMenuItem_Click(false);
