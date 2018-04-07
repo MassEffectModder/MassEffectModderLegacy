@@ -703,15 +703,11 @@ namespace MassEffectModder
                 {
                     gamePixelFormat = PixelFormat.ATI2;
                 }
-                else if (gamePixelFormat == PixelFormat.DXT5 && texturePixelFormat == PixelFormat.ARGB &&
+                else if ((gamePixelFormat == PixelFormat.DXT5 || gamePixelFormat == PixelFormat.DXT1) &&
+                    (texturePixelFormat == PixelFormat.ARGB || texturePixelFormat == PixelFormat.RGB) &&
                     flags == TexProperty.TextureTypes.Normal)
                 {
                     gamePixelFormat = PixelFormat.ARGB;
-                }
-                else if (gamePixelFormat == PixelFormat.DXT1 && texturePixelFormat == PixelFormat.RGB &&
-                    flags == TexProperty.TextureTypes.Normal)
-                {
-                    gamePixelFormat = PixelFormat.RGB;
                 }
             }
 

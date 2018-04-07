@@ -66,16 +66,11 @@ namespace MassEffectModder
                     texture.properties.setByteValue("Format", Image.getEngineFormatType(gamePixelFormat), "EPixelFormat");
                     texture.properties.setByteValue("CompressionSettings", "TC_NormalmapHQ", "TextureCompressionSettings");
                 }
-                else if (gamePixelFormat == PixelFormat.DXT5 && texturePixelFormat == PixelFormat.ARGB &&
+                else if ((gamePixelFormat == PixelFormat.DXT5 || gamePixelFormat == PixelFormat.DXT1) &&
+                    (texturePixelFormat == PixelFormat.ARGB || texturePixelFormat == PixelFormat.RGB) &&
                     !texture.properties.exists("CompressionSettings"))
                 {
                     gamePixelFormat = PixelFormat.ARGB;
-                    texture.properties.setByteValue("Format", Image.getEngineFormatType(gamePixelFormat), "EPixelFormat");
-                }
-                else if (gamePixelFormat == PixelFormat.DXT1 && texturePixelFormat == PixelFormat.RGB &&
-                    !texture.properties.exists("CompressionSettings"))
-                {
-                    gamePixelFormat = PixelFormat.RGB;
                     texture.properties.setByteValue("Format", Image.getEngineFormatType(gamePixelFormat), "EPixelFormat");
                 }
             }
