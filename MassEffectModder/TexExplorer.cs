@@ -1258,8 +1258,8 @@ namespace MassEffectModder
                                         newPixelFormat = Misc.changeTextureType(image.pixelFormat, image.pixelFormat, f.flags);
                                     if (!image.checkDDSHaveAllMipmaps() ||
                                        (f.list.Find(s => s.path != "").numMips > 1 && image.mipMaps.Count() <= 1) ||
-                                        newPixelFormat != pixelFormat ||
-                                        image.pixelFormat != pixelFormat)
+                                       (markConvert && image.pixelFormat != newPixelFormat) ||
+                                       (!markConvert && image.pixelFormat != pixelFormat))
                                     {
                                         bool dxt1HasAlpha = false;
                                         byte dxt1Threshold = 128;
@@ -1391,8 +1391,8 @@ namespace MassEffectModder
 
                                 if (!image.checkDDSHaveAllMipmaps() ||
                                    (foundCrcList[0].list.Find(s => s.path != "").numMips > 1 && image.mipMaps.Count() <= 1) ||
-                                    newPixelFormat != pixelFormat ||
-                                    image.pixelFormat != pixelFormat)
+                                   (markConvert && image.pixelFormat != newPixelFormat) ||
+                                   (!markConvert && image.pixelFormat != pixelFormat))
                                 {
                                     bool dxt1HasAlpha = false;
                                     byte dxt1Threshold = 128;

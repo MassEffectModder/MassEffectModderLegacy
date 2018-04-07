@@ -933,8 +933,8 @@ namespace MassEffectModder
 
                                     if (!image.checkDDSHaveAllMipmaps() ||
                                        (f.list.Find(s => s.path != "").numMips > 1 && image.mipMaps.Count() <= 1) ||
-                                        newPixelFormat != pixelFormat ||
-                                        image.pixelFormat != pixelFormat)
+                                       (markToConvert && image.pixelFormat != newPixelFormat) ||
+                                       (!markToConvert && image.pixelFormat != pixelFormat))
                                     {
                                         bool dxt1HasAlpha = false;
                                         byte dxt1Threshold = 128;
@@ -1132,8 +1132,8 @@ namespace MassEffectModder
 
                                 if (!image.checkDDSHaveAllMipmaps() ||
                                    (foundCrcList[0].list.Find(s => s.path != "").numMips > 1 && image.mipMaps.Count() <= 1) ||
-                                    newPixelFormat != pixelFormat ||
-                                    image.pixelFormat != pixelFormat)
+                                   (markToConvert && image.pixelFormat != newPixelFormat) ||
+                                   (!markToConvert && image.pixelFormat != pixelFormat))
                                 {
                                     bool dxt1HasAlpha = false;
                                     byte dxt1Threshold = 128;
@@ -1204,7 +1204,7 @@ namespace MassEffectModder
                         continue;
                     }
 
-                    idx = filename.IndexOf("-memconvert.");
+                    idx = filename.IndexOf("-memconvert");
                     if (idx > 0)
                         markToConvert = true;
 
@@ -1227,8 +1227,8 @@ namespace MassEffectModder
 
                         if (!image.checkDDSHaveAllMipmaps() ||
                            (foundCrcList[0].list.Find(s => s.path != "").numMips > 1 && image.mipMaps.Count() <= 1) ||
-                            newPixelFormat != pixelFormat ||
-                            image.pixelFormat != pixelFormat)
+                           (markToConvert && image.pixelFormat != newPixelFormat) ||
+                           (!markToConvert && image.pixelFormat != pixelFormat))
                         {
                             bool dxt1HasAlpha = false;
                             byte dxt1Threshold = 128;
@@ -1291,7 +1291,7 @@ namespace MassEffectModder
                         continue;
                     }
 
-                    idx = filename.IndexOf("-memconvert.");
+                    idx = filename.IndexOf("-memconvert");
                     if (idx > 0)
                         markToConvert = true;
 

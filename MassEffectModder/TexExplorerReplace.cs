@@ -138,8 +138,8 @@ namespace MassEffectModder
 
                 if (!image.checkDDSHaveAllMipmaps() ||
                     (texture.mipMapsList.Count > 1 && image.mipMaps.Count() <= 1) ||
-                    newPixelFormat != pixelFormat ||
-                    image.pixelFormat != pixelFormat)
+                    (markConvert && image.pixelFormat != newPixelFormat) ||
+                    (!markConvert && image.pixelFormat != pixelFormat))
                 {
                     bool dxt1HasAlpha = false;
                     byte dxt1Threshold = 128;
