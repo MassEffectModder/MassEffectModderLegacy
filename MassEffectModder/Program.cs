@@ -45,12 +45,15 @@ namespace MassEffectModder
         public static string dllPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
         public static Misc.MD5FileEntry[] entriesME1 = null;
+        public static Misc.MD5FileEntry[] entriesME1PL = null;
         public static Misc.MD5FileEntry[] entriesME2 = null;
         public static Misc.MD5FileEntry[] entriesME3 = null;
         public static byte[] tableME1 = null;
+        public static byte[] tableME1PL = null;
         public static byte[] tableME2 = null;
         public static byte[] tableME3 = null;
         public static List<string> tablePkgsME1 = new List<string>();
+        public static List<string> tablePkgsME1PL = new List<string>();
         public static List<string> tablePkgsME2 = new List<string>();
         public static List<string> tablePkgsME3 = new List<string>();
         private static Form progressForm;
@@ -89,6 +92,13 @@ namespace MassEffectModder
                         using (Stream s = Assembly.GetEntryAssembly().GetManifestResourceStream(resources[l]))
                         {
                             tableME1 = s.ReadToBuffer(s.Length);
+                        }
+                    }
+                    else if (resources[l].Contains("MD5EntriesME1PL.bin"))
+                    {
+                        using (Stream s = Assembly.GetEntryAssembly().GetManifestResourceStream(resources[l]))
+                        {
+                            tableME1PL = s.ReadToBuffer(s.Length);
                         }
                     }
                     else if (resources[l].Contains("MD5EntriesME2.bin"))
@@ -171,6 +181,28 @@ namespace MassEffectModder
                 entriesME1[l].path = tablePkgsME1[tmp.ReadInt32()];
                 entriesME1[l].size = tmp.ReadInt32();
                 entriesME1[l].md5 = tmp.ReadToBuffer(16);
+            }
+
+            tmp = new MemoryStream(tableME1PL);
+            tmp.SkipInt32();
+            decompressed = new byte[tmp.ReadInt32()];
+            compressed = tmp.ReadToBuffer((uint)tableME1PL.Length - 8);
+            if (new ZlibHelper.Zlib().Decompress(compressed, (uint)compressed.Length, decompressed) == 0)
+                throw new Exception();
+            tmp = new MemoryStream(decompressed);
+            count = tmp.ReadInt32();
+            tablePkgsME1PL = new List<string>();
+            for (int l = 0; l < count; l++)
+            {
+                tablePkgsME1PL.Add(tmp.ReadStringASCIINull());
+            }
+            count = tmp.ReadInt32();
+            entriesME1PL = new Misc.MD5FileEntry[count];
+            for (int l = 0; l < count; l++)
+            {
+                entriesME1PL[l].path = tablePkgsME1PL[tmp.ReadInt32()];
+                entriesME1PL[l].size = tmp.ReadInt32();
+                entriesME1PL[l].md5 = tmp.ReadToBuffer(16);
             }
 
             tmp = new MemoryStream(tableME2);

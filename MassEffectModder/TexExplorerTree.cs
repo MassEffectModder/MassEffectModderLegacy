@@ -39,7 +39,12 @@ namespace MassEffectModder
             byte[] buffer = null;
             List<string> pkgs;
             if (gameId == MeType.ME1_TYPE)
-                pkgs = Program.tablePkgsME1;
+            {
+                if (GameData.PolishME1Game)
+                    pkgs = Program.tablePkgsME1PL;
+                else
+                    pkgs = Program.tablePkgsME1;
+            }
             else if (gameId == MeType.ME2_TYPE)
                 pkgs = Program.tablePkgsME2;
             else
@@ -49,7 +54,8 @@ namespace MassEffectModder
             string[] resources = assembly.GetManifestResourceNames();
             for (int l = 0; l < resources.Length; l++)
             {
-                if (resources[l].Contains("me" + (int)gameId + "map.bin"))
+                if ((GameData.PolishME1Game && resources[l].Contains("me1map-pl.bin") && gameId == MeType.ME1_TYPE) ||
+                   (!GameData.PolishME1Game && resources[l].Contains("me" + (int)gameId + "map.bin")))
                 {
                     using (Stream s = Assembly.GetEntryAssembly().GetManifestResourceStream(resources[l]))
                     {
@@ -113,8 +119,16 @@ namespace MassEffectModder
             Misc.MD5FileEntry[] md5Entries;
             if (GameData.gameType == MeType.ME1_TYPE)
             {
-                pkgs = Program.tablePkgsME1;
-                md5Entries = Program.entriesME1;
+                if (GameData.PolishME1Game)
+                {
+                    pkgs = Program.tablePkgsME1PL;
+                    md5Entries = Program.entriesME1PL;
+                }
+                else
+                {
+                    pkgs = Program.tablePkgsME1;
+                    md5Entries = Program.entriesME1;
+                }
             }
             else if (GameData.gameType == MeType.ME2_TYPE)
             {
