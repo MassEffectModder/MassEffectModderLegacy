@@ -25,7 +25,7 @@ class MD5TablesME1
 {
 public MD5FileEntry[] entriesME1 = new MD5FileEntry[]
 {
-// Origin English
+// Origin
 new MD5FileEntry
 {
 path = @"\BioGame\CookedPC\BIOC_Base.u",

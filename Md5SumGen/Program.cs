@@ -86,6 +86,41 @@ namespace Md5SumGen
                 fs.WriteInt32(tmp.Length);
                 fs.WriteFromBuffer(Zlib.Compress(tmp, 9));
             }
+
+            if (gameId == 1)
+            {
+                // Polish version DB
+                MD5TablesME1PL tablesME1PL = new MD5TablesME1PL();
+                entries = tablesME1PL.entriesME1PL;
+                files = new List<string>();
+                stream = new MemoryStream();
+                for (int p = 0; p < entries.Length; p++)
+                {
+                    if (!files.Exists(s => s == entries[p].path))
+                        files.Add(entries[p].path);
+                }
+
+                stream.WriteInt32(files.Count);
+                for (int p = 0; p < files.Count; p++)
+                {
+                    stream.WriteStringASCIINull(files[p]);
+                }
+
+                stream.WriteInt32(entries.Length);
+                for (int p = 0; p < entries.Length; p++)
+                {
+                    stream.WriteInt32(files.IndexOf(entries[p].path));
+                    stream.WriteInt32(entries[p].size);
+                    stream.WriteFromBuffer(entries[p].md5);
+                }
+                using (FileStream fs = new FileStream("MD5EntriesME1PL.bin", FileMode.Create, FileAccess.Write))
+                {
+                    fs.WriteUInt32(md5Tag);
+                    byte[] tmp = stream.ToArray();
+                    fs.WriteInt32(tmp.Length);
+                    fs.WriteFromBuffer(Zlib.Compress(tmp, 9));
+                }
+            }
         }
     }
 

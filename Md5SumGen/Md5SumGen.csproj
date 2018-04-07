@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MD5EntriesME1.cs" />
+    <Compile Include="MD5EntriesME1PL.cs" />
     <Compile Include="MD5EntriesME2.cs" />
     <Compile Include="MD5EntriesME3.cs" />
     <Compile Include="Program.cs" />
