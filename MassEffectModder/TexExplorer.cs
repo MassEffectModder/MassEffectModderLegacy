@@ -879,6 +879,9 @@ namespace MassEffectModder
                     diskUsage = (long)(diskUsage * 2.5);
                     if (diskUsage < diskFreeSpace)
                     {
+                        List<FoundTexture> textures = new List<FoundTexture>();
+                        TreeScan.loadTexturesMap(GameData.gameType, textures);
+
                         Misc.startTimer();
                         richTextBoxInfo.Text = "";
                         string log = "";
@@ -888,7 +891,7 @@ namespace MassEffectModder
                             Directory.CreateDirectory(outDir);
                             _mainWindow.updateStatusLabel("MEM: " + item.Text + "extracting...");
                             _mainWindow.updateStatusLabel2("");
-                            richTextBoxInfo.Text += mipMaps.extractTextureMod(item.Name, outDir, _textures, cachePackageMgr, this, ref log);
+                            richTextBoxInfo.Text += mipMaps.extractTextureMod(item.Name, outDir, textures, cachePackageMgr, this, ref log);
                         }
                         var time = Misc.stopTimer();
                         _mainWindow.updateStatusLabel("MEMs extracted. Process total time: " + Misc.getTimerFormat(time));
@@ -1113,6 +1116,9 @@ namespace MassEffectModder
             string memFilename = "";
             string memDir = "";
 
+            List<FoundTexture> textures = new List<FoundTexture>();
+            TreeScan.loadTexturesMap(GameData.gameType, textures);
+
             if (batch)
             {
                 using (FolderBrowserDialog modDir = new FolderBrowserDialog())
@@ -1220,10 +1226,10 @@ namespace MassEffectModder
                                     int index = -1;
                                     try
                                     {
-                                        index = Misc.ParseLegacyMe3xScriptMod(_textures, scriptLegacy, textureName);
+                                        index = Misc.ParseLegacyMe3xScriptMod(textures, scriptLegacy, textureName);
                                         if (index == -1)
                                             throw new Exception();
-                                        f = _textures[index];
+                                        f = textures[index];
                                     }
                                     catch
                                     {
@@ -1345,7 +1351,7 @@ namespace MassEffectModder
                                     continue;
                                 }
 
-                                List<FoundTexture> foundCrcList = _textures.FindAll(s => s.crc == crc);
+                                List<FoundTexture> foundCrcList = textures.FindAll(s => s.crc == crc);
                                 if (foundCrcList.Count == 0)
                                 {
                                     errors += "Texture skipped. File " + filename + string.Format(" - 0x{0:X8}", crc) + " is not present in your game setup - mod: " + file + Environment.NewLine;
