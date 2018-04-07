@@ -244,6 +244,18 @@ namespace MassEffectModder
                         MessageBox.Show("Detected not compatible mods: \n\n" + errors);
                         return "";
                     }
+
+                    List<string> mods = Misc.detectMods(GameData.gameType);
+                    if (mods.Count != 0 && GameData.gameType == MeType.ME1_TYPE && GameData.PolishME1Game)
+                    {
+                        errors = "";
+                        for (int l = 0; l < mods.Count; l++)
+                        {
+                            errors += mods[l] + Environment.NewLine;
+                        }
+                        MessageBox.Show("Detected not compatible mods with Polish version of game: \n\n" + errors);
+                        return "";
+                    }
                 }
 
                 DialogResult result = MessageBox.Show("Replacing textures and creating mods requires generating a map of the game's textures.\n" +

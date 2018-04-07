@@ -1430,6 +1430,25 @@ namespace MassEffectModder
             }
         }
 
+        static public List<string> detectMods(MeType gameType)
+        {
+            List<string> mods = new List<string>();
+
+            for (int l = 0; l < modsEntries.Count(); l++)
+            {
+                if (!File.Exists(GameData.GamePath + modsEntries[l].path))
+                    continue;
+                byte[] md5 = calculateMD5(GameData.GamePath + modsEntries[l].path);
+                if (StructuralComparisons.StructuralEqualityComparer.Equals(md5, modsEntries[l].md5))
+                {
+                    if (!mods.Exists(s => s == modsEntries[l].modName))
+                        mods.Add(modsEntries[l].modName);
+                }
+            }
+
+            return mods;
+        }
+
         static public List<string> detectBrokenMod(MeType gameType)
         {
             List<string> packageMainFiles = null;

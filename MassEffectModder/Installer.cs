@@ -935,13 +935,37 @@ namespace MassEffectModder
             }
 
 
-            List<string> mods = Misc.detectBrokenMod((MeType)gameId);
-            if (mods.Count != 0)
+            List<string> mods = Misc.detectMods((MeType)gameId);
+            if (mods.Count != 0 && gameId == 1 && GameData.PolishME1Game)
             {
-                errors = Environment.NewLine + "------- Detected not compatible mods --------" + Environment.NewLine + Environment.NewLine;
+                errors = Environment.NewLine + "------- Detected not compatible mods with Polish version of game --------" + Environment.NewLine + Environment.NewLine;
                 for (int l = 0; l < mods.Count; l++)
                 {
                     errors += mods[l] + Environment.NewLine;
+                }
+                errors += "---------------------------------------------" + Environment.NewLine + Environment.NewLine;
+                errors += Environment.NewLine + Environment.NewLine;
+
+                if (File.Exists(filename))
+                    File.Delete(filename);
+                using (FileStream fs = new FileStream(filename, FileMode.CreateNew))
+                {
+                    fs.WriteStringASCII(errors);
+                }
+                Process.Start(filename);
+
+                customLabelFinalStatus.Text = "Detected not compatible mod, aborting...";
+                customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
+                return false;
+            }
+
+            List<string> brokenMods = Misc.detectBrokenMod((MeType)gameId);
+            if (brokenMods.Count != 0)
+            {
+                errors = Environment.NewLine + "------- Detected not compatible mods --------" + Environment.NewLine + Environment.NewLine;
+                for (int l = 0; l < brokenMods.Count; l++)
+                {
+                    errors += brokenMods[l] + Environment.NewLine;
                 }
                 errors += "---------------------------------------------" + Environment.NewLine + Environment.NewLine;
                 errors += Environment.NewLine + Environment.NewLine;
