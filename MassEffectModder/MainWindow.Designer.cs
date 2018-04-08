@@ -105,6 +105,7 @@ namespace MassEffectModder
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.statusStrip2 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.updateLODSetME1MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuGame.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.statusStrip2.SuspendLayout();
@@ -131,6 +132,7 @@ namespace MassEffectModder
             this.toolStripSeparator8,
             this.toolStripMenuItemCreateBinME1,
             this.toolStripSeparator2,
+            this.updateLODSetME1MenuItem,
             this.removeLODSetME1MenuItem,
             this.toolStripUpdateGfxME1MenuItem,
             this.toolStripUpdateGfxME1MenuItemSoftMode,
@@ -521,6 +523,13 @@ namespace MassEffectModder
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
             this.toolStripStatusLabel2.Size = new System.Drawing.Size(0, 17);
             // 
+            // updateLODSetME1MenuItem
+            // 
+            this.updateLODSetME1MenuItem.Name = "updateLODSetME1MenuItem";
+            this.updateLODSetME1MenuItem.Size = new System.Drawing.Size(320, 22);
+            this.updateLODSetME1MenuItem.Text = "Update LOD Settings";
+            this.updateLODSetME1MenuItem.Click += new System.EventHandler(this.updateLODSetME1MenuItem_Click);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -603,6 +612,7 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemCreateBinME3;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem repackME3ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem updateLODSetME1MenuItem;
     }
 }
 

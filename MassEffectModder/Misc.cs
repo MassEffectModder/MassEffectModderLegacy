@@ -38,6 +38,46 @@ namespace MassEffectModder
 {
     static class LODSettings
     {
+        static public void readLOD(MeType gameId, ConfIni engineConf, ref string log)
+        {
+            if (gameId == MeType.ME1_TYPE)
+            {
+                log += "TEXTUREGROUP_GUI=" + engineConf.Read("TEXTUREGROUP_GUI", "TextureLODSettings") + Environment.NewLine;
+            }
+            else if (gameId == MeType.ME2_TYPE)
+            {
+                //log += "TEXTUREGROUP_UI=" + engineConf.Read("TEXTUREGROUP_UI", "SystemSettings") + Environment.NewLine;
+            }
+            else if (gameId == MeType.ME3_TYPE)
+            {
+                //log += "TEXTUREGROUP_UI=" + engineConf.Read("TEXTUREGROUP_UI", "SystemSettings") + Environment.NewLine;
+            }
+            else
+            {
+                throw new Exception("");
+            }
+        }
+
+        static public void updateLOD(MeType gameId, ConfIni engineConf)
+        {
+            if (gameId == MeType.ME1_TYPE)
+            {
+                engineConf.Write("TEXTUREGROUP_GUI", "(MinLODSize=4096,MaxLODSize=4096,LODBias=0)", "TextureLODSettings");
+            }
+            else if (gameId == MeType.ME2_TYPE)
+            {
+                //engineConf.Write("TEXTUREGROUP_UI", "(MinLODSize=64,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+            }
+            else if (gameId == MeType.ME3_TYPE)
+            {
+                //engineConf.Write("TEXTUREGROUP_UI", "(MinLODSize=64,MaxLODSize=4096,LODBias=0)", "SystemSettings");
+            }
+            else
+            {
+                throw new Exception("");
+            }
+        }
+
         static public void removeLOD(MeType gameId, ConfIni engineConf)
         {
             if (gameId == MeType.ME1_TYPE)

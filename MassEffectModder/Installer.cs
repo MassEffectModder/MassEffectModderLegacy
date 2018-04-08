@@ -1451,6 +1451,7 @@ namespace MassEffectModder
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
             ConfIni engineConf = new ConfIni(path);
             LODSettings.removeLOD((MeType)gameId, engineConf);
+            LODSettings.updateLOD((MeType)gameId, engineConf);
             LODSettings.updateGFXSettings((MeType)gameId, engineConf, softShadowsModPath != "", meuitmMode);
             log += "Updating GFX settings finished" + Environment.NewLine + Environment.NewLine;
 
@@ -1519,6 +1520,14 @@ namespace MassEffectModder
             customLabelCurrentStatus.ForeColor = Color.FromKnownColor(KnownColor.White);
             customLabelDesc.Text = "";
             buttonNormal.Visible = true;
+
+            if (gameId == 1)
+            {
+                log += "==========================================" + Environment.NewLine;
+                log += "LOD settings:" + Environment.NewLine;
+                LODSettings.readLOD((MeType)gameId, engineConf, ref log);
+                log += "==========================================" + Environment.NewLine;
+            }
 
             string filename = "install-log.txt";
             if (File.Exists(filename))
