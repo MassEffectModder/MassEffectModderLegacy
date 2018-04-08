@@ -193,7 +193,7 @@ namespace MassEffectModder
                 package.DisposeCache();
 
                 if (GameData.gameType == MeType.ME1_TYPE)
-                    texture.properties.setByteValue("LODGroup", "TEXTUREGROUP_GUI", "");
+                    texture.properties.setByteValue("LODGroup", "TEXTUREGROUP_Character", "", 1025);
                 else if (GameData.gameType == MeType.ME3_TYPE)
                     texture.properties.setByteValue("LODGroup", "TEXTUREGROUP_ShadowMap", "TextureGroup");
                 else
@@ -529,6 +529,11 @@ namespace MassEffectModder
                         cprTexture = texture;
                     if (triggerCacheArc)
                         arcTexture = texture;
+                }
+                if (nodeTexture.removeEmptyMips)
+                {
+                    nodeTexture.removeEmptyMips = false;
+                    list[n] = nodeTexture;
                 }
                 package = null;
             }

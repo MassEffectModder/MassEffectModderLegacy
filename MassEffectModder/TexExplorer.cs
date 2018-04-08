@@ -55,6 +55,7 @@ namespace MassEffectModder
         public int linkToMaster;
         public uint mipmapOffset;
         public List<uint> crcs;
+        public bool removeEmptyMips;
         public int numMips;
     }
 

@@ -69,7 +69,7 @@ namespace MassEffectModder
         bool OptionBikVisible;
         bool mute = false;
         int stage = 1;
-        int totalStages = 5;
+        int totalStages = 6;
         System.Media.SoundPlayer musicPlayer;
         CustomLabel customLabelDesc;
         CustomLabel customLabelCurrentStatus;
@@ -1004,6 +1004,10 @@ namespace MassEffectModder
             if (updateMode)
                 totalStages -= 1;
 
+            // remove empty mipmaps
+            if (updateMode || gameId != 1)
+                totalStages -= 1;
+
             // recompress game files
             if (!checkBoxOptionRepack.Checked)
                 totalStages -= 1;
@@ -1400,6 +1404,19 @@ namespace MassEffectModder
 
             customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
             cachePackageMgr.CloseAllWithSave(checkBoxOptionRepack.Checked);
+
+            if (!updateMode && gameId == 1)
+            {
+                customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
+                log += "Remove mipmaps started..." + Environment.NewLine;
+                errors += mipMaps.removeMipMapsME1(1, textures, null, this, false);
+                errors += mipMaps.removeMipMapsME1(2, textures, null, this, false);
+                log += "Remove mipmaps finished" + Environment.NewLine + Environment.NewLine;
+            }
+            else
+            {
+                log += "Remove mipmaps skipped" + Environment.NewLine + Environment.NewLine;
+            }
 
             if (checkBoxOptionRepack.Checked)
             {

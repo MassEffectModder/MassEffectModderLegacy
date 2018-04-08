@@ -101,6 +101,7 @@ namespace MassEffectModder
                             matched.slave = true;
                             matched.basePackageName = fs.ReadStringASCIINull();
                         }
+                        matched.removeEmptyMips = fs.ReadByte() != 0;
                     }
                     matched.numMips = fs.ReadByte();
                     matched.path = pkgs[fs.ReadInt16()];
@@ -513,6 +514,7 @@ namespace MassEffectModder
                                 mem.WriteInt16((short)textures[i].list[k].linkToMaster);
                                 if (textures[i].list[k].linkToMaster != -1)
                                     mem.WriteStringASCIINull(textures[i].list[k].basePackageName);
+                                mem.WriteByte(textures[i].list[k].removeEmptyMips ? (byte)1 : (byte)0);
                             }
                             mem.WriteByte((byte)textures[i].list[k].numMips);
                             mem.WriteInt16((short)pkgs.IndexOf(textures[i].list[k].path));
@@ -548,6 +550,27 @@ namespace MassEffectModder
                 else
                 {
                     fs.WriteFromStream(mem, mem.Length);
+                }
+            }
+
+            if (mainWindow != null && GameData.gameType == MeType.ME1_TYPE)
+            {
+                if (!generateBuiltinMapFiles)
+                {
+                    MipMaps mipmaps = new MipMaps();
+                    if (GameData.gameType == MeType.ME1_TYPE)
+                    {
+                        errors += mipmaps.removeMipMapsME1(1, textures, mainWindow, null);
+                        errors += mipmaps.removeMipMapsME1(2, textures, mainWindow, null);
+                    }
+                    else
+                    {
+                        errors += mipmaps.removeMipMapsME2ME3(textures, mainWindow, null);
+                    }
+                    if (GameData.gameType == MeType.ME3_TYPE)
+                    {
+                        TOCBinFile.UpdateAllTOCBinFiles();
+                    }
                 }
             }
 
@@ -607,6 +630,11 @@ namespace MassEffectModder
                     matchTexture.numMips = texture.mipMapsList.FindAll(s => s.storageType != Texture.StorageTypes.empty).Count;
                     if (GameData.gameType == MeType.ME1_TYPE)
                     {
+                        if (texture.properties.exists("LODGroup") &&
+                            texture.properties.getProperty("LODGroup").valueName == "TEXTUREGROUP_Character")
+                        {
+                            matchTexture.removeEmptyMips = texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty);
+                        }
                         matchTexture.basePackageName = texture.basePackageName;
                         matchTexture.slave = texture.slave;
                         matchTexture.weakSlave = texture.weakSlave;
