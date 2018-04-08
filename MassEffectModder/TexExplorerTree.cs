@@ -253,7 +253,7 @@ namespace MassEffectModder
                         {
                             errors += mods[l] + Environment.NewLine;
                         }
-                        MessageBox.Show("Detected not compatible mods with Polish version of game: \n\n" + errors);
+                        MessageBox.Show("Detected not compatible mods with this version of game: \n\n" + errors);
                         return "";
                     }
                 }

@@ -938,7 +938,7 @@ namespace MassEffectModder
             List<string> mods = Misc.detectMods((MeType)gameId);
             if (mods.Count != 0 && gameId == 1 && (GameData.PolishME1Game || GameData.FullScanME1Game))
             {
-                errors = Environment.NewLine + "------- Detected not compatible mods with Polish version of game --------" + Environment.NewLine + Environment.NewLine;
+                errors = Environment.NewLine + "------- Detected not compatible mods with this version of game --------" + Environment.NewLine + Environment.NewLine;
                 for (int l = 0; l < mods.Count; l++)
                 {
                     errors += mods[l] + Environment.NewLine;
