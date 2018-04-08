@@ -36,6 +36,7 @@ namespace MassEffectModder
         static public List<string> packageFiles;
         static public List<string> tfcFiles;
         static public bool PolishME1Game = false;
+        static public bool FullScanME1Game = false;
 
         public bool DLCDataCacheDone = false;
 
@@ -334,6 +335,8 @@ namespace MassEffectModder
                     s.EndsWith(".sfm", StringComparison.OrdinalIgnoreCase)).ToList();
                 if (packageFiles.FindAll(s => s.Contains("_PLPC.")).Count() > 10)
                     PolishME1Game = true;
+                if (packageFiles.FindAll(s => s.Contains("_RA.")).Count() > 10)
+                    FullScanME1Game = true;
 
                 if (Directory.Exists(DLCData))
                 {

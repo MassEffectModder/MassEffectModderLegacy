@@ -246,7 +246,7 @@ namespace MassEffectModder
                     }
 
                     List<string> mods = Misc.detectMods(GameData.gameType);
-                    if (mods.Count != 0 && GameData.gameType == MeType.ME1_TYPE && GameData.PolishME1Game)
+                    if (mods.Count != 0 && GameData.gameType == MeType.ME1_TYPE && (GameData.PolishME1Game || GameData.FullScanME1Game))
                     {
                         errors = "";
                         for (int l = 0; l < mods.Count; l++)
@@ -274,27 +274,30 @@ namespace MassEffectModder
             if (File.Exists(filename))
                 File.Delete(filename);
 
-            GameData.packageFiles.Sort();
-            int count = GameData.packageFiles.Count;
-            for (int i = 0; i < count; i++)
+            if (!GameData.FullScanME1Game)
             {
-                if (GameData.packageFiles[i].Contains("_IT.") ||
-                    GameData.packageFiles[i].Contains("_FR.") ||
-                    GameData.packageFiles[i].Contains("_ES.") ||
-                    GameData.packageFiles[i].Contains("_DE.") ||
-                    GameData.packageFiles[i].Contains("_PLPC.") ||
-                    GameData.packageFiles[i].Contains("_DEU.") ||
-                    GameData.packageFiles[i].Contains("_FRA.") ||
-                    GameData.packageFiles[i].Contains("_ITA.") ||
-                    GameData.packageFiles[i].Contains("_POL."))
+                GameData.packageFiles.Sort();
+                int count = GameData.packageFiles.Count;
+                for (int i = 0; i < count; i++)
                 {
-                    GameData.packageFiles.Add(GameData.packageFiles[i]);
-                    GameData.packageFiles.RemoveAt(i--);
-                    count--;
+                    if (GameData.packageFiles[i].Contains("_IT.") ||
+                        GameData.packageFiles[i].Contains("_FR.") ||
+                        GameData.packageFiles[i].Contains("_ES.") ||
+                        GameData.packageFiles[i].Contains("_DE.") ||
+                        GameData.packageFiles[i].Contains("_PLPC.") ||
+                        GameData.packageFiles[i].Contains("_DEU.") ||
+                        GameData.packageFiles[i].Contains("_FRA.") ||
+                        GameData.packageFiles[i].Contains("_ITA.") ||
+                        GameData.packageFiles[i].Contains("_POL."))
+                    {
+                        GameData.packageFiles.Add(GameData.packageFiles[i]);
+                        GameData.packageFiles.RemoveAt(i--);
+                        count--;
+                    }
                 }
             }
 
-            if (!generateBuiltinMapFiles)
+            if (!generateBuiltinMapFiles && !GameData.FullScanME1Game)
             {
                 List<string> addedFiles = new List<string>();
                 List<string> modifiedFiles = new List<string>();
@@ -394,7 +397,10 @@ namespace MassEffectModder
             {
                 for (int i = 0; i < GameData.packageFiles.Count; i++)
                 {
-                    mainWindow.updateStatusLabel("Finding textures in package " + (i + 1) + " of " + GameData.packageFiles.Count + " - " + GameData.packageFiles[i]);
+                    if (installer != null)
+                        installer.updateProgressStatus("Scanning textures " + ((i + 1) * 100) / GameData.packageFiles.Count + "% ");
+                    if (mainWindow != null)
+                        mainWindow.updateStatusLabel("Finding textures in package " + (i + 1) + " of " + GameData.packageFiles.Count + " - " + GameData.packageFiles[i]);
                     FindTextures(textures, GameData.RelativeGameData(GameData.packageFiles[i]), false, ref log);
                 }
             }
