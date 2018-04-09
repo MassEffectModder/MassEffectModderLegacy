@@ -326,6 +326,16 @@ namespace MassEffectModder
             updateMEConfig(MeType.ME1_TYPE);
         }
 
+        private void updateLODSetME2MenuItem_Click(object sender, EventArgs e)
+        {
+            updateMEConfig(MeType.ME2_TYPE);
+        }
+
+        private void updateLODSetME3MenuItem_Click(object sender, EventArgs e)
+        {
+            updateMEConfig(MeType.ME3_TYPE);
+        }
+
         void removeTreeFile(MeType game)
         {
             enableGameDataMenu(false);

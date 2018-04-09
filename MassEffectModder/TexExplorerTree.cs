@@ -101,8 +101,8 @@ namespace MassEffectModder
                             matched.slave = true;
                             matched.basePackageName = fs.ReadStringASCIINull();
                         }
-                        matched.removeEmptyMips = fs.ReadByte() != 0;
                     }
+                    matched.removeEmptyMips = fs.ReadByte() != 0;
                     matched.numMips = fs.ReadByte();
                     matched.path = pkgs[fs.ReadInt16()];
                     matched.packageName = Path.GetFileNameWithoutExtension(matched.path).ToUpper();
@@ -285,6 +285,7 @@ namespace MassEffectModder
                         GameData.packageFiles[i].Contains("_FR.") ||
                         GameData.packageFiles[i].Contains("_ES.") ||
                         GameData.packageFiles[i].Contains("_DE.") ||
+                        GameData.packageFiles[i].Contains("_RA.") ||
                         GameData.packageFiles[i].Contains("_PLPC.") ||
                         GameData.packageFiles[i].Contains("_DEU.") ||
                         GameData.packageFiles[i].Contains("_FRA.") ||
@@ -514,8 +515,8 @@ namespace MassEffectModder
                                 mem.WriteInt16((short)textures[i].list[k].linkToMaster);
                                 if (textures[i].list[k].linkToMaster != -1)
                                     mem.WriteStringASCIINull(textures[i].list[k].basePackageName);
-                                mem.WriteByte(textures[i].list[k].removeEmptyMips ? (byte)1 : (byte)0);
                             }
+                            mem.WriteByte(textures[i].list[k].removeEmptyMips ? (byte)1 : (byte)0);
                             mem.WriteByte((byte)textures[i].list[k].numMips);
                             mem.WriteInt16((short)pkgs.IndexOf(textures[i].list[k].path));
                         }
@@ -553,7 +554,7 @@ namespace MassEffectModder
                 }
             }
 
-            if (mainWindow != null && GameData.gameType == MeType.ME1_TYPE)
+            if (mainWindow != null)
             {
                 if (!generateBuiltinMapFiles)
                 {
@@ -627,14 +628,10 @@ namespace MassEffectModder
                     matchTexture.exportID = i;
                     matchTexture.path = packagePath;
                     matchTexture.packageName = texture.packageName;
+                    matchTexture.removeEmptyMips = texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty);
                     matchTexture.numMips = texture.mipMapsList.FindAll(s => s.storageType != Texture.StorageTypes.empty).Count;
                     if (GameData.gameType == MeType.ME1_TYPE)
                     {
-                        if (texture.properties.exists("LODGroup") &&
-                            texture.properties.getProperty("LODGroup").valueName == "TEXTUREGROUP_Character")
-                        {
-                            matchTexture.removeEmptyMips = texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty);
-                        }
                         matchTexture.basePackageName = texture.basePackageName;
                         matchTexture.slave = texture.slave;
                         matchTexture.weakSlave = texture.weakSlave;

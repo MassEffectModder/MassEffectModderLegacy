@@ -192,12 +192,8 @@ namespace MassEffectModder
 
                 package.DisposeCache();
 
-                if (GameData.gameType == MeType.ME1_TYPE)
-                    texture.properties.setByteValue("LODGroup", "TEXTUREGROUP_Character", "", 1025);
-                else if (GameData.gameType == MeType.ME3_TYPE)
-                    texture.properties.setByteValue("LODGroup", "TEXTUREGROUP_ShadowMap", "TextureGroup");
-                else
-                    texture.properties.setByteValue("LODGroup", "TEXTUREGROUP_LightAndShadowMap", "");
+                if (!texture.properties.exists("LODGroup"))
+                    texture.properties.setByteValue("LODGroup", "TEXTUREGROUP_Character", "TextureGroup", 1025);
 
                 if (cacheCprMipmaps == null)
                 {

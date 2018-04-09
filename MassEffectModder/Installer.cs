@@ -462,10 +462,6 @@ namespace MassEffectModder
                     {
                         if (prevProductV < 10 || prevProductV == 4352 || prevProductV == 16777472) // default before MEM v178
                             prevProductV = prevAlotV = prevMeuitmV = 0;
-                        if (prevAlotV != 0)
-                            allowInstall = false;
-                        else
-                            allowInstall = true;
                         return true;
                     }
                 }
@@ -1405,12 +1401,19 @@ namespace MassEffectModder
             customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
             cachePackageMgr.CloseAllWithSave(checkBoxOptionRepack.Checked);
 
-            if (!updateMode && gameId == 1)
+            if (!updateMode)
             {
                 customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
                 log += "Remove mipmaps started..." + Environment.NewLine;
-                errors += mipMaps.removeMipMapsME1(1, textures, null, this, false);
-                errors += mipMaps.removeMipMapsME1(2, textures, null, this, false);
+                if (gameId == 1)
+                {
+                    errors += mipMaps.removeMipMapsME1(1, textures, null, this, false);
+                    errors += mipMaps.removeMipMapsME1(2, textures, null, this, false);
+                }
+                else
+                {
+                    errors += mipMaps.removeMipMapsME2ME3(textures, null, this, checkBoxOptionRepack.Checked);
+                }
                 log += "Remove mipmaps finished" + Environment.NewLine + Environment.NewLine;
             }
             else
@@ -1467,7 +1470,6 @@ namespace MassEffectModder
             if (!exist)
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
             ConfIni engineConf = new ConfIni(path);
-            LODSettings.removeLOD((MeType)gameId, engineConf);
             LODSettings.updateLOD((MeType)gameId, engineConf);
             LODSettings.updateGFXSettings((MeType)gameId, engineConf, softShadowsModPath != "", meuitmMode);
             log += "Updating GFX settings finished" + Environment.NewLine + Environment.NewLine;
@@ -1538,13 +1540,10 @@ namespace MassEffectModder
             customLabelDesc.Text = "";
             buttonNormal.Visible = true;
 
-            if (gameId == 1)
-            {
-                log += "==========================================" + Environment.NewLine;
-                log += "LOD settings:" + Environment.NewLine;
-                LODSettings.readLOD((MeType)gameId, engineConf, ref log);
-                log += "==========================================" + Environment.NewLine;
-            }
+            log += "==========================================" + Environment.NewLine;
+            log += "LOD settings:" + Environment.NewLine;
+            LODSettings.readLOD((MeType)gameId, engineConf, ref log);
+            log += "==========================================" + Environment.NewLine;
 
             string filename = "install-log.txt";
             if (File.Exists(filename))
