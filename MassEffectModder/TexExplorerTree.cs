@@ -30,21 +30,22 @@ namespace MassEffectModder
 {
     public partial class TreeScan
     {
-        public List<FoundTexture> treeScan = null;
+        public const uint textureMapBinTag = 0x5054454D;
+        public const uint textureMapBinVersion = 2;
         private bool generateBuiltinMapFiles = false; // change to true to enable map files generation
+        public List<FoundTexture> treeScan = null;
+        List<string> pkgs;
 
-        static public void loadTexturesMap(MeType gameId, List<FoundTexture> textures)
+        public void loadTexturesMap(MeType gameId, List<FoundTexture> textures)
         {
             Stream fs;
             byte[] buffer = null;
-            List<string> pkgs;
             if (gameId == MeType.ME1_TYPE)
                 pkgs = Program.tablePkgsME1;
             else if (gameId == MeType.ME2_TYPE)
                 pkgs = Program.tablePkgsME2;
             else
                 pkgs = Program.tablePkgsME3;
-
             Assembly assembly = Assembly.GetExecutingAssembly();
             string[] resources = assembly.GetManifestResourceNames();
             for (int l = 0; l < resources.Length; l++)
@@ -106,34 +107,24 @@ namespace MassEffectModder
             }
         }
 
-        public string PrepareListOfTextures(TexExplorer texEplorer, MainWindow mainWindow, Installer installer, ref string log)
+        public string PrepareListOfTextures(MeType gameId, TexExplorer texEplorer, MainWindow mainWindow, Installer installer, ref string log)
         {
             string errors = "";
             treeScan = null;
-            List<string> pkgs;
             Misc.MD5FileEntry[] md5Entries;
-            if (GameData.gameType == MeType.ME1_TYPE)
-            {
-                pkgs = Program.tablePkgsME1;
+            if (gameId == MeType.ME1_TYPE)
                 md5Entries = Program.entriesME1;
-            }
-            else if (GameData.gameType == MeType.ME2_TYPE)
-            {
-                pkgs = Program.tablePkgsME2;
+            else if (gameId == MeType.ME2_TYPE)
                 md5Entries = Program.entriesME2;
-            }
             else
-            {
-                pkgs = Program.tablePkgsME3;
                 md5Entries = Program.entriesME3;
-            }
 
             List<FoundTexture> textures = new List<FoundTexture>();
             string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                     Assembly.GetExecutingAssembly().GetName().Name);
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
-            string filename = Path.Combine(path, "me" + (int)GameData.gameType + "map.bin");
+            string filename = Path.Combine(path, "me" + (int)gameId + "map.bin");
 
             if (mainWindow != null)
             {
@@ -260,9 +251,6 @@ namespace MassEffectModder
                 Misc.startTimer();
             }
 
-            if (File.Exists(filename))
-                File.Delete(filename);
-
             if (!GameData.FullScanME1Game)
             {
                 GameData.packageFiles.Sort();
@@ -292,7 +280,7 @@ namespace MassEffectModder
                 List<string> addedFiles = new List<string>();
                 List<string> modifiedFiles = new List<string>();
 
-                loadTexturesMap(GameData.gameType, textures);
+	            loadTexturesMap(gameId, textures);
 
                 List<string> sortedFiles = new List<string>();
                 for (int i = 0; i < GameData.packageFiles.Count; i++)
@@ -352,7 +340,7 @@ namespace MassEffectModder
                         installer.updateProgressStatus("Scanning textures " + ((currentPackage + 1) * 100) / totalPackages + "% ");
                     if (mainWindow != null)
                         mainWindow.updateStatusLabel("Finding textures in package " + (currentPackage + 1) + " of " + totalPackages + " - " + modifiedFiles[i]);
-                    errors += FindTextures(textures, modifiedFiles[i], true, ref log);
+                    errors += FindTextures(gameId, textures, modifiedFiles[i], true, ref log);
                 }
 
                 for (int i = 0; i < addedFiles.Count; i++, currentPackage++)
@@ -361,7 +349,7 @@ namespace MassEffectModder
                         installer.updateProgressStatus("Scanning textures " + ((currentPackage + 1) * 100) / totalPackages + "% ");
                     if (mainWindow != null)
                         mainWindow.updateStatusLabel("Finding textures in package " + (currentPackage + 1) + " of " + totalPackages + " - " + addedFiles[i]);
-                    errors += FindTextures(textures, addedFiles[i], false, ref log);
+                    errors += FindTextures(gameId, textures, addedFiles[i], false, ref log);
                 }
 
                 for (int k = 0; k < textures.Count; k++)
@@ -391,11 +379,11 @@ namespace MassEffectModder
                         installer.updateProgressStatus("Scanning textures " + ((i + 1) * 100) / GameData.packageFiles.Count + "% ");
                     if (mainWindow != null)
                         mainWindow.updateStatusLabel("Finding textures in package " + (i + 1) + " of " + GameData.packageFiles.Count + " - " + GameData.packageFiles[i]);
-                    FindTextures(textures, GameData.RelativeGameData(GameData.packageFiles[i]), false, ref log);
+                    FindTextures(gameId, textures, GameData.RelativeGameData(GameData.packageFiles[i]), false, ref log);
                 }
             }
 
-            if (GameData.gameType == MeType.ME1_TYPE)
+            if (gameId == MeType.ME1_TYPE)
             {
                 for (int k = 0; k < textures.Count; k++)
                 {
@@ -465,11 +453,15 @@ namespace MassEffectModder
                 }
             }
 
+
+            if (File.Exists(filename))
+                File.Delete(filename);
+
             using (FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
             {
                 MemoryStream mem = new MemoryStream();
-                mem.WriteUInt32(TexExplorer.textureMapBinTag);
-                mem.WriteUInt32(TexExplorer.textureMapBinVersion);
+                mem.WriteUInt32(textureMapBinTag);
+                mem.WriteUInt32(textureMapBinVersion);
                 mem.WriteInt32(textures.Count);
 
                 for (int i = 0; i < textures.Count; i++)
@@ -575,7 +567,7 @@ namespace MassEffectModder
             return errors;
         }
 
-        private string FindTextures(List<FoundTexture> textures, string packagePath, bool modified, ref string log)
+        private string FindTextures(MeType gameId, List<FoundTexture> textures, string packagePath, bool modified, ref string log)
         {
             string errors = "";
             Package package = null;
@@ -590,7 +582,7 @@ namespace MassEffectModder
                     return errors;
                 string err = "";
                 err += "---- Start --------------------------------------------" + Environment.NewLine;
-                err += "Issue with open package file: " + packagePath + Environment.NewLine;
+                err += "Issue opening package file: " + packagePath + Environment.NewLine;
                 err += e.Message + Environment.NewLine + Environment.NewLine;
                 err += e.StackTrace + Environment.NewLine + Environment.NewLine;
                 err += "---- End ----------------------------------------------" + Environment.NewLine + Environment.NewLine;

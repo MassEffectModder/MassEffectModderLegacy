@@ -103,23 +103,26 @@ namespace MassEffectModder
             return list;
         }
 
-        public string removeMipMapsME1(int phase, List<FoundTexture> textures, MainWindow mainWindow, Installer installer, bool forceZlib = false)
+        public string removeMipMapsME1(int phase, List<FoundTexture> textures, MainWindow mainWindow, Installer installer)
         {
             string errors = "";
-
             List<RemoveMipsEntry> list = prepareListToRemove(textures);
+            string path = @"\BioGame\CookedPC\testVolumeLight_VFX.upk";
             for (int i = 0; i < list.Count; i++)
             {
-                bool modified = false;
+                if (path == list[i].pkgPath)
+                    continue;
+
                 if (installer != null)
-                    installer.updateProgressStatus("Removing empty mipmaps " + ((list.Count * (phase - 1) + i + 1) * 100 / (list.Count * 2)) + "% ");
+                    installer.updateProgressStatus("Removing empty mipmaps " + ((list.Count * (phase - 1) + i + 1) * 100 / (list.Count * 2)) + "%");
                 if (mainWindow != null)
                 {
                     mainWindow.updateStatusLabel("Removing empty mipmaps (" + phase + ") - package " + (i + 1) + " of " + list.Count + " - " + list[i].pkgPath);
                     mainWindow.updateStatusLabel2("");
                 }
-                Package package = null;
 
+                bool modified = false;
+                Package package = null;
                 try
                 {
                     package = new Package(GameData.GamePath + list[i].pkgPath, true);
@@ -130,7 +133,7 @@ namespace MassEffectModder
                         return errors;
                     string err = "";
                     err += "---- Start --------------------------------------------" + Environment.NewLine;
-                    err += "Issue with open package file: " + GameData.GamePath + list[i].pkgPath + Environment.NewLine;
+            		err += "Issue opening package file: " + list[i].pkgPath + Environment.NewLine;
                     err += e.Message + Environment.NewLine + Environment.NewLine;
                     err += e.StackTrace + Environment.NewLine + Environment.NewLine;
                     err += "---- End ----------------------------------------------" + Environment.NewLine + Environment.NewLine;
@@ -226,37 +229,43 @@ skip:
                 }
                 if (modified)
                 {
-                    if (package.compressed && package.compressionType != Package.CompressionType.Zlib)
-                        package.SaveToFile(true, false, installer != null);
-                    else
-                        package.SaveToFile(false, false, installer != null);
+                    package.SaveToFile(false, false, installer != null);
                 }
                 else
                 {
                     package.Dispose();
+					if (installer != null)
+	                    AddMarkerToPackages(GameData.GamePath + list[i].pkgPath);
                 }
                 package.Dispose();
             }
             return errors;
         }
 
-        public string removeMipMapsME2ME3(List<FoundTexture> textures, MainWindow mainWindow, Installer installer, bool forceZlib = false)
+        public string removeMipMapsME2ME3(List<FoundTexture> textures, MainWindow mainWindow, Installer installer, bool repack = false)
         {
             string errors = "";
-
             List<RemoveMipsEntry> list = prepareListToRemove(textures);
+            string path = "";
+            if (GameData.gameType == MeType.ME2_TYPE)
+            {
+                path = GameData.GamePath + @"\BioGame\CookedPC\BIOC_Materials.pcc";
+            }
             for (int i = 0; i < list.Count; i++)
             {
-                bool modified = false;
+                if (path == list[i].pkgPath)
+                    continue;
+
                 if (installer != null)
-                    installer.updateProgressStatus("Removing empty mipmaps " + ((i + 1) * 100 / list.Count * 2) + "% ");
+                    installer.updateProgressStatus("Removing empty mipmaps " + ((i + 1) * 100 / list.Count * 2) + "%");
                 if (mainWindow != null)
                 {
                     mainWindow.updateStatusLabel("Removing empty mipmaps - package " + (i + 1) + " of " + list.Count + " - " + list[i].pkgPath);
                     mainWindow.updateStatusLabel2("");
                 }
-                Package package = null;
 
+                bool modified = false;
+                Package package = null;
                 try
                 {
                     package = new Package(GameData.GamePath + list[i].pkgPath, true);
@@ -267,7 +276,7 @@ skip:
                         return errors;
                     string err = "";
                     err += "---- Start --------------------------------------------" + Environment.NewLine;
-                    err += "Issue with open package file: " + GameData.GamePath + list[i].pkgPath + Environment.NewLine;
+                    err += "Issue opening package file: " + list[i].pkgPath + Environment.NewLine;
                     err += e.Message + Environment.NewLine + Environment.NewLine;
                     err += e.StackTrace + Environment.NewLine + Environment.NewLine;
                     err += "---- End ----------------------------------------------" + Environment.NewLine + Environment.NewLine;
@@ -303,14 +312,15 @@ skip:
                 }
                 if (modified)
                 {
-                    if (package.compressed && package.compressionType != Package.CompressionType.Zlib)
-                        package.SaveToFile(true, false, installer != null);
-                    else
-                        package.SaveToFile(false, false, installer != null);
+                    package.SaveToFile(repack, false, installer != null);
+                    if (repack && Installer.pkgsToRepack != null)
+                        Installer.pkgsToRepack.Remove(package.packagePath);
                 }
                 else
                 {
                     package.Dispose();
+					if (installer != null)
+	                    AddMarkerToPackages(GameData.GamePath + list[i].pkgPath);
                 }
                 package.Dispose();
             }

@@ -74,6 +74,7 @@ namespace MassEffectModder
         CustomLabel customLabelDesc;
         CustomLabel customLabelCurrentStatus;
         CustomLabel customLabelFinalStatus;
+        static public List<string> pkgsToRepack = null;
 
         public Installer()
         {
@@ -1382,10 +1383,19 @@ namespace MassEffectModder
                 }
                 log += Environment.NewLine;
 
+                if (checkBoxOptionRepack.Checked)
+                {
+                    pkgsToRepack = new List<string>();
+                    for (int i = 0; i < GameData.packageFiles.Count; i++)
+                    {
+                        pkgsToRepack.Add(GameData.packageFiles[i]);
+                    }
+                }
+
                 customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
 
                 log += "Scan textures started..." + Environment.NewLine;
-                errors += treeScan.PrepareListOfTextures(null, null, this, ref log);
+                errors += treeScan.PrepareListOfTextures(GameData.gameType, null, null, this, ref log);
                 textures = treeScan.treeScan;
                 log += "Scan textures finished" + Environment.NewLine + Environment.NewLine;
             }
@@ -1412,8 +1422,8 @@ namespace MassEffectModder
                 log += "Remove mipmaps started..." + Environment.NewLine;
                 if (gameId == 1)
                 {
-                    errors += mipMaps.removeMipMapsME1(1, textures, null, this, false);
-                    errors += mipMaps.removeMipMapsME1(2, textures, null, this, false);
+                    errors += mipMaps.removeMipMapsME1(1, textures, null, this);
+                    errors += mipMaps.removeMipMapsME1(2, textures, null, this);
                 }
                 else
                 {
@@ -1430,21 +1440,18 @@ namespace MassEffectModder
             {
                 customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
                 log += "Repack started..." + Environment.NewLine;
-                string pkg = "";
-                if (gameId == (int)MeType.ME2_TYPE)
-                    pkg = @"\BioGame\CookedPC\BIOC_Materials.pcc".ToLowerInvariant();
-                for (int i = 0; i < GameData.packageFiles.Count; i++)
+                if (GameData.gameType == MeType.ME2_TYPE)
+                    pkgsToRepack.Remove(GameData.GamePath + @"\BioGame\CookedPC\BIOC_Materials.pcc");
+                for (int i = 0; i < pkgsToRepack.Count; i++)
                 {
-                    if (pkg != "" && GameData.packageFiles[i].ToLowerInvariant().Contains(pkg))
-                        continue;
                     updateProgressStatus("Repack game files " + ((i + 1) * 100 / GameData.packageFiles.Count) + "%");
                     try
                     {
-                        Package package = new Package(GameData.packageFiles[i], true, true);
+                        Package package = new Package(pkgsToRepack[i], true, true);
                         if (!package.compressed || package.compressed && package.compressionType != Package.CompressionType.Zlib)
                         {
                             package.Dispose();
-                            package = new Package(GameData.packageFiles[i]);
+                            package = new Package(pkgsToRepack[i]);
                             package.SaveToFile(true);
                         }
                         package.Dispose();

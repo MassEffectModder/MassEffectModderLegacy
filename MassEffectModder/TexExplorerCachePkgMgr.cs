@@ -97,6 +97,8 @@ namespace MassEffectModder
 
                 pkg.SaveToFile(repack, false, appendMarker);
                 pkg.Dispose();
+                if (repack && Installer.pkgsToRepack != null)
+                    Installer.pkgsToRepack.Remove(pkg.packagePath);
             }
 
             if (GameData.gameType == MeType.ME3_TYPE)

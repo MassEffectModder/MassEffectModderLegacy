@@ -904,7 +904,7 @@ namespace MassEffectModder
             string[] files = null;
             List<FoundTexture> textures = new List<FoundTexture>();
 
-            TreeScan.loadTexturesMap(GameData.gameType, textures);
+            new TreeScan().loadTexturesMap(GameData.gameType, textures);
 
             List<string> list;
             List<string> list2;

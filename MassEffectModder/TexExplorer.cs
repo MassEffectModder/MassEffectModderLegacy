@@ -179,7 +179,7 @@ namespace MassEffectModder
                 string log = "";
                 _mainWindow.updateStatusLabel("");
                 _mainWindow.updateStatusLabel("Preparing tree...");
-                errors += treeScan.PrepareListOfTextures(this, _mainWindow, null, ref log);
+                errors += treeScan.PrepareListOfTextures(GameData.gameType, this, _mainWindow, null, ref log);
                 _textures = treeScan.treeScan;
                 if (errors != "")
                 {
@@ -932,7 +932,7 @@ namespace MassEffectModder
                     if (diskUsage < diskFreeSpace)
                     {
                         List<FoundTexture> textures = new List<FoundTexture>();
-                        TreeScan.loadTexturesMap(GameData.gameType, textures);
+                        new TreeScan().loadTexturesMap(GameData.gameType, textures);
 
                         Misc.startTimer();
                         richTextBoxInfo.Text = "";
@@ -1169,7 +1169,7 @@ namespace MassEffectModder
             string memDir = "";
 
             List<FoundTexture> textures = new List<FoundTexture>();
-            TreeScan.loadTexturesMap(GameData.gameType, textures);
+            new TreeScan().loadTexturesMap(GameData.gameType, textures);
 
             if (batch)
             {
