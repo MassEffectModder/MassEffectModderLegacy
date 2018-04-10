@@ -39,12 +39,7 @@ namespace MassEffectModder
             byte[] buffer = null;
             List<string> pkgs;
             if (gameId == MeType.ME1_TYPE)
-            {
-                if (GameData.PolishME1Game)
-                    pkgs = Program.tablePkgsME1PL;
-                else
-                    pkgs = Program.tablePkgsME1;
-            }
+                pkgs = Program.tablePkgsME1;
             else if (gameId == MeType.ME2_TYPE)
                 pkgs = Program.tablePkgsME2;
             else
@@ -54,8 +49,7 @@ namespace MassEffectModder
             string[] resources = assembly.GetManifestResourceNames();
             for (int l = 0; l < resources.Length; l++)
             {
-                if ((GameData.PolishME1Game && resources[l].Contains("me1map-pl.bin") && gameId == MeType.ME1_TYPE) ||
-                   (!GameData.PolishME1Game && resources[l].Contains("me" + (int)gameId + "map.bin")))
+                if (resources[l].Contains("me" + (int)gameId + "map.bin"))
                 {
                     using (Stream s = Assembly.GetEntryAssembly().GetManifestResourceStream(resources[l]))
                     {
@@ -120,16 +114,8 @@ namespace MassEffectModder
             Misc.MD5FileEntry[] md5Entries;
             if (GameData.gameType == MeType.ME1_TYPE)
             {
-                if (GameData.PolishME1Game)
-                {
-                    pkgs = Program.tablePkgsME1PL;
-                    md5Entries = Program.entriesME1PL;
-                }
-                else
-                {
-                    pkgs = Program.tablePkgsME1;
-                    md5Entries = Program.entriesME1;
-                }
+                pkgs = Program.tablePkgsME1;
+                md5Entries = Program.entriesME1;
             }
             else if (GameData.gameType == MeType.ME2_TYPE)
             {
@@ -247,15 +233,17 @@ namespace MassEffectModder
                     }
 
                     List<string> mods = Misc.detectMods(GameData.gameType);
-                    if (mods.Count != 0 && GameData.gameType == MeType.ME1_TYPE && (GameData.PolishME1Game || GameData.FullScanME1Game))
+                    if (mods.Count != 0 && GameData.gameType == MeType.ME1_TYPE && GameData.FullScanME1Game)
                     {
                         errors = "";
                         for (int l = 0; l < mods.Count; l++)
                         {
                             errors += mods[l] + Environment.NewLine;
                         }
-                        MessageBox.Show("Detected not compatible mods with this version of game: \n\n" + errors);
-                        return "";
+                        DialogResult resp = MessageBox.Show("Detected NOT compatible/supported mods with this version of game: \n\n" + errors +
+                            "\n\nPress Cancel to abort or press Ok button to continue.", "Warning !", MessageBoxButtons.OKCancel);
+                        if (resp == DialogResult.Cancel)
+                            return "";
                     }
                 }
 

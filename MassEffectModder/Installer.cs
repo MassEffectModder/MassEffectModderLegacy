@@ -932,9 +932,9 @@ namespace MassEffectModder
 
 
             List<string> mods = Misc.detectMods((MeType)gameId);
-            if (mods.Count != 0 && gameId == 1 && (GameData.PolishME1Game || GameData.FullScanME1Game))
+            if (mods.Count != 0 && gameId == 1 && GameData.FullScanME1Game)
             {
-                errors = Environment.NewLine + "------- Detected not compatible mods with this version of game --------" + Environment.NewLine + Environment.NewLine;
+                errors = Environment.NewLine + "------- Detected NOT supported mods with this version of game --------" + Environment.NewLine + Environment.NewLine;
                 for (int l = 0; l < mods.Count; l++)
                 {
                     errors += mods[l] + Environment.NewLine;
@@ -950,9 +950,14 @@ namespace MassEffectModder
                 }
                 Process.Start(filename);
 
-                customLabelFinalStatus.Text = "Detected not compatible mod, aborting...";
-                customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
-                return false;
+                DialogResult resp = MessageBox.Show("Detected NOT compatible/supported mods with this version of game!" +
+                    "\n\nPress Cancel to abort or press Ok button to continue.", "Warning !", MessageBoxButtons.OKCancel);
+                if (resp == DialogResult.Cancel)
+                {
+                    customLabelFinalStatus.Text = "Detected NOT supported mod...";
+                    customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
+                    return false;
+                }
             }
 
             List<string> brokenMods = Misc.detectBrokenMod((MeType)gameId);
