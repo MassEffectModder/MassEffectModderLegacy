@@ -1002,13 +1002,9 @@ namespace MassEffectModder
             if (gameId != 3 || !unpackDLC || (updateMode && gameId == 3))
                 totalStages -= 1;
 
-            // scan textures
+            // scan textures && remove empty mipmaps
             if (updateMode)
-                totalStages -= 1;
-
-            // remove empty mipmaps
-            if (updateMode || gameId != 1)
-                totalStages -= 1;
+                totalStages -= 2;
 
             // recompress game files
             if (!checkBoxOptionRepack.Checked)
