@@ -35,38 +35,6 @@ namespace MassEffectModder
             public List<int> exportIDs;
         }
 
-        public void AddMarkerToPackages(string packagePath)
-        {
-            string path = "";
-            if (GameData.gameType == MeType.ME1_TYPE)
-            {
-                path = @"\BioGame\CookedPC\testVolumeLight_VFX.upk".ToLowerInvariant();
-            }
-            if (GameData.gameType == MeType.ME2_TYPE)
-            {
-                path = @"\BioGame\CookedPC\BIOC_Materials.pcc".ToLowerInvariant();
-            }
-            if (path != "" && packagePath.ToLowerInvariant().Contains(path))
-                return;
-            try
-            {
-                using (FileStream fs = new FileStream(packagePath, FileMode.Open, FileAccess.ReadWrite))
-                {
-                    fs.SeekEnd();
-                    fs.Seek(-Package.MEMendFileMarker.Length, SeekOrigin.Current);
-                    string marker = fs.ReadStringASCII(Package.MEMendFileMarker.Length);
-                    if (marker != Package.MEMendFileMarker)
-                    {
-                        fs.SeekEnd();
-                        fs.WriteStringASCII(Package.MEMendFileMarker);
-                    }
-                }
-            }
-            catch
-            {
-            }
-        }
-
         public List<RemoveMipsEntry> prepareListToRemove(List<FoundTexture> textures)
         {
             List<RemoveMipsEntry> list = new List<RemoveMipsEntry>();
@@ -121,7 +89,6 @@ namespace MassEffectModder
                     mainWindow.updateStatusLabel2("");
                 }
 
-                bool modified = false;
                 Package package = null;
                 try
                 {
@@ -133,7 +100,7 @@ namespace MassEffectModder
                         return errors;
                     string err = "";
                     err += "---- Start --------------------------------------------" + Environment.NewLine;
-            		err += "Issue opening package file: " + list[i].pkgPath + Environment.NewLine;
+                    err += "Issue opening package file: " + list[i].pkgPath + Environment.NewLine;
                     err += e.Message + Environment.NewLine + Environment.NewLine;
                     err += e.StackTrace + Environment.NewLine + Environment.NewLine;
                     err += "---- End ----------------------------------------------" + Environment.NewLine + Environment.NewLine;
@@ -224,20 +191,11 @@ skip:
                             newData.WriteFromBuffer(texture.toArray(package.exportsTable[exportID].dataOffset + (uint)newData.Position));
                             package.setExportData(exportID, newData.ToArray());
                         }
-                        modified = true;
                     }
                 }
-                if (modified)
-                {
-                    package.SaveToFile(false, false, installer != null);
-                }
-                else
-                {
-                    package.Dispose();
-					if (installer != null)
-	                    AddMarkerToPackages(GameData.GamePath + list[i].pkgPath);
-                }
+                package.SaveToFile(false, false, installer != null);
                 package.Dispose();
+
             }
             return errors;
         }
@@ -264,7 +222,6 @@ skip:
                     mainWindow.updateStatusLabel2("");
                 }
 
-                bool modified = false;
                 Package package = null;
                 try
                 {
@@ -307,27 +264,12 @@ skip:
                             newData.WriteFromBuffer(texture.toArray(package.exportsTable[exportID].dataOffset + (uint)newData.Position));
                             package.setExportData(exportID, newData.ToArray());
                         }
-                        modified = true;
                     }
                 }
-                if (modified)
-                {
-                    package.SaveToFile(repack, false, installer != null);
-                    if (repack && Installer.pkgsToRepack != null)
-                        Installer.pkgsToRepack.Remove(package.packagePath);
-                }
-                else
-                {
-                    package.Dispose();
-					if (installer != null)
-	                    AddMarkerToPackages(GameData.GamePath + list[i].pkgPath);
-                }
+                package.SaveToFile(repack, false, installer != null);
                 package.Dispose();
             }
-            if (GameData.gameType == MeType.ME3_TYPE)
-            {
-                TOCBinFile.UpdateAllTOCBinFiles();
-            }
+
             return errors;
         }
 

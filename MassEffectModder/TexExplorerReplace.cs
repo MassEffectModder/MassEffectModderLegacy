@@ -579,6 +579,9 @@ namespace MassEffectModder
 
                 cachePackageMgr.CloseAllWithSave(false, false);
 
+                if (GameData.gameType == MeType.ME3_TYPE)
+                    TOCBinFile.UpdateAllTOCBinFiles();
+
                 for (int t = 0; t < node.textures[index].list.Count; t++)
                 {
                     if (node.textures[index].list[t].path == "")

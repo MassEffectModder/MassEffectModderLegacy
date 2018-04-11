@@ -101,9 +101,6 @@ namespace MassEffectModder
                     Installer.pkgsToRepack.Remove(pkg.packagePath);
             }
 
-            if (GameData.gameType == MeType.ME3_TYPE)
-                TOCBinFile.UpdateAllTOCBinFiles();
-
             if (mainWindow != null)
                 mainWindow.updateStatusLabel2("");
             packages.Clear();

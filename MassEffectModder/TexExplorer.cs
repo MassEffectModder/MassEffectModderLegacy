@@ -812,6 +812,9 @@ namespace MassEffectModder
                 _mainWindow.updateStatusLabel("");
                 cachePackageMgr.CloseAllWithSave(false, false);
 
+                if (GameData.gameType == MeType.ME3_TYPE)
+                    TOCBinFile.UpdateAllTOCBinFiles();
+
                 if (verify)
                 {
                     errors = "";
