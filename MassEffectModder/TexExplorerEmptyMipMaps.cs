@@ -257,7 +257,7 @@ skip:
                     continue;
 
                 if (installer != null)
-                    installer.updateProgressStatus("Removing empty mipmaps " + ((i + 1) * 100 / list.Count * 2) + "%");
+                    installer.updateProgressStatus("Removing empty mipmaps " + (i + 1) * 100 / list.Count + "%");
                 if (mainWindow != null)
                 {
                     mainWindow.updateStatusLabel("Removing empty mipmaps - package " + (i + 1) + " of " + list.Count + " - " + list[i].pkgPath);
