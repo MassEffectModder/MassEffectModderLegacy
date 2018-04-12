@@ -193,7 +193,11 @@ skip:
                         }
                     }
                 }
-                package.SaveToFile(false, false, installer != null);
+                if (package.SaveToFile(false, false, installer != null))
+                {
+                    if (installer != null && Installer.pkgsToMarker != null)
+                        Installer.pkgsToMarker.Remove(package.packagePath);
+                }
                 package.Dispose();
 
             }
@@ -266,7 +270,13 @@ skip:
                         }
                     }
                 }
-                package.SaveToFile(repack, false, installer != null);
+                if (package.SaveToFile(repack, false, installer != null))
+                {
+                    if (repack && Installer.pkgsToRepack != null)
+                        Installer.pkgsToRepack.Remove(package.packagePath);
+                    if (installer != null && Installer.pkgsToMarker != null)
+                        Installer.pkgsToMarker.Remove(package.packagePath);
+                }
                 package.Dispose();
             }
 

@@ -1142,6 +1142,9 @@ namespace MassEffectModder
             if (packageFileVersion == packageFileVersionME1)
                 forceCompressed = false;
 
+            if (!modified && !forceDecompressed && !forceCompressed)
+                return false;
+
             if (forceCompressed && forceDecompressed)
                 throw new Exception("force de/compression can't be both enabled!");
 
@@ -1149,28 +1152,14 @@ namespace MassEffectModder
             if (forceCompressed)
                 targetCompression = CompressionType.Zlib;
 
-            if (!appendMarker || (!modified && !forceDecompressed && !forceCompressed))
+            if (!appendMarker)
             {
                 packageStream.SeekEnd();
                 packageStream.Seek(-MEMendFileMarker.Length, SeekOrigin.Current);
                 string marker = packageStream.ReadStringASCII(MEMendFileMarker.Length);
                 if (marker == MEMendFileMarker)
                     appendMarker = true;
-                if ((!modified && !forceDecompressed && !forceCompressed) &&
-                    (appendMarker && marker != MEMendFileMarker))
-                {
-                    packageStream.Close();
-                    using (FileStream fs = new FileStream(packagePath, FileMode.Open, FileAccess.Write))
-                    {
-                        fs.SeekEnd();
-                        fs.WriteStringASCII(MEMendFileMarker);
-                    }
-                    return true;
-                }
             }
-
-            if (!modified && !forceDecompressed && !forceCompressed)
-                return false;
 
             MemoryStream tempOutput = new MemoryStream();
             tempOutput.Write(packageHeader, 0, packageHeader.Length);

@@ -95,10 +95,14 @@ namespace MassEffectModder
                 }
                 skipCounter++;
 
-                pkg.SaveToFile(repack, false, appendMarker);
+                if (pkg.SaveToFile(repack, false, appendMarker))
+                {
+                    if (repack && Installer.pkgsToRepack != null)
+                        Installer.pkgsToRepack.Remove(pkg.packagePath);
+                    if (appendMarker && Installer.pkgsToMarker != null)
+                        Installer.pkgsToMarker.Remove(pkg.packagePath);
+                }
                 pkg.Dispose();
-                if (repack && Installer.pkgsToRepack != null)
-                    Installer.pkgsToRepack.Remove(pkg.packagePath);
             }
 
             if (mainWindow != null)

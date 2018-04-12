@@ -75,6 +75,7 @@ namespace MassEffectModder
         CustomLabel customLabelCurrentStatus;
         CustomLabel customLabelFinalStatus;
         static public List<string> pkgsToRepack = null;
+        static public List<string> pkgsToMarker = null;
 
         public Installer()
         {
@@ -522,6 +523,30 @@ namespace MassEffectModder
             }
 
             return true;
+        }
+
+        static public void AddMarkers(MeType gameType)
+        {
+            for (int i = 0; i < pkgsToMarker.Count; i++)
+            {
+                try
+                {
+                    using (FileStream fs = new FileStream(pkgsToMarker[i], FileMode.Open, FileAccess.ReadWrite))
+                    {
+                        fs.SeekEnd();
+                        fs.Seek(-Package.MEMendFileMarker.Length, SeekOrigin.Current);
+                        string marker = fs.ReadStringASCII(Package.MEMendFileMarker.Length);
+                        if (marker != Package.MEMendFileMarker)
+                        {
+                            fs.SeekEnd();
+                            fs.WriteStringASCII(Package.MEMendFileMarker);
+                        }
+                    }
+                }
+                catch
+                {
+                }
+            }
         }
 
         private bool installSoftShadowsMod(GameData gameData, string path)
@@ -1339,6 +1364,16 @@ namespace MassEffectModder
                 }
                 log += Environment.NewLine;
 
+                pkgsToMarker = new List<string>();
+                for (int i = 0; i < GameData.packageFiles.Count; i++)
+                {
+                    pkgsToMarker.Add(GameData.packageFiles[i]);
+                }
+                if (GameData.gameType == MeType.ME1_TYPE)
+                    pkgsToMarker.Remove(GameData.GamePath + @"\BioGame\CookedPC\testVolumeLight_VFX.upk");
+                if (GameData.gameType == MeType.ME2_TYPE)
+                    pkgsToMarker.Remove(GameData.GamePath + @"\BioGame\CookedPC\BIOC_Materials.pcc");
+
                 if (checkBoxOptionRepack.Checked)
                 {
                     pkgsToRepack = new List<string>();
@@ -1346,6 +1381,10 @@ namespace MassEffectModder
                     {
                         pkgsToRepack.Add(GameData.packageFiles[i]);
                     }
+                    if (GameData.gameType == MeType.ME1_TYPE)
+                        pkgsToRepack.Remove(GameData.GamePath + @"\BioGame\CookedPC\testVolumeLight_VFX.upk");
+                    if (GameData.gameType == MeType.ME2_TYPE)
+                        pkgsToRepack.Remove(GameData.GamePath + @"\BioGame\CookedPC\BIOC_Materials.pcc");
                 }
 
                 customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
@@ -1408,7 +1447,8 @@ namespace MassEffectModder
                         {
                             package.Dispose();
                             package = new Package(pkgsToRepack[i]);
-                            package.SaveToFile(true);
+                            if (package.SaveToFile(true))
+                                pkgsToMarker.Remove(package.packagePath);
                         }
                         package.Dispose();
                     }
@@ -1426,11 +1466,14 @@ namespace MassEffectModder
                 log += "Repack skipped" + Environment.NewLine + Environment.NewLine;
             }
 
-            if (GameData.gameType == MeType.ME3_TYPE)
-                TOCBinFile.UpdateAllTOCBinFiles();
+            if (!updateMode)
+                AddMarkers((MeType)gameId);
 
             if (!applyModTag(gameId, MeuitmVer, 0))
                 errors += "Failed applying stamp for installation!\n";
+
+            if (GameData.gameType == MeType.ME3_TYPE)
+                TOCBinFile.UpdateAllTOCBinFiles();
 
             log += "Updating GFX settings started..." + Environment.NewLine;
             string path = gameData.EngineConfigIniPath;
