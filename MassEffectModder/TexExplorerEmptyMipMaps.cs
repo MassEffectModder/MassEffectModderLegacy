@@ -71,9 +71,10 @@ namespace MassEffectModder
             return list;
         }
 
-        public string removeMipMapsME1(int phase, List<FoundTexture> textures, MainWindow mainWindow, Installer installer)
+        public string removeMipMapsME1(int phase, List<FoundTexture> textures, MainWindow mainWindow, Installer installer, bool ipc)
         {
             string errors = "";
+            int lastProgress = -1;
             List<RemoveMipsEntry> list = prepareListToRemove(textures);
             string path = @"\BioGame\CookedPC\testVolumeLight_VFX.upk";
             for (int i = 0; i < list.Count; i++)
@@ -88,7 +89,16 @@ namespace MassEffectModder
                     mainWindow.updateStatusLabel("Removing empty mipmaps (" + phase + ") - package " + (i + 1) + " of " + list.Count + " - " + list[i].pkgPath);
                     mainWindow.updateStatusLabel2("");
                 }
-
+				if (ipc)
+				{
+					int newProgress = (list.Count * (phase - 1) + i + 1) * 100 / (list.Count * 2);
+	                if (lastProgress != newProgress)
+	                {
+	                    Console.WriteLine("[IPC]TASK_PROGRESS " + newProgress);
+	                    Console.Out.Flush();
+	                    lastProgress = newProgress;
+	                }
+				}
                 Package package = null;
                 try
                 {
@@ -98,13 +108,21 @@ namespace MassEffectModder
                 {
                     if (e.Message.Contains("Problem with PCC file header:"))
                         return errors;
-                    string err = "";
-                    err += "---- Start --------------------------------------------" + Environment.NewLine;
-                    err += "Issue opening package file: " + list[i].pkgPath + Environment.NewLine;
-                    err += e.Message + Environment.NewLine + Environment.NewLine;
-                    err += e.StackTrace + Environment.NewLine + Environment.NewLine;
-                    err += "---- End ----------------------------------------------" + Environment.NewLine + Environment.NewLine;
-                    errors += err;
+                    if (ipc)
+                    {
+                        Console.WriteLine("[IPC]ERROR Issue opening package file: " + list[i].pkgPath);
+                        Console.Out.Flush();
+                    }
+                    else
+                    {
+                        string err = "";
+                        err += "---- Start --------------------------------------------" + Environment.NewLine;
+                        err += "Issue opening package file: " + list[i].pkgPath + Environment.NewLine;
+                        err += e.Message + Environment.NewLine + Environment.NewLine;
+                        err += e.StackTrace + Environment.NewLine + Environment.NewLine;
+                        err += "---- End ----------------------------------------------" + Environment.NewLine + Environment.NewLine;
+                    	errors += err;
+					}
                     continue;
                 }
 
@@ -145,7 +163,15 @@ namespace MassEffectModder
                         }
                         if (foundListEntry == -1)
                         {
+                            if (ipc)
+                            {
+                                Console.WriteLine("[IPC]ERROR Texture " + package.exportsTable[exportID].objectName + " not found in package: " + list[i].pkgPath + ", skipping...");
+                                Console.Out.Flush();
+                            }
+                            else
+                            {
                             errors += "Error: Texture " + package.exportsTable[exportID].objectName + " not found in package: " + list[i].pkgPath + ", skipping..." + Environment.NewLine;
+                            }
                             goto skip;
                         }
 
@@ -164,7 +190,15 @@ namespace MassEffectModder
                             {
                                 if (texture.mipMapsList.Count != masterTexture.mipMapsList.Count)
                                 {
-                                    errors += "Error: Texture " + package.exportsTable[exportID].objectName + " in package: " + foundMasterTex.path + " has wrong reference, skipping..." + Environment.NewLine;
+                                    if (ipc)
+                                    {
+                                        Console.WriteLine("[IPC]ERROR Texture " + package.exportsTable[exportID].objectName + " in package: " + foundMasterTex.path + " has wrong reference, skipping..." + Environment.NewLine);
+                                        Console.Out.Flush();
+                                    }
+                                    else
+                                    {
+                                    	errors += "Error: Texture " + package.exportsTable[exportID].objectName + " in package: " + foundMasterTex.path + " has wrong reference, skipping..." + Environment.NewLine;
+                                    }
                                     goto skip;
                                 }
                                 for (int t = 0; t < texture.mipMapsList.Count; t++)
@@ -204,8 +238,9 @@ skip:
             return errors;
         }
 
-        public string removeMipMapsME2ME3(List<FoundTexture> textures, MainWindow mainWindow, Installer installer, bool repack = false)
+        public string removeMipMapsME2ME3(List<FoundTexture> textures, MainWindow mainWindow, Installer installer, bool repack, bool ipc)
         {
+            int lastProgress = -1;
             string errors = "";
             List<RemoveMipsEntry> list = prepareListToRemove(textures);
             string path = "";
@@ -225,6 +260,16 @@ skip:
                     mainWindow.updateStatusLabel("Removing empty mipmaps - package " + (i + 1) + " of " + list.Count + " - " + list[i].pkgPath);
                     mainWindow.updateStatusLabel2("");
                 }
+				if (ipc)
+				{
+					int newProgress = i * 100 / list.Count;
+	                if (lastProgress != newProgress)
+	                {
+	                    Console.WriteLine("[IPC]TASK_PROGRESS " + newProgress);
+	                    Console.Out.Flush();
+	                    lastProgress = newProgress;
+	                }
+				}
 
                 Package package = null;
                 try
@@ -235,13 +280,21 @@ skip:
                 {
                     if (e.Message.Contains("Problem with PCC file header:"))
                         return errors;
-                    string err = "";
-                    err += "---- Start --------------------------------------------" + Environment.NewLine;
-                    err += "Issue opening package file: " + list[i].pkgPath + Environment.NewLine;
-                    err += e.Message + Environment.NewLine + Environment.NewLine;
-                    err += e.StackTrace + Environment.NewLine + Environment.NewLine;
-                    err += "---- End ----------------------------------------------" + Environment.NewLine + Environment.NewLine;
-                    errors += err;
+                    if (ipc)
+                    {
+                        Console.WriteLine("[IPC]ERROR Issue opening package file: " + list[i].pkgPath);
+                        Console.Out.Flush();
+                    }
+                    else
+                    {
+                        string err = "";
+                        err += "---- Start --------------------------------------------" + Environment.NewLine;
+                        err += "Issue opening package file: " + list[i].pkgPath + Environment.NewLine;
+                        err += e.Message + Environment.NewLine + Environment.NewLine;
+                        err += e.StackTrace + Environment.NewLine + Environment.NewLine;
+                        err += "---- End ----------------------------------------------" + Environment.NewLine + Environment.NewLine;
+                    	errors += err;
+                    }
                     continue;
                 }
 

@@ -72,8 +72,9 @@ namespace MassEffectModder
             packages.Clear();
         }
 
-        public void CloseAllWithSave(bool repack = false, bool appendMarker = true)
+        public void CloseAllWithSave(bool repack, bool appendMarker, bool ipc)
         {
+            int lastProgress = -1;
             int skipCounter = 0;
             bool lowMemoryMode = false;
             ulong memorySize = ((new ComputerInfo().TotalPhysicalMemory / 1024 / 1024) + 1023) / 1024;
@@ -87,6 +88,16 @@ namespace MassEffectModder
                     mainWindow.updateStatusLabel2("Saving package " + (i + 1) + " of " + packages.Count);
                 if (_installer != null)
                     _installer.updateProgressStatus("Saving packages " + ((i + 1) * 100 / packages.Count) + "%");
+				if (ipc)
+				{
+	                int newProgress = i * 100 / packages.Count;
+	                if (lastProgress != newProgress)
+	                {
+	                    Console.WriteLine("[IPC]TASK_PROGRESS " + newProgress);
+	                    Console.Out.Flush();
+	                    lastProgress = newProgress;
+	                }
+				}
                 if (skipCounter > 10 && lowMemoryMode)
                 {
                     GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;

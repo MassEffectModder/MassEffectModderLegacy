@@ -168,7 +168,7 @@ namespace MassEffectModder
                 throw new Exception("filenames entry not found");
         }
 
-        public void extract(string SFARfilename, string outPath, ref int currentProgress, int totalNumber)
+        public void extract(string SFARfilename, string outPath, bool ipc, ref int currentProgress, int totalNumber)
         {
             if (!File.Exists(SFARfilename))
                 throw new Exception("filename missing");
@@ -196,6 +196,7 @@ namespace MassEffectModder
             {
                 loadHeader(stream);
 
+                int lastProgress = -1;
                 for (int i = 0; i < filesCount; i++, currentProgress++)
                 {
                     if (filenamesIndex == i)
@@ -207,6 +208,16 @@ namespace MassEffectModder
                         mainWindow.updateStatusLabel2("File " + (i + 1) + " of " + filesList.Count() + " - " + Path.GetFileName(filesList[i].filenamePath));
                     if (installer != null)
                         installer.updateStatusPrepare("Unpacking DLC " + ((currentProgress + 1) * 100 / totalNumber) + "%");
+					if (ipc)
+					{
+	                    int newProgress = (100 * currentProgress) / totalNumber;
+	                    if (lastProgress != newProgress)
+	                    {
+	                        Console.WriteLine("[IPC]TASK_PROGRESS " + newProgress);
+	                        Console.Out.Flush();
+	                        lastProgress = newProgress;
+	                    }
+					}
 
                     int pos = filesList[i].filenamePath.IndexOf("\\BIOGame\\DLC\\", StringComparison.OrdinalIgnoreCase);
                     string filename = filesList[i].filenamePath.Substring(pos + ("\\BIOGame\\DLC\\").Length).Replace('/', '\\');
@@ -265,7 +276,7 @@ namespace MassEffectModder
             }
         }
 
-        static public void unpackAllDLC(MainWindow mainWindow, Installer installer)
+        static public void unpackAllDLC(MainWindow mainWindow, Installer installer, bool ipc)
         {
             if (!Directory.Exists(GameData.DLCData))
             {
@@ -275,6 +286,7 @@ namespace MassEffectModder
             }
 
             List<string> sfarFiles = Directory.GetFiles(GameData.DLCData, "Default.sfar", SearchOption.AllDirectories).ToList();
+            int totalSfars = sfarFiles.Count;
             for (int i = 0; i < sfarFiles.Count; i++)
             {
                 if (File.Exists(Path.Combine(Path.GetDirectoryName(sfarFiles[i]), "Mount.dlc")))
@@ -285,6 +297,12 @@ namespace MassEffectModder
                 if (mainWindow != null)
                     MessageBox.Show("No DLCs need to be extracted.");
                 return;
+			}
+            if (ipc)
+            {
+                Console.WriteLine("[IPC]STAGE_WEIGHT STAGE_UNPACKDLC " +
+                    string.Format("{0:0.000000}", ((float)sfarFiles.Count / totalSfars)));
+                Console.Out.Flush();
             }
 
             int totalNumFiles = 0;
@@ -320,7 +338,12 @@ namespace MassEffectModder
                 {
                     mainWindow.updateStatusLabel("SFAR extracting - DLC " + (i + 1) + " of " + sfarFiles.Count);
                 }
-                dlc.extract(sfarFiles[i], outPath, ref currentProgress, totalNumFiles);
+                if (ipc)
+                {
+                    Console.WriteLine("[IPC]PROCESSING_FILE " + sfarFiles[i]);
+                    Console.Out.Flush();
+                }
+                dlc.extract(sfarFiles[i], outPath, ipc, ref currentProgress, totalNumFiles);
             }
         }
     }

@@ -246,7 +246,7 @@ namespace MassEffectModder
                         uint numEntries = fs.ReadUInt32();
                         for (uint i = 0; i < numEntries; i++)
                         {
-                            TexExplorer.BinaryMod mod = new TexExplorer.BinaryMod();
+                            BinaryMod mod = new BinaryMod();
                             len = fs.ReadInt32();
                             string desc = fs.ReadStringASCII(len); // description
                             len = fs.ReadInt32();
@@ -341,9 +341,9 @@ namespace MassEffectModder
                 }
                 uint tag = fs.ReadUInt32();
                 uint version = fs.ReadUInt32();
-                if (tag != TexExplorer.TextureModTag || version != TexExplorer.TextureModVersion)
+                if (tag != TreeScan.TextureModTag || version != TreeScan.TextureModVersion)
                 {
-                    if (version != TexExplorer.TextureModVersion)
+                    if (version != TreeScan.TextureModVersion)
                     {
                         errors += "File " + filenameMod + " was made with an older version of MEM, skipping..." + Environment.NewLine;
                         log += "File " + filenameMod + " was made with an older version of MEM, skipping..." + Environment.NewLine;

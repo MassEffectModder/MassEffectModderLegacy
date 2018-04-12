@@ -577,7 +577,7 @@ namespace MassEffectModder
                 MipMaps mipMaps = new MipMaps();
                 errors = mipMaps.replaceTexture(image, node.textures[index].list, cachePackageMgr,  node.textures[index].name, node.textures[index].crc, true, markConvert);
 
-                cachePackageMgr.CloseAllWithSave(false, false);
+                cachePackageMgr.CloseAllWithSave(false, false, false);
 
                 if (GameData.gameType == MeType.ME3_TYPE)
                     TOCBinFile.UpdateAllTOCBinFiles();

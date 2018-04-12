@@ -28,10 +28,67 @@ using System.Windows.Forms;
 
 namespace MassEffectModder
 {
+    public enum MeType
+    {
+        ME1_TYPE = 1,
+        ME2_TYPE,
+        ME3_TYPE
+    }
+
+    struct TFCTexture
+    {
+        public byte[] guid;
+        public string name;
+    }
+
+    public struct BinaryMod
+    {
+        public string packagePath;
+        public int exportId;
+        public byte[] data;
+        public int binaryModType;
+        public string textureName;
+        public uint textureCrc;
+        public bool markConvert;
+        public long offset;
+        public long size;
+    };
+
+    public struct MatchedTexture
+    {
+        public int exportID;
+        public string packageName; // only used while texture scan for ME1
+        public string basePackageName; // only used while texture scan for ME1
+        public bool weakSlave;
+        public bool slave;
+        public string path;
+        public int linkToMaster;
+        public uint mipmapOffset;
+        public List<uint> crcs;
+        public bool removeEmptyMips;
+        public int numMips;
+    }
+
+    public struct FoundTexture
+    {
+        public string name;
+        public uint crc;
+        public List<MatchedTexture> list;
+        public PixelFormat pixfmt;
+        public TexProperty.TextureTypes flags;
+        public int width, height;
+    }
+
     public partial class TreeScan
     {
         public const uint textureMapBinTag = 0x5054454D;
         public const uint textureMapBinVersion = 2;
+        public const uint TextureModTag = 0x444F4D54;
+        public const uint TextureModVersion = 2;
+        public const uint FileTextureTag = 0x53444446;
+        public const uint FileBinTag = 0x4E494246;
+        public const uint MEMI_TAG = 0x494D454D;
+
         private bool generateBuiltinMapFiles = false; // change to true to enable map files generation
         public List<FoundTexture> treeScan = null;
         List<string> pkgs;
@@ -107,7 +164,7 @@ namespace MassEffectModder
             }
         }
 
-        public string PrepareListOfTextures(MeType gameId, TexExplorer texEplorer, MainWindow mainWindow, Installer installer, ref string log)
+        public string PrepareListOfTextures(MeType gameId, TexExplorer texEplorer, MainWindow mainWindow, Installer installer, ref string log, bool ipc)
         {
             string errors = "";
             treeScan = null;
@@ -134,7 +191,7 @@ namespace MassEffectModder
                     {
                         uint tag = fs.ReadUInt32();
                         uint version = fs.ReadUInt32();
-                        if (tag != TexExplorer.textureMapBinTag || version != TexExplorer.textureMapBinVersion)
+                        if (tag != TreeScan.textureMapBinTag || version != TreeScan.textureMapBinVersion)
                         {
                             MessageBox.Show("Detected wrong or old version of textures scan file!" +
                                 "\n\nYou need to restore the game to vanilla state then reinstall optional DLC/PCC mods." +
@@ -306,6 +363,11 @@ namespace MassEffectModder
                     installer.updateProgressStatus("Scanning packages");
                 if (mainWindow != null)
                     mainWindow.updateStatusLabel("Scanning packages...");
+	            if (ipc)
+	            {
+	                Console.WriteLine("[IPC]STAGE_CONTEXT STAGE_SCAN");
+	                Console.Out.Flush();
+	            }
                 for (int i = 0; i < GameData.packageFiles.Count; i++)
                 {
                     int index = -1;
@@ -332,14 +394,32 @@ namespace MassEffectModder
                         addedFiles.Add(GameData.RelativeGameData(GameData.packageFiles[i]));
                 }
 
+	            int lastProgress = -1;
                 int totalPackages = modifiedFiles.Count + addedFiles.Count;
                 int currentPackage = 0;
+	            if (ipc)
+	            {
+	                Console.WriteLine("[IPC]STAGE_WEIGHT STAGE_SCAN " +
+	                    string.Format("{0:0.000000}", ((float)totalPackages / GameData.packageFiles.Count)));
+	                Console.Out.Flush();
+	            }
                 for (int i = 0; i < modifiedFiles.Count; i++, currentPackage++)
                 {
                     if (installer != null)
                         installer.updateProgressStatus("Scanning textures " + ((currentPackage + 1) * 100) / totalPackages + "% ");
                     if (mainWindow != null)
                         mainWindow.updateStatusLabel("Finding textures in package " + (currentPackage + 1) + " of " + totalPackages + " - " + modifiedFiles[i]);
+	                if (ipc)
+	                {
+	                    Console.WriteLine("[IPC]PROCESSING_FILE " + modifiedFiles[i]);
+	                	int newProgress = currentPackage * 100 / totalPackages;
+	                	if (lastProgress != newProgress)
+		                {
+		                    Console.WriteLine("[IPC]TASK_PROGRESS " + newProgress);
+	        	            lastProgress = newProgress;
+	            	    }
+	                    Console.Out.Flush();
+	                }
                     errors += FindTextures(gameId, textures, modifiedFiles[i], true, ref log);
                 }
 
@@ -349,6 +429,18 @@ namespace MassEffectModder
                         installer.updateProgressStatus("Scanning textures " + ((currentPackage + 1) * 100) / totalPackages + "% ");
                     if (mainWindow != null)
                         mainWindow.updateStatusLabel("Finding textures in package " + (currentPackage + 1) + " of " + totalPackages + " - " + addedFiles[i]);
+	                if (ipc)
+	                {
+	                    Console.WriteLine("[IPC]PROCESSING_FILE " + addedFiles[i]);
+	                	int newProgress = currentPackage * 100 / totalPackages;
+		                if (lastProgress != newProgress)
+		                {
+		                    Console.WriteLine("[IPC]TASK_PROGRESS " + newProgress);
+		                    Console.Out.Flush();
+		                    lastProgress = newProgress;
+		                }
+	                    Console.Out.Flush();
+	                }
                     errors += FindTextures(gameId, textures, addedFiles[i], false, ref log);
                 }
 
@@ -373,12 +465,24 @@ namespace MassEffectModder
             }
             else
             {
+			    int lastProgress = -1;
                 for (int i = 0; i < GameData.packageFiles.Count; i++)
                 {
                     if (installer != null)
                         installer.updateProgressStatus("Scanning textures " + ((i + 1) * 100) / GameData.packageFiles.Count + "% ");
                     if (mainWindow != null)
                         mainWindow.updateStatusLabel("Finding textures in package " + (i + 1) + " of " + GameData.packageFiles.Count + " - " + GameData.packageFiles[i]);
+                    if (ipc)
+                    {
+                        Console.WriteLine("[IPC]PROCESSING_FILE " + GameData.packageFiles[i]);
+	                    int newProgress = i * 100 / GameData.packageFiles.Count;
+	                    if (lastProgress != newProgress)
+	                    {
+	                        Console.WriteLine("[IPC]TASK_PROGRESS " + newProgress);
+	                        lastProgress = newProgress;
+	                    }
+                        Console.Out.Flush();
+                    }
                     FindTextures(gameId, textures, GameData.RelativeGameData(GameData.packageFiles[i]), false, ref log);
                 }
             }
@@ -541,12 +645,12 @@ namespace MassEffectModder
                     MipMaps mipmaps = new MipMaps();
                     if (GameData.gameType == MeType.ME1_TYPE)
                     {
-                        errors += mipmaps.removeMipMapsME1(1, textures, mainWindow, null);
-                        errors += mipmaps.removeMipMapsME1(2, textures, mainWindow, null);
+                        errors += mipmaps.removeMipMapsME1(1, textures, mainWindow, null, false);
+                        errors += mipmaps.removeMipMapsME1(2, textures, mainWindow, null, false);
                     }
                     else
                     {
-                        errors += mipmaps.removeMipMapsME2ME3(textures, mainWindow, null);
+                        errors += mipmaps.removeMipMapsME2ME3(textures, mainWindow, null, false, false);
                     }
                     if (GameData.gameType == MeType.ME3_TYPE)
                     {
@@ -610,7 +714,7 @@ namespace MassEffectModder
                     matchTexture.packageName = texture.packageName;
                     matchTexture.removeEmptyMips = texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty);
                     matchTexture.numMips = texture.mipMapsList.FindAll(s => s.storageType != Texture.StorageTypes.empty).Count;
-                    if (GameData.gameType == MeType.ME1_TYPE)
+                    if (gameId == MeType.ME1_TYPE)
                     {
                         matchTexture.basePackageName = texture.basePackageName;
                         matchTexture.slave = texture.slave;
@@ -642,7 +746,7 @@ namespace MassEffectModder
                     {
                         if (modified && foundTexName.list.Exists(s => (s.exportID == i && s.path.ToLowerInvariant() == packagePath.ToLowerInvariant())))
                             continue;
-                        if (matchTexture.slave || GameData.gameType != MeType.ME1_TYPE)
+                        if (matchTexture.slave || gameId != MeType.ME1_TYPE)
                             foundTexName.list.Add(matchTexture);
                         else
                             foundTexName.list.Insert(0, matchTexture);

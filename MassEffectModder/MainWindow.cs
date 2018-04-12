@@ -210,7 +210,7 @@ namespace MassEffectModder
             }
 
             Misc.startTimer();
-            ME3DLC.unpackAllDLC(this, null);
+            ME3DLC.unpackAllDLC(this, null, false);
             var time = Misc.stopTimer();
             updateStatusLabel("DLCs extracted. Process total time: " + Misc.getTimerFormat(time));
             updateStatusLabel2("");
@@ -407,7 +407,7 @@ namespace MassEffectModder
                     File.Delete(filename);
                 string errors = "";
                 List<string> mods = new List<string>();
-                bool vanilla = Misc.checkGameFiles(gameType, ref errors, ref mods, this);
+                bool vanilla = Misc.checkGameFiles(gameType, ref errors, ref mods, this, false);
                 updateStatusLabel("");
                 using (FileStream fs = new FileStream(filename, FileMode.CreateNew))
                 {
@@ -635,7 +635,7 @@ namespace MassEffectModder
                     s.EndsWith(".u", StringComparison.OrdinalIgnoreCase) ||
                     s.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase) ||
                     s.EndsWith(".sfm", StringComparison.OrdinalIgnoreCase)).ToList();
-                List<TexExplorer.BinaryMod> modFiles = new List<TexExplorer.BinaryMod>();
+                List<BinaryMod> modFiles = new List<BinaryMod>();
                 for (int i = 0; i < mods.Count; i++)
                 {
                     Package vanillaPkg = null;
@@ -696,7 +696,7 @@ namespace MassEffectModder
                                 continue;
                         }
 
-                        TexExplorer.BinaryMod mod = new TexExplorer.BinaryMod();
+                        BinaryMod mod = new BinaryMod();
                         mod.packagePath = GameData.RelativeGameData(vanillaPkg.packagePath);
                         mod.exportId = e;
 
@@ -761,15 +761,15 @@ namespace MassEffectModder
 
                     using (FileStream outFs = new FileStream(modFile.FileName, FileMode.CreateNew, FileAccess.Write))
                     {
-                        outFs.WriteUInt32(TexExplorer.TextureModTag);
-                        outFs.WriteUInt32(TexExplorer.TextureModVersion);
+                        outFs.WriteUInt32(TreeScan.TextureModTag);
+                        outFs.WriteUInt32(TreeScan.TextureModVersion);
                         outFs.WriteInt64(0); // filled later
 
                         for (int i = 0; i < modFiles.Count; i++)
                         {
                             Stream dst = MipMaps.compressData(modFiles[i].data);
                             dst.SeekBegin();
-                            TexExplorer.BinaryMod bmod = modFiles[i];
+                            BinaryMod bmod = modFiles[i];
                             bmod.offset = outFs.Position;
                             bmod.size = dst.Length;
                             modFiles[i] = bmod;
@@ -780,8 +780,8 @@ namespace MassEffectModder
 
                         long pos = outFs.Position;
                         outFs.SeekBegin();
-                        outFs.WriteUInt32(TexExplorer.TextureModTag);
-                        outFs.WriteUInt32(TexExplorer.TextureModVersion);
+                        outFs.WriteUInt32(TreeScan.TextureModTag);
+                        outFs.WriteUInt32(TreeScan.TextureModVersion);
                         outFs.WriteInt64(pos);
                         outFs.JumpTo(pos);
                         outFs.WriteUInt32((uint)gameType);

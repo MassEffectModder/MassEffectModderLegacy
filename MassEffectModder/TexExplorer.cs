@@ -31,53 +31,8 @@ using System.Text;
 
 namespace MassEffectModder
 {
-    public enum MeType
-    {
-        ME1_TYPE = 1,
-        ME2_TYPE,
-        ME3_TYPE
-    }
-
-    struct TFCTexture
-    {
-        public byte[] guid;
-        public string name;
-    }
-
-    public struct MatchedTexture
-    {
-        public int exportID;
-        public string packageName; // only used while texture scan for ME1
-        public string basePackageName; // only used while texture scan for ME1
-        public bool weakSlave;
-        public bool slave;
-        public string path;
-        public int linkToMaster;
-        public uint mipmapOffset;
-        public List<uint> crcs;
-        public bool removeEmptyMips;
-        public int numMips;
-    }
-
-    public struct FoundTexture
-    {
-        public string name;
-        public uint crc;
-        public List<MatchedTexture> list;
-        public PixelFormat pixfmt;
-        public TexProperty.TextureTypes flags;
-        public int width, height;
-    }
-
     public partial class TexExplorer : Form
     {
-        public const uint textureMapBinTag = 0x5054454D;
-        public const uint textureMapBinVersion = 2;
-        public const uint TextureModTag = 0x444F4D54;
-        public const uint FileTextureTag = 0x53444446;
-        public const uint FileBinTag = 0x4E494246;
-        public const uint TextureModVersion = 2;
-
         MeType _gameSelected;
         public MainWindow _mainWindow;
         ConfIni _configIni;
@@ -88,19 +43,6 @@ namespace MassEffectModder
         CachePackageMgr cachePackageMgr;
         TreeScan treeScan;
         MipMaps mipMaps;
-
-        public struct BinaryMod
-        {
-            public string packagePath;
-            public int exportId;
-            public byte[] data;
-            public int binaryModType;
-            public string textureName;
-            public uint textureCrc;
-            public bool markConvert;
-            public long offset;
-            public long size;
-        };
 
         public class PackageTreeNode : TreeNode
         {
@@ -179,7 +121,7 @@ namespace MassEffectModder
                 string log = "";
                 _mainWindow.updateStatusLabel("");
                 _mainWindow.updateStatusLabel("Preparing tree...");
-                errors += treeScan.PrepareListOfTextures(GameData.gameType, this, _mainWindow, null, ref log);
+                errors += treeScan.PrepareListOfTextures(GameData.gameType, this, _mainWindow, null, ref log, false);
                 _textures = treeScan.treeScan;
                 if (errors != "")
                 {
@@ -551,9 +493,9 @@ namespace MassEffectModder
                         {
                             uint tag = fs.ReadUInt32();
                             uint version = fs.ReadUInt32();
-                            if (tag != TextureModTag || version != TextureModVersion)
+                            if (tag != TreeScan.TextureModTag || version != TreeScan.TextureModVersion)
                             {
-                                if (version != TextureModVersion)
+                                if (version != TreeScan.TextureModVersion)
                                     MessageBox.Show("File " + file + " was made with an older version of MEM, skipping...");
                                 else
                                     MessageBox.Show("File " + file + " is not a valid MEM mod, skipping...");
@@ -810,7 +752,7 @@ namespace MassEffectModder
                     listViewMods.Items.Remove(item);
                 }
                 _mainWindow.updateStatusLabel("");
-                cachePackageMgr.CloseAllWithSave(false, false);
+                cachePackageMgr.CloseAllWithSave(false, false, false);
 
                 if (GameData.gameType == MeType.ME3_TYPE)
                     TOCBinFile.UpdateAllTOCBinFiles();
@@ -1008,7 +950,7 @@ namespace MassEffectModder
                         string errors = "";
                         Misc.convertDataModtoMem(modFile.SelectedPath,
                             Path.Combine(Path.GetDirectoryName(modFile.SelectedPath), Path.GetFileName(modFile.SelectedPath)) + ".mem",
-                            GameData.gameType, _mainWindow, ref errors, markConvert, true);
+                            GameData.gameType, _mainWindow, ref errors, markConvert, true, false);
                         var time = Misc.stopTimer();
                         richTextBoxInfo.Text = errors;
                         if (richTextBoxInfo.Text != "")
@@ -1076,7 +1018,7 @@ namespace MassEffectModder
                         for (int i = 0; i < listDirs.Count; i++)
                         {
                             Misc.convertDataModtoMem(listDirs[i], Path.Combine(Path.GetDirectoryName(listDirs[i]), Path.GetFileName(listDirs[i])) + ".mem",
-                                GameData.gameType, _mainWindow, ref errors, true);
+                                GameData.gameType, _mainWindow, ref errors, true, false, false);
                         }
                         var time = Misc.stopTimer();
                         richTextBoxInfo.Text = errors;
@@ -1519,9 +1461,9 @@ namespace MassEffectModder
                     outFs = new FileStream(memFilename, FileMode.Open, FileAccess.ReadWrite);
                     uint tag = outFs.ReadUInt32();
                     uint version = outFs.ReadUInt32();
-                    if (tag != TextureModTag || version != TextureModVersion)
+                    if (tag != TreeScan.TextureModTag || version != TreeScan.TextureModVersion)
                     {
-                        if (version != TextureModVersion)
+                        if (version != TreeScan.TextureModVersion)
                             errors += "File " + memFilename + " was made with an older version of MEM, skipping..." + Environment.NewLine;
                         else
                             errors += "File " + memFilename + " is not a valid MEM mod, skipping..." + Environment.NewLine;
@@ -1557,8 +1499,8 @@ namespace MassEffectModder
                 else
                 {
                     outFs = new FileStream(memFilename, FileMode.Create, FileAccess.Write);
-                    outFs.WriteUInt32(TextureModTag);
-                    outFs.WriteUInt32(TextureModVersion);
+                    outFs.WriteUInt32(TreeScan.TextureModTag);
+                    outFs.WriteUInt32(TreeScan.TextureModVersion);
                     outFs.WriteInt64(0); // filled later
                 }
 
@@ -1603,8 +1545,8 @@ namespace MassEffectModder
 
                 long pos = outFs.Position;
                 outFs.SeekBegin();
-                outFs.WriteUInt32(TextureModTag);
-                outFs.WriteUInt32(TextureModVersion);
+                outFs.WriteUInt32(TreeScan.TextureModTag);
+                outFs.WriteUInt32(TreeScan.TextureModVersion);
                 outFs.WriteInt64(pos);
                 outFs.JumpTo(pos);
                 outFs.WriteUInt32((uint)GameData.gameType);

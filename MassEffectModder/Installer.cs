@@ -790,9 +790,9 @@ namespace MassEffectModder
                 {
                     uint tag = fs.ReadUInt32();
                     uint version = fs.ReadUInt32();
-                    if (tag != TexExplorer.TextureModTag || version != TexExplorer.TextureModVersion)
+                    if (tag != TreeScan.TextureModTag || version != TreeScan.TextureModVersion)
                     {
-                        if (version != TexExplorer.TextureModVersion)
+                        if (version != TreeScan.TextureModVersion)
                             errors += "File " + memFiles[i] + " was made with an older version of MEM, skipping..." + Environment.NewLine;
                         else
                             errors += "File " + memFiles[i] + " is not a valid MEM mod, skipping..." + Environment.NewLine;
@@ -1038,7 +1038,7 @@ namespace MassEffectModder
             {
                 uint tag = fs.ReadUInt32();
                 uint version = fs.ReadUInt32();
-                if (tag != TexExplorer.textureMapBinTag || version != TexExplorer.textureMapBinVersion)
+                if (tag != TreeScan.textureMapBinTag || version != TreeScan.textureMapBinVersion)
                 {
                     errors += "Detected wrong or old version of textures scan file!" + Environment.NewLine;
                     log += "Detected wrong or old version of textures scan file!" + Environment.NewLine;
@@ -1111,7 +1111,7 @@ namespace MassEffectModder
                     {
                         uint tag = fs.ReadUInt32();
                         uint version = fs.ReadUInt32();
-                        if (tag != TexExplorer.TextureModTag || version != TexExplorer.TextureModVersion)
+                        if (tag != TreeScan.TextureModTag || version != TreeScan.TextureModVersion)
                             continue;
                         fs.JumpTo(fs.ReadInt64());
                         fs.SkipInt32();
@@ -1129,9 +1129,9 @@ namespace MassEffectModder
                 {
                     uint tag = fs.ReadUInt32();
                     uint version = fs.ReadUInt32();
-                    if (tag != TexExplorer.TextureModTag || version != TexExplorer.TextureModVersion)
+                    if (tag != TreeScan.TextureModTag || version != TreeScan.TextureModVersion)
                     {
-                        if (version != TexExplorer.TextureModVersion)
+                        if (version != TreeScan.TextureModVersion)
                         {
                             errors += "File " + memFiles[i] + " was made with an older version of MEM, skipping..." + Environment.NewLine;
                             log += "File " + memFiles[i] + " was made with an older version of MEM, skipping..." + Environment.NewLine;
@@ -1340,7 +1340,7 @@ namespace MassEffectModder
                 if (gameId == 3 && unpackDLC)
                 {
                     customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
-                    ME3DLC.unpackAllDLC(null, this);
+                    ME3DLC.unpackAllDLC(null, this, false);
                     gameData.getPackages(true, true);
                 }
 
@@ -1390,7 +1390,7 @@ namespace MassEffectModder
                 customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
 
                 log += "Scan textures started..." + Environment.NewLine;
-                errors += treeScan.PrepareListOfTextures(GameData.gameType, null, null, this, ref log);
+                errors += treeScan.PrepareListOfTextures(GameData.gameType, null, null, this, ref log, false);
                 textures = treeScan.treeScan;
                 log += "Scan textures finished" + Environment.NewLine + Environment.NewLine;
             }
@@ -1409,7 +1409,7 @@ namespace MassEffectModder
 
 
             customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
-            cachePackageMgr.CloseAllWithSave(checkBoxOptionRepack.Checked);
+            cachePackageMgr.CloseAllWithSave(checkBoxOptionRepack.Checked, true, false);
 
             if (!updateMode)
             {
@@ -1417,12 +1417,12 @@ namespace MassEffectModder
                 log += "Remove mipmaps started..." + Environment.NewLine;
                 if (gameId == 1)
                 {
-                    errors += mipMaps.removeMipMapsME1(1, textures, null, this);
-                    errors += mipMaps.removeMipMapsME1(2, textures, null, this);
+                    errors += mipMaps.removeMipMapsME1(1, textures, null, this, false);
+                    errors += mipMaps.removeMipMapsME1(2, textures, null, this, false);
                 }
                 else
                 {
-                    errors += mipMaps.removeMipMapsME2ME3(textures, null, this, checkBoxOptionRepack.Checked);
+                    errors += mipMaps.removeMipMapsME2ME3(textures, null, this, checkBoxOptionRepack.Checked, false);
                 }
                 log += "Remove mipmaps finished" + Environment.NewLine + Environment.NewLine;
             }
