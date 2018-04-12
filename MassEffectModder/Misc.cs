@@ -932,8 +932,8 @@ namespace MassEffectModder
         {
             string[] files = null;
             List<FoundTexture> textures = new List<FoundTexture>();
+            new TreeScan().loadTexturesMap(gameId, textures);
 
-            new TreeScan().loadTexturesMap(GameData.gameType, textures);
             Console.WriteLine("Mods conversion started...");
 
             List<string> list;
