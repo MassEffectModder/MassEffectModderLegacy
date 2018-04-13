@@ -238,7 +238,7 @@ skip:
             return errors;
         }
 
-        public string removeMipMapsME2ME3(List<FoundTexture> textures, MainWindow mainWindow, Installer installer, bool repack, bool ipc)
+        public string removeMipMapsME2ME3(List<FoundTexture> textures, MainWindow mainWindow, Installer installer, bool ipc, bool repack)
         {
             int lastProgress = -1;
             string errors = "";
