@@ -262,7 +262,7 @@ skip:
                 }
 				if (ipc)
 				{
-					int newProgress = i * 100 / list.Count;
+					int newProgress = (i + 1) * 100 / list.Count;
 	                if (lastProgress != newProgress)
 	                {
 	                    Console.WriteLine("[IPC]TASK_PROGRESS " + newProgress);
