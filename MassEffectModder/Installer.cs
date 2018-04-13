@@ -1335,20 +1335,31 @@ namespace MassEffectModder
             log = "";
             Misc.startTimer();
 
+            if (!updateMode && gameId == 3 && unpackDLC)
+            {
+                customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
+                ME3DLC.unpackAllDLC(null, this, false);
+                gameData.getPackages(true, true);
+            }
+
+            if (checkBoxOptionRepack.Checked)
+            {
+                pkgsToRepack = new List<string>();
+                for (int i = 0; i < GameData.packageFiles.Count; i++)
+                {
+                    pkgsToRepack.Add(GameData.packageFiles[i]);
+                }
+                if (GameData.gameType == MeType.ME1_TYPE)
+                    pkgsToRepack.Remove(GameData.GamePath + @"\BioGame\CookedPC\testVolumeLight_VFX.upk");
+                if (GameData.gameType == MeType.ME2_TYPE)
+                    pkgsToRepack.Remove(GameData.GamePath + @"\BioGame\CookedPC\BIOC_Materials.pcc");
+            }
+
+            if (GameData.gameType != MeType.ME1_TYPE)
+                gameData.getTfcTextures();
+
             if (!updateMode)
             {
-                if (gameId == 3 && unpackDLC)
-                {
-                    customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
-                    ME3DLC.unpackAllDLC(null, this, false);
-                    gameData.getPackages(true, true);
-                }
-
-                log += "Prepare game data started..." + Environment.NewLine;
-                if (GameData.gameType != MeType.ME1_TYPE)
-                    gameData.getTfcTextures();
-                log += "Prepare game data finished" + Environment.NewLine + Environment.NewLine;
-
                 if (Directory.Exists(GameData.DLCData))
                 {
                     List<string> dirs = Directory.EnumerateDirectories(GameData.DLCData).ToList();
@@ -1374,32 +1385,12 @@ namespace MassEffectModder
                 if (GameData.gameType == MeType.ME2_TYPE)
                     pkgsToMarker.Remove(GameData.GamePath + @"\BioGame\CookedPC\BIOC_Materials.pcc");
 
-                if (checkBoxOptionRepack.Checked)
-                {
-                    pkgsToRepack = new List<string>();
-                    for (int i = 0; i < GameData.packageFiles.Count; i++)
-                    {
-                        pkgsToRepack.Add(GameData.packageFiles[i]);
-                    }
-                    if (GameData.gameType == MeType.ME1_TYPE)
-                        pkgsToRepack.Remove(GameData.GamePath + @"\BioGame\CookedPC\testVolumeLight_VFX.upk");
-                    if (GameData.gameType == MeType.ME2_TYPE)
-                        pkgsToRepack.Remove(GameData.GamePath + @"\BioGame\CookedPC\BIOC_Materials.pcc");
-                }
-
                 customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
 
                 log += "Scan textures started..." + Environment.NewLine;
                 errors += treeScan.PrepareListOfTextures(GameData.gameType, null, null, this, ref log, false);
                 textures = treeScan.treeScan;
                 log += "Scan textures finished" + Environment.NewLine + Environment.NewLine;
-            }
-            else
-            {
-                log += "Prepare game data skipped" + Environment.NewLine + Environment.NewLine;
-                if (GameData.gameType != MeType.ME1_TYPE)
-                    gameData.getTfcTextures();
-                log += "Scan textures skipped" + Environment.NewLine + Environment.NewLine;
             }
 
             customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
@@ -1408,8 +1399,11 @@ namespace MassEffectModder
             log += "Process textures finished" + Environment.NewLine + Environment.NewLine;
 
 
+            log += "Saving packages started..." + Environment.NewLine;
             customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
             cachePackageMgr.CloseAllWithSave(checkBoxOptionRepack.Checked, true, false);
+            log += "Saving packages finished" + Environment.NewLine;
+
 
             if (!updateMode)
             {
@@ -1425,10 +1419,6 @@ namespace MassEffectModder
                     errors += mipMaps.removeMipMapsME2ME3(textures, null, this, checkBoxOptionRepack.Checked, false);
                 }
                 log += "Remove mipmaps finished" + Environment.NewLine + Environment.NewLine;
-            }
-            else
-            {
-                log += "Remove mipmaps skipped" + Environment.NewLine + Environment.NewLine;
             }
 
             if (checkBoxOptionRepack.Checked)
@@ -1460,10 +1450,6 @@ namespace MassEffectModder
 
                 }
                 log += "Repack finished" + Environment.NewLine + Environment.NewLine;
-            }
-            else
-            {
-                log += "Repack skipped" + Environment.NewLine + Environment.NewLine;
             }
 
             if (!updateMode)
