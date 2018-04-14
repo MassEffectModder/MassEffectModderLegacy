@@ -1402,7 +1402,7 @@ namespace MassEffectModder
             log += "Saving packages started..." + Environment.NewLine;
             customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
             cachePackageMgr.CloseAllWithSave(checkBoxOptionRepack.Checked, true, false);
-            log += "Saving packages finished" + Environment.NewLine;
+            log += "Saving packages finished" + Environment.NewLine + Environment.NewLine;
 
 
             if (!updateMode)
