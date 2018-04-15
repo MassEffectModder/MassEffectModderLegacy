@@ -492,6 +492,9 @@ namespace MassEffectModder
                 }
                 numFiles = modFiles.Count;
 
+                if (texExplorer != null && newReplace)
+                    texExplorer._mainWindow.updateStatusLabel("Processing MOD " + Path.GetFileName(filenameMod));
+
                 for (int i = 0; i < numFiles; i++)
                 {
                     string name = "";
@@ -522,7 +525,7 @@ namespace MassEffectModder
                         pkgPath = fs.ReadStringASCIINull();
                     }
 
-                    if (texExplorer != null && (extract || replace || newReplace))
+                    if (texExplorer != null && (extract || replace))
                     {
                         texExplorer._mainWindow.updateStatusLabel("Processing MOD " + Path.GetFileName(filenameMod) +
                             " - File " + (i + 1) + " of " + numFiles + " - " + name);
@@ -570,8 +573,11 @@ namespace MassEffectModder
                         continue;
                     }
 
-                    dst = decompressData(fs, size);
-                    dstLen = dst.Length;
+                    if (!newReplace || (modFiles[i].tag != FileTextureTag && modFiles[i].tag != FileTextureTag2))
+                    {
+                        dst = decompressData(fs, size);
+                        dstLen = dst.Length;
+                    }
 
                     if (extract)
                     {
