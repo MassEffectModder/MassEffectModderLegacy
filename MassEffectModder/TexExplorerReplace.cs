@@ -35,6 +35,29 @@ namespace MassEffectModder
         public string name;
     }
 
+    public struct ModEntry
+    {
+        public string packagePath;
+        public int exportId;
+
+        public string textureName;
+        public uint textureCrc;
+        public bool markConvert;
+        public Image cacheImage;
+        public List<byte[]> cacheCprMipmaps;
+        public Dictionary<List<MipMap>, int> masterTextures;
+        public List<MipMap> arcTexture;
+        public List<MipMap> cprTexture;
+        public byte[] cprTfcGuid;
+
+        public bool binaryModType;
+        public byte[] binaryModData;
+
+        public string memPath;
+        public long memDataOffset;
+        public long memDataSize;
+    };
+
     public partial class MipMaps
     {
         TFCTexture[] guids = new TFCTexture[]
@@ -50,6 +73,8 @@ namespace MassEffectModder
                 name = "Format"
             },
         };
+
+        static List<ModEntry> modsToReplace;
 
         public PixelFormat changeTextureType(PixelFormat gamePixelFormat, PixelFormat texturePixelFormat,
                 ref Package package, ref Texture texture)

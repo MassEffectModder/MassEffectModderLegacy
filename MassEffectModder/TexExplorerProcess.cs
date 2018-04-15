@@ -74,9 +74,12 @@ namespace MassEffectModder
             return processTextureMod(filenameMod, -1, false, false, false, false, "", textures, cachePackageMgr, texExplorer, ref log);
         }
 
-        private string processTextureMod(string filenameMod, int previewIndex, bool extract, bool replace, bool newReplace, bool verify, string outDir, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer, ref string log)
+        private string processTextureMod(string filenameMod, int previewIndex, bool extract, bool replace, bool newReplace, bool verify,
+            string outDir, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer, ref string log)
         {
             string errors = "";
+            if (newReplace)
+                modsToReplace = new List<ModEntry>();
 
             if (filenameMod.EndsWith(".tpf", StringComparison.OrdinalIgnoreCase))
             {
@@ -193,7 +196,58 @@ namespace MassEffectModder
                                 }
                                 else
                                 {
-                                    // TODO
+                                    int indexPremap = -1;
+                                    for (int t = 0; t < texExplorer.texturesPreMap.Count; t++)
+                                    {
+                                        if (texExplorer.texturesPreMap[t].crc == crc)
+                                        {
+                                            indexPremap = t;
+                                            break;
+                                        }
+                                    }
+                                    if (indexPremap != -1)
+                                    {
+                                        zip.GoToNextFile(handle);
+                                        log += "Texture skipped. File " + filename + string.Format(" - 0x{0:X8}", crc) + " is not present in premap database - mod: " + filenameMod + Environment.NewLine;
+                                        continue;
+                                    }
+
+                                    PixelFormat pixelFormat = texExplorer.texturesPreMap[indexPremap].pixfmt;
+                                    Image image = new Image(data, Path.GetExtension(filename));
+
+                                    if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
+                                        texExplorer.texturesPreMap[indexPremap].width / texExplorer.texturesPreMap[indexPremap].height)
+                                    {
+                                        zip.GoToNextFile(handle);
+                                        errors += "Error in texture: " + foundTexture.name + string.Format("_0x{0:X8}", crc) + " This texture has wrong aspect ratio, skipping texture, entry: " + (i + 1) + " - mod: " + filename + Environment.NewLine;
+                                        continue;
+                                    }
+
+                                    if (!image.checkDDSHaveAllMipmaps() ||
+                                       (foundTexture.list.Find(s => s.path != "").numMips > 1 && image.mipMaps.Count() <= 1) ||
+                                       (image.pixelFormat != pixelFormat))
+                                    {
+                                        texExplorer._mainWindow.updateStatusLabel2("Converting/correcting texture: " + foundTexture.name);
+                                        bool dxt1HasAlpha = false;
+                                        byte dxt1Threshold = 128;
+                                        if (texExplorer.texturesPreMap[indexPremap].flags == TexProperty.TextureTypes.OneBitAlpha)
+                                        {
+                                            dxt1HasAlpha = true;
+                                            if (image.pixelFormat == PixelFormat.ARGB ||
+                                                image.pixelFormat == PixelFormat.DXT3 ||
+                                                image.pixelFormat == PixelFormat.DXT5)
+                                            {
+                                                errors += "Warning for texture: " + foundTexture.name + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
+                                            }
+                                        }
+                                        image.correctMips(pixelFormat, dxt1HasAlpha, dxt1Threshold);
+                                    }
+
+                                    ModEntry entry = new ModEntry();
+                                    entry.cacheImage = image;
+                                    entry.textureCrc = crc;
+                                    entry.textureName = foundTexture.name;
+                                    modsToReplace.Add(entry);
                                 }
                             }
                             else
@@ -284,7 +338,11 @@ namespace MassEffectModder
                                 }
                                 else
                                 {
-                                    // TODO
+                                    ModEntry entry = new ModEntry();
+                                    entry.binaryModType = true;
+                                    entry.packagePath = mod.packagePath;
+                                    entry.binaryModData = mod.data;
+                                    modsToReplace.Add(entry);
                                 }
                             }
                             else
@@ -320,7 +378,56 @@ namespace MassEffectModder
                                 }
                                 else
                                 {
-                                    // TODO
+                                    int indexPremap = -1;
+                                    try
+                                    {
+                                        indexPremap = Misc.ParseLegacyMe3xScriptMod(texExplorer.texturesPreMap, scriptLegacy, textureName);
+                                        if (indexPremap == -1)
+                                            throw new Exception();
+                                    }
+                                    catch
+                                    {
+                                        len = fs.ReadInt32();
+                                        fs.Skip(len);
+                                        errors += "Skipping not compatible content, entry: " + (i + 1) + " - mod: " + filenameMod + Environment.NewLine;
+                                        continue;
+                                    }
+
+                                    PixelFormat pixelFormat = texExplorer.texturesPreMap[indexPremap].pixfmt;
+                                    Image image = new Image(mod.data, Image.ImageFormat.DDS);
+
+                                    if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
+                                        texExplorer.texturesPreMap[indexPremap].width / texExplorer.texturesPreMap[indexPremap].height)
+                                    {
+                                        errors += "Error in texture: " + f.name + string.Format("_0x{0:X8}", f.crc) + " This texture has wrong aspect ratio, skipping texture, entry: " + (i + 1) + " - mod: " + filenameMod + Environment.NewLine;
+                                        continue;
+                                    }
+
+                                    if (!image.checkDDSHaveAllMipmaps() ||
+                                       (f.list.Find(s => s.path != "").numMips > 1 && image.mipMaps.Count() <= 1) ||
+                                       (image.pixelFormat != pixelFormat))
+                                    {
+                                        texExplorer._mainWindow.updateStatusLabel2("Converting/correcting texture: " + f.name);
+                                        bool dxt1HasAlpha = false;
+                                        byte dxt1Threshold = 128;
+                                        if (texExplorer.texturesPreMap[indexPremap].flags == TexProperty.TextureTypes.OneBitAlpha)
+                                        {
+                                            dxt1HasAlpha = true;
+                                            if (image.pixelFormat == PixelFormat.ARGB ||
+                                                image.pixelFormat == PixelFormat.DXT3 ||
+                                                image.pixelFormat == PixelFormat.DXT5)
+                                            {
+                                                errors += "Warning for texture: " + f.name + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
+                                            }
+                                        }
+                                        image.correctMips(pixelFormat, dxt1HasAlpha, dxt1Threshold);
+                                    }
+
+                                    ModEntry entry = new ModEntry();
+                                    entry.cacheImage = image;
+                                    entry.textureCrc = f.crc;
+                                    entry.textureName = f.name;
+                                    modsToReplace.Add(entry);
                                 }
                             }
                         }
@@ -362,7 +469,7 @@ namespace MassEffectModder
                     uint gameType = 0;
                     fs.JumpTo(fs.ReadInt64());
                     gameType = fs.ReadUInt32();
-                    if (textures != null && (MeType)gameType != GameData.gameType)
+                    if ((MeType)gameType != GameData.gameType)
                     {
                         errors += "File " + filenameMod + " is not a MEM mod valid for this game" + Environment.NewLine;
                         log += "File " + filenameMod + " is not a MEM mod valid for this game" + Environment.NewLine;
@@ -557,16 +664,71 @@ namespace MassEffectModder
                             }
                             if (index != -1)
                             {
+                                FoundTexture foundTexture = textures[index];
                                 if (replace)
                                 {
-                                    FoundTexture foundTexture = textures[index];
                                     Image image = new Image(dst, Image.ImageFormat.DDS);
                                     errors += replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc, verify, modFiles[i].tag == FileTextureTag2);
                                     textures[index] = foundTexture;
                                 }
                                 else
                                 {
-                                    // TODO
+                                    bool markToConvert;
+                                    if (modFiles[i].tag == FileTextureTag2)
+                                        markToConvert = true;
+                                    else
+                                        markToConvert = false;
+
+                                    int indexPremap = -1;
+                                    for (int t = 0; t < texExplorer.texturesPreMap.Count; t++)
+                                    {
+                                        if (texExplorer.texturesPreMap[t].crc == crc)
+                                        {
+                                            indexPremap = t;
+                                            break;
+                                        }
+                                    }
+
+                                    PixelFormat pixelFormat = texExplorer.texturesPreMap[indexPremap].pixfmt;
+                                    Image image = new Image(dst, Image.ImageFormat.DDS);
+
+                                    if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
+                                        texExplorer.texturesPreMap[indexPremap].width / texExplorer.texturesPreMap[indexPremap].height)
+                                    {
+                                        errors += "Error in texture: " + foundTexture.name + string.Format("_0x{0:X8}", foundTexture.crc) + " This texture has wrong aspect ratio, skipping texture..." + foundTexture.name + Environment.NewLine;
+                                        continue;
+                                    }
+
+                                    PixelFormat newPixelFormat = pixelFormat;
+                                    if (markToConvert)
+                                        newPixelFormat = Misc.changeTextureType(pixelFormat, image.pixelFormat, foundTexture.flags);
+
+                                    if (!image.checkDDSHaveAllMipmaps() ||
+                                       (foundTexture.list.Find(s => s.path != "").numMips > 1 && image.mipMaps.Count() <= 1) ||
+                                       (markToConvert && image.pixelFormat != newPixelFormat) ||
+                                       (!markToConvert && image.pixelFormat != pixelFormat))
+                                    {
+                                        texExplorer._mainWindow.updateStatusLabel2("Converting/correcting texture: " + foundTexture.name);
+                                        bool dxt1HasAlpha = false;
+                                        byte dxt1Threshold = 128;
+                                        if (texExplorer.texturesPreMap[indexPremap].flags == TexProperty.TextureTypes.OneBitAlpha)
+                                        {
+                                            dxt1HasAlpha = true;
+                                            if (image.pixelFormat == PixelFormat.ARGB ||
+                                                image.pixelFormat == PixelFormat.DXT3 ||
+                                                image.pixelFormat == PixelFormat.DXT5)
+                                            {
+                                                errors += "Warning for texture: " + foundTexture.name + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
+                                            }
+                                        }
+                                        image.correctMips(newPixelFormat, dxt1HasAlpha, dxt1Threshold);
+                                    }
+
+                                    ModEntry entry = new ModEntry();
+                                    entry.cacheImage = image;
+                                    entry.textureCrc = foundTexture.crc;
+                                    entry.textureName = foundTexture.name;
+                                    modsToReplace.Add(entry);
                                 }
                             }
                             else
@@ -590,7 +752,11 @@ namespace MassEffectModder
                             }
                             else
                             {
-                                // TODO
+                                ModEntry entry = new ModEntry();
+                                entry.binaryModType = true;
+                                entry.packagePath = path;
+                                entry.binaryModData = dst;
+                                modsToReplace.Add(entry);
                             }
                         }
                         else if (modFiles[i].tag == FileXdeltaTag)
