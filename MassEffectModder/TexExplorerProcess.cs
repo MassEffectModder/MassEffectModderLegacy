@@ -78,8 +78,6 @@ namespace MassEffectModder
             string outDir, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer, ref string log)
         {
             string errors = "";
-            if (newReplace)
-                modsToReplace = new List<ModEntry>();
 
             if (filenameMod.EndsWith(".tpf", StringComparison.OrdinalIgnoreCase))
             {

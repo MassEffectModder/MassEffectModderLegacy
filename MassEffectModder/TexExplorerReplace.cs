@@ -74,7 +74,7 @@ namespace MassEffectModder
             },
         };
 
-        static List<ModEntry> modsToReplace;
+        public static List<ModEntry> modsToReplace;
 
         public PixelFormat changeTextureType(PixelFormat gamePixelFormat, PixelFormat texturePixelFormat,
                 ref Package package, ref Texture texture)
@@ -572,6 +572,29 @@ namespace MassEffectModder
 
         public string replaceTexturesFromList()
         {
+            // Remove duplicates
+            for (int i = 0; i < modsToReplace.Count; i++)
+            {
+                ModEntry mod = modsToReplace[i];
+                for (int l = 0; l < i; l++)
+                {
+                    if (mod.textureCrc != 0 && mod.textureCrc == modsToReplace[l].textureCrc)
+                    {
+                        modsToReplace.RemoveAt(l);
+                        i--;
+                        break;
+                    }
+                    else if (mod.binaryModType && modsToReplace[l].binaryModType &&
+                        mod.exportId == modsToReplace[l].exportId &&
+                        mod.packagePath.ToLowerInvariant() == modsToReplace[l].packagePath.ToLowerInvariant())
+                    {
+                        modsToReplace.RemoveAt(l);
+                        i--;
+                        break;
+                    }
+                }
+            }
+
             MessageBox.Show("Nothing yet. WIP");
 
             return "";

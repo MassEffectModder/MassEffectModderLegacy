@@ -711,6 +711,7 @@ namespace MassEffectModder
             }
 
             Misc.startTimer();
+            MipMaps.modsToReplace = new List<ModEntry>();
             foreach (ListViewItem item in listViewMods.SelectedItems)
             {
                 errors += mipMaps.newReplaceTextureMod(item.Name, _textures, cachePackageMgr, this, false, ref log);
