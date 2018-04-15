@@ -340,7 +340,7 @@ namespace MassEffectModder
                                 {
                                     ModEntry entry = new ModEntry();
                                     entry.binaryModType = true;
-                                    entry.packagePath = mod.packagePath;
+                                    entry.packagePath = path;
                                     entry.exportId = mod.exportId;
                                     entry.binaryModData = mod.data;
                                     modsToReplace.Add(entry);
@@ -707,7 +707,7 @@ namespace MassEffectModder
                             {
                                 ModEntry entry = new ModEntry();
                                 entry.binaryModType = true;
-                                entry.packagePath = path;
+                                entry.packagePath = pkgPath;
                                 entry.exportId = exportId;
                                 entry.binaryModData = dst;
                                 modsToReplace.Add(entry);
@@ -746,7 +746,7 @@ namespace MassEffectModder
                                     continue;
                                 }
                                 entry.binaryModType = true;
-                                entry.packagePath = path;
+                                entry.packagePath = pkgPath;
                                 entry.exportId = exportId;
                                 entry.binaryModData = buffer;
                                 modsToReplace.Add(entry);
