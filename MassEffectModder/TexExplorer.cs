@@ -531,20 +531,39 @@ namespace MassEffectModder
                                     string path = "";
                                     if (desc2.Contains("Binary Replacement"))
                                     {
-                                        Misc.ParseME3xBinaryScriptMod(scriptLegacy, ref package, ref mod.exportId, ref path);
-                                        if (mod.exportId == -1 || package == "" || path == "")
-                                            throw new Exception();
-                                        len = fs.ReadInt32();
-                                        fs.Skip(len);
+                                        try
+                                        {
+                                            Misc.ParseME3xBinaryScriptMod(scriptLegacy, ref package, ref mod.exportId, ref path);
+                                            if (mod.exportId == -1 || package == "" || path == "")
+                                                throw new Exception();
+                                        }
+                                        catch
+                                        {
+                                            len = fs.ReadInt32();
+                                            fs.Skip(len);
+                                            MessageBox.Show("Skipping not compatible content, entry: " + (i + 1) + " - mod: " + file);
+                                            continue;
+                                        }
                                     }
                                     else
                                     {
                                         string textureName = desc2.Split(' ').Last();
-                                        int index = Misc.ParseLegacyMe3xScriptMod(_textures, scriptLegacy, textureName);
-                                        if (index == -1)
-                                            throw new Exception();
-                                        mod.textureCrc = _textures[index].crc;
+                                        try
+                                        {
+                                            int index = Misc.ParseLegacyMe3xScriptMod(_textures, scriptLegacy, textureName);
+                                            if (index == -1)
+                                                throw new Exception();
+                                        }
+                                        catch
+                                        {
+                                            len = fs.ReadInt32();
+                                            fs.Skip(len);
+                                            MessageBox.Show("Skipping not compatible content, entry: " + (i + 1) + " - mod: " + file);
+                                            continue;
+                                        }
                                     }
+                                    len = fs.ReadInt32();
+                                    fs.Skip(len);
                                 }
                             }
                         }

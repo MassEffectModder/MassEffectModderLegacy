@@ -306,7 +306,7 @@ namespace MassEffectModder
                                     errors += "Skipping not compatible content, entry: " + (i + 1) + " - mod: " + filenameMod + Environment.NewLine;
                                     continue;
                                 }
-                                mod.textureCrc = textures[index].crc;
+                                mod.textureCrc = f.crc;
                                 mod.textureName = f.name;
                                 len = fs.ReadInt32();
                                 mod.data = fs.ReadToBuffer(len);
