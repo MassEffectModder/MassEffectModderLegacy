@@ -896,35 +896,33 @@ namespace MassEffectModder
                         diskUsage += new FileInfo(item.Name).Length;
                     }
                     diskUsage = (long)(diskUsage * 2.5);
-                    if (diskUsage < diskFreeSpace)
-                    {
-                        List<FoundTexture> textures = new List<FoundTexture>();
-                        new TreeScan().loadTexturesMap(GameData.gameType, textures);
-
-                        Misc.startTimer();
-                        richTextBoxInfo.Text = "";
-                        string log = "";
-                        foreach (ListViewItem item in listViewMods.SelectedItems)
-                        {
-                            string outDir = Path.Combine(modFile.SelectedPath, Path.GetFileNameWithoutExtension(item.Name));
-                            Directory.CreateDirectory(outDir);
-                            _mainWindow.updateStatusLabel("MEM: " + item.Text + "extracting...");
-                            _mainWindow.updateStatusLabel2("");
-                            richTextBoxInfo.Text += mipMaps.extractTextureMod(item.Name, outDir, textures, cachePackageMgr, this, ref log);
-                        }
-                        var time = Misc.stopTimer();
-                        _mainWindow.updateStatusLabel("MEMs extracted. Process total time: " + Misc.getTimerFormat(time));
-                        _mainWindow.updateStatusLabel2("");
-                        if (richTextBoxInfo.Text != "")
-                        {
-                            richTextBoxInfo.Show();
-                            pictureBoxPreview.Hide();
-                            MessageBox.Show("WARNING: Some errors have occured!");
-                        }
-                    }
-                    else
+                    if (diskUsage > diskFreeSpace)
                     {
                         MessageBox.Show("You have not enough disk space remaining. You need about " + Misc.getBytesFormat(diskUsage) + " free.");
+                        EnableMenuOptions(true);
+                        _mainWindow.updateStatusLabel("");
+                        _mainWindow.updateStatusLabel2("");
+                    }
+
+                    Misc.startTimer();
+                    richTextBoxInfo.Text = "";
+                    string log = "";
+                    foreach (ListViewItem item in listViewMods.SelectedItems)
+                    {
+                        string outDir = Path.Combine(modFile.SelectedPath, Path.GetFileNameWithoutExtension(item.Name));
+                        Directory.CreateDirectory(outDir);
+                        _mainWindow.updateStatusLabel("MEM: " + item.Text + "extracting...");
+                        _mainWindow.updateStatusLabel2("");
+                        richTextBoxInfo.Text += mipMaps.extractTextureMod(item.Name, outDir, texturesPreMap, cachePackageMgr, this, ref log);
+                    }
+                    var time = Misc.stopTimer();
+                    _mainWindow.updateStatusLabel("MEMs extracted. Process total time: " + Misc.getTimerFormat(time));
+                    _mainWindow.updateStatusLabel2("");
+                    if (richTextBoxInfo.Text != "")
+                    {
+                        richTextBoxInfo.Show();
+                        pictureBoxPreview.Hide();
+                        MessageBox.Show("WARNING: Some errors have occured!");
                     }
                 }
             }
@@ -1035,7 +1033,7 @@ namespace MassEffectModder
                         _mainWindow.updateStatusLabel2("");
                     }
 
-                Misc.startTimer();
+                    Misc.startTimer();
                     _mainWindow.updateStatusLabel("MEMs packing...");
                     _mainWindow.updateStatusLabel2("");
                     richTextBoxInfo.Text = "";
