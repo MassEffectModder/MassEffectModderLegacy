@@ -29,6 +29,12 @@ using System.Windows.Forms;
 
 namespace MassEffectModder
 {
+    struct TFCTexture
+    {
+        public byte[] guid;
+        public string name;
+    }
+
     public partial class MipMaps
     {
         TFCTexture[] guids = new TFCTexture[]

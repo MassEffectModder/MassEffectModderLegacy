@@ -28,32 +28,6 @@ using System.Windows.Forms;
 
 namespace MassEffectModder
 {
-    public enum MeType
-    {
-        ME1_TYPE = 1,
-        ME2_TYPE,
-        ME3_TYPE
-    }
-
-    struct TFCTexture
-    {
-        public byte[] guid;
-        public string name;
-    }
-
-    public struct BinaryMod
-    {
-        public string packagePath;
-        public int exportId;
-        public byte[] data;
-        public int binaryModType;
-        public string textureName;
-        public uint textureCrc;
-        public bool markConvert;
-        public long offset;
-        public long size;
-    };
-
     public struct MatchedTexture
     {
         public int exportID;
