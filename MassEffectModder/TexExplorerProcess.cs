@@ -341,6 +341,7 @@ namespace MassEffectModder
                                     ModEntry entry = new ModEntry();
                                     entry.binaryModType = true;
                                     entry.packagePath = mod.packagePath;
+                                    entry.exportId = mod.exportId;
                                     entry.binaryModData = mod.data;
                                     modsToReplace.Add(entry);
                                 }
@@ -755,6 +756,7 @@ namespace MassEffectModder
                                 ModEntry entry = new ModEntry();
                                 entry.binaryModType = true;
                                 entry.packagePath = path;
+                                entry.exportId = exportId;
                                 entry.binaryModData = dst;
                                 modsToReplace.Add(entry);
                             }
@@ -772,11 +774,30 @@ namespace MassEffectModder
                             {
                                 Package pkg = cachePackageMgr.OpenPackage(path);
                                 byte[] buffer = new Xdelta3Helper.Xdelta3().Decompress(pkg.getExportData(exportId), dst);
+                                if (buffer.Length == 0)
+                                {
+                                    errors += "Warning: Xdelta patch for " + path + " failed to apply." + Environment.NewLine;
+                                    log += "Warning: Xdelta patch for " + path + " failed to apply." + Environment.NewLine;
+                                    continue;
+                                }
                                 pkg.setExportData(exportId, buffer);
                             }
                             else
                             {
-                                // TODO
+                                ModEntry entry = new ModEntry();
+                                Package pkg = new Package(path);
+                                byte[] buffer = new Xdelta3Helper.Xdelta3().Decompress(pkg.getExportData(exportId), dst);
+                                if (buffer.Length == 0)
+                                {
+                                    errors += "Warning: Xdelta patch for " + path + " failed to apply." + Environment.NewLine;
+                                    log += "Warning: Xdelta patch for " + path + " failed to apply." + Environment.NewLine;
+                                    continue;
+                                }
+                                entry.binaryModType = true;
+                                entry.packagePath = path;
+                                entry.exportId = exportId;
+                                entry.binaryModData = buffer;
+                                modsToReplace.Add(entry);
                             }
                         }
                         else
