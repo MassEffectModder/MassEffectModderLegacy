@@ -54,8 +54,7 @@ namespace MassEffectModder
         public byte[] binaryModData;
 
         public string memPath;
-        public long memDataOffset;
-        public long memDataSize;
+        public int memFileIndex;
     };
 
     public partial class MipMaps

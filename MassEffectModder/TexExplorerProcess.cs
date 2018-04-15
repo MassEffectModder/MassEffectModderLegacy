@@ -674,61 +674,13 @@ namespace MassEffectModder
                                 }
                                 else
                                 {
-                                    bool markToConvert;
-                                    if (modFiles[i].tag == FileTextureTag2)
-                                        markToConvert = true;
-                                    else
-                                        markToConvert = false;
-
-                                    int indexPremap = -1;
-                                    for (int t = 0; t < texExplorer.texturesPreMap.Count; t++)
-                                    {
-                                        if (texExplorer.texturesPreMap[t].crc == crc)
-                                        {
-                                            indexPremap = t;
-                                            break;
-                                        }
-                                    }
-
-                                    PixelFormat pixelFormat = texExplorer.texturesPreMap[indexPremap].pixfmt;
-                                    Image image = new Image(dst, Image.ImageFormat.DDS);
-
-                                    if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
-                                        texExplorer.texturesPreMap[indexPremap].width / texExplorer.texturesPreMap[indexPremap].height)
-                                    {
-                                        errors += "Error in texture: " + foundTexture.name + string.Format("_0x{0:X8}", foundTexture.crc) + " This texture has wrong aspect ratio, skipping texture..." + foundTexture.name + Environment.NewLine;
-                                        continue;
-                                    }
-
-                                    PixelFormat newPixelFormat = pixelFormat;
-                                    if (markToConvert)
-                                        newPixelFormat = Misc.changeTextureType(pixelFormat, image.pixelFormat, foundTexture.flags);
-
-                                    if (!image.checkDDSHaveAllMipmaps() ||
-                                       (foundTexture.list.Find(s => s.path != "").numMips > 1 && image.mipMaps.Count() <= 1) ||
-                                       (markToConvert && image.pixelFormat != newPixelFormat) ||
-                                       (!markToConvert && image.pixelFormat != pixelFormat))
-                                    {
-                                        texExplorer._mainWindow.updateStatusLabel2("Converting/correcting texture: " + foundTexture.name);
-                                        bool dxt1HasAlpha = false;
-                                        byte dxt1Threshold = 128;
-                                        if (texExplorer.texturesPreMap[indexPremap].flags == TexProperty.TextureTypes.OneBitAlpha)
-                                        {
-                                            dxt1HasAlpha = true;
-                                            if (image.pixelFormat == PixelFormat.ARGB ||
-                                                image.pixelFormat == PixelFormat.DXT3 ||
-                                                image.pixelFormat == PixelFormat.DXT5)
-                                            {
-                                                errors += "Warning for texture: " + foundTexture.name + ". This texture converted from full alpha to binary alpha." + Environment.NewLine;
-                                            }
-                                        }
-                                        image.correctMips(newPixelFormat, dxt1HasAlpha, dxt1Threshold);
-                                    }
-
                                     ModEntry entry = new ModEntry();
-                                    entry.cacheImage = image;
                                     entry.textureCrc = foundTexture.crc;
                                     entry.textureName = foundTexture.name;
+                                    if (modFiles[i].tag == FileTextureTag2)
+                                        entry.markConvert = true;
+                                    entry.memPath = filenameMod;
+                                    entry.memFileIndex = i;
                                     modsToReplace.Add(entry);
                                 }
                             }
