@@ -578,15 +578,10 @@ namespace MassEffectModder
                 ModEntry mod = modsToReplace[i];
                 for (int l = 0; l < i; l++)
                 {
-                    if (mod.textureCrc != 0 && mod.textureCrc == modsToReplace[l].textureCrc)
-                    {
-                        modsToReplace.RemoveAt(l);
-                        i--;
-                        break;
-                    }
-                    else if (mod.binaryModType && modsToReplace[l].binaryModType &&
+                    if ((mod.textureCrc != 0 && mod.textureCrc == modsToReplace[l].textureCrc) ||
+                        (mod.binaryModType && modsToReplace[l].binaryModType &&
                         mod.exportId == modsToReplace[l].exportId &&
-                        mod.packagePath.ToLowerInvariant() == modsToReplace[l].packagePath.ToLowerInvariant())
+                        mod.packagePath.ToLowerInvariant() == modsToReplace[l].packagePath.ToLowerInvariant()))
                     {
                         modsToReplace.RemoveAt(l);
                         i--;
