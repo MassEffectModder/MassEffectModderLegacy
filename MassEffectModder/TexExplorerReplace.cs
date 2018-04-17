@@ -570,7 +570,7 @@ namespace MassEffectModder
             return errors;
         }
 
-        public string replaceTexturesFromList()
+        public string replaceTexturesFromList(List<FoundTexture> textures)
         {
             // Remove duplicates
             for (int i = 0; i < modsToReplace.Count; i++)
