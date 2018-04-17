@@ -1407,7 +1407,7 @@ namespace MassEffectModder
 
             log += "Saving packages started..." + Environment.NewLine;
             customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
-            cachePackageMgr.CloseAllWithSave(checkBoxOptionRepack.Checked, true, false);
+            cachePackageMgr.CloseAllWithSave(checkBoxOptionRepack.Checked, !updateMode, false);
             log += "Saving packages finished" + Environment.NewLine + Environment.NewLine;
 
 
@@ -1443,8 +1443,11 @@ namespace MassEffectModder
                         {
                             package.Dispose();
                             package = new Package(pkgsToRepack[i]);
-                            if (package.SaveToFile(true))
-                                pkgsToMarker.Remove(package.packagePath);
+                            if (package.SaveToFile(true, false, !updateMode))
+                            {
+                                if (pkgsToMarker != null)
+                                    pkgsToMarker.Remove(package.packagePath);
+                            }
                         }
                         package.Dispose();
                     }
