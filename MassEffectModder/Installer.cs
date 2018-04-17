@@ -1422,7 +1422,7 @@ namespace MassEffectModder
                 }
                 else
                 {
-                    errors += mipMaps.removeMipMapsME2ME3(textures, null, this, checkBoxOptionRepack.Checked, false);
+                    errors += mipMaps.removeMipMapsME2ME3(textures, null, this, false, checkBoxOptionRepack.Checked);
                 }
                 log += "Remove mipmaps finished" + Environment.NewLine + Environment.NewLine;
             }
