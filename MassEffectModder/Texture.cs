@@ -490,6 +490,7 @@ namespace MassEffectModder
                     {
                         newData.WriteUInt32(0);
                         textureData.JumpTo(mipmap.internalOffset);
+                        mipmap.internalOffset = (uint)newData.Position;
                         newData.WriteFromBuffer(textureData.ReadToBuffer(mipmap.uncompressedSize));
                     }
                     else if (mipmap.storageType == StorageTypes.pccLZO ||
@@ -498,6 +499,7 @@ namespace MassEffectModder
                         mipmap.dataOffset = (uint)newData.Position + pccTextureDataOffset + 4;
                         newData.WriteUInt32(mipmap.dataOffset);
                         textureData.JumpTo(mipmap.internalOffset);
+                        mipmap.internalOffset = (uint)newData.Position;
                         newData.WriteFromBuffer(textureData.ReadToBuffer(mipmap.compressedSize));
                     }
                     else
