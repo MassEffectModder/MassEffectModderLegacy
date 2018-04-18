@@ -165,66 +165,71 @@ namespace MassEffectModder
                         {
                             if (ipc)
                             {
-                                Console.WriteLine("[IPC]ERROR Texture " + package.exportsTable[exportID].objectName + " not found in package: " + list[i].pkgPath + ", skipping...");
+                                Console.WriteLine("[IPC]ERROR Texture " + package.exportsTable[exportID].objectName + " not found in tree: " + list[i].pkgPath + ", skipping...");
                                 Console.Out.Flush();
                             }
                             else
                             {
-                            errors += "Error: Texture " + package.exportsTable[exportID].objectName + " not found in package: " + list[i].pkgPath + ", skipping..." + Environment.NewLine;
+                                errors += "Error: Texture " + package.exportsTable[exportID].objectName + " not found in tree: " + list[i].pkgPath + ", skipping..." + Environment.NewLine;
                             }
-                            goto skip;
+                            continue;
                         }
 
-                        if (foundTexture.list[foundListEntry].linkToMaster != -1)
+                        MatchedTexture m = foundTexture.list[foundListEntry];
+                        if (m.linkToMaster != -1)
                         {
                             if (phase == 1)
                                 continue;
 
-                            MatchedTexture foundMasterTex = foundTexture.list[foundTexture.list[foundListEntry].linkToMaster];
-                            Package masterPkg = null;
-                            masterPkg = new Package(GameData.GamePath + foundMasterTex.path);
-                            int masterExportId = foundMasterTex.exportID;
-                            byte[] masterData = masterPkg.getExportData(masterExportId);
-                            masterPkg.DisposeCache();
-                            using (Texture masterTexture = new Texture(masterPkg, masterExportId, masterData, false))
+                            MatchedTexture foundMasterTex = foundTexture.list[m.linkToMaster];
+                            if (texture.mipMapsList.Count != foundMasterTex.masterDataOffset.Count)
                             {
-                                if (texture.mipMapsList.Count != masterTexture.mipMapsList.Count)
+                                if (ipc)
                                 {
-                                    if (ipc)
-                                    {
-                                        Console.WriteLine("[IPC]ERROR Texture " + package.exportsTable[exportID].objectName + " in package: " + foundMasterTex.path + " has wrong reference, skipping..." + Environment.NewLine);
-                                        Console.Out.Flush();
-                                    }
-                                    else
-                                    {
-                                    	errors += "Error: Texture " + package.exportsTable[exportID].objectName + " in package: " + foundMasterTex.path + " has wrong reference, skipping..." + Environment.NewLine;
-                                    }
-                                    goto skip;
+                                    Console.WriteLine("[IPC]ERROR Texture " + package.exportsTable[exportID].objectName + " in package: " + foundMasterTex.path + " has wrong reference, skipping..." + Environment.NewLine);
+                                    Console.Out.Flush();
                                 }
-                                for (int t = 0; t < texture.mipMapsList.Count; t++)
+                                else
                                 {
-                                    Texture.MipMap mipmap = texture.mipMapsList[t];
-                                    if (mipmap.storageType == Texture.StorageTypes.extLZO ||
-                                        mipmap.storageType == Texture.StorageTypes.extZlib ||
-                                        mipmap.storageType == Texture.StorageTypes.extUnc)
-                                    {
-                                        mipmap.dataOffset = masterPkg.exportsTable[masterExportId].dataOffset + (uint)masterTexture.properties.propertyEndOffset + masterTexture.mipMapsList[t].internalOffset;
-                                        texture.mipMapsList[t] = mipmap;
-                                    }
+                                    errors += "Error: Texture " + package.exportsTable[exportID].objectName + " in package: " + foundMasterTex.path + " has wrong reference, skipping..." + Environment.NewLine;
+                                }
+                                continue;
+                            }
+                            for (int t = 0; t < texture.mipMapsList.Count; t++)
+                            {
+                                Texture.MipMap mipmap = texture.mipMapsList[t];
+                                if (mipmap.storageType == Texture.StorageTypes.extLZO ||
+                                    mipmap.storageType == Texture.StorageTypes.extZlib ||
+                                    mipmap.storageType == Texture.StorageTypes.extUnc)
+                                {
+                                    mipmap.dataOffset = foundMasterTex.masterDataOffset[t];
+                                    texture.mipMapsList[t] = mipmap;
                                 }
                             }
-                            masterPkg.Dispose();
                         }
-                        MatchedTexture m = foundTexture.list[foundListEntry];
-                        m.removeEmptyMips = false;
-                        textures[foundTextureEntry].list[foundListEntry] = m;
-skip:
+
+                        uint packageDataOffset;
                         using (MemoryStream newData = new MemoryStream())
                         {
                             newData.WriteFromBuffer(texture.properties.toArray());
-                            newData.WriteFromBuffer(texture.toArray(package.exportsTable[exportID].dataOffset + (uint)newData.Position));
+                            packageDataOffset = package.exportsTable[exportID].dataOffset + (uint)newData.Position;
+                            newData.WriteFromBuffer(texture.toArray(packageDataOffset));
                             package.setExportData(exportID, newData.ToArray());
                         }
+
+                        if (m.linkToMaster == -1)
+                        {
+                            if (phase == 2)
+                                throw new Exception();
+                            m.masterDataOffset = new List<uint>();
+                            for (int t = 0; t < texture.mipMapsList.Count; t++)
+                            {
+                                m.masterDataOffset.Add(packageDataOffset + texture.mipMapsList[t].internalOffset);
+                            }
+                        }
+
+                        m.removeEmptyMips = false;
+                        textures[foundTextureEntry].list[foundListEntry] = m;
                     }
                 }
                 if (package.SaveToFile(false, false, installer != null))
@@ -233,7 +238,6 @@ skip:
                         Installer.pkgsToMarker.Remove(package.packagePath);
                 }
                 package.Dispose();
-
             }
             return errors;
         }
