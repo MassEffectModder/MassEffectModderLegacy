@@ -556,7 +556,7 @@ namespace MassEffectModder
                 using (MemoryStream newData = new MemoryStream())
                 {
                     newData.WriteFromBuffer(texture.properties.toArray());
-                    newData.WriteFromBuffer(texture.toArray(0)); // filled later
+                    newData.WriteFromBuffer(texture.toArray(0, false)); // filled later
                     package.setExportData(nodeTexture.exportID, newData.ToArray());
                 }
 
