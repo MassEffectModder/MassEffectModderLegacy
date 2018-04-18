@@ -49,6 +49,7 @@ namespace MassEffectModder
         public List<MipMap> arcTexture;
         public List<MipMap> cprTexture;
         public byte[] cprTfcGuid;
+        public int instance;
 
         public bool binaryModType;
         public byte[] binaryModData;
@@ -57,6 +58,27 @@ namespace MassEffectModder
         public long memEntryOffset;
         public long memEntrySize;
     };
+
+    public struct MapTexturesToMod
+    {
+        public string packagePath;
+        public int modIndex;
+        public int texturesIndex;
+        public int listIndex;
+    }
+
+    public struct MapPackagesToModEntry
+    {
+        public int modIndex;
+        public int texturesIndex;
+        public int listIndex;
+    }
+
+    public struct MapPackagesToMod
+    {
+        public string packagePath;
+        public List<MapPackagesToModEntry> textures;
+    }
 
     public partial class MipMaps
     {
@@ -589,6 +611,101 @@ namespace MassEffectModder
                     }
                 }
             }
+
+            List<MapTexturesToMod> map = new List<MapTexturesToMod>();
+            List<MapTexturesToMod> mapSlaves = new List<MapTexturesToMod>();
+
+            for (int k = 0; k < textures.Count; k++)
+            {
+                int index = -1;
+                for (int t = 0; t < modsToReplace.Count; t++)
+                {
+                    if (textures[k].crc == modsToReplace[t].textureCrc)
+                    {
+                        index = t;
+                        break;
+                    }
+                }
+                if (index == -1)
+                    continue;
+
+                for (int t = 0; t < textures[k].list.Count; t++)
+                {
+                    if (textures[k].list[t].path == "")
+                        continue;
+
+                    MapTexturesToMod entry = new MapTexturesToMod();
+                    entry.packagePath = textures[k].list[t].path;
+                    entry.modIndex = index;
+                    entry.listIndex = t;
+                    entry.texturesIndex = k;
+                    if (GameData.gameType == MeType.ME1_TYPE && textures[k].list[t].linkToMaster != -1)
+                        mapSlaves.Add(entry);
+                    else
+                        map.Add(entry);
+
+                    ModEntry mod = modsToReplace[index];
+                    mod.instance++;
+                    modsToReplace[index] = mod;
+                }
+            }
+
+
+            map.Sort((x, y) => x.packagePath.CompareTo(y.packagePath));
+            List<MapPackagesToMod> mapPackages = new List<MapPackagesToMod>();
+            string previousPath = "";
+            int previousIndex = -1;
+            for (int i = 0; i < map.Count; i++)
+            {
+                MapPackagesToModEntry entry = new MapPackagesToModEntry();
+                entry.modIndex = map[i].modIndex;
+                entry.texturesIndex = map[i].texturesIndex;
+                entry.listIndex = map[i].listIndex;
+                string path = map[i].packagePath.ToLowerInvariant();
+                if (previousPath == path)
+                {
+                    mapPackages[previousIndex].textures.Add(entry);
+                }
+                else
+                {
+                    MapPackagesToMod mapEntry = new MapPackagesToMod();
+                    mapEntry.textures = new List<MapPackagesToModEntry>();
+                    mapEntry.textures.Add(entry);
+                    previousPath = mapEntry.packagePath = map[i].packagePath;
+                    mapPackages.Add(mapEntry);
+                    previousIndex++;
+                }
+            }
+            map.Clear();
+
+
+            mapSlaves.Sort((x, y) => x.packagePath.CompareTo(y.packagePath));
+            List<MapPackagesToMod> mapSlavesPackages = new List<MapPackagesToMod>();
+            previousPath = "";
+            previousIndex = -1;
+            for (int i = 0; i < mapSlaves.Count; i++)
+            {
+                MapPackagesToModEntry entry = new MapPackagesToModEntry();
+                entry.modIndex = mapSlaves[i].modIndex;
+                entry.texturesIndex = mapSlaves[i].texturesIndex;
+                entry.listIndex = mapSlaves[i].listIndex;
+                string path = mapSlaves[i].packagePath.ToLowerInvariant();
+                if (previousPath == path)
+                {
+                    mapSlavesPackages[previousIndex].textures.Add(entry);
+                }
+                else
+                {
+                    MapPackagesToMod mapEntry = new MapPackagesToMod();
+                    mapEntry.textures = new List<MapPackagesToModEntry>();
+                    mapEntry.textures.Add(entry);
+                    previousPath = mapEntry.packagePath = mapSlaves[i].packagePath;
+                    mapSlavesPackages.Add(mapEntry);
+                    previousIndex++;
+                }
+            }
+            mapSlaves.Clear();
+
 
             MessageBox.Show("Nothing yet. WIP");
 
