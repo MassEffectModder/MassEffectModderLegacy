@@ -592,7 +592,8 @@ namespace MassEffectModder
             return errors;
         }
 
-        public string replaceTextures(List<MapTexturesToMod> map, List<FoundTexture> textures)
+        public string replaceTextures(List<MapTexturesToMod> map, List<FoundTexture> textures, TexExplorer texExplorer, Installer installer,
+            bool repack, bool appendMarker, bool ipc)
         {
             string errors = "";
 
@@ -614,7 +615,7 @@ namespace MassEffectModder
                     errors += e.Message + Environment.NewLine + Environment.NewLine;
                     errors += e.StackTrace + Environment.NewLine + Environment.NewLine;
                     errors += "---- End ----------------------------------------------" + Environment.NewLine + Environment.NewLine;
-                    break;
+                    continue;
                 }
                 Texture texture = new Texture(package, matched.exportID, package.getExportData(matched.exportID));
                 string fmt = texture.properties.getProperty("Format").valueName;
@@ -628,14 +629,19 @@ namespace MassEffectModder
                 Image image = mod.cacheImage;
                 if (image == null)
                 {
-
+                    using (FileStream fs = new FileStream(mod.memPath, FileMode.Open, FileAccess.Read))
+                    {
+                        fs.JumpTo(mod.memEntryOffset);
+                        byte[] data = decompressData(fs, mod.memEntrySize);
+                        mod.cacheImage = image = new Image(data, Image.ImageFormat.DDS);
+                    }
                 }
 
                 if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
                     texture.mipMapsList[0].width / texture.mipMapsList[0].height)
                 {
                     errors += "Error in texture: " + mod.textureName + " This texture has wrong aspect ratio, skipping texture..." + Environment.NewLine;
-                    break;
+                    continue;
                 }
 
                 if (GameData.gameType == MeType.ME1_TYPE && texture.mipMapsList.Count < 6)
@@ -988,52 +994,64 @@ namespace MassEffectModder
                     mipmaps.Add(mipmap);
                     if (texture.mipMapsList.Count() == 1)
                         break;
-
-                    texture.replaceMipMaps(mipmaps);
-                    texture.properties.setIntValue("SizeX", texture.mipMapsList.First().width);
-                    texture.properties.setIntValue("SizeY", texture.mipMapsList.First().height);
-                    if (texture.properties.exists("MipTailBaseIdx"))
-                        texture.properties.setIntValue("MipTailBaseIdx", texture.mipMapsList.Count() - 1);
-
-                    using (MemoryStream newData = new MemoryStream())
-                    {
-                        newData.WriteFromBuffer(texture.properties.toArray());
-                        newData.WriteFromBuffer(texture.toArray(0, false)); // filled later
-                        package.setExportData(matched.exportID, newData.ToArray());
-                    }
-
-                    using (MemoryStream newData = new MemoryStream())
-                    {
-                        newData.WriteFromBuffer(texture.properties.toArray());
-                        newData.WriteFromBuffer(texture.toArray(package.exportsTable[matched.exportID].dataOffset + (uint)newData.Position));
-                        package.setExportData(matched.exportID, newData.ToArray());
-                    }
-
-                    if (GameData.gameType == MeType.ME1_TYPE)
-                    {
-                        if (matched.linkToMaster == -1)
-                            mod.masterTextures.Add(texture.mipMapsList, entryMap.listIndex);
-                    }
-                    else
-                    {
-                        if (triggerCacheCpr)
-                            mod.cprTexture = texture.mipMapsList;
-                        if (triggerCacheArc)
-                            mod.arcTexture = texture.mipMapsList;
-                    }
-                    if (matched.removeEmptyMips)
-                    {
-                        matched.removeEmptyMips = false;
-                        textures[entryMap.texturesIndex].list[entryMap.listIndex] = matched;
-                    }
-                    package = null;
                 }
+                texture.replaceMipMaps(mipmaps);
+                texture.properties.setIntValue("SizeX", texture.mipMapsList.First().width);
+                texture.properties.setIntValue("SizeY", texture.mipMapsList.First().height);
+                if (texture.properties.exists("MipTailBaseIdx"))
+                    texture.properties.setIntValue("MipTailBaseIdx", texture.mipMapsList.Count() - 1);
+
+                using (MemoryStream newData = new MemoryStream())
+                {
+                    newData.WriteFromBuffer(texture.properties.toArray());
+                    newData.WriteFromBuffer(texture.toArray(0, false)); // filled later
+                    package.setExportData(matched.exportID, newData.ToArray());
+                }
+
+                using (MemoryStream newData = new MemoryStream())
+                {
+                    newData.WriteFromBuffer(texture.properties.toArray());
+                    newData.WriteFromBuffer(texture.toArray(package.exportsTable[matched.exportID].dataOffset + (uint)newData.Position));
+                    package.setExportData(matched.exportID, newData.ToArray());
+                }
+
+                if (GameData.gameType == MeType.ME1_TYPE)
+                {
+                    if (matched.linkToMaster == -1)
+                        mod.masterTextures.Add(texture.mipMapsList, entryMap.listIndex);
+                }
+                else
+                {
+                    if (triggerCacheCpr)
+                        mod.cprTexture = texture.mipMapsList;
+                    if (triggerCacheArc)
+                        mod.arcTexture = texture.mipMapsList;
+                }
+                if (matched.removeEmptyMips)
+                {
+                    matched.removeEmptyMips = false;
+                    textures[entryMap.texturesIndex].list[entryMap.listIndex] = matched;
+                }
+
+                modsToReplace[entryMap.modIndex] = mod;
+                textures[entryMap.texturesIndex].list[entryMap.listIndex] = matched;
+
+                if (package.SaveToFile(repack, false, appendMarker))
+                {
+                    if (repack && Installer.pkgsToRepack != null)
+                        Installer.pkgsToRepack.Remove(package.packagePath);
+                    if (appendMarker && Installer.pkgsToMarker != null)
+                        Installer.pkgsToMarker.Remove(package.packagePath);
+                }
+                package.Dispose();
+                package = null;
             }
 
             return errors;
         }
 
-        public string replaceTexturesFromList(List<FoundTexture> textures)
+        public string replaceTexturesFromList(List<FoundTexture> textures, TexExplorer texExplorer, Installer installer,
+            bool repack, bool appendMarker, bool ipc)
         {
             // Remove duplicates
             for (int i = 0; i < modsToReplace.Count; i++)
@@ -1147,10 +1165,34 @@ namespace MassEffectModder
             }
             mapSlaves.Clear();
 
+            string errors = "";
+            for (int i = 0; i < modsToReplace.Count; i++)
+            {
+                ModEntry mod = modsToReplace[i];
+                if (mod.binaryModType)
+                {
+                    string path = GameData.GamePath + mod.packagePath;
+                    if (!File.Exists(path))
+                    {
+                        errors += "Warning: File " + path + " not exists in your game setup." + Environment.NewLine;
+                        continue;
+                    }
+                    Package pkg = new Package(path);
+                    pkg.setExportData(mod.exportId, mod.binaryModData);
+                    if (pkg.SaveToFile(repack, false, appendMarker))
+                    {
+                        if (repack && Installer.pkgsToRepack != null)
+                            Installer.pkgsToRepack.Remove(pkg.packagePath);
+                        if (appendMarker && Installer.pkgsToMarker != null)
+                            Installer.pkgsToMarker.Remove(pkg.packagePath);
+                    }
+                    pkg.Dispose();
+                }
+            }
 
-            string errors = replaceTextures(map, textures);
+            errors += replaceTextures(map, textures, texExplorer, installer, repack, appendMarker, ipc);
             if (GameData.gameType == MeType.ME1_TYPE)
-                errors += replaceTextures(mapSlaves, textures);
+                errors += replaceTextures(mapSlaves, textures, texExplorer, installer, repack, appendMarker, ipc);
 
             return errors;
         }

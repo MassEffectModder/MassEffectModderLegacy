@@ -720,7 +720,7 @@ namespace MassEffectModder
             }
             _mainWindow.updateStatusLabel("");
 
-            errors += mipMaps.replaceTexturesFromList(_textures);
+            errors += mipMaps.replaceTexturesFromList(_textures, this, null, false, false, false);
 
             var time = Misc.stopTimer();
             if (listViewMods.Items.Count == 0)
