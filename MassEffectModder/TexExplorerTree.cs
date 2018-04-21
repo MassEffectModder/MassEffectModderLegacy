@@ -294,6 +294,7 @@ namespace MassEffectModder
                         GameData.packageFiles[i].Contains("_ES.") ||
                         GameData.packageFiles[i].Contains("_DE.") ||
                         GameData.packageFiles[i].Contains("_RA.") ||
+                        GameData.packageFiles[i].Contains("_RU.") ||
                         GameData.packageFiles[i].Contains("_PLPC.") ||
                         GameData.packageFiles[i].Contains("_DEU.") ||
                         GameData.packageFiles[i].Contains("_FRA.") ||

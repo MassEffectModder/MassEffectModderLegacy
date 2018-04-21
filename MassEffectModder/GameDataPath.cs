@@ -1,7 +1,7 @@
 /*
  * MassEffectModder
  *
- * Copyright (C) 2014-2017 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2014-2018 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -332,9 +332,11 @@ namespace MassEffectModder
                     StringComparison.OrdinalIgnoreCase) ||
                     s.EndsWith(".u", StringComparison.OrdinalIgnoreCase) ||
                     s.EndsWith(".sfm", StringComparison.OrdinalIgnoreCase)).ToList();
-                if (packageFiles.FindAll(s => s.Contains("_PLPC.")).Count() > 10)
+                if (packageFiles.FindAll(s => s.Contains("_PLPC.")).Count() > 5)
                     FullScanME1Game = true;
-                if (packageFiles.FindAll(s => s.Contains("_RA.")).Count() > 10)
+                if (packageFiles.FindAll(s => s.Contains("_RA.")).Count() > 5)
+                    FullScanME1Game = true;
+                if (packageFiles.FindAll(s => s.Contains("_RU.")).Count() > 5)
                     FullScanME1Game = true;
 
                 if (Directory.Exists(DLCData))
