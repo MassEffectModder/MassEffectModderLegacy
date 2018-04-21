@@ -426,10 +426,11 @@ namespace MassEffectModder
             TexPropertyEntry texProperty;
             if (exists(name))
             {
-                texProperty = texPropertyList.Find(s => s.name == name);
+                int index = texPropertyList.IndexOf(texPropertyList.Find(s => s.name == name));
+                fetchValue(index);
+                texProperty = texPropertyList[index];
                 if (texProperty.type != "StructProperty" || texProperty.valueStruct.Length != valueStruct.Length)
                     throw new Exception();
-                fetchValue(name);
             }
             else
             {
