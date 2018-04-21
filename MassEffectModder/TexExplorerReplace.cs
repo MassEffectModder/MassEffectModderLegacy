@@ -647,6 +647,8 @@ namespace MassEffectModder
                     MapPackagesToModEntry entryMap = map[e].textures[p];
                     MatchedTexture matched = textures[entryMap.texturesIndex].list[entryMap.listIndex];
                     ModEntry mod = modsToReplace[entryMap.modIndex];
+                    if (mod.masterTextures == null)
+                        mod.masterTextures = new Dictionary<List<Texture.MipMap>, int>();
 
                     Texture texture = new Texture(package, matched.exportID, package.getExportData(matched.exportID));
                     string fmt = texture.properties.getProperty("Format").valueName;
@@ -1231,9 +1233,7 @@ namespace MassEffectModder
 
 
             mapSlaves.Sort((x, y) => x.packagePath.CompareTo(y.packagePath));
-            List<MapPackagesToMod> mapSlavesPackages = new List<MapPackagesToMod>();
             previousPath = "";
-            previousIndex = -1;
             for (int i = 0; i < mapSlaves.Count; i++)
             {
                 MapPackagesToModEntry entry = new MapPackagesToModEntry();
@@ -1243,16 +1243,16 @@ namespace MassEffectModder
                 string path = mapSlaves[i].packagePath.ToLowerInvariant();
                 if (previousPath == path)
                 {
-                    mapSlavesPackages[previousIndex].textures.Add(entry);
+                    mapPackages[previousIndex].textures.Add(entry);
                 }
                 else
                 {
                     MapPackagesToMod mapEntry = new MapPackagesToMod();
                     mapEntry.textures = new List<MapPackagesToModEntry>();
                     mapEntry.textures.Add(entry);
-                    mapEntry.packagePath = map[i].packagePath;
-                    previousPath = map[i].packagePath.ToLowerInvariant();
-                    mapSlavesPackages.Add(mapEntry);
+                    mapEntry.packagePath = mapSlaves[i].packagePath;
+                    previousPath = mapSlaves[i].packagePath.ToLowerInvariant();
+                    mapPackages.Add(mapEntry);
                     previousIndex++;
                 }
             }
@@ -1295,7 +1295,7 @@ namespace MassEffectModder
                 }
             }
 
-            if (mapPackages.Count != 0 || mapSlavesPackages.Count != 0)
+            if (mapPackages.Count != 0)
             {
                 if (texExplorer != null)
                 {
@@ -1308,8 +1308,6 @@ namespace MassEffectModder
                 }
 
                 errors += replaceTextures(mapPackages, textures, texExplorer, installer, repack, appendMarker, ipc);
-                if (GameData.gameType == MeType.ME1_TYPE)
-                    errors += replaceTextures(mapSlavesPackages, textures, texExplorer, installer, repack, appendMarker, ipc);
             }
 
             return errors;
