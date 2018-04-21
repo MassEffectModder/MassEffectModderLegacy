@@ -48,6 +48,7 @@ namespace MassEffectModder
         public Dictionary<List<Texture.MipMap>, int> masterTextures;
         public List<Texture.MipMap> arcTexture;
         public byte[] arcTfcGuid;
+        public string arcTfcName;
         public List<Texture.MipMap> cprTexture;
         public int instance;
 
@@ -754,98 +755,106 @@ namespace MassEffectModder
                     }
 
                     bool triggerCacheArc = false, triggerCacheCpr = false;
+                    bool newTfcFile = false;
+                    bool oldSpace = true;
                     string archiveFile = "";
-                    byte[] origGuid = new byte[16];
                     if (texture.properties.exists("TextureFileCacheName"))
                     {
-                        Array.Copy(texture.properties.getProperty("TFCFileGuid").valueStruct, origGuid, 16);
-                        string archive = texture.properties.getProperty("TextureFileCacheName").valueName;
-                        archiveFile = Path.Combine(GameData.MainData, archive + ".tfc");
-                        if (matched.path.ToLowerInvariant().Contains("\\dlc"))
+                        if (mod.arcTexture == null)
                         {
-                            string DLCArchiveFile = Path.Combine(Path.GetDirectoryName(GameData.GamePath + matched.path), archive + ".tfc");
-                            if (File.Exists(DLCArchiveFile))
-                                archiveFile = DLCArchiveFile;
-                            else if (!File.Exists(archiveFile))
+                            string archive = texture.properties.getProperty("TextureFileCacheName").valueName;
+                            archiveFile = Path.Combine(GameData.MainData, archive + ".tfc");
+                            if (matched.path.ToLowerInvariant().Contains("\\dlc"))
                             {
-                                List<string> files = Directory.GetFiles(GameData.bioGamePath, archive + ".tfc",
-                                    SearchOption.AllDirectories).Where(item => item.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase)).ToList();
-                                if (files.Count == 1)
-                                    archiveFile = files[0];
-                                else if (files.Count == 0)
+                                string DLCArchiveFile = Path.Combine(Path.GetDirectoryName(GameData.GamePath + matched.path), archive + ".tfc");
+                                if (File.Exists(DLCArchiveFile))
+                                    archiveFile = DLCArchiveFile;
+                                else if (!File.Exists(archiveFile))
                                 {
-                                    DLCArchiveFile = Path.Combine(Path.GetDirectoryName(DLCArchiveFile),
-                                        "Textures_" + Path.GetFileName(Path.GetDirectoryName(Path.GetDirectoryName(GameData.GamePath + matched.path)) + ".tfc"));
-                                    if (File.Exists(DLCArchiveFile))
-                                        archiveFile = DLCArchiveFile;
+                                    List<string> files = Directory.GetFiles(GameData.bioGamePath, archive + ".tfc",
+                                        SearchOption.AllDirectories).Where(item => item.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase)).ToList();
+                                    if (files.Count == 1)
+                                        archiveFile = files[0];
+                                    else if (files.Count == 0)
+                                    {
+                                        DLCArchiveFile = Path.Combine(Path.GetDirectoryName(DLCArchiveFile),
+                                            "Textures_" + Path.GetFileName(Path.GetDirectoryName(Path.GetDirectoryName(GameData.GamePath + matched.path)) + ".tfc"));
+                                        if (File.Exists(DLCArchiveFile))
+                                            archiveFile = DLCArchiveFile;
+                                        else
+                                            archiveFile = Path.Combine(GameData.MainData, "Textures.tfc");
+                                    }
                                     else
-                                        archiveFile = Path.Combine(GameData.MainData, "Textures.tfc");
+                                        throw new Exception("");
                                 }
+                            }
+
+                            // chek if texture fit in old space
+                            for (int mip = 0; mip < image.mipMaps.Count(); mip++)
+                            {
+                                Texture.MipMap testMipmap = new Texture.MipMap();
+                                testMipmap.width = image.mipMaps[mip].origWidth;
+                                testMipmap.height = image.mipMaps[mip].origHeight;
+                                if (texture.existMipmap(testMipmap.width, testMipmap.height))
+                                    testMipmap.storageType = texture.getMipmap(testMipmap.width, testMipmap.height).storageType;
                                 else
-                                    throw new Exception("");
-                            }
-                        }
-
-                        // dry run to test if texture fit in old space
-                        bool oldSpace = true;
-                        for (int m = 0; m < image.mipMaps.Count(); m++)
-                        {
-                            Texture.MipMap mipmap = new Texture.MipMap();
-                            mipmap.width = image.mipMaps[m].origWidth;
-                            mipmap.height = image.mipMaps[m].origHeight;
-                            if (texture.existMipmap(mipmap.width, mipmap.height))
-                                mipmap.storageType = texture.getMipmap(mipmap.width, mipmap.height).storageType;
-                            else
-                            {
-                                oldSpace = false;
-                                break;
-                            }
-
-                            if (mipmap.storageType == Texture.StorageTypes.extZlib ||
-                                mipmap.storageType == Texture.StorageTypes.extLZO)
-                            {
-                                Texture.MipMap oldMipmap = texture.getMipmap(mipmap.width, mipmap.height);
-                                if (mod.cacheCprMipmaps[m].Length > oldMipmap.compressedSize)
                                 {
                                     oldSpace = false;
                                     break;
                                 }
-                            }
-                            if (texture.mipMapsList.Count() == 1)
-                                break;
-                        }
 
-                        long fileLength = new FileInfo(archiveFile).Length;
-                        if (!oldSpace && fileLength + 0x5000000 > 0x80000000)
-                        {
-                            archiveFile = "";
-                            foreach (TFCTexture newGuid in guids)
-                            {
-                                archiveFile = Path.Combine(GameData.MainData, newGuid.name + ".tfc");
-                                if (!File.Exists(archiveFile))
+                                if (testMipmap.storageType == Texture.StorageTypes.extZlib ||
+                                    testMipmap.storageType == Texture.StorageTypes.extLZO)
                                 {
-                                    texture.properties.setNameValue("TextureFileCacheName", newGuid.name);
-                                    texture.properties.setStructValue("TFCFileGuid", "Guid", newGuid.guid);
-                                    using (FileStream fs = new FileStream(archiveFile, FileMode.CreateNew, FileAccess.Write))
+                                    Texture.MipMap oldTestMipmap = texture.getMipmap(testMipmap.width, testMipmap.height);
+                                    if (mod.cacheCprMipmaps[mip].Length > oldTestMipmap.compressedSize)
                                     {
-                                        fs.WriteFromBuffer(newGuid.guid);
-                                    }
-                                    break;
-                                }
-                                else
-                                {
-                                    fileLength = new FileInfo(archiveFile).Length;
-                                    if (fileLength + 0x5000000 < 0x80000000)
-                                    {
-                                        texture.properties.setNameValue("TextureFileCacheName", newGuid.name);
-                                        texture.properties.setStructValue("TFCFileGuid", "Guid", newGuid.guid);
+                                        oldSpace = false;
                                         break;
                                     }
                                 }
-                                archiveFile = "";
+                                if (texture.mipMapsList.Count() == 1)
+                                    break;
                             }
-                            if (archiveFile == "")
-                                throw new Exception("No free TFC texture file!");
+
+                            long fileLength = new FileInfo(archiveFile).Length;
+                            if (!oldSpace && fileLength + 0x5000000 > 0x80000000)
+                            {
+                                archiveFile = "";
+                                foreach (TFCTexture newGuid in guids)
+                                {
+                                    archiveFile = Path.Combine(GameData.MainData, newGuid.name + ".tfc");
+                                    if (!File.Exists(archiveFile))
+                                    {
+                                        texture.properties.setNameValue("TextureFileCacheName", newGuid.name);
+                                        texture.properties.setStructValue("TFCFileGuid", "Guid", newGuid.guid);
+                                        using (FileStream fs = new FileStream(archiveFile, FileMode.CreateNew, FileAccess.Write))
+                                        {
+                                            fs.WriteFromBuffer(newGuid.guid);
+                                        }
+                                        newTfcFile = true;
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        fileLength = new FileInfo(archiveFile).Length;
+                                        if (fileLength + 0x5000000 < 0x80000000)
+                                        {
+                                            texture.properties.setNameValue("TextureFileCacheName", newGuid.name);
+                                            texture.properties.setStructValue("TFCFileGuid", "Guid", newGuid.guid);
+                                            break;
+                                        }
+                                    }
+                                    archiveFile = "";
+                                }
+                                if (archiveFile == "")
+                                    throw new Exception("No free TFC texture file!");
+                            }
+                        }
+                        else
+                        {
+                            texture.properties.setNameValue("TextureFileCacheName", mod.arcTfcName);
+                            texture.properties.setStructValue("TFCFileGuid", "Guid", mod.arcTfcGuid);
                         }
                     }
 
@@ -950,6 +959,7 @@ namespace MassEffectModder
                                 }
                                 mipmap.compressedSize = mipmap.newData.Length;
                             }
+
                             if (mipmap.storageType == Texture.StorageTypes.pccUnc ||
                                 mipmap.storageType == Texture.StorageTypes.extUnc)
                             {
@@ -960,20 +970,17 @@ namespace MassEffectModder
                                 mipmap.storageType == Texture.StorageTypes.extLZO ||
                                 mipmap.storageType == Texture.StorageTypes.extUnc)
                             {
-                                if (mod.arcTexture == null ||
-                                    !StructuralComparisons.StructuralEqualityComparer.Equals(
-                                    mod.arcTfcGuid, texture.properties.getProperty("TFCFileGuid").valueStruct))
+                                if (mod.arcTexture == null)
                                 {
                                     triggerCacheArc = true;
-                                    Texture.MipMap oldMipmap = texture.getMipmap(mipmap.width, mipmap.height);
-                                    if (StructuralComparisons.StructuralEqualityComparer.Equals(origGuid,
-                                        texture.properties.getProperty("TFCFileGuid").valueStruct) &&
-                                        oldMipmap.width != 0 && mipmap.newData.Length <= oldMipmap.compressedSize)
+
+                                    if (!newTfcFile && oldSpace)
                                     {
                                         try
                                         {
                                             using (FileStream fs = new FileStream(archiveFile, FileMode.Open, FileAccess.Write))
                                             {
+                                                Texture.MipMap oldMipmap = texture.getMipmap(mipmap.width, mipmap.height);
                                                 fs.JumpTo(oldMipmap.dataOffset);
                                                 mipmap.dataOffset = oldMipmap.dataOffset;
                                                 fs.WriteFromBuffer(mipmap.newData);
@@ -1052,6 +1059,7 @@ namespace MassEffectModder
                         {
                             mod.arcTexture = texture.mipMapsList;
                             mod.arcTfcGuid = texture.properties.getProperty("TFCFileGuid").valueStruct;
+                            mod.arcTfcName = texture.properties.getProperty("TextureFileCacheName").valueName;
                         }
                     }
 
