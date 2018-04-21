@@ -19,12 +19,14 @@
  *
  */
 
+using Microsoft.VisualBasic.Devices;
 using StreamHelpers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime;
 using System.Windows.Forms;
 
 namespace MassEffectModder
@@ -598,6 +600,10 @@ namespace MassEffectModder
         {
             string errors = "";
             int lastProgress = -1;
+            int ratioGCpackage = 50;
+            ulong memorySize = ((new ComputerInfo().TotalPhysicalMemory / 1024 / 1024) + 1023) / 1024;
+            if (memorySize <= 12)
+                ratioGCpackage = 20;
 
             for (int e = 0; e < map.Count; e++)
             {
@@ -1109,6 +1115,12 @@ namespace MassEffectModder
                 }
                 package.Dispose();
                 package = null;
+
+                if (e % ratioGCpackage == 0)
+                {
+                    GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
+                    GC.Collect();
+                }
             }
 
             return errors;
