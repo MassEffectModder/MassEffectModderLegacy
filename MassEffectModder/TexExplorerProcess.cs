@@ -684,8 +684,8 @@ namespace MassEffectModder
                                     if (modFiles[i].tag == FileTextureTag2)
                                         entry.markConvert = true;
                                     entry.memPath = filenameMod;
-                                    entry.memEntryOffset = modFiles[i].offset;
-                                    entry.memEntrySize = modFiles[i].size;
+                                    entry.memEntryOffset = fs.Position;
+                                    entry.memEntrySize = size;
                                     modsToReplace.Add(entry);
                                 }
                             }
