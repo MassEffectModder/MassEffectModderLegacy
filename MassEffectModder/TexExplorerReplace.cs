@@ -47,8 +47,8 @@ namespace MassEffectModder
         public List<byte[]> cacheCprMipmaps;
         public Dictionary<List<Texture.MipMap>, int> masterTextures;
         public List<Texture.MipMap> arcTexture;
+        public byte[] arcTfcGuid;
         public List<Texture.MipMap> cprTexture;
-        public byte[] cprTfcGuid;
         public int instance;
 
         public bool binaryModType;
@@ -738,8 +738,6 @@ namespace MassEffectModder
                     if (skip)
                         continue;
 
-                    package.DisposeCache();
-
                     if (!texture.properties.exists("LODGroup"))
                         texture.properties.setByteValue("LODGroup", "TEXTUREGROUP_Character", "TextureGroup", 1025);
 
@@ -964,7 +962,7 @@ namespace MassEffectModder
                             {
                                 if (mod.arcTexture == null ||
                                     !StructuralComparisons.StructuralEqualityComparer.Equals(
-                                    mod.cprTfcGuid, texture.properties.getProperty("TFCFileGuid").valueStruct))
+                                    mod.arcTfcGuid, texture.properties.getProperty("TFCFileGuid").valueStruct))
                                 {
                                     triggerCacheArc = true;
                                     Texture.MipMap oldMipmap = texture.getMipmap(mipmap.width, mipmap.height);
@@ -1049,10 +1047,12 @@ namespace MassEffectModder
                         if (triggerCacheCpr)
                         {
                             mod.cprTexture = texture.mipMapsList;
-                            mod.cprTfcGuid = texture.properties.getProperty("TFCFileGuid").valueStruct;
                         }
                         if (triggerCacheArc)
+                        {
                             mod.arcTexture = texture.mipMapsList;
+                            mod.arcTfcGuid = texture.properties.getProperty("TFCFileGuid").valueStruct;
+                        }
                     }
 
                     matched.removeEmptyMips = false;
@@ -1079,8 +1079,8 @@ namespace MassEffectModder
                             mod.cprTexture.Clear();
                             mod.cprTexture = null;
                         }
-                        if (mod.cprTfcGuid != null)
-                            mod.cprTfcGuid = null;
+                        if (mod.arcTfcGuid != null)
+                            mod.arcTfcGuid = null;
                         if (mod.masterTextures != null)
                         {
                             mod.masterTextures.Clear();
