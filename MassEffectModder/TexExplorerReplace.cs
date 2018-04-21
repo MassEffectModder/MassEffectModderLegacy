@@ -1053,7 +1053,6 @@ namespace MassEffectModder
                     if (matched.removeEmptyMips)
                     {
                         matched.removeEmptyMips = false;
-                        textures[entryMap.texturesIndex].list[entryMap.listIndex] = matched;
                     }
 
                     modsToReplace[entryMap.modIndex] = mod;
