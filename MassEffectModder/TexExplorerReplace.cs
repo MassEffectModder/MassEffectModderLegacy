@@ -1088,15 +1088,13 @@ namespace MassEffectModder
                             mod.cacheCprMipmaps.Clear();
                             mod.cacheCprMipmaps = null;
                         }
-                        if (mod.cacheImage != null)
-                            mod.cacheImage = null;
+                        mod.cacheImage = null;
                         if (mod.cprTexture != null)
                         {
                             mod.cprTexture.Clear();
                             mod.cprTexture = null;
                         }
-                        if (mod.arcTfcGuid != null)
-                            mod.arcTfcGuid = null;
+                        mod.arcTfcGuid = null;
                         if (mod.masterTextures != null)
                         {
                             mod.masterTextures.Clear();
