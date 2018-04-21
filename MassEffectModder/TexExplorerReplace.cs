@@ -1169,7 +1169,8 @@ namespace MassEffectModder
                     MapPackagesToMod mapEntry = new MapPackagesToMod();
                     mapEntry.textures = new List<MapPackagesToModEntry>();
                     mapEntry.textures.Add(entry);
-                    previousPath = mapEntry.packagePath = map[i].packagePath;
+                    mapEntry.packagePath = map[i].packagePath;
+                    previousPath = map[i].packagePath.ToLowerInvariant();
                     mapPackages.Add(mapEntry);
                     previousIndex++;
                 }
@@ -1197,7 +1198,8 @@ namespace MassEffectModder
                     MapPackagesToMod mapEntry = new MapPackagesToMod();
                     mapEntry.textures = new List<MapPackagesToModEntry>();
                     mapEntry.textures.Add(entry);
-                    previousPath = mapEntry.packagePath = mapSlaves[i].packagePath;
+                    mapEntry.packagePath = map[i].packagePath;
+                    previousPath = map[i].packagePath.ToLowerInvariant();
                     mapSlavesPackages.Add(mapEntry);
                     previousIndex++;
                 }
