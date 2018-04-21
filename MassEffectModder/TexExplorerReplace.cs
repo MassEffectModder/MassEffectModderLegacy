@@ -1241,7 +1241,7 @@ namespace MassEffectModder
                 }
             }
 
-            if (mapPackages.Count != 0 && mapSlavesPackages.Count != 0)
+            if (mapPackages.Count != 0 || mapSlavesPackages.Count != 0)
             {
                 if (texExplorer != null)
                 {
