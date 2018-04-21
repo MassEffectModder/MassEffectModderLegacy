@@ -620,26 +620,27 @@ namespace MassEffectModder
                     Console.WriteLine("Package: " + (e + 1) + " of " + map.Count + " started: " + map[e].packagePath);
                 }
 
+                Package package;
+                try
+                {
+                    package = new Package(GameData.GamePath + map[e].packagePath, true);
+                }
+                catch (Exception ex)
+                {
+                    errors += "---- Start --------------------------------------------" + Environment.NewLine;
+                    errors += "Error opening package file: " + GameData.GamePath + map[e].packagePath + Environment.NewLine;
+                    errors += ex.Message + Environment.NewLine + Environment.NewLine;
+                    errors += ex.StackTrace + Environment.NewLine + Environment.NewLine;
+                    errors += "---- End ----------------------------------------------" + Environment.NewLine + Environment.NewLine;
+                    continue;
+                }
+
                 for (int p = 0; p < map[e].textures.Count; p++)
                 {
                     MapPackagesToModEntry entryMap = map[e].textures[p];
                     MatchedTexture matched = textures[entryMap.texturesIndex].list[entryMap.listIndex];
                     ModEntry mod = modsToReplace[entryMap.modIndex];
 
-                    Package package;
-                    try
-                    {
-                        package = new Package(GameData.GamePath + matched.path, true);
-                    }
-                    catch (Exception ex)
-                    {
-                        errors += "---- Start --------------------------------------------" + Environment.NewLine;
-                        errors += "Error opening package file: " + GameData.GamePath + matched.path + Environment.NewLine;
-                        errors += ex.Message + Environment.NewLine + Environment.NewLine;
-                        errors += ex.StackTrace + Environment.NewLine + Environment.NewLine;
-                        errors += "---- End ----------------------------------------------" + Environment.NewLine + Environment.NewLine;
-                        continue;
-                    }
                     Texture texture = new Texture(package, matched.exportID, package.getExportData(matched.exportID));
                     string fmt = texture.properties.getProperty("Format").valueName;
                     PixelFormat pixelFormat = Image.getPixelFormatType(fmt);
@@ -1046,28 +1047,60 @@ namespace MassEffectModder
                     else
                     {
                         if (triggerCacheCpr)
+                        {
                             mod.cprTexture = texture.mipMapsList;
+                            mod.cprTfcGuid = texture.properties.getProperty("TFCFileGuid").valueStruct;
+                        }
                         if (triggerCacheArc)
                             mod.arcTexture = texture.mipMapsList;
                     }
-                    if (matched.removeEmptyMips)
+
+                    matched.removeEmptyMips = false;
+
+                    mod.instance--;
+                    if (mod.instance < 0)
+                        throw new Exception();
+                    if (mod.instance == 0)
                     {
-                        matched.removeEmptyMips = false;
+                        if (mod.arcTexture != null)
+                        {
+                            mod.arcTexture.Clear();
+                            mod.arcTexture = null;
+                        }
+                        if (mod.cacheCprMipmaps != null)
+                        {
+                            mod.cacheCprMipmaps.Clear();
+                            mod.cacheCprMipmaps = null;
+                        }
+                        if (mod.cacheImage != null)
+                            mod.cacheImage = null;
+                        if (mod.cprTexture != null)
+                        {
+                            mod.cprTexture.Clear();
+                            mod.cprTexture = null;
+                        }
+                        if (mod.cprTfcGuid != null)
+                            mod.cprTfcGuid = null;
+                        if (mod.masterTextures != null)
+                        {
+                            mod.masterTextures.Clear();
+                            mod.masterTextures = null;
+                        }
                     }
 
                     modsToReplace[entryMap.modIndex] = mod;
                     textures[entryMap.texturesIndex].list[entryMap.listIndex] = matched;
-
-                    if (package.SaveToFile(repack, false, appendMarker))
-                    {
-                        if (repack && Installer.pkgsToRepack != null)
-                            Installer.pkgsToRepack.Remove(package.packagePath);
-                        if (appendMarker && Installer.pkgsToMarker != null)
-                            Installer.pkgsToMarker.Remove(package.packagePath);
-                    }
-                    package.Dispose();
-                    package = null;
                 }
+
+                if (package.SaveToFile(repack, false, appendMarker))
+                {
+                    if (repack && Installer.pkgsToRepack != null)
+                        Installer.pkgsToRepack.Remove(package.packagePath);
+                    if (appendMarker && Installer.pkgsToMarker != null)
+                        Installer.pkgsToMarker.Remove(package.packagePath);
+                }
+                package.Dispose();
+                package = null;
             }
 
             return errors;
