@@ -722,6 +722,9 @@ namespace MassEffectModder
 
             errors += mipMaps.replaceModsFromList(_textures, this, null, false, false, false);
 
+            if (GameData.gameType == MeType.ME3_TYPE)
+                TOCBinFile.UpdateAllTOCBinFiles();
+
             var time = Misc.stopTimer();
             if (listViewMods.Items.Count == 0)
                 clearMODsView();
