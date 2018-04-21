@@ -755,6 +755,7 @@ namespace MassEffectModder
                                 entry.exportId = exportId;
                                 entry.binaryModData = buffer;
                                 modsToReplace.Add(entry);
+                                pkg.Dispose();
                             }
                         }
                         else
