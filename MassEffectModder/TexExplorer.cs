@@ -714,13 +714,13 @@ namespace MassEffectModder
             MipMaps.modsToReplace = new List<ModEntry>();
             foreach (ListViewItem item in listViewMods.SelectedItems)
             {
-                errors += mipMaps.newReplaceTextureMod(item.Name, _textures, cachePackageMgr, this, false, ref log);
+                errors += mipMaps.newReplaceTextureMod(item.Name, _textures, null, this, false, ref log);
                 _mainWindow.updateStatusLabel("MOD: " + item.Text + " preparing...");
                 listViewMods.Items.Remove(item);
             }
             _mainWindow.updateStatusLabel("");
 
-            errors += mipMaps.replaceTexturesFromList(_textures, this, null, false, false, false);
+            errors += mipMaps.replaceModsFromList(_textures, this, null, false, false, false);
 
             var time = Misc.stopTimer();
             if (listViewMods.Items.Count == 0)

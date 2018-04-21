@@ -1050,7 +1050,7 @@ namespace MassEffectModder
             return errors;
         }
 
-        public string replaceTexturesFromList(List<FoundTexture> textures, TexExplorer texExplorer, Installer installer,
+        public string replaceModsFromList(List<FoundTexture> textures, TexExplorer texExplorer, Installer installer,
             bool repack, bool appendMarker, bool ipc)
         {
             // Remove duplicates
