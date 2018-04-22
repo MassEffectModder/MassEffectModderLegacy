@@ -688,6 +688,16 @@ namespace MassEffectModder
 
         private void applyModToolStripMenuItemExperimental_Click(object sender, EventArgs e)
         {
+            applyModToolStripMenuItemExperimentalInstall(false);
+        }
+
+        private void applyAndVerifynewExperimentalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            applyModToolStripMenuItemExperimentalInstall(true);
+        }
+
+        private void applyModToolStripMenuItemExperimentalInstall(bool verify)
+        {
             if (listViewMods.SelectedItems.Count == 0)
             {
                 foreach (ListViewItem item in listViewMods.Items)
@@ -725,10 +735,43 @@ namespace MassEffectModder
             }
             _mainWindow.updateStatusLabel("");
 
-            errors += mipMaps.replaceModsFromList(_textures, this, null, false, false, false);
+            errors += mipMaps.replaceModsFromList(_textures, this, null, false, false, verify, false);
 
             if (GameData.gameType == MeType.ME3_TYPE)
                 TOCBinFile.UpdateAllTOCBinFiles();
+
+            if (verify)
+            {
+                errors = "";
+                _mainWindow.updateStatusLabel2("Verification...");
+                for (int k = 0; k < _textures.Count; k++)
+                {
+                    FoundTexture foundTexture = _textures[k];
+                    for (int t = 0; t < foundTexture.list.Count; t++)
+                    {
+                        if (foundTexture.list[t].path == "")
+                            continue;
+                        MatchedTexture matchedTexture = foundTexture.list[t];
+                        if (matchedTexture.crcs != null)
+                        {
+                            _mainWindow.updateStatusLabel("Texture: " + foundTexture.name + " in " + matchedTexture.path);
+                            Package pkg = new Package(GameData.GamePath + matchedTexture.path);
+                            Texture texture = new Texture(pkg, matchedTexture.exportID, pkg.getExportData(matchedTexture.exportID));
+                            for (int m = 0; m < matchedTexture.crcs.Count(); m++)
+                            {
+                                if (matchedTexture.crcs[m] != texture.getCrcData(texture.getMipMapDataByIndex(m)))
+                                {
+                                    errors += "CRC does not match: Texture: " + foundTexture.name + ", instance: " + t + ", mipmap: " +
+                                        m + Environment.NewLine;
+                                }
+                            }
+                            matchedTexture.crcs = null;
+                            foundTexture.list[t] = matchedTexture;
+                            pkg.Dispose();
+                        }
+                    }
+                }
+            }
 
             var time = Misc.stopTimer();
             if (listViewMods.Items.Count == 0)

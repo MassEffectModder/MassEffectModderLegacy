@@ -597,7 +597,7 @@ namespace MassEffectModder
         }
 
         public string replaceTextures(List<MapPackagesToMod> map, List<FoundTexture> textures,
-            TexExplorer texExplorer, Installer installer, bool repack, bool appendMarker, bool ipc)
+            TexExplorer texExplorer, Installer installer, bool repack, bool appendMarker, bool verify, bool ipc)
         {
             string errors = "";
             int lastProgress = -1;
@@ -867,9 +867,13 @@ namespace MassEffectModder
                         }
                     }
 
+                    if (verify)
+                        matched.crcs = new List<uint>();
                     List<Texture.MipMap> mipmaps = new List<Texture.MipMap>();
                     for (int m = 0; m < image.mipMaps.Count(); m++)
                     {
+                        if (verify)
+                            matched.crcs.Add(texture.getCrcData(image.mipMaps[m].data));
                         Texture.MipMap mipmap = new Texture.MipMap();
                         mipmap.width = image.mipMaps[m].origWidth;
                         mipmap.height = image.mipMaps[m].origHeight;
@@ -1128,7 +1132,7 @@ namespace MassEffectModder
         }
 
         public string replaceModsFromList(List<FoundTexture> textures, TexExplorer texExplorer, Installer installer,
-            bool repack, bool appendMarker, bool ipc)
+            bool repack, bool appendMarker, bool verify, bool ipc)
         {
             string errors = "";
             bool binaryMods = false;
@@ -1314,7 +1318,7 @@ namespace MassEffectModder
                     Console.WriteLine("Installing texture mods...");
                 }
 
-                errors += replaceTextures(mapPackages, textures, texExplorer, installer, repack, appendMarker, ipc);
+                errors += replaceTextures(mapPackages, textures, texExplorer, installer, repack, appendMarker, verify, ipc);
             }
 
             return errors;
