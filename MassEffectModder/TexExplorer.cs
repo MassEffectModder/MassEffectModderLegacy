@@ -69,6 +69,7 @@ namespace MassEffectModder
             treeScan = new TreeScan();
             mipMaps = new MipMaps();
             texturesPreMap = new List<FoundTexture>();
+            MipMaps.modsToReplace = new List<ModEntry>();
             new TreeScan().loadTexturesMap(GameData.gameType, texturesPreMap);
         }
 
@@ -376,7 +377,7 @@ namespace MassEffectModder
             _mainWindow.updateStatusLabel("Replacing texture...");
             _mainWindow.updateStatusLabel2("");
             Misc.startTimer();
-            replaceTexture(false);
+            replaceTexture(false, false);
             var time = Misc.stopTimer();
             _mainWindow.updateStatusLabel("Done. Process total time: " + Misc.getTimerFormat(time));
             _mainWindow.updateStatusLabel2("");
@@ -389,7 +390,7 @@ namespace MassEffectModder
             _mainWindow.updateStatusLabel("Replacing texture...");
             _mainWindow.updateStatusLabel2("");
             Misc.startTimer();
-            replaceTexture(false);
+            replaceTexture(false, false);
             var time = Misc.stopTimer();
             _mainWindow.updateStatusLabel("Done. Process total time: " + Misc.getTimerFormat(time));
             _mainWindow.updateStatusLabel2("");
@@ -432,7 +433,7 @@ namespace MassEffectModder
         {
             _mainWindow.updateStatusLabel("Replacing texture...");
             _mainWindow.updateStatusLabel2("");
-            replaceTexture(false);
+            replaceTexture(false, false);
             _mainWindow.updateStatusLabel("Done.");
             _mainWindow.updateStatusLabel2("");
         }
@@ -441,7 +442,16 @@ namespace MassEffectModder
         {
             _mainWindow.updateStatusLabel("Replacing texture (convert mode) ...");
             _mainWindow.updateStatusLabel2("");
-            replaceTexture(true);
+            replaceTexture(false, true);
+            _mainWindow.updateStatusLabel("Done.");
+            _mainWindow.updateStatusLabel2("");
+        }
+
+        private void replaceTextureToolStripMenuItemExperimental_Click(object sender, EventArgs e)
+        {
+            _mainWindow.updateStatusLabel("Replacing texture (Experimental) ...");
+            _mainWindow.updateStatusLabel2("");
+            replaceTexture(true, false);
             _mainWindow.updateStatusLabel("Done.");
             _mainWindow.updateStatusLabel2("");
         }
@@ -726,13 +736,14 @@ namespace MassEffectModder
             }
 
             Misc.startTimer();
-            MipMaps.modsToReplace = new List<ModEntry>();
+            MipMaps.modsToReplace.Clear();
             foreach (ListViewItem item in listViewMods.SelectedItems)
             {
                 errors += mipMaps.newReplaceTextureMod(item.Name, _textures, null, this, false, ref log);
                 _mainWindow.updateStatusLabel("MOD: " + item.Text + " preparing...");
                 listViewMods.Items.Remove(item);
             }
+            MipMaps.modsToReplace.Clear();
             _mainWindow.updateStatusLabel("");
 
             errors += mipMaps.replaceModsFromList(_textures, this, null, false, false, verify, false);
