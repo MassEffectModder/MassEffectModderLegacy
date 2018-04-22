@@ -70,6 +70,7 @@ namespace MassEffectModder
         bool mute = false;
         int stage = 1;
         int totalStages = 6;
+        bool newWayInstall = false;
         System.Media.SoundPlayer musicPlayer;
         CustomLabel customLabelDesc;
         CustomLabel customLabelCurrentStatus;
@@ -84,6 +85,7 @@ namespace MassEffectModder
             mipMaps = new MipMaps();
             treeScan = new TreeScan();
             cachePackageMgr = new CachePackageMgr(null, this);
+            MipMaps.modsToReplace = new List<ModEntry>();
 
             // 
             // customLabelDesc
@@ -179,6 +181,10 @@ namespace MassEffectModder
                 meuitmMode = true;
             if (meuitmMode && MeuitmVer == 0)
                 MeuitmVer = 1;
+
+            string newWayInstallvalue = installerIni.Read("NewInstall", "Main").ToLowerInvariant();
+            if (newWayInstallvalue == "true")
+                newWayInstall = true;
 
             indirectSoundPath = installerIni.Read("IndirectSound", "Main").ToLowerInvariant();
             if (indirectSoundPath != "")
@@ -1098,10 +1104,13 @@ namespace MassEffectModder
             return true;
         }
 
-        public void applyModules()
+        public void applyModules(bool newWay)
         {
             int totalNumberOfMods = 0;
             int currentNumberOfTotalMods = 1;
+
+            if (newWay)
+                updateProgressStatus("Preparing textures...");
 
             for (int i = 0; i < memFiles.Count; i++)
             {
@@ -1195,10 +1204,13 @@ namespace MassEffectModder
                             pkgPath = fs.ReadStringASCIINull();
                         }
 
-                        dst = MipMaps.decompressData(fs, size);
-                        dstLen = dst.Length;
+                        if (!newWay)
+                        {
+                            dst = MipMaps.decompressData(fs, size);
+                            dstLen = dst.Length;
 
-                        updateProgressStatus("Installing textures " + (currentNumberOfTotalMods * 100 / totalNumberOfMods) + "%");
+                            updateProgressStatus("Installing textures " + (currentNumberOfTotalMods * 100 / totalNumberOfMods) + "%");
+                        }
 
                         if (modFiles[l].tag == MipMaps.FileTextureTag || modFiles[l].tag == MipMaps.FileTextureTag2)
                         {
@@ -1206,14 +1218,29 @@ namespace MassEffectModder
                             foundTexture = textures.Find(s => s.crc == crc);
                             if (foundTexture.crc != 0)
                             {
-                                Image image = new Image(dst, Image.ImageFormat.DDS);
-                                if (!image.checkDDSHaveAllMipmaps())
+                                if (newWay)
                                 {
-                                    errors += "Error in texture: " + name + string.Format("_0x{0:X8}", crc) + " Texture skipped. This texture has not all the required mipmaps" + Environment.NewLine;
-                                    log += "Error in texture: " + name + string.Format("_0x{0:X8}", crc) + " Texture skipped. This texture has not all the required mipmaps" + Environment.NewLine;
-                                    continue;
+                                    ModEntry entry = new ModEntry();
+                                    entry.textureCrc = foundTexture.crc;
+                                    entry.textureName = foundTexture.name;
+                                    if (modFiles[i].tag == MipMaps.FileTextureTag2)
+                                        entry.markConvert = true;
+                                    entry.memPath = memFiles[i];
+                                    entry.memEntryOffset = fs.Position;
+                                    entry.memEntrySize = size;
+                                    MipMaps.modsToReplace.Add(entry);
                                 }
-                                errors += mipMaps.replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc, false, modFiles[l].tag == MipMaps.FileTextureTag2);
+                                else
+                                {
+                                    Image image = new Image(dst, Image.ImageFormat.DDS);
+                                    if (!image.checkDDSHaveAllMipmaps())
+                                    {
+                                        errors += "Error in texture: " + name + string.Format("_0x{0:X8}", crc) + " Texture skipped. This texture has not all the required mipmaps" + Environment.NewLine;
+                                        log += "Error in texture: " + name + string.Format("_0x{0:X8}", crc) + " Texture skipped. This texture has not all the required mipmaps" + Environment.NewLine;
+                                        continue;
+                                    }
+                                    errors += mipMaps.replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc, false, modFiles[l].tag == MipMaps.FileTextureTag2);
+                                }
                             }
                             else
                             {
@@ -1228,9 +1255,21 @@ namespace MassEffectModder
                                 log += "Warning: File " + path + " not exists in your game setup." + Environment.NewLine;
                                 continue;
                             }
-                            Package pkg = cachePackageMgr.OpenPackage(path);
-                            pkg.setExportData(exportId, dst);
-                            pkg = null;
+                            if (newWay)
+                            {
+                                ModEntry entry = new ModEntry();
+                                entry.binaryModType = true;
+                                entry.packagePath = pkgPath;
+                                entry.exportId = exportId;
+                                entry.binaryModData = dst;
+                                MipMaps.modsToReplace.Add(entry);
+                            }
+                            else
+                            {
+                                Package pkg = cachePackageMgr.OpenPackage(path);
+                                pkg.setExportData(exportId, dst);
+                                pkg = null;
+                            }
                         }
                         else if (modFiles[l].tag == MipMaps.FileXdeltaTag)
                         {
@@ -1240,16 +1279,37 @@ namespace MassEffectModder
                                 log += "Warning: File " + path + " not exists in your game setup." + Environment.NewLine;
                                 continue;
                             }
-                            Package pkg = cachePackageMgr.OpenPackage(path);
-                            byte[] buffer = new Xdelta3Helper.Xdelta3().Decompress(pkg.getExportData(exportId), dst);
-                            if (buffer.Length == 0)
+                            if (newWay)
                             {
-                                errors += "Warning: Xdelta patch for " + path + " failed to apply." + Environment.NewLine;
-                                log += "Warning: Xdelta patch for " + path + " failed to apply." + Environment.NewLine;
-                                continue;
+                                ModEntry entry = new ModEntry();
+                                Package pkg = new Package(path);
+                                byte[] buffer = new Xdelta3Helper.Xdelta3().Decompress(pkg.getExportData(exportId), dst);
+                                if (buffer.Length == 0)
+                                {
+                                    errors += "Warning: Xdelta patch for " + path + " failed to apply." + Environment.NewLine;
+                                    log += "Warning: Xdelta patch for " + path + " failed to apply." + Environment.NewLine;
+                                    continue;
+                                }
+                                entry.binaryModType = true;
+                                entry.packagePath = pkgPath;
+                                entry.exportId = exportId;
+                                entry.binaryModData = buffer;
+                                MipMaps.modsToReplace.Add(entry);
+                                pkg.Dispose();
                             }
-                            pkg.setExportData(exportId, buffer);
-                            pkg = null;
+                            else
+                            {
+                                Package pkg = cachePackageMgr.OpenPackage(path);
+                                byte[] buffer = new Xdelta3Helper.Xdelta3().Decompress(pkg.getExportData(exportId), dst);
+                                if (buffer.Length == 0)
+                                {
+                                    errors += "Warning: Xdelta patch for " + path + " failed to apply." + Environment.NewLine;
+                                    log += "Warning: Xdelta patch for " + path + " failed to apply." + Environment.NewLine;
+                                    continue;
+                                }
+                                pkg.setExportData(exportId, buffer);
+                                pkg = null;
+                            }
                         }
                         else
                         {
@@ -1401,7 +1461,9 @@ namespace MassEffectModder
 
             customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
             log += "Process textures started..." + Environment.NewLine;
-            applyModules();
+            MipMaps.modsToReplace.Clear();
+            applyModules(newWayInstall);
+            MipMaps.modsToReplace.Clear();
             log += "Process textures finished" + Environment.NewLine + Environment.NewLine;
 
 
