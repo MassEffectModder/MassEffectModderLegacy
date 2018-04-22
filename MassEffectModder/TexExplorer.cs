@@ -689,7 +689,12 @@ namespace MassEffectModder
         private void applyModToolStripMenuItemExperimental_Click(object sender, EventArgs e)
         {
             if (listViewMods.SelectedItems.Count == 0)
-                return;
+            {
+                foreach (ListViewItem item in listViewMods.Items)
+                    item.Selected = true;
+                if (listViewMods.SelectedItems.Count == 0)
+                    return;
+            }
 
             EnableMenuOptions(false);
             richTextBoxInfo.Text = "";
@@ -754,7 +759,12 @@ namespace MassEffectModder
         private void applyModToolStripMenuItem_Click(bool verify)
         {
             if (listViewMods.SelectedItems.Count == 0)
-                return;
+            {
+                foreach (ListViewItem item in listViewMods.Items)
+                    item.Selected = true;
+                if (listViewMods.SelectedItems.Count == 0)
+                    return;
+            }
 
             EnableMenuOptions(false);
             richTextBoxInfo.Text = "";
@@ -840,7 +850,12 @@ namespace MassEffectModder
         private void deleteModToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (listViewMods.SelectedItems.Count == 0)
-                return;
+            {
+                foreach (ListViewItem item in listViewMods.Items)
+                    item.Selected = true;
+                if (listViewMods.SelectedItems.Count == 0)
+                    return;
+            }
 
             EnableMenuOptions(false);
             foreach (ListViewItem item in listViewMods.SelectedItems)
@@ -882,7 +897,12 @@ namespace MassEffectModder
         private void extractModsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (listViewMods.SelectedItems.Count == 0)
-                return;
+            {
+                foreach (ListViewItem item in listViewMods.Items)
+                    item.Selected = true;
+                if (listViewMods.SelectedItems.Count == 0)
+                    return;
+            }
 
             EnableMenuOptions(false);
 
