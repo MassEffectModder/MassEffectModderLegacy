@@ -601,13 +601,9 @@ namespace MassEffectModder
         public string replaceTextures(List<MapPackagesToMod> map, List<FoundTexture> textures,
             TexExplorer texExplorer, Installer installer, bool repack, bool appendMarker, bool verify, bool ipc)
         {
-            long totalMemoryUsage = 0;
             string errors = "";
             int lastProgress = -1;
-            int ratioGCpackage = 50;
             ulong memorySize = ((new ComputerInfo().TotalPhysicalMemory / 1024 / 1024) + 1023) / 1024;
-            if (memorySize <= 12)
-                ratioGCpackage = 20;
 
             for (int e = 0; e < map.Count; e++)
             {
@@ -670,9 +666,10 @@ namespace MassEffectModder
                         {
                             fs.JumpTo(mod.memEntryOffset);
                             byte[] data = decompressData(fs, mod.memEntrySize);
-                            mod.cacheImage = image = new Image(data, Image.ImageFormat.DDS);
+                            image = new Image(data, Image.ImageFormat.DDS);
+                            if (memorySize > 8 || modsToReplace.Count == 1)
+                                mod.cacheImage = image;
                         }
-                        totalMemoryUsage += mod.memEntrySize;
                     }
 
                     if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
@@ -711,7 +708,8 @@ namespace MassEffectModder
                             }
                         }
                         image.correctMips(newPixelFormat, dxt1HasAlpha, dxt1Threshold);
-                        mod.cacheImage = image;
+                        if (memorySize > 8 || modsToReplace.Count == 1)
+                            mod.cacheImage = image;
                     }
 
                     // remove lower mipmaps from source image which not exist in game data
@@ -802,7 +800,7 @@ namespace MassEffectModder
                                 }
                             }
 
-                            // chek if texture fit in old space
+                            // check if texture fit in old space
                             for (int mip = 0; mip < image.mipMaps.Count(); mip++)
                             {
                                 Texture.MipMap testMipmap = new Texture.MipMap();
@@ -1109,7 +1107,12 @@ namespace MassEffectModder
                             mod.masterTextures.Clear();
                             mod.masterTextures = null;
                         }
-                        totalMemoryUsage -= mod.memEntrySize;
+                    }
+
+                    if (memorySize <= 6 && mod.cacheCprMipmaps != null && modsToReplace.Count != 1)
+                    {
+                        mod.cacheCprMipmaps.Clear();
+                        mod.cacheCprMipmaps = null;
                     }
 
                     modsToReplace[entryMap.modIndex] = mod;
@@ -1126,7 +1129,7 @@ namespace MassEffectModder
                 package.Dispose();
                 package = null;
 
-                if (e % ratioGCpackage == 0)
+                if (memorySize < 16 && modsToReplace.Count != 1)
                 {
                     GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
                     GC.Collect();
