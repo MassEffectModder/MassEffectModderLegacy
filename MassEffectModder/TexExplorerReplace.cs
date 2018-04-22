@@ -82,6 +82,8 @@ namespace MassEffectModder
         public string packagePath;
         public List<MapPackagesToModEntry> textures;
         public long usage;
+        public int instances;
+        public long weight;
     }
 
     public partial class MipMaps
@@ -599,6 +601,7 @@ namespace MassEffectModder
         public string replaceTextures(List<MapPackagesToMod> map, List<FoundTexture> textures,
             TexExplorer texExplorer, Installer installer, bool repack, bool appendMarker, bool verify, bool ipc)
         {
+            long totalMemoryUsage = 0;
             string errors = "";
             int lastProgress = -1;
             int ratioGCpackage = 50;
@@ -669,6 +672,7 @@ namespace MassEffectModder
                             byte[] data = decompressData(fs, mod.memEntrySize);
                             mod.cacheImage = image = new Image(data, Image.ImageFormat.DDS);
                         }
+                        totalMemoryUsage += mod.memEntrySize;
                     }
 
                     if (image.mipMaps[0].origWidth / image.mipMaps[0].origHeight !=
@@ -1105,6 +1109,7 @@ namespace MassEffectModder
                             mod.masterTextures.Clear();
                             mod.masterTextures = null;
                         }
+                        totalMemoryUsage -= mod.memEntrySize;
                     }
 
                     modsToReplace[entryMap.modIndex] = mod;
@@ -1222,6 +1227,7 @@ namespace MassEffectModder
                     mapPackages[packagesIndex].textures.Add(entry);
                     MapPackagesToMod mapEntry = mapPackages[packagesIndex];
                     mapEntry.usage += modsToReplace[map[i].modIndex].memEntrySize;
+                    mapEntry.instances += modsToReplace[map[i].modIndex].instance;
                     mapPackages[packagesIndex] = mapEntry;
                 }
                 else
@@ -1231,6 +1237,7 @@ namespace MassEffectModder
                     mapEntry.textures.Add(entry);
                     mapEntry.packagePath = map[i].packagePath;
                     mapEntry.usage = modsToReplace[map[i].modIndex].memEntrySize;
+                    mapEntry.instances = modsToReplace[map[i].modIndex].instance;
                     previousPath = map[i].packagePath.ToLowerInvariant();
                     mapPackages.Add(mapEntry);
                     packagesIndex++;
@@ -1238,6 +1245,11 @@ namespace MassEffectModder
             }
             map.Clear();
 
+            for (int i = 0; i < map.Count; i++)
+            {
+                MapPackagesToMod mapEntry = mapPackages[i];
+                mapEntry.weight = mapEntry.usage * mapEntry.instances;
+            }
 
             mapSlaves.Sort((x, y) => x.packagePath.CompareTo(y.packagePath));
             previousPath = "";
@@ -1252,7 +1264,8 @@ namespace MassEffectModder
                 {
                     mapPackages[packagesIndex].textures.Add(entry);
                     MapPackagesToMod mapEntry = mapPackages[packagesIndex];
-                    mapEntry.usage += modsToReplace[map[i].modIndex].memEntrySize;
+                    mapEntry.usage += modsToReplace[mapSlaves[i].modIndex].memEntrySize;
+                    mapEntry.instances = modsToReplace[mapSlaves[i].modIndex].instance;
                     mapPackages[packagesIndex] = mapEntry;
                 }
                 else
@@ -1261,7 +1274,8 @@ namespace MassEffectModder
                     mapEntry.textures = new List<MapPackagesToModEntry>();
                     mapEntry.textures.Add(entry);
                     mapEntry.packagePath = mapSlaves[i].packagePath;
-                    mapEntry.usage = modsToReplace[map[i].modIndex].memEntrySize;
+                    mapEntry.usage = modsToReplace[mapSlaves[i].modIndex].memEntrySize;
+                    mapEntry.instances = modsToReplace[mapSlaves[i].modIndex].instance;
                     previousPath = mapSlaves[i].packagePath.ToLowerInvariant();
                     mapPackages.Add(mapEntry);
                     packagesIndex++;
