@@ -765,6 +765,12 @@ namespace MassEffectModder
                         }
                     }
 
+                    if (map[e].textures.FindAll(s => s.texturesIndex == entryMap.texturesIndex && s.modIndex == entryMap.modIndex).Count > 1)
+                    {
+                        mod.cprTexture = null;
+                        mod.arcTexture = null;
+                    }
+
                     bool triggerCacheArc = false, triggerCacheCpr = false;
                     bool newTfcFile = false;
                     bool oldSpace = true;
