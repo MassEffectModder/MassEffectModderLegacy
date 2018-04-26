@@ -2013,7 +2013,15 @@ namespace MassEffectModder
                 }
                 packageMainFiles.RemoveAll(s => s.ToLowerInvariant().Contains("localshadercache-pc-d3d-sm3.upk"));
                 packageMainFiles.RemoveAll(s => s.ToLowerInvariant().Contains("refshadercache-pc-d3d-sm3.upk"));
-                entries = Program.entriesME1;
+                entries = new MD5FileEntry[Program.entriesME1.Count() + Program.entriesME1PL.Count()];
+                for (int i = 0; i < Program.entriesME1.Count(); i++)
+                {
+                    entries[i] = Program.entriesME1[i];
+                }
+                for (int i = 0; i < Program.entriesME1PL.Count(); i++)
+                {
+                    entries[Program.entriesME1.Count() + i] = Program.entriesME1PL[i];
+                }
             }
             else if (gameType == MeType.ME2_TYPE)
             {
