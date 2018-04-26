@@ -377,7 +377,7 @@ namespace MassEffectModder
             _mainWindow.updateStatusLabel("Replacing texture...");
             _mainWindow.updateStatusLabel2("");
             Misc.startTimer();
-            replaceTexture(false, false);
+            replaceTexture(false);
             var time = Misc.stopTimer();
             _mainWindow.updateStatusLabel("Done. Process total time: " + Misc.getTimerFormat(time));
             _mainWindow.updateStatusLabel2("");
@@ -390,7 +390,7 @@ namespace MassEffectModder
             _mainWindow.updateStatusLabel("Replacing texture...");
             _mainWindow.updateStatusLabel2("");
             Misc.startTimer();
-            replaceTexture(false, false);
+            replaceTexture(false);
             var time = Misc.stopTimer();
             _mainWindow.updateStatusLabel("Done. Process total time: " + Misc.getTimerFormat(time));
             _mainWindow.updateStatusLabel2("");
@@ -433,7 +433,7 @@ namespace MassEffectModder
         {
             _mainWindow.updateStatusLabel("Replacing texture...");
             _mainWindow.updateStatusLabel2("");
-            replaceTexture(false, false);
+            replaceTexture(false);
             _mainWindow.updateStatusLabel("Done.");
             _mainWindow.updateStatusLabel2("");
         }
@@ -442,18 +442,13 @@ namespace MassEffectModder
         {
             _mainWindow.updateStatusLabel("Replacing texture (convert mode) ...");
             _mainWindow.updateStatusLabel2("");
-            replaceTexture(false, true);
+            replaceTexture(false);
             _mainWindow.updateStatusLabel("Done.");
             _mainWindow.updateStatusLabel2("");
         }
 
         private void replaceTextureToolStripMenuItemExperimental_Click(object sender, EventArgs e)
         {
-            _mainWindow.updateStatusLabel("Replacing texture (Experimental) ...");
-            _mainWindow.updateStatusLabel2("");
-            replaceTexture(true, false);
-            _mainWindow.updateStatusLabel("Done.");
-            _mainWindow.updateStatusLabel2("");
         }
 
         private void switchModMode(bool enable)
@@ -698,104 +693,14 @@ namespace MassEffectModder
 
         private void applyModToolStripMenuItemExperimental_Click(object sender, EventArgs e)
         {
-            applyModToolStripMenuItemExperimentalInstall(false);
         }
 
         private void applyAndVerifynewExperimentalToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            applyModToolStripMenuItemExperimentalInstall(true);
         }
 
         private void applyModToolStripMenuItemExperimentalInstall(bool verify)
         {
-            if (listViewMods.SelectedItems.Count == 0)
-            {
-                foreach (ListViewItem item in listViewMods.Items)
-                    item.Selected = true;
-                if (listViewMods.SelectedItems.Count == 0)
-                    return;
-            }
-
-            EnableMenuOptions(false);
-            richTextBoxInfo.Text = "";
-            string log = "";
-            string errors = "";
-
-            long diskFreeSpace = Misc.getDiskFreeSpace(GameData.GamePath);
-            long diskUsage = 0;
-            foreach (ListViewItem item in listViewMods.SelectedItems)
-            {
-                diskUsage += new FileInfo(item.Name).Length;
-            }
-            diskUsage = (long)(diskUsage * 2.5);
-            if (diskUsage > diskFreeSpace)
-            {
-                MessageBox.Show("You have not enough disk space remaining. You need about " + Misc.getBytesFormat(diskUsage) + " free.");
-                EnableMenuOptions(true);
-                return;
-            }
-
-            Misc.startTimer();
-            MipMaps.modsToReplace.Clear();
-            foreach (ListViewItem item in listViewMods.SelectedItems)
-            {
-                errors += mipMaps.newReplaceTextureMod(item.Name, _textures, null, this, false, ref log);
-                _mainWindow.updateStatusLabel("MOD: " + item.Text + " preparing...");
-                listViewMods.Items.Remove(item);
-            }
-            errors += mipMaps.replaceModsFromList(_textures, this, null, false, false, verify, false);
-            MipMaps.modsToReplace.Clear();
-            if (GameData.gameType == MeType.ME3_TYPE)
-                TOCBinFile.UpdateAllTOCBinFiles();
-            _mainWindow.updateStatusLabel("");
-
-            if (verify)
-            {
-                errors = "";
-                _mainWindow.updateStatusLabel2("Verification...");
-                for (int k = 0; k < _textures.Count; k++)
-                {
-                    FoundTexture foundTexture = _textures[k];
-                    for (int t = 0; t < foundTexture.list.Count; t++)
-                    {
-                        if (foundTexture.list[t].path == "")
-                            continue;
-                        MatchedTexture matchedTexture = foundTexture.list[t];
-                        if (matchedTexture.crcs != null)
-                        {
-                            _mainWindow.updateStatusLabel("Texture: " + foundTexture.name + " in " + matchedTexture.path);
-                            Package pkg = new Package(GameData.GamePath + matchedTexture.path);
-                            Texture texture = new Texture(pkg, matchedTexture.exportID, pkg.getExportData(matchedTexture.exportID));
-                            for (int m = 0; m < matchedTexture.crcs.Count(); m++)
-                            {
-                                if (matchedTexture.crcs[m] != texture.getCrcData(texture.getMipMapDataByIndex(m)))
-                                {
-                                    errors += "CRC does not match: Texture: " + foundTexture.name + ", instance: " + t + ", mipmap: " +
-                                        m + Environment.NewLine;
-                                }
-                            }
-                            matchedTexture.crcs = null;
-                            foundTexture.list[t] = matchedTexture;
-                            pkg.Dispose();
-                        }
-                    }
-                }
-            }
-
-            var time = Misc.stopTimer();
-            if (listViewMods.Items.Count == 0)
-                clearMODsView();
-            _mainWindow.updateStatusLabel("MODs applied. Process total time: " + Misc.getTimerFormat(time));
-            _mainWindow.updateStatusLabel2("");
-            if (errors != "")
-            {
-                richTextBoxInfo.Text = errors;
-                richTextBoxInfo.Show();
-                pictureBoxPreview.Hide();
-                MessageBox.Show("WARNING: Some errors have occured!");
-            }
-
-            EnableMenuOptions(true);
         }
 
         private void applyModToolStripMenuItem_Click(object sender, EventArgs e)
@@ -838,17 +743,18 @@ namespace MassEffectModder
             }
 
             Misc.startTimer();
+            MipMaps.modsToReplace.Clear();
             foreach (ListViewItem item in listViewMods.SelectedItems)
             {
-                errors += mipMaps.replaceTextureMod(item.Name, _textures, cachePackageMgr, this, verify, ref log);
-                _mainWindow.updateStatusLabel("MOD: " + item.Text + " applying...");
+                errors += mipMaps.replaceTextureMod(item.Name, _textures, null, this, false, ref log);
+                _mainWindow.updateStatusLabel("MOD: " + item.Text + " preparing...");
                 listViewMods.Items.Remove(item);
             }
-            _mainWindow.updateStatusLabel("");
-            cachePackageMgr.CloseAllWithSave(false, false, false);
-
+            errors += mipMaps.replaceModsFromList(_textures, this, null, false, false, verify, false);
+            MipMaps.modsToReplace.Clear();
             if (GameData.gameType == MeType.ME3_TYPE)
                 TOCBinFile.UpdateAllTOCBinFiles();
+            _mainWindow.updateStatusLabel("");
 
             if (verify)
             {

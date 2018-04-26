@@ -51,37 +51,32 @@ namespace MassEffectModder
 
         public string extractTextureMod(string filenameMod, string outDir, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer, ref string log)
         {
-            return processTextureMod(filenameMod, -1, true, false, false, false, outDir, textures, cachePackageMgr, texExplorer, ref log);
+            return processTextureMod(filenameMod, -1, true, false, false, outDir, textures, cachePackageMgr, texExplorer, ref log);
         }
 
         public string previewTextureMod(string filenameMod, int previewIndex, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer, ref string log)
         {
-            return processTextureMod(filenameMod, previewIndex, false, false, false, false, "", textures, cachePackageMgr, texExplorer, ref log);
+            return processTextureMod(filenameMod, previewIndex, false, false, false, "", textures, cachePackageMgr, texExplorer, ref log);
         }
 
         public string replaceTextureMod(string filenameMod, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer, bool verify, ref string log)
         {
-            return processTextureMod(filenameMod, -1, false, true, false, verify, "", textures, cachePackageMgr, texExplorer, ref log);
-        }
-
-        public string newReplaceTextureMod(string filenameMod, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer, bool verify, ref string log)
-        {
-            return processTextureMod(filenameMod, -1, false, false, true, verify, "", textures, cachePackageMgr, texExplorer, ref log);
+            return processTextureMod(filenameMod, -1, false, false, verify, "", textures, cachePackageMgr, texExplorer, ref log);
         }
 
         public string listTextureMod(string filenameMod, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer, ref string log)
         {
-            return processTextureMod(filenameMod, -1, false, false, false, false, "", textures, cachePackageMgr, texExplorer, ref log);
+            return processTextureMod(filenameMod, -1, false, false, false, "", textures, cachePackageMgr, texExplorer, ref log);
         }
 
-        private string processTextureMod(string filenameMod, int previewIndex, bool extract, bool replace, bool newReplace, bool verify,
+        private string processTextureMod(string filenameMod, int previewIndex, bool extract, bool replace, bool verify,
             string outDir, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer, ref string log)
         {
             string errors = "";
 
             if (filenameMod.EndsWith(".tpf", StringComparison.OrdinalIgnoreCase))
             {
-                if (!replace && !extract && !newReplace)
+                if (!replace && !extract)
                     throw new Exception();
 
                 int result;
@@ -277,7 +272,7 @@ namespace MassEffectModder
             }
             else if (filenameMod.EndsWith(".mod", StringComparison.OrdinalIgnoreCase))
             {
-                if (!replace && !extract && !newReplace)
+                if (!replace && !extract)
                     throw new Exception();
 
                 try
@@ -441,7 +436,7 @@ namespace MassEffectModder
 
             using (FileStream fs = new FileStream(filenameMod, FileMode.Open, FileAccess.Read))
             {
-                if (previewIndex == -1 && !extract && !replace && !newReplace)
+                if (previewIndex == -1 && !extract && !replace)
                 {
                     texExplorer.listViewTextures.BeginUpdate();
                 }
@@ -490,7 +485,7 @@ namespace MassEffectModder
                 }
                 numFiles = modFiles.Count;
 
-                if (texExplorer != null && newReplace)
+                if (texExplorer != null && replace)
                     texExplorer._mainWindow.updateStatusLabel("Processing MOD " + Path.GetFileName(filenameMod));
 
                 for (int i = 0; i < numFiles; i++)
@@ -529,7 +524,7 @@ namespace MassEffectModder
                             " - File " + (i + 1) + " of " + numFiles + " - " + name);
                     }
 
-                    if (previewIndex == -1 && !extract && !replace && !newReplace)
+                    if (previewIndex == -1 && !extract && !replace)
                     {
                         if (modFiles[i].tag == FileTextureTag || modFiles[i].tag == FileTextureTag2)
                         {
@@ -571,7 +566,7 @@ namespace MassEffectModder
                         continue;
                     }
 
-                    if (!newReplace || (modFiles[i].tag != FileTextureTag && modFiles[i].tag != FileTextureTag2))
+                    if (!replace || (modFiles[i].tag != FileTextureTag && modFiles[i].tag != FileTextureTag2))
                     {
                         dst = decompressData(fs, size);
                         dstLen = dst.Length;
@@ -654,7 +649,7 @@ namespace MassEffectModder
                         }
                         break;
                     }
-                    else if (replace || newReplace)
+                    else if (replace)
                     {
                         if (modFiles[i].tag == FileTextureTag || modFiles[i].tag == FileTextureTag2)
                         {
@@ -670,24 +665,15 @@ namespace MassEffectModder
                             if (index != -1)
                             {
                                 FoundTexture foundTexture = textures[index];
-                                if (replace)
-                                {
-                                    Image image = new Image(dst, Image.ImageFormat.DDS);
-                                    errors += replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc, verify, modFiles[i].tag == FileTextureTag2);
-                                    textures[index] = foundTexture;
-                                }
-                                else
-                                {
-                                    ModEntry entry = new ModEntry();
-                                    entry.textureCrc = foundTexture.crc;
-                                    entry.textureName = foundTexture.name;
-                                    if (modFiles[i].tag == FileTextureTag2)
-                                        entry.markConvert = true;
-                                    entry.memPath = filenameMod;
-                                    entry.memEntryOffset = fs.Position;
-                                    entry.memEntrySize = size;
-                                    modsToReplace.Add(entry);
-                                }
+                                ModEntry entry = new ModEntry();
+                                entry.textureCrc = foundTexture.crc;
+                                entry.textureName = foundTexture.name;
+                                if (modFiles[i].tag == FileTextureTag2)
+                                    entry.markConvert = true;
+                                entry.memPath = filenameMod;
+                                entry.memEntryOffset = fs.Position;
+                                entry.memEntrySize = size;
+                                modsToReplace.Add(entry);
                             }
                             else
                             {
@@ -703,20 +689,12 @@ namespace MassEffectModder
                                 log += "Warning: File " + path + " not exists in your game setup." + Environment.NewLine;
                                 continue;
                             }
-                            if (replace)
-                            {
-                                Package pkg = cachePackageMgr.OpenPackage(path);
-                                pkg.setExportData(exportId, dst);
-                            }
-                            else
-                            {
-                                ModEntry entry = new ModEntry();
-                                entry.binaryModType = true;
-                                entry.packagePath = pkgPath;
-                                entry.exportId = exportId;
-                                entry.binaryModData = dst;
-                                modsToReplace.Add(entry);
-                            }
+                            ModEntry entry = new ModEntry();
+                            entry.binaryModType = true;
+                            entry.packagePath = pkgPath;
+                            entry.exportId = exportId;
+                            entry.binaryModData = dst;
+                            modsToReplace.Add(entry);
                         }
                         else if (modFiles[i].tag == FileXdeltaTag)
                         {
@@ -727,36 +705,21 @@ namespace MassEffectModder
                                 log += "Warning: File " + path + " not exists in your game setup." + Environment.NewLine;
                                 continue;
                             }
-                            if (replace)
+                            ModEntry entry = new ModEntry();
+                            Package pkg = new Package(path);
+                            byte[] buffer = new Xdelta3Helper.Xdelta3().Decompress(pkg.getExportData(exportId), dst);
+                            if (buffer.Length == 0)
                             {
-                                Package pkg = cachePackageMgr.OpenPackage(path);
-                                byte[] buffer = new Xdelta3Helper.Xdelta3().Decompress(pkg.getExportData(exportId), dst);
-                                if (buffer.Length == 0)
-                                {
-                                    errors += "Warning: Xdelta patch for " + path + " failed to apply." + Environment.NewLine;
-                                    log += "Warning: Xdelta patch for " + path + " failed to apply." + Environment.NewLine;
-                                    continue;
-                                }
-                                pkg.setExportData(exportId, buffer);
+                                errors += "Warning: Xdelta patch for " + path + " failed to apply." + Environment.NewLine;
+                                log += "Warning: Xdelta patch for " + path + " failed to apply." + Environment.NewLine;
+                                continue;
                             }
-                            else
-                            {
-                                ModEntry entry = new ModEntry();
-                                Package pkg = new Package(path);
-                                byte[] buffer = new Xdelta3Helper.Xdelta3().Decompress(pkg.getExportData(exportId), dst);
-                                if (buffer.Length == 0)
-                                {
-                                    errors += "Warning: Xdelta patch for " + path + " failed to apply." + Environment.NewLine;
-                                    log += "Warning: Xdelta patch for " + path + " failed to apply." + Environment.NewLine;
-                                    continue;
-                                }
-                                entry.binaryModType = true;
-                                entry.packagePath = pkgPath;
-                                entry.exportId = exportId;
-                                entry.binaryModData = buffer;
-                                modsToReplace.Add(entry);
-                                pkg.Dispose();
-                            }
+                            entry.binaryModType = true;
+                            entry.packagePath = pkgPath;
+                            entry.exportId = exportId;
+                            entry.binaryModData = buffer;
+                            modsToReplace.Add(entry);
+                            pkg.Dispose();
                         }
                         else
                         {
@@ -767,7 +730,7 @@ namespace MassEffectModder
                     else
                         throw new Exception();
                 }
-                if (previewIndex == -1 && !extract && !replace && !newReplace)
+                if (previewIndex == -1 && !extract && !replace)
                     texExplorer.listViewTextures.EndUpdate();
             }
             return errors;

@@ -1342,7 +1342,7 @@ namespace MassEffectModder
 
     public partial class TexExplorer : Form
     {
-        private void replaceTexture(bool newWay, bool markConvert)
+        private void replaceTexture(bool markConvert)
         {
             if (listViewTextures.SelectedItems.Count == 0)
                 return;
@@ -1367,23 +1367,15 @@ namespace MassEffectModder
 
                 string errors = "";
                 MipMaps mipMaps = new MipMaps();
-                if (newWay)
-                {
-                    MipMaps.modsToReplace.Clear();
-                    ModEntry entry = new ModEntry();
-                    entry.cacheImage = image;
-                    entry.textureCrc = node.textures[index].crc;
-                    entry.textureName = node.textures[index].name;
-                    entry.markConvert = markConvert;
-                    MipMaps.modsToReplace.Add(entry);
-                    errors = mipMaps.replaceModsFromList(_textures, this, null, false, false, true, false);
-                    MipMaps.modsToReplace.Clear();
-                }
-                else
-                {
-                    errors = mipMaps.replaceTexture(image, node.textures[index].list, cachePackageMgr, node.textures[index].name, node.textures[index].crc, true, markConvert);
-                    cachePackageMgr.CloseAllWithSave(false, false, false);
-                }
+                MipMaps.modsToReplace.Clear();
+                ModEntry entry = new ModEntry();
+                entry.cacheImage = image;
+                entry.textureCrc = node.textures[index].crc;
+                entry.textureName = node.textures[index].name;
+                entry.markConvert = markConvert;
+                MipMaps.modsToReplace.Add(entry);
+                errors = mipMaps.replaceModsFromList(_textures, this, null, false, false, true, false);
+                MipMaps.modsToReplace.Clear();
 
                 if (GameData.gameType == MeType.ME3_TYPE)
                     TOCBinFile.UpdateAllTOCBinFiles();
