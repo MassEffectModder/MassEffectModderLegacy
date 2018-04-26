@@ -332,22 +332,6 @@ namespace MassEffectModder
                     StringComparison.OrdinalIgnoreCase) ||
                     s.EndsWith(".u", StringComparison.OrdinalIgnoreCase) ||
                     s.EndsWith(".sfm", StringComparison.OrdinalIgnoreCase)).ToList();
-                if (packageFiles.FindAll(s => s.Contains("_PLPC.")).Count > 5)
-                    FullScanME1Game = true;
-                else if (packageFiles.FindAll(s => s.Contains("_RA.")).Count > 5)
-                    FullScanME1Game = true;
-                else if (packageFiles.FindAll(s => s.Contains("_RU.")).Count > 5)
-                    FullScanME1Game = true;
-                else if (packageFiles.FindAll(s => s.Contains("GlobalTlk_PLPC.upk")).Count > 0)
-                    FullScanME1Game = true;
-                else if (packageFiles.FindAll(s => s.Contains("GlobalTlk_CS.upk")).Count > 0)
-                    FullScanME1Game = true;
-                else if (packageFiles.FindAll(s => s.Contains("GlobalTlk_HU.upk")).Count > 0)
-                    FullScanME1Game = true;
-                else if (packageFiles.FindAll(s => s.Contains("GlobalTlk_RA.upk")).Count > 0)
-                    FullScanME1Game = true;
-                else if (packageFiles.FindAll(s => s.Contains("GlobalTlk_RU.upk")).Count > 0)
-                    FullScanME1Game = true;
 
                 if (Directory.Exists(DLCData))
                 {
@@ -359,6 +343,25 @@ namespace MassEffectModder
                 }
                 packageFiles.RemoveAll(s => s.ToLowerInvariant().Contains("localshadercache-pc-d3d-sm3.upk"));
                 packageFiles.RemoveAll(s => s.ToLowerInvariant().Contains("refshadercache-pc-d3d-sm3.upk"));
+
+                if (packageFiles.FindAll(s => s.Contains("_PLPC.")).Count > 0)
+                    FullScanME1Game = true;
+                else if (packageFiles.FindAll(s => s.Contains("_RA.")).Count > 0)
+                    FullScanME1Game = true;
+                else if (packageFiles.FindAll(s => s.Contains("_RU.")).Count > 0)
+                    FullScanME1Game = true;
+                else if (packageFiles.FindAll(s => s.Contains("GlobalTlk_PLPC.upk")).Count > 0)
+                    FullScanME1Game = true;
+                else if (packageFiles.FindAll(s => s.Contains("GlobalTlk_CS.upk")).Count > 0)
+                    FullScanME1Game = true;
+                else if (packageFiles.FindAll(s => s.Contains("GlobalTlk_HU.upk")).Count > 0)
+                    FullScanME1Game = true;
+                else if (packageFiles.FindAll(s => s.Contains("GlobalTlk_RA.upk")).Count > 0)
+                    FullScanME1Game = true;
+                else if (packageFiles.FindAll(s => s.Contains("GlobalTlk_RU.upk")).Count > 0)
+                    FullScanME1Game = true;
+                else if (Directory.GetFiles(MainData + "\\Movies", "niebieska_pl.bik").ToList().Count > 0)
+                    FullScanME1Game = true;
             }
             else if (gameType == MeType.ME2_TYPE)
             {
