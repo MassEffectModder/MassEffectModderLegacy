@@ -765,13 +765,84 @@ namespace MassEffectModder
                         }
                     }
 
-                    if (map[e].textures.FindAll(s => s.texturesIndex == entryMap.texturesIndex && s.modIndex == entryMap.modIndex).Count > 1)
+                    if (verify)
+                        matched.crcs = new List<uint>();
+                    List<Texture.MipMap> mipmaps = new List<Texture.MipMap>();
+                    for (int m = 0; m < image.mipMaps.Count(); m++)
                     {
-                        mod.cprTexture = null;
-                        mod.arcTexture = null;
+                        if (verify)
+                            matched.crcs.Add(texture.getCrcData(image.mipMaps[m].data));
+                        Texture.MipMap mipmap = new Texture.MipMap();
+                        mipmap.width = image.mipMaps[m].origWidth;
+                        mipmap.height = image.mipMaps[m].origHeight;
+                        if (texture.existMipmap(mipmap.width, mipmap.height))
+                            mipmap.storageType = texture.getMipmap(mipmap.width, mipmap.height).storageType;
+                        else
+                        {
+                            mipmap.storageType = texture.getTopMipmap().storageType;
+                            if (texture.mipMapsList.Count() > 1)
+                            {
+                                if (GameData.gameType == MeType.ME1_TYPE && matched.linkToMaster == -1)
+                                {
+                                    if (mipmap.storageType == Texture.StorageTypes.pccUnc)
+                                    {
+                                        mipmap.storageType = Texture.StorageTypes.pccLZO;
+                                    }
+                                }
+                                else if (GameData.gameType == MeType.ME1_TYPE && matched.linkToMaster != -1)
+                                {
+                                    if (mipmap.storageType == Texture.StorageTypes.pccUnc ||
+                                        mipmap.storageType == Texture.StorageTypes.pccLZO ||
+                                        mipmap.storageType == Texture.StorageTypes.pccZlib)
+                                    {
+                                        mipmap.storageType = Texture.StorageTypes.extLZO;
+                                    }
+                                }
+                                else if (GameData.gameType == MeType.ME2_TYPE || GameData.gameType == MeType.ME3_TYPE)
+                                {
+                                    if (texture.properties.exists("TextureFileCacheName"))
+                                    {
+                                        if (texture.mipMapsList.Count < 6)
+                                        {
+                                            mipmap.storageType = Texture.StorageTypes.pccUnc;
+                                            texture.properties.setBoolValue("NeverStream", true);
+                                        }
+                                        else
+                                        {
+                                            if (GameData.gameType == MeType.ME2_TYPE)
+                                                mipmap.storageType = Texture.StorageTypes.extLZO;
+                                            else
+                                                mipmap.storageType = Texture.StorageTypes.extZlib;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        if (GameData.gameType != MeType.ME1_TYPE)
+                        {
+                            if (mipmap.storageType == Texture.StorageTypes.extLZO)
+                                mipmap.storageType = Texture.StorageTypes.extZlib;
+                            if (mipmap.storageType == Texture.StorageTypes.pccLZO)
+                                mipmap.storageType = Texture.StorageTypes.pccZlib;
+                        }
+
+                        if (mod.arcTexture != null)
+                        {
+                            if (mod.arcTexture[m].storageType != mipmap.storageType)
+                            {
+                                mod.arcTexture = null;
+                            }
+                        }
+
+                        mipmap.width = image.mipMaps[m].width;
+                        mipmap.height = image.mipMaps[m].height;
+                        mipmaps.Add(mipmap);
+                        if (texture.mipMapsList.Count() == 1)
+                            break;
                     }
 
-                    bool triggerCacheArc = false, triggerCacheCpr = false;
+                    bool triggerCacheArc = false;
                     bool newTfcFile = false;
                     bool oldSpace = true;
                     string archiveFile = "";
@@ -875,68 +946,9 @@ namespace MassEffectModder
                         }
                     }
 
-                    if (verify)
-                        matched.crcs = new List<uint>();
-                    List<Texture.MipMap> mipmaps = new List<Texture.MipMap>();
                     for (int m = 0; m < image.mipMaps.Count(); m++)
                     {
-                        if (verify)
-                            matched.crcs.Add(texture.getCrcData(image.mipMaps[m].data));
-                        Texture.MipMap mipmap = new Texture.MipMap();
-                        mipmap.width = image.mipMaps[m].origWidth;
-                        mipmap.height = image.mipMaps[m].origHeight;
-                        if (texture.existMipmap(mipmap.width, mipmap.height))
-                            mipmap.storageType = texture.getMipmap(mipmap.width, mipmap.height).storageType;
-                        else
-                        {
-                            mipmap.storageType = texture.getTopMipmap().storageType;
-                            if (texture.mipMapsList.Count() > 1)
-                            {
-                                if (GameData.gameType == MeType.ME1_TYPE && matched.linkToMaster == -1)
-                                {
-                                    if (mipmap.storageType == Texture.StorageTypes.pccUnc)
-                                    {
-                                        mipmap.storageType = Texture.StorageTypes.pccLZO;
-                                    }
-                                }
-                                else if (GameData.gameType == MeType.ME1_TYPE && matched.linkToMaster != -1)
-                                {
-                                    if (mipmap.storageType == Texture.StorageTypes.pccUnc ||
-                                        mipmap.storageType == Texture.StorageTypes.pccLZO ||
-                                        mipmap.storageType == Texture.StorageTypes.pccZlib)
-                                    {
-                                        mipmap.storageType = Texture.StorageTypes.extLZO;
-                                    }
-                                }
-                                else if (GameData.gameType == MeType.ME2_TYPE || GameData.gameType == MeType.ME3_TYPE)
-                                {
-                                    if (texture.properties.exists("TextureFileCacheName"))
-                                    {
-                                        if (texture.mipMapsList.Count < 6)
-                                        {
-                                            mipmap.storageType = Texture.StorageTypes.pccUnc;
-                                            texture.properties.setBoolValue("NeverStream", true);
-                                        }
-                                        else
-                                        {
-                                            if (GameData.gameType == MeType.ME2_TYPE)
-                                                mipmap.storageType = Texture.StorageTypes.extLZO;
-                                            else
-                                                mipmap.storageType = Texture.StorageTypes.extZlib;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        if (GameData.gameType != MeType.ME1_TYPE)
-                        {
-                            if (mipmap.storageType == Texture.StorageTypes.extLZO)
-                                mipmap.storageType = Texture.StorageTypes.extZlib;
-                            if (mipmap.storageType == Texture.StorageTypes.pccLZO)
-                                mipmap.storageType = Texture.StorageTypes.pccZlib;
-                        }
-
+                        Texture.MipMap mipmap = mipmaps[m];
                         mipmap.uncompressedSize = image.mipMaps[m].data.Length;
                         if (GameData.gameType == MeType.ME1_TYPE)
                         {
@@ -966,18 +978,9 @@ namespace MassEffectModder
                             if (mipmap.storageType == Texture.StorageTypes.extZlib ||
                                 mipmap.storageType == Texture.StorageTypes.extLZO)
                             {
-                                if (mod.cprTexture == null || (mod.cprTexture != null && mipmap.storageType != mod.cprTexture[m].storageType))
-                                {
-                                    mipmap.newData = mod.cacheCprMipmaps[m];
-                                    triggerCacheCpr = true;
-                                }
-                                else
-                                {
-                                    if (mod.cprTexture[m].width != mipmap.width ||
-                                        mod.cprTexture[m].height != mipmap.height)
-                                        throw new Exception();
-                                    mipmap.newData = mod.cprTexture[m].newData;
-                                }
+                                if (mod.cacheCprMipmaps.Count != image.mipMaps.Count())
+                                    throw new Exception();
+                                mipmap.newData = mod.cacheCprMipmaps[m];
                                 mipmap.compressedSize = mipmap.newData.Length;
                             }
 
@@ -1038,13 +1041,11 @@ namespace MassEffectModder
                                 }
                             }
                         }
-
-                        mipmap.width = image.mipMaps[m].width;
-                        mipmap.height = image.mipMaps[m].height;
-                        mipmaps.Add(mipmap);
+                        mipmaps[m] = mipmap;
                         if (texture.mipMapsList.Count() == 1)
                             break;
                     }
+
                     texture.replaceMipMaps(mipmaps);
                     texture.properties.setIntValue("SizeX", texture.mipMapsList.First().width);
                     texture.properties.setIntValue("SizeY", texture.mipMapsList.First().height);
@@ -1072,10 +1073,6 @@ namespace MassEffectModder
                     }
                     else
                     {
-                        if (triggerCacheCpr)
-                        {
-                            mod.cprTexture = texture.mipMapsList;
-                        }
                         if (triggerCacheArc)
                         {
                             mod.arcTexture = texture.mipMapsList;
@@ -1102,11 +1099,6 @@ namespace MassEffectModder
                             mod.cacheCprMipmaps = null;
                         }
                         mod.cacheImage = null;
-                        if (mod.cprTexture != null)
-                        {
-                            mod.cprTexture.Clear();
-                            mod.cprTexture = null;
-                        }
                         mod.arcTfcGuid = null;
                         if (mod.masterTextures != null)
                         {
