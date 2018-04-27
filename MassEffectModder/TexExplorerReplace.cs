@@ -1336,6 +1336,8 @@ namespace MassEffectModder
                 errors += replaceTextures(mapPackages, textures, texExplorer, installer, repack, appendMarker, verify, ipc);
             }
 
+            modsToReplace.Clear();
+
             return errors;
         }
     }
@@ -1375,7 +1377,6 @@ namespace MassEffectModder
                 entry.markConvert = markConvert;
                 MipMaps.modsToReplace.Add(entry);
                 errors = mipMaps.replaceModsFromList(_textures, this, null, false, false, true, false);
-                MipMaps.modsToReplace.Clear();
 
                 if (GameData.gameType == MeType.ME3_TYPE)
                     TOCBinFile.UpdateAllTOCBinFiles();

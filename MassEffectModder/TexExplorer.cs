@@ -751,7 +751,6 @@ namespace MassEffectModder
                 listViewMods.Items.Remove(item);
             }
             errors += mipMaps.replaceModsFromList(_textures, this, null, false, false, verify, false);
-            MipMaps.modsToReplace.Clear();
             if (GameData.gameType == MeType.ME3_TYPE)
                 TOCBinFile.UpdateAllTOCBinFiles();
             _mainWindow.updateStatusLabel("");
