@@ -61,7 +61,7 @@ namespace MassEffectModder
 
         public string replaceTextureMod(string filenameMod, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer, bool verify, ref string log)
         {
-            return processTextureMod(filenameMod, -1, false, false, verify, "", textures, cachePackageMgr, texExplorer, ref log);
+            return processTextureMod(filenameMod, -1, false, true, verify, "", textures, cachePackageMgr, texExplorer, ref log);
         }
 
         public string listTextureMod(string filenameMod, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer, ref string log)
