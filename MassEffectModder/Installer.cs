@@ -1353,9 +1353,11 @@ namespace MassEffectModder
 
             if (!updateMode && gameId == 3 && unpackDLC)
             {
+                log += "Unpacking DLCs started..." + Environment.NewLine;
                 customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
                 ME3DLC.unpackAllDLC(null, this, false);
                 gameData.getPackages(true, true);
+                log += "Unpacking DLCs finished" + Environment.NewLine + Environment.NewLine;
             }
 
             if (checkBoxOptionRepack.Checked)
