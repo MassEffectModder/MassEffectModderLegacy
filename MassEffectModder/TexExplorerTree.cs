@@ -653,7 +653,7 @@ namespace MassEffectModder
 
             try
             {
-                package = new Package(GameData.GamePath + packagePath, true);
+                package = new Package(GameData.GamePath + packagePath);
             }
             catch (Exception e)
             {

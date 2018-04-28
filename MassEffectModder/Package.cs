@@ -194,7 +194,6 @@ namespace MassEffectModder
             }
             //public ulong objectFlags; // not used - save RAM
             public byte[] raw;
-            public bool updatedData;
             public byte[] newData;
             public uint id;
         }
@@ -666,14 +665,6 @@ namespace MassEffectModder
 
         public byte[] getExportData(int id)
         {
-            if (exportsTable[id].updatedData)
-            {
-                string exportFile = packagePath + "-exports\\exportId-" + id;
-                using (FileStream fs = new FileStream(exportFile, FileMode.Open, FileAccess.Read))
-                {
-                    return fs.ReadToBuffer(fs.Length);
-                }
-            }
             if (exportsTable[id].newData != null)
             {
                 return exportsTable[id].newData;
@@ -1228,16 +1219,7 @@ namespace MassEffectModder
                     dataLeft = exportsEndOffset - export.dataOffset - export.dataSize;
                 else
                     dataLeft = sortedExports[i + 1].dataOffset - export.dataOffset - export.dataSize;
-                if (export.updatedData)
-                {
-                    string exportFile = packagePath + "-exports\\exportId-" + export.id;
-                    using (FileStream fs = new FileStream(exportFile, FileMode.Open, FileAccess.Read))
-                    {
-                        tempOutput.WriteFromStream(fs, fs.Length);
-                    }
-                    export.updatedData = false;
-                }
-                else if (export.newData != null)
+                if (export.newData != null)
                 {
                     tempOutput.WriteFromBuffer(export.newData);
                 }
