@@ -1,7 +1,7 @@
 /*
  * MassEffectModder
  *
- * Copyright (C) 2014-2017 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2014-2018 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -49,28 +49,28 @@ namespace MassEffectModder
             public long size;
         }
 
-        public string extractTextureMod(string filenameMod, string outDir, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer, ref string log)
+        public string extractTextureMod(string filenameMod, string outDir, List<FoundTexture> textures, TexExplorer texExplorer, ref string log)
         {
-            return processTextureMod(filenameMod, -1, true, false, false, outDir, textures, cachePackageMgr, texExplorer, ref log);
+            return processTextureMod(filenameMod, -1, true, false, false, outDir, textures, texExplorer, ref log);
         }
 
-        public string previewTextureMod(string filenameMod, int previewIndex, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer, ref string log)
+        public string previewTextureMod(string filenameMod, int previewIndex, List<FoundTexture> textures, TexExplorer texExplorer, ref string log)
         {
-            return processTextureMod(filenameMod, previewIndex, false, false, false, "", textures, cachePackageMgr, texExplorer, ref log);
+            return processTextureMod(filenameMod, previewIndex, false, false, false, "", textures, texExplorer, ref log);
         }
 
-        public string replaceTextureMod(string filenameMod, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer, bool verify, ref string log)
+        public string replaceTextureMod(string filenameMod, List<FoundTexture> textures, TexExplorer texExplorer, bool verify, ref string log)
         {
-            return processTextureMod(filenameMod, -1, false, true, verify, "", textures, cachePackageMgr, texExplorer, ref log);
+            return processTextureMod(filenameMod, -1, false, true, verify, "", textures, texExplorer, ref log);
         }
 
-        public string listTextureMod(string filenameMod, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer, ref string log)
+        public string listTextureMod(string filenameMod, List<FoundTexture> textures, TexExplorer texExplorer, ref string log)
         {
-            return processTextureMod(filenameMod, -1, false, false, false, "", textures, cachePackageMgr, texExplorer, ref log);
+            return processTextureMod(filenameMod, -1, false, false, false, "", textures, texExplorer, ref log);
         }
 
         private string processTextureMod(string filenameMod, int previewIndex, bool extract, bool replace, bool verify,
-            string outDir, List<FoundTexture> textures, CachePackageMgr cachePackageMgr, TexExplorer texExplorer, ref string log)
+            string outDir, List<FoundTexture> textures, TexExplorer texExplorer, ref string log)
         {
             string errors = "";
 
@@ -182,12 +182,6 @@ namespace MassEffectModder
                                     }
                                 }
                                 else if (replace)
-                                {
-                                    Image image = new Image(data, Path.GetExtension(filename));
-                                    errors += replaceTexture(image, foundTexture.list, cachePackageMgr, foundTexture.name, crc, verify, false);
-                                    textures[index] = foundTexture;
-                                }
-                                else
                                 {
                                     int indexPremap = -1;
                                     for (int t = 0; t < texExplorer.texturesPreMap.Count; t++)
@@ -326,11 +320,6 @@ namespace MassEffectModder
                                 }
                                 if (replace)
                                 {
-                                    Package pkg = cachePackageMgr.OpenPackage(mod.packagePath);
-                                    pkg.setExportData(mod.exportId, mod.data);
-                                }
-                                else
-                                {
                                     ModEntry entry = new ModEntry();
                                     entry.binaryModType = true;
                                     entry.packagePath = path;
@@ -364,13 +353,6 @@ namespace MassEffectModder
                                 mod.data = fs.ReadToBuffer(len);
 
                                 if (replace)
-                                {
-                                    PixelFormat pixelFormat = f.pixfmt;
-                                    Image image = new Image(mod.data, Image.ImageFormat.DDS);
-                                    errors += replaceTexture(image, f.list, cachePackageMgr, f.name, f.crc, verify, false);
-                                    textures[index] = f;
-                                }
-                                else
                                 {
                                     int indexPremap = -1;
                                     try

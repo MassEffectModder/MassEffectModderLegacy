@@ -152,7 +152,7 @@ namespace MassEffectModder
                 updateStatusLabel("Repack PCC file " + (i + 1) + " of " + GameData.packageFiles.Count);
                 try
                 {
-                    Package package = new Package(GameData.packageFiles[i], false, true);
+                    Package package = new Package(GameData.packageFiles[i], true);
                     if (!package.compressed || package.compressed && package.compressionType != Package.CompressionType.Zlib)
                     {
                         package.Dispose();
@@ -533,7 +533,7 @@ namespace MassEffectModder
                             Directory.CreateDirectory(outDir);
                             updateStatusLabel("MOD: " + file + " - extracting...");
                             updateStatusLabel2("");
-                            errors += new MipMaps().extractTextureMod(file, outDir, null, null, null, ref log);
+                            errors += new MipMaps().extractTextureMod(file, outDir, null, null, ref log);
                         }
                         var time = Misc.stopTimer();
                         updateStatusLabel("MODs extracted. Process total time: " + Misc.getTimerFormat(time));

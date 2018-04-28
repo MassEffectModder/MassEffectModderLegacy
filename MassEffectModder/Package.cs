@@ -96,7 +96,6 @@ namespace MassEffectModder
         int currentChunk = -1;
         MemoryStream chunkCache;
         bool modified;
-        bool memoryMode;
         public int nameIdTexture2D = -1;
         public int nameIdLightMapTexture2D = -1;
         public int nameIdShadowMapTexture2D = -1;
@@ -441,10 +440,9 @@ namespace MassEffectModder
             return s;
         }
 
-        public Package(string filename, bool memMode = false, bool headerOnly = false)
+        public Package(string filename, bool headerOnly = false)
         {
             packagePath = filename;
-            memoryMode = memMode;
 
             if (!File.Exists(filename))
                 throw new Exception("File not found: " + filename);
@@ -696,26 +694,8 @@ namespace MassEffectModder
                 exportsEndOffset = export.dataOffset + (uint)data.Length;
             }
             export.dataSize = (uint)data.Length;
-
-            if (memoryMode)
-            {
-                export.newData = new byte[data.Length];
-                Array.Copy(data, export.newData, data.Length);
-            }
-            else
-            {
-                string packageDir = Path.GetDirectoryName(packagePath);
-                Directory.CreateDirectory(packagePath + "-exports");
-                string exportFile = packagePath + "-exports\\exportId-" + id;
-                if (File.Exists(exportFile))
-                    File.Delete(exportFile);
-                using (FileStream fs = new FileStream(exportFile, FileMode.Create, FileAccess.Write))
-                {
-                    fs.WriteFromBuffer(data);
-                }
-                export.updatedData = true;
-            }
-
+            export.newData = new byte[data.Length];
+            Array.Copy(data, export.newData, data.Length);
             exportsTable[id] = export;
             modified = true;
         }
@@ -727,25 +707,8 @@ namespace MassEffectModder
             export.dataOffset = exportsEndOffset;
             exportsEndOffset = export.dataOffset + export.dataSize;
 
-            if (memoryMode)
-            {
-                export.newData = new byte[export.dataSize];
-                Array.Copy(data, export.newData, export.dataSize);
-            }
-            else
-            {
-                string packageDir = Path.GetDirectoryName(packagePath);
-                Directory.CreateDirectory(packagePath + "-exports");
-                string exportFile = packagePath + "-exports\\exportId-" + id;
-                if (File.Exists(exportFile))
-                    File.Delete(exportFile);
-                using (FileStream fs = new FileStream(exportFile, FileMode.Create, FileAccess.Write))
-                {
-                    fs.WriteFromBuffer(data);
-                }
-                export.updatedData = true;
-            }
-
+            export.newData = new byte[export.dataSize];
+            Array.Copy(data, export.newData, export.dataSize);
             exportsTable[id] = export;
             modified = true;
         }
@@ -1334,8 +1297,6 @@ namespace MassEffectModder
             tempOutput.Write(packageHeader, 0, packageHeader.Length);
 
             packageStream.Close();
-            if (!memoryMode && Directory.Exists(packagePath + "-exports"))
-                Directory.Delete(packagePath + "-exports", true);
 
             using (FileStream fs = new FileStream(packagePath, FileMode.Create, FileAccess.Write))
             {
@@ -1495,8 +1456,6 @@ namespace MassEffectModder
             }
             packageStream.Close();
             packageStream.Dispose();
-            if (!memoryMode && modified && Directory.Exists(packagePath + "-exports"))
-                Directory.Delete(packagePath + "-exports", true);
         }
     }
 }

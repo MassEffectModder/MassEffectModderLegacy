@@ -48,7 +48,6 @@ namespace MassEffectModder
         int gameId = 1;
         GameData gameData;
         public List<string> memFiles;
-        CachePackageMgr cachePackageMgr;
         List<FoundTexture> textures;
         MipMaps mipMaps;
         TreeScan treeScan;
@@ -83,7 +82,6 @@ namespace MassEffectModder
             Text = "MEM Installer v" + Application.ProductVersion;
             mipMaps = new MipMaps();
             treeScan = new TreeScan();
-            cachePackageMgr = new CachePackageMgr(null, this);
             MipMaps.modsToReplace = new List<ModEntry>();
 
             // 
@@ -1444,7 +1442,7 @@ namespace MassEffectModder
                     updateProgressStatus("Repack game files " + ((i + 1) * 100 / GameData.packageFiles.Count) + "%");
                     try
                     {
-                        Package package = new Package(pkgsToRepack[i], true, true);
+                        Package package = new Package(pkgsToRepack[i], true);
                         if (!package.compressed || package.compressed && package.compressionType != Package.CompressionType.Zlib)
                         {
                             package.Dispose();

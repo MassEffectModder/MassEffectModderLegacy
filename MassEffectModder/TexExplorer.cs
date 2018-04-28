@@ -40,7 +40,6 @@ namespace MassEffectModder
         List<FoundTexture> _textures;
         bool previewShow = true;
         bool detailedInfo = false;
-        CachePackageMgr cachePackageMgr;
         TreeScan treeScan;
         MipMaps mipMaps;
 
@@ -65,7 +64,6 @@ namespace MassEffectModder
             _gameSelected = gameType;
             _configIni = main._configIni;
             gameData = new GameData(_gameSelected, _configIni);
-            cachePackageMgr = new CachePackageMgr(main, null);
             treeScan = new TreeScan();
             mipMaps = new MipMaps();
             texturesPreMap = new List<FoundTexture>();
@@ -156,7 +154,6 @@ namespace MassEffectModder
         {
             if (GameData.packageFiles != null)
                 GameData.packageFiles.Clear();
-            cachePackageMgr.CloseAllWithoutSave();
             _mainWindow.updateStatusLabel("");
             _mainWindow.updateStatusLabel2("");
             _mainWindow.enableGameDataMenu(true);
@@ -217,7 +214,7 @@ namespace MassEffectModder
                 previewShow = true;
                 string log = "";
                 int index = Convert.ToInt32(listViewTextures.FocusedItem.Name);
-                mipMaps.previewTextureMod(listViewMods.SelectedItems[0].Name, index, _textures, cachePackageMgr, this, ref log);
+                mipMaps.previewTextureMod(listViewMods.SelectedItems[0].Name, index, _textures, this, ref log);
                 _mainWindow.updateStatusLabel("Done.");
                 pictureBoxPreview.Show();
                 richTextBoxInfo.Hide();
@@ -746,7 +743,7 @@ namespace MassEffectModder
             MipMaps.modsToReplace.Clear();
             foreach (ListViewItem item in listViewMods.SelectedItems)
             {
-                errors += mipMaps.replaceTextureMod(item.Name, _textures, null, this, false, ref log);
+                errors += mipMaps.replaceTextureMod(item.Name, _textures, this, false, ref log);
                 _mainWindow.updateStatusLabel("MOD: " + item.Text + " preparing...");
                 listViewMods.Items.Remove(item);
             }
@@ -840,7 +837,7 @@ namespace MassEffectModder
             if (listViewMods.SelectedItems[0].Name.EndsWith(".mod", StringComparison.OrdinalIgnoreCase))
                 return;
             _mainWindow.updateStatusLabel("Processing MOD...");
-            richTextBoxInfo.Text = mipMaps.listTextureMod(listViewMods.SelectedItems[0].Name, _textures, cachePackageMgr, this, ref log);
+            richTextBoxInfo.Text = mipMaps.listTextureMod(listViewMods.SelectedItems[0].Name, _textures, this, ref log);
             _mainWindow.updateStatusLabel("Done.");
             _mainWindow.updateStatusLabel2("");
             if (richTextBoxInfo.Text != "")
@@ -894,7 +891,7 @@ namespace MassEffectModder
                         Directory.CreateDirectory(outDir);
                         _mainWindow.updateStatusLabel("MEM: " + item.Text + "extracting...");
                         _mainWindow.updateStatusLabel2("");
-                        richTextBoxInfo.Text += mipMaps.extractTextureMod(item.Name, outDir, texturesPreMap, cachePackageMgr, this, ref log);
+                        richTextBoxInfo.Text += mipMaps.extractTextureMod(item.Name, outDir, texturesPreMap, this, ref log);
                     }
                     var time = Misc.stopTimer();
                     _mainWindow.updateStatusLabel("MEMs extracted. Process total time: " + Misc.getTimerFormat(time));
