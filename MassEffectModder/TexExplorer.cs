@@ -747,7 +747,7 @@ namespace MassEffectModder
                 _mainWindow.updateStatusLabel("MOD: " + item.Text + " preparing...");
                 listViewMods.Items.Remove(item);
             }
-            errors += mipMaps.replaceModsFromList(_textures, this, null, false, false, verify, false);
+            errors += mipMaps.replaceModsFromList(_textures, _mainWindow, null, false, false, verify, false, false);
             if (GameData.gameType == MeType.ME3_TYPE)
                 TOCBinFile.UpdateAllTOCBinFiles();
             _mainWindow.updateStatusLabel("");

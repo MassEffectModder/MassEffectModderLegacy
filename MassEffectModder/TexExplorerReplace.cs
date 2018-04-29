@@ -84,6 +84,8 @@ namespace MassEffectModder
         public long usage;
         public int instances;
         public long weight;
+        public bool slave;
+        public MipMaps.RemoveMipsEntry removeMips;
     }
 
     public partial class MipMaps
@@ -138,7 +140,7 @@ namespace MassEffectModder
         }
 
         public string replaceTextures(List<MapPackagesToMod> map, List<FoundTexture> textures,
-            TexExplorer texExplorer, Installer installer, bool repack, bool appendMarker, bool verify, bool ipc)
+            MainWindow mainWindow, Installer installer, bool repack, bool appendMarker, bool verify, bool removeMips, bool ipc)
         {
             string errors = "";
             int lastProgress = -1;
@@ -148,8 +150,8 @@ namespace MassEffectModder
             {
                 if (installer != null)
                     installer.updateProgressStatus("Installing textures " + ((e + 1) * 100) / map.Count + "% ");
-                else if (texExplorer._mainWindow != null)
-                    texExplorer._mainWindow.updateStatusLabel("Installing textures in package " + (e + 1) + " of " + map.Count + " - " + map[e].packagePath);
+                else if (mainWindow != null)
+                    mainWindow.updateStatusLabel("Installing textures in package " + (e + 1) + " of " + map.Count + " - " + map[e].packagePath);
                 else if (ipc)
                 {
                     Console.WriteLine("[IPC]PROCESSING_FILE " + map[e].packagePath);
@@ -621,6 +623,17 @@ namespace MassEffectModder
                     }
 
                     matched.removeEmptyMips = false;
+                    if (!map[e].slave)
+                    {
+                        for (int r = 0; r < map[e].removeMips.exportIDs.Count; r++)
+                        {
+                            if (map[e].removeMips.exportIDs[r] == matched.exportID)
+                            {
+                                map[e].removeMips.exportIDs.RemoveAt(r);
+                                break;
+                            }
+                        }
+                    }
 
                     mod.instance--;
                     if (mod.instance < 0)
@@ -656,14 +669,24 @@ namespace MassEffectModder
                     textures[entryMap.texturesIndex].list[entryMap.listIndex] = matched;
                 }
 
-                if (package.SaveToFile(repack, false, appendMarker))
+                if (removeMips && !map[e].slave)
                 {
-                    if (repack && Installer.pkgsToRepack != null)
-                        Installer.pkgsToRepack.Remove(package.packagePath);
-                    if (appendMarker && Installer.pkgsToMarker != null)
-                        Installer.pkgsToMarker.Remove(package.packagePath);
+                    if (GameData.gameType == MeType.ME1_TYPE)
+                        errors += removeMipMapsME1(1, textures, package, map[e].removeMips, mainWindow, installer, ipc);
+                    else
+                        errors += removeMipMapsME2ME3(textures, package, map[e].removeMips, mainWindow, installer, ipc, repack);
                 }
-                package.Dispose();
+                else
+                {
+                    if (package.SaveToFile(repack, false, appendMarker))
+                    {
+                        if (repack && Installer.pkgsToRepack != null)
+                            Installer.pkgsToRepack.Remove(package.packagePath);
+                        if (appendMarker && Installer.pkgsToMarker != null)
+                            Installer.pkgsToMarker.Remove(package.packagePath);
+                    }
+                    package.Dispose();
+                }
                 package = null;
 
                 if (memorySize < 16 && modsToReplace.Count != 1)
@@ -676,16 +699,16 @@ namespace MassEffectModder
             return errors;
         }
 
-        public string replaceModsFromList(List<FoundTexture> textures, TexExplorer texExplorer, Installer installer,
-            bool repack, bool appendMarker, bool verify, bool ipc)
+        public string replaceModsFromList(List<FoundTexture> textures, MainWindow mainWindow, Installer installer,
+            bool repack, bool appendMarker, bool verify, bool removeMips, bool ipc)
         {
             string errors = "";
             bool binaryMods = false;
 
-            if (texExplorer != null)
+            if (mainWindow != null)
             {
-                texExplorer._mainWindow.updateStatusLabel("Preparing...");
-                texExplorer._mainWindow.updateStatusLabel2("");
+                mainWindow.updateStatusLabel("Preparing...");
+                mainWindow.updateStatusLabel2("");
             }
             else if (!ipc)
             {
@@ -778,18 +801,14 @@ namespace MassEffectModder
                     mapEntry.packagePath = map[i].packagePath;
                     mapEntry.usage = modsToReplace[map[i].modIndex].memEntrySize;
                     mapEntry.instances = modsToReplace[map[i].modIndex].instance;
+                    mapEntry.removeMips.exportIDs = new List<int>();
+                    mapEntry.removeMips.pkgPath = map[i].packagePath;
                     previousPath = map[i].packagePath.ToLowerInvariant();
                     mapPackages.Add(mapEntry);
                     packagesIndex++;
                 }
             }
             map.Clear();
-
-            for (int i = 0; i < map.Count; i++)
-            {
-                MapPackagesToMod mapEntry = mapPackages[i];
-                mapEntry.weight = mapEntry.usage * mapEntry.instances;
-            }
 
             mapSlaves.Sort((x, y) => x.packagePath.CompareTo(y.packagePath));
             previousPath = "";
@@ -816,6 +835,7 @@ namespace MassEffectModder
                     mapEntry.packagePath = mapSlaves[i].packagePath;
                     mapEntry.usage = modsToReplace[mapSlaves[i].modIndex].memEntrySize;
                     mapEntry.instances = modsToReplace[mapSlaves[i].modIndex].instance;
+                    mapEntry.slave = true;
                     previousPath = mapSlaves[i].packagePath.ToLowerInvariant();
                     mapPackages.Add(mapEntry);
                     packagesIndex++;
@@ -823,12 +843,40 @@ namespace MassEffectModder
             }
             mapSlaves.Clear();
 
+            if (removeMips)
+            {
+                for (int k = 0; k < textures.Count; k++)
+                {
+                    for (int t = 0; t < textures[k].list.Count; t++)
+                    {
+                        if (textures[k].list[t].path == "")
+                            continue;
+                        if (textures[k].list[t].removeEmptyMips)
+                        {
+                            for (int e = 0; e < mapPackages.Count; e++)
+                            {
+                                if (mapPackages[e].slave)
+                                    continue;
+                                if (mapPackages[e].packagePath == textures[k].list[t].path)
+                                {
+                                    mapPackages[e].removeMips.exportIDs.Add(textures[k].list[t].exportID);
+                                    MatchedTexture f = textures[k].list[t];
+                                    f.removeEmptyMips = false;
+                                    textures[k].list[t] = f;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             if (binaryMods)
             {
-                if (texExplorer != null)
+                if (mainWindow != null)
                 {
-                    texExplorer._mainWindow.updateStatusLabel("Installing binary mods...");
-                    texExplorer._mainWindow.updateStatusLabel2("");
+                    mainWindow.updateStatusLabel("Installing binary mods...");
+                    mainWindow.updateStatusLabel2("");
                 }
                 else if (!ipc)
                 {
@@ -862,17 +910,17 @@ namespace MassEffectModder
 
             if (mapPackages.Count != 0)
             {
-                if (texExplorer != null)
+                if (mainWindow != null)
                 {
-                    texExplorer._mainWindow.updateStatusLabel("Installing texture mods...");
-                    texExplorer._mainWindow.updateStatusLabel2("");
+                    mainWindow.updateStatusLabel("Installing texture mods...");
+                    mainWindow.updateStatusLabel2("");
                 }
                 else if (!ipc)
                 {
                     Console.WriteLine("Installing texture mods...");
                 }
 
-                errors += replaceTextures(mapPackages, textures, texExplorer, installer, repack, appendMarker, verify, ipc);
+                errors += replaceTextures(mapPackages, textures, mainWindow, installer, repack, appendMarker, verify, removeMips, ipc);
             }
 
             modsToReplace.Clear();
@@ -915,7 +963,7 @@ namespace MassEffectModder
                 entry.textureName = node.textures[index].name;
                 entry.markConvert = markConvert;
                 MipMaps.modsToReplace.Add(entry);
-                errors = mipMaps.replaceModsFromList(_textures, this, null, false, false, true, false);
+                errors = mipMaps.replaceModsFromList(_textures, _mainWindow, null, false, false, true, false, false);
 
                 if (GameData.gameType == MeType.ME3_TYPE)
                     TOCBinFile.UpdateAllTOCBinFiles();

@@ -1264,7 +1264,8 @@ namespace MassEffectModder
                 }
             }
 
-            errors += mipMaps.replaceModsFromList(textures, null, this, checkBoxOptionRepack.Checked, !updateMode, false, false);
+            errors += mipMaps.replaceModsFromList(textures, null, this, checkBoxOptionRepack.Checked,
+                !updateMode, false, !updateMode, false);
 
             MipMaps.modsToReplace.Clear();
         }
