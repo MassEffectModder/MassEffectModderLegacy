@@ -802,23 +802,30 @@ namespace MassEffectModder
         {
             nodeList = new List<PackageTreeNode>();
             PackageTreeNode rootNode = new PackageTreeNode("All Packages");
-            for (int l = 0; l < _textures.Count; l++)
+            for (int t = 0; t < _textures.Count; t++)
             {
-                bool found = false;
-                for (int i = 0; i < nodeList.Count; i++)
+                for (int l = 0; l < _textures[t].list.Count; l++)
                 {
-                    if (nodeList[i].Name.ToLowerInvariant() == Path.GetFileNameWithoutExtension(_textures[l].list.Find(s => s.path != "").path).ToLowerInvariant())
+                    if (_textures[t].list[l].path == "")
+                        continue;
+
+                    string packageName = Path.GetFileNameWithoutExtension(_textures[t].list[l].path).ToUpperInvariant();
+                    bool found = false;
+                    for (int n = 0; n < nodeList.Count; n++)
                     {
-                        nodeList[i].textures.Add(_textures[l]);
-                        found = true;
+                        if (nodeList[n].Name == packageName)
+                        {
+                            nodeList[n].textures.Add(_textures[t]);
+                            found = true;
+                        }
                     }
-                }
-                if (!found)
-                {
-                    PackageTreeNode treeNode = new PackageTreeNode(Path.GetFileNameWithoutExtension(_textures[l].list.Find(s => s.path != "").path).ToUpperInvariant());
-                    treeNode.textures.Add(_textures[l]);
-                    rootNode.Nodes.Add(treeNode);
-                    nodeList.Add(treeNode);
+                    if (!found)
+                    {
+                        PackageTreeNode treeNode = new PackageTreeNode(packageName);
+                        treeNode.textures.Add(_textures[t]);
+                        rootNode.Nodes.Add(treeNode);
+                        nodeList.Add(treeNode);
+                    }
                 }
             }
 
