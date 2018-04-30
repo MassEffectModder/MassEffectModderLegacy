@@ -319,10 +319,9 @@ namespace MassEffectModder
             return errors;
         }
 
-        public string removeMipMapsME2ME3(List<FoundTexture> textures, Package package ,RemoveMipsEntry removeEntry, MainWindow mainWindow, Installer installer, bool ipc, bool repack)
+        public string removeMipMapsME2ME3(List<FoundTexture> textures, Package package, RemoveMipsEntry removeEntry, MainWindow mainWindow, Installer installer, bool ipc, bool repack)
         {
             string errors = "";
-
 
             for (int l = 0; l < removeEntry.exportIDs.Count; l++)
             {
