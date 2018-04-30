@@ -851,13 +851,11 @@ namespace MassEffectModder
                     {
                         if (textures[k].list[t].path == "")
                             continue;
-                        if (textures[k].list[t].removeEmptyMips)
+                        if (!textures[k].list[t].slave && textures[k].list[t].removeEmptyMips)
                         {
                             for (int e = 0; e < mapPackages.Count; e++)
                             {
-                                if (mapPackages[e].slave)
-                                    continue;
-                                if (mapPackages[e].packagePath == textures[k].list[t].path)
+                                if (!mapPackages[e].slave && mapPackages[e].packagePath == textures[k].list[t].path)
                                 {
                                     mapPackages[e].removeMips.exportIDs.Add(textures[k].list[t].exportID);
                                     MatchedTexture f = textures[k].list[t];
