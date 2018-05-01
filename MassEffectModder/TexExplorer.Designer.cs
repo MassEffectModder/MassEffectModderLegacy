@@ -60,10 +60,10 @@ namespace MassEffectModder
             this.previewTextureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.infoTextureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.info2TextureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.singleMultiPackageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.listViewMods = new System.Windows.Forms.ListView();
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contextMenuStripMods = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.applyModToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteModToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -71,10 +71,10 @@ namespace MassEffectModder
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.applyModsWithVerificationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.listViewResults = new System.Windows.Forms.ListView();
-            this.columnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.treeViewPackages = new System.Windows.Forms.TreeView();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.listViewTextures = new System.Windows.Forms.ListView();
+            this.listViewPackages = new System.Windows.Forms.ListView();
             this.pictureBoxPreview = new System.Windows.Forms.PictureBox();
             this.richTextBoxInfo = new System.Windows.Forms.RichTextBox();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
@@ -150,7 +150,8 @@ namespace MassEffectModder
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.previewTextureToolStripMenuItem,
             this.infoTextureToolStripMenuItem,
-            this.info2TextureToolStripMenuItem});
+            this.info2TextureToolStripMenuItem,
+            this.singleMultiPackageToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(243, 22);
             this.viewToolStripMenuItem.Text = "View";
@@ -159,7 +160,7 @@ namespace MassEffectModder
             // 
             this.previewTextureToolStripMenuItem.Name = "previewTextureToolStripMenuItem";
             this.previewTextureToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
-            this.previewTextureToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.previewTextureToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.previewTextureToolStripMenuItem.Text = "Preview";
             this.previewTextureToolStripMenuItem.Click += new System.EventHandler(this.previewToolStripMenuItem_Click);
             // 
@@ -167,16 +168,23 @@ namespace MassEffectModder
             // 
             this.infoTextureToolStripMenuItem.Name = "infoTextureToolStripMenuItem";
             this.infoTextureToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.infoTextureToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.infoTextureToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.infoTextureToolStripMenuItem.Text = "Info";
             this.infoTextureToolStripMenuItem.Click += new System.EventHandler(this.infoToolStripMenuItem_Click);
             // 
             // info2TextureToolStripMenuItem
             // 
             this.info2TextureToolStripMenuItem.Name = "info2TextureToolStripMenuItem";
-            this.info2TextureToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.info2TextureToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.info2TextureToolStripMenuItem.Text = "Info (all)";
             this.info2TextureToolStripMenuItem.Click += new System.EventHandler(this.info2TextureToolStripMenuItem_Click);
+            // 
+            // singleMultiPackageToolStripMenuItem
+            // 
+            this.singleMultiPackageToolStripMenuItem.Name = "singleMultiPackageToolStripMenuItem";
+            this.singleMultiPackageToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.singleMultiPackageToolStripMenuItem.Text = "Single/Multi Package";
+            this.singleMultiPackageToolStripMenuItem.Click += new System.EventHandler(this.singleMultiPackageToolStripMenuItem_Click);
             // 
             // imageList
             // 
@@ -210,22 +218,18 @@ namespace MassEffectModder
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.listViewMods.BackColor = System.Drawing.Color.White;
-            this.listViewMods.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1});
             this.listViewMods.ContextMenuStrip = this.contextMenuStripMods;
             this.listViewMods.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.listViewMods.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.listViewMods.Location = new System.Drawing.Point(0, 28);
             this.listViewMods.Name = "listViewMods";
             this.listViewMods.ShowGroups = false;
             this.listViewMods.Size = new System.Drawing.Size(338, 431);
             this.listViewMods.TabIndex = 2;
+            this.listViewMods.TabStop = false;
             this.listViewMods.UseCompatibleStateImageBehavior = false;
             this.listViewMods.View = System.Windows.Forms.View.List;
             this.listViewMods.SelectedIndexChanged += new System.EventHandler(this.listViewMods_SelectedIndexChanged);
-            // 
-            // columnHeader1
-            // 
-            this.columnHeader1.Width = 500;
             // 
             // contextMenuStripMods
             // 
@@ -236,38 +240,38 @@ namespace MassEffectModder
             this.toolStripSeparator2,
             this.applyModsWithVerificationToolStripMenuItem});
             this.contextMenuStripMods.Name = "contextMenuStripTextures";
-            this.contextMenuStripMods.Size = new System.Drawing.Size(181, 120);
+            this.contextMenuStripMods.Size = new System.Drawing.Size(161, 98);
             // 
             // applyModToolStripMenuItem
             // 
             this.applyModToolStripMenuItem.Name = "applyModToolStripMenuItem";
-            this.applyModToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
+            this.applyModToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.applyModToolStripMenuItem.Text = "Apply Mods";
             this.applyModToolStripMenuItem.Click += new System.EventHandler(this.applyModToolStripMenuItem_Click);
             // 
             // deleteModToolStripMenuItem
             // 
             this.deleteModToolStripMenuItem.Name = "deleteModToolStripMenuItem";
-            this.deleteModToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
+            this.deleteModToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.deleteModToolStripMenuItem.Text = "Clear Mods";
             this.deleteModToolStripMenuItem.Click += new System.EventHandler(this.deleteModToolStripMenuItem_Click);
             // 
             // extractModsToolStripMenuItem
             // 
             this.extractModsToolStripMenuItem.Name = "extractModsToolStripMenuItem";
-            this.extractModsToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
+            this.extractModsToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.extractModsToolStripMenuItem.Text = "Extract Mods";
             this.extractModsToolStripMenuItem.Click += new System.EventHandler(this.extractModsToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(261, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(157, 6);
             // 
             // applyModsWithVerificationToolStripMenuItem
             // 
             this.applyModsWithVerificationToolStripMenuItem.Name = "applyModsWithVerificationToolStripMenuItem";
-            this.applyModsWithVerificationToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
+            this.applyModsWithVerificationToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.applyModsWithVerificationToolStripMenuItem.Text = "Apply and Verify";
             this.applyModsWithVerificationToolStripMenuItem.Click += new System.EventHandler(this.applyModsWithVerificationToolStripMenuItem_Click);
             // 
@@ -277,22 +281,19 @@ namespace MassEffectModder
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.listViewResults.BackColor = System.Drawing.Color.White;
-            this.listViewResults.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader});
             this.listViewResults.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.listViewResults.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.listViewResults.LabelWrap = false;
             this.listViewResults.Location = new System.Drawing.Point(0, 28);
             this.listViewResults.MultiSelect = false;
             this.listViewResults.Name = "listViewResults";
             this.listViewResults.ShowGroups = false;
             this.listViewResults.Size = new System.Drawing.Size(338, 431);
             this.listViewResults.TabIndex = 1;
+            this.listViewResults.TabStop = false;
             this.listViewResults.UseCompatibleStateImageBehavior = false;
             this.listViewResults.View = System.Windows.Forms.View.List;
             this.listViewResults.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listViewResults_MouseDoubleClick);
-            // 
-            // columnHeader
-            // 
-            this.columnHeader.Width = 500;
             // 
             // treeViewPackages
             // 
@@ -322,6 +323,7 @@ namespace MassEffectModder
             // 
             // splitContainer2.Panel2
             // 
+            this.splitContainer2.Panel2.Controls.Add(this.listViewPackages);
             this.splitContainer2.Panel2.Controls.Add(this.pictureBoxPreview);
             this.splitContainer2.Panel2.Controls.Add(this.richTextBoxInfo);
             this.splitContainer2.Size = new System.Drawing.Size(798, 462);
@@ -336,16 +338,36 @@ namespace MassEffectModder
             this.listViewTextures.BackColor = System.Drawing.Color.White;
             this.listViewTextures.ContextMenuStrip = this.contextMenuStripTextures;
             this.listViewTextures.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.listViewTextures.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.listViewTextures.LabelWrap = false;
             this.listViewTextures.Location = new System.Drawing.Point(3, 28);
             this.listViewTextures.MultiSelect = false;
             this.listViewTextures.Name = "listViewTextures";
             this.listViewTextures.Size = new System.Drawing.Size(328, 431);
             this.listViewTextures.TabIndex = 0;
+            this.listViewTextures.TabStop = false;
             this.listViewTextures.UseCompatibleStateImageBehavior = false;
             this.listViewTextures.View = System.Windows.Forms.View.List;
             this.listViewTextures.SelectedIndexChanged += new System.EventHandler(this.listViewTextures_SelectedIndexChanged);
             this.listViewTextures.DoubleClick += new System.EventHandler(this.listViewTextures_DoubleClick);
             this.listViewTextures.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.listViewTextures_KeyPress);
+            // 
+            // listViewPackages
+            // 
+            this.listViewPackages.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.listViewPackages.ContextMenuStrip = this.contextMenuStripTextures;
+            this.listViewPackages.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.listViewPackages.LabelWrap = false;
+            this.listViewPackages.Location = new System.Drawing.Point(3, 28);
+            this.listViewPackages.MultiSelect = false;
+            this.listViewPackages.Name = "listViewPackages";
+            this.listViewPackages.Size = new System.Drawing.Size(457, 431);
+            this.listViewPackages.TabIndex = 2;
+            this.listViewPackages.TabStop = false;
+            this.listViewPackages.UseCompatibleStateImageBehavior = false;
+            this.listViewPackages.View = System.Windows.Forms.View.List;
             // 
             // pictureBoxPreview
             // 
@@ -353,9 +375,9 @@ namespace MassEffectModder
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBoxPreview.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.pictureBoxPreview.Location = new System.Drawing.Point(3, 30);
+            this.pictureBoxPreview.Location = new System.Drawing.Point(3, 28);
             this.pictureBoxPreview.Name = "pictureBoxPreview";
-            this.pictureBoxPreview.Size = new System.Drawing.Size(457, 429);
+            this.pictureBoxPreview.Size = new System.Drawing.Size(457, 431);
             this.pictureBoxPreview.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBoxPreview.TabIndex = 1;
             this.pictureBoxPreview.TabStop = false;
@@ -515,7 +537,6 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripMenuItem previewTextureToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem infoTextureToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem searchToolStripMenuItem;
-        private System.Windows.Forms.ColumnHeader columnHeader;
         private System.Windows.Forms.ToolStripMenuItem MODsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadMODsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem clearMODsToolStripMenuItem;
@@ -523,7 +544,6 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripMenuItem applyModToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteModToolStripMenuItem;
         private System.Windows.Forms.ListView listViewMods;
-        private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ToolStripMenuItem extractModsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem packMODToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem createMODBatchToolStripMenuItem;
@@ -538,5 +558,7 @@ namespace MassEffectModder
         private System.Windows.Forms.ToolStripMenuItem replaceTextureToolStripMenuItemConvert;
         private System.Windows.Forms.ToolStripMenuItem packMODToolStripMenuItemConvert;
         private System.Windows.Forms.ToolStripMenuItem convertME3ExplorermodForMEMToolStripMenuItemConvert;
+        private System.Windows.Forms.ListView listViewPackages;
+        private System.Windows.Forms.ToolStripMenuItem singleMultiPackageToolStripMenuItem;
     }
 }

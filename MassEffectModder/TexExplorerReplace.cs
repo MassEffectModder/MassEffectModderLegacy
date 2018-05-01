@@ -934,6 +934,9 @@ namespace MassEffectModder
             if (listViewTextures.SelectedItems.Count == 0)
                 return;
 
+            if (singlePackageMode && listViewPackages.SelectedItems.Count == 0)
+                return;
+
             using (OpenFileDialog selectDDS = new OpenFileDialog())
             {
                 selectDDS.Title = "Please select Texture file";
@@ -951,40 +954,64 @@ namespace MassEffectModder
                 PackageTreeNode node = (PackageTreeNode)treeViewPackages.SelectedNode;
                 ListViewItem item = listViewTextures.FocusedItem;
                 int index = Convert.ToInt32(item.Name);
-
                 string errors = "";
                 MipMaps mipMaps = new MipMaps();
                 MipMaps.modsToReplace.Clear();
-                ModEntry entry = new ModEntry();
-                entry.cacheImage = image;
-                entry.textureCrc = node.textures[index].crc;
-                entry.textureName = node.textures[index].name;
-                entry.markConvert = markConvert;
-                MipMaps.modsToReplace.Add(entry);
-                errors = mipMaps.replaceModsFromList(_textures, _mainWindow, null, false, false, true, false, false);
+                ModEntry modEntry = new ModEntry();
+                modEntry.cacheImage = image;
+                modEntry.textureCrc = node.textures[index].crc;
+                modEntry.textureName = node.textures[index].name;
+                modEntry.markConvert = markConvert;
+                modEntry.instance = 1;
+                MipMaps.modsToReplace.Add(modEntry);
+                if (singlePackageMode)
+                {
+                    ListViewItem itemPkg = listViewPackages.FocusedItem;
+                    int indexPackage = Convert.ToInt32(itemPkg.Name);
+                    MapPackagesToModEntry entry = new MapPackagesToModEntry();
+                    entry.modIndex = 0;
+                    entry.texturesIndex = index;
+                    entry.listIndex = indexPackage;
+                    MapPackagesToMod mapEntry = new MapPackagesToMod();
+                    mapEntry.textures = new List<MapPackagesToModEntry>();
+                    mapEntry.textures.Add(entry);
+                    mapEntry.packagePath = node.textures[index].list[indexPackage].path;
+                    mapEntry.removeMips.exportIDs = new List<int>();
+                    List<MapPackagesToMod> mapPackages = new List<MapPackagesToMod>();
+                    mapPackages.Add(mapEntry);
+                    errors = mipMaps.replaceTextures(mapPackages, node.textures, _mainWindow, null, false, false, false, false, false);
+                    MipMaps.modsToReplace.Clear();
+                }
+                else
+                {
+                    errors = mipMaps.replaceModsFromList(_textures, _mainWindow, null, false, false, true, false, false);
+                }
 
                 if (GameData.gameType == MeType.ME3_TYPE)
                     TOCBinFile.UpdateAllTOCBinFiles();
 
-                for (int t = 0; t < node.textures[index].list.Count; t++)
+                if (!singlePackageMode)
                 {
-                    if (node.textures[index].list[t].path == "")
-                        continue;
-                    MatchedTexture matchedTexture = node.textures[index].list[t];
-                    _mainWindow.updateStatusLabel("Verify: " + node.textures[index].name + " in " + matchedTexture.path);
-                    Package pkg = new Package(GameData.GamePath + matchedTexture.path);
-                    Texture texture = new Texture(pkg, matchedTexture.exportID, pkg.getExportData(matchedTexture.exportID));
-                    pkg.Dispose();
-                    for (int m = 0; m < matchedTexture.crcs.Count(); m++)
+                    for (int t = 0; t < node.textures[index].list.Count; t++)
                     {
-                        if (matchedTexture.crcs[m] != texture.getCrcData(texture.getMipMapDataByIndex(m)))
+                        if (node.textures[index].list[t].path == "")
+                            continue;
+                        MatchedTexture matchedTexture = node.textures[index].list[t];
+                        _mainWindow.updateStatusLabel("Verify: " + node.textures[index].name + " in " + matchedTexture.path);
+                        Package pkg = new Package(GameData.GamePath + matchedTexture.path);
+                        Texture texture = new Texture(pkg, matchedTexture.exportID, pkg.getExportData(matchedTexture.exportID));
+                        pkg.Dispose();
+                        for (int m = 0; m < matchedTexture.crcs.Count(); m++)
                         {
-                            errors += "CRC does not match: Texture: " + node.textures[index].name + ", instance: " + t + ", mipmap: " +
-                                m + Environment.NewLine;
+                            if (matchedTexture.crcs[m] != texture.getCrcData(texture.getMipMapDataByIndex(m)))
+                            {
+                                errors += "CRC does not match: Texture: " + node.textures[index].name + ", instance: " + t + ", mipmap: " +
+                                    m + Environment.NewLine;
+                            }
                         }
+                        matchedTexture.crcs = null;
+                        node.textures[index].list[t] = matchedTexture;
                     }
-                    matchedTexture.crcs = null;
-                    node.textures[index].list[t] = matchedTexture;
                 }
                 _mainWindow.updateStatusLabel("");
                 _mainWindow.updateStatusLabel2("Texture replacing finished.");

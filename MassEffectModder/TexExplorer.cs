@@ -40,6 +40,7 @@ namespace MassEffectModder
         List<FoundTexture> _textures;
         bool previewShow = true;
         bool detailedInfo = false;
+        bool singlePackageMode = false;
         TreeScan treeScan;
         MipMaps mipMaps;
 
@@ -79,6 +80,7 @@ namespace MassEffectModder
             listViewResults.Enabled = enable;
             listViewTextures.Enabled = enable;
             listViewMods.Enabled = enable;
+            listViewPackages.Enabled = enable;
             replaceTextureToolStripMenuItem.Enabled = enable;
             viewToolStripMenuItem.Enabled = enable;
             extractToDDSFileToolStripMenuItem.Enabled = enable;
@@ -95,9 +97,15 @@ namespace MassEffectModder
             clearMODsToolStripMenuItem.Enabled = false;
             listViewResults.Hide();
             listViewMods.Hide();
+            listViewPackages.Hide();
             richTextBoxInfo.Hide();
             listViewTextures.Clear();
+            listViewPackages.Clear();
             richTextBoxInfo.Clear();
+            if (GameData.gameType == MeType.ME1_TYPE)
+            {
+                singleMultiPackageToolStripMenuItem.Enabled = false;
+            }
 
             if (!Directory.Exists(GameData.GamePath))
             {
@@ -204,9 +212,9 @@ namespace MassEffectModder
 
         private void updateViewFromListView()
         {
+            clearPreview();
             if (listViewTextures.SelectedItems.Count == 0)
             {
-                clearPreview();
                 return;
             }
             if (listViewMods.Items.Count > 0)
@@ -337,6 +345,9 @@ namespace MassEffectModder
 
         private void infoToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            singlePackageMode = false;
+            listViewPackages.Hide();
+            listViewPackages.Clear();
             detailedInfo = false;
             richTextBoxInfo.Show();
             pictureBoxPreview.Hide();
@@ -346,6 +357,9 @@ namespace MassEffectModder
 
         private void info2TextureToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            singlePackageMode = false;
+            listViewPackages.Hide();
+            listViewPackages.Clear();
             detailedInfo = true;
             richTextBoxInfo.Show();
             pictureBoxPreview.Hide();
@@ -355,6 +369,9 @@ namespace MassEffectModder
 
         private void previewToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            singlePackageMode = false;
+            listViewPackages.Hide();
+            listViewPackages.Clear();
             detailedInfo = false;
             richTextBoxInfo.Hide();
             pictureBoxPreview.Show();
@@ -362,9 +379,48 @@ namespace MassEffectModder
             updateViewFromListView();
         }
 
+        private void updateListOfPackagesView()
+        {
+            listViewPackages.Clear();
+            if (listViewTextures.SelectedItems.Count == 0)
+            {
+                return;
+            }
+
+            int index = Convert.ToInt32(listViewTextures.FocusedItem.Name);
+            PackageTreeNode node = (PackageTreeNode)treeViewPackages.SelectedNode;
+
+            for (int index2 = 0; index2 < node.textures[index].list.Count; index2++)
+            {
+                if (node.textures[index].list[index2].path == "")
+                    continue;
+                ListViewItem item = new ListViewItem();
+                item.Name = index2.ToString();
+                item.Text = (index2 + 1) + ": " + Path.GetFileNameWithoutExtension(node.textures[index].list[index2].path);
+                listViewPackages.Items.Add(item);
+            }
+        }
+
+        private void singleMultiPackageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (singlePackageMode)
+            {
+                singlePackageMode = false;
+                listViewPackages.Hide();
+                listViewPackages.Clear();
+            }
+            else
+            {
+                listViewPackages.Show();
+                singlePackageMode = true;
+                updateListOfPackagesView();
+            }
+        }
+
         private void listViewTextures_SelectedIndexChanged(object sender, EventArgs e)
         {
             updateViewFromListView();
+            updateListOfPackagesView();
         }
 
         private void listViewTextures_DoubleClick(object sender, EventArgs e)
@@ -442,10 +498,6 @@ namespace MassEffectModder
             replaceTexture(false);
             _mainWindow.updateStatusLabel("Done.");
             _mainWindow.updateStatusLabel2("");
-        }
-
-        private void replaceTextureToolStripMenuItemExperimental_Click(object sender, EventArgs e)
-        {
         }
 
         private void switchModMode(bool enable)
@@ -686,18 +738,6 @@ namespace MassEffectModder
         private void clearMODsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             clearMODsView();
-        }
-
-        private void applyModToolStripMenuItemExperimental_Click(object sender, EventArgs e)
-        {
-        }
-
-        private void applyAndVerifynewExperimentalToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-        }
-
-        private void applyModToolStripMenuItemExperimentalInstall(bool verify)
-        {
         }
 
         private void applyModToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1064,12 +1104,25 @@ namespace MassEffectModder
             if (listViewTextures.SelectedItems.Count == 0)
                 return;
 
+            if (singlePackageMode && listViewPackages.SelectedItems.Count == 0)
+                return;
+
             using (SaveFileDialog saveFile = new SaveFileDialog())
             {
                 PackageTreeNode node = (PackageTreeNode)treeViewPackages.SelectedNode;
                 ListViewItem item = listViewTextures.FocusedItem;
                 int index = Convert.ToInt32(item.Name);
-                MatchedTexture nodeTexture = node.textures[index].list.Find(s => s.path != "");
+                MatchedTexture nodeTexture;
+                if (singlePackageMode)
+                {
+                    ListViewItem itemPkg = listViewPackages.FocusedItem;
+                    int indexPackage = Convert.ToInt32(itemPkg.Name);
+                    nodeTexture = node.textures[index].list[indexPackage];
+                }
+                else
+                {
+                    nodeTexture = node.textures[index].list.Find(s => s.path != "");
+                }
                 saveFile.Title = "Please select output DDS file";
                 saveFile.Filter = "DDS file | *.dds";
                 saveFile.FileName = node.textures[index].name + string.Format("_0x{0:X8}", node.textures[index].crc) + ".dds";
@@ -1087,12 +1140,25 @@ namespace MassEffectModder
             if (listViewTextures.SelectedItems.Count == 0)
                 return;
 
+            if (singlePackageMode && listViewPackages.SelectedItems.Count == 0)
+                return;
+
             using (SaveFileDialog saveFile = new SaveFileDialog())
             {
                 PackageTreeNode node = (PackageTreeNode)treeViewPackages.SelectedNode;
                 ListViewItem item = listViewTextures.FocusedItem;
                 int index = Convert.ToInt32(item.Name);
-                MatchedTexture nodeTexture = node.textures[index].list.Find(s => s.path != "");
+                MatchedTexture nodeTexture;
+                if (singlePackageMode)
+                {
+                    ListViewItem itemPkg = listViewPackages.FocusedItem;
+                    int indexPackage = Convert.ToInt32(itemPkg.Name);
+                    nodeTexture = node.textures[index].list[indexPackage];
+                }
+                else
+                {
+                    nodeTexture = node.textures[index].list.Find(s => s.path != "");
+                }
                 saveFile.Title = "Please select output PNG file";
                 saveFile.Filter = "PNG file | *.png";
                 saveFile.FileName = node.textures[index].name + string.Format("_0x{0:X8}", node.textures[index].crc) + ".png";
