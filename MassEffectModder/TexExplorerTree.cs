@@ -166,7 +166,7 @@ namespace MassEffectModder
                     {
                         uint tag = fs.ReadUInt32();
                         uint version = fs.ReadUInt32();
-                        if (tag != TreeScan.textureMapBinTag || version != TreeScan.textureMapBinVersion)
+                        if (tag != textureMapBinTag || version != textureMapBinVersion)
                         {
                             MessageBox.Show("Detected wrong or old version of textures scan file!" +
                                 "\n\nYou need to restore the game to vanilla state then reinstall optional DLC/PCC mods." +
@@ -237,8 +237,15 @@ namespace MassEffectModder
                         treeScan = textures;
                         mainWindow.updateStatusLabel("");
                         mainWindow.updateStatusLabel2("");
-                        return errors;
                     }
+                    if (!texEplorer.verifyGameDataEmptyMipMapsRemoval())
+                    {
+                        MessageBox.Show("Detected empty mips in game files." +
+                        "\n\nYou need the game in vanilla state and optional DLC/PCC mods." +
+                        "\n\nThen from the main menu, select 'Remove Textures Scan File' and start Texture Manager again.");
+                        return "";
+                    }
+                    return errors;
                 }
 
                 if (mainWindow != null)
