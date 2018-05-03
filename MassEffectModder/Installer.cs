@@ -68,7 +68,7 @@ namespace MassEffectModder
         bool OptionBikVisible;
         bool mute = false;
         int stage = 1;
-        int totalStages = 5;
+        int totalStages = 6;
         System.Media.SoundPlayer musicPlayer;
         CustomLabel customLabelDesc;
         CustomLabel customLabelCurrentStatus;
@@ -517,10 +517,11 @@ namespace MassEffectModder
             return true;
         }
 
-        static public void AddMarkers(MeType gameType)
+        public void AddMarkers(MeType gameType)
         {
             for (int i = 0; i < pkgsToMarker.Count; i++)
             {
+                updateProgressStatus("Adding markers " + ((i + 1) * 100 / pkgsToMarker.Count) + "%");
                 try
                 {
                     using (FileStream fs = new FileStream(pkgsToMarker[i], FileMode.Open, FileAccess.ReadWrite))
@@ -979,9 +980,9 @@ namespace MassEffectModder
             if (gameId != 3 || !unpackDLC || (updateMode && gameId == 3))
                 totalStages -= 1;
 
-            // scan textures && remove empty mipmaps
+            // scan textures, remove empty mipmaps, adding markers
             if (updateMode)
-                totalStages -= 2;
+                totalStages -= 3;
 
             // recompress game files
             if (!checkBoxOptionRepack.Checked)
@@ -1440,7 +1441,7 @@ namespace MassEffectModder
                     pkgsToRepack.Remove(GameData.GamePath + @"\BioGame\CookedPC\BIOC_Materials.pcc");
                 for (int i = 0; i < pkgsToRepack.Count; i++)
                 {
-                    updateProgressStatus("Repack game files " + ((i + 1) * 100 / GameData.packageFiles.Count) + "%");
+                    updateProgressStatus("Repack game files " + ((i + 1) * 100 / pkgsToRepack.Count) + "%");
                     try
                     {
                         Package package = new Package(pkgsToRepack[i], true);
@@ -1467,7 +1468,12 @@ namespace MassEffectModder
             }
 
             if (!updateMode)
+            {
+                customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
+                log += "Adding markers started..." + Environment.NewLine;
                 AddMarkers((MeType)gameId);
+                log += "Repack finished" + Environment.NewLine + Environment.NewLine;
+            }
 
             if (!applyModTag(gameId, MeuitmVer, 0))
                 errors += "Failed applying stamp for installation!\n";
