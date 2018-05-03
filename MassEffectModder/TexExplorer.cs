@@ -544,7 +544,7 @@ namespace MassEffectModder
         {
             _mainWindow.updateStatusLabel("Replacing texture (convert mode) ...");
             _mainWindow.updateStatusLabel2("");
-            replaceTexture(false);
+            replaceTexture(true);
             _mainWindow.updateStatusLabel("Done.");
             _mainWindow.updateStatusLabel2("");
         }
