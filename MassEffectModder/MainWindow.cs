@@ -492,7 +492,7 @@ namespace MassEffectModder
             updateGfxME(MeType.ME3_TYPE);
         }
 
-        private void toolStripExtractMEMMenuItem()
+        private void toolStripExtractMEMMenuItem(MeType gameType)
         {
             using (OpenFileDialog modFile = new OpenFileDialog())
             {
@@ -509,6 +509,7 @@ namespace MassEffectModder
                         return;
 
                     enableGameDataMenu(false);
+                    GameData.gameType = gameType;
 
                     string errors = "";
                     string log = "";
@@ -550,17 +551,17 @@ namespace MassEffectModder
 
         private void toolStripExtractME1MEMMenuItem_Click(object sender, EventArgs e)
         {
-            toolStripExtractMEMMenuItem();
+            toolStripExtractMEMMenuItem(MeType.ME1_TYPE);
         }
 
         private void toolStripExtractME2MEMMenuItem_Click(object sender, EventArgs e)
         {
-            toolStripExtractMEMMenuItem();
+            toolStripExtractMEMMenuItem(MeType.ME2_TYPE);
         }
 
         private void toolStripExtractME3MEMMenuItem_Click(object sender, EventArgs e)
         {
-            toolStripExtractMEMMenuItem();
+            toolStripExtractMEMMenuItem(MeType.ME3_TYPE);
         }
 
         void toolStripCreateBinaryMod(MeType gameType)
