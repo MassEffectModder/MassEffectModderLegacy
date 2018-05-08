@@ -51,6 +51,7 @@ namespace MassEffectModder
         public List<Texture.MipMap> arcTexture;
         public byte[] arcTfcGuid;
         public string arcTfcName;
+        public bool arcTfcDLC;
         public List<Texture.MipMap> cprTexture;
         public int instance;
 
@@ -417,12 +418,17 @@ namespace MassEffectModder
                     string archiveFile = "";
                     if (texture.properties.exists("TextureFileCacheName"))
                     {
+                        string archive = texture.properties.getProperty("TextureFileCacheName").valueName;
+                        if (mod.arcTfcDLC && matched.path.ToLowerInvariant().Contains("\\dlc"))
+                            if (archive != mod.arcTfcName)
+                                mod.arcTexture = null;
+
                         if (mod.arcTexture == null)
                         {
-                            string archive = texture.properties.getProperty("TextureFileCacheName").valueName;
                             archiveFile = Path.Combine(GameData.MainData, archive + ".tfc");
                             if (matched.path.ToLowerInvariant().Contains("\\dlc"))
                             {
+                                mod.arcTfcDLC = true;
                                 string DLCArchiveFile = Path.Combine(Path.GetDirectoryName(GameData.GamePath + matched.path), archive + ".tfc");
                                 if (File.Exists(DLCArchiveFile))
                                     archiveFile = DLCArchiveFile;
@@ -444,6 +450,10 @@ namespace MassEffectModder
                                     else
                                         throw new Exception("");
                                 }
+                            }
+                            else
+                            {
+                                mod.arcTfcDLC = false;
                             }
 
                             // check if texture fit in old space
