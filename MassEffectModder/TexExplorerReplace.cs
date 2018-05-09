@@ -419,9 +419,8 @@ namespace MassEffectModder
                     if (texture.properties.exists("TextureFileCacheName"))
                     {
                         string archive = texture.properties.getProperty("TextureFileCacheName").valueName;
-                        if (mod.arcTfcDLC && matched.path.ToLowerInvariant().Contains("\\dlc"))
-                            if (archive != mod.arcTfcName)
-                                mod.arcTexture = null;
+                        if (mod.arcTfcDLC && mod.arcTfcName != archive)
+                            mod.arcTexture = null;
 
                         if (mod.arcTexture == null)
                         {
