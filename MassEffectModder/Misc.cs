@@ -944,7 +944,7 @@ namespace MassEffectModder
                 }
                 else if ((gamePixelFormat == PixelFormat.DXT5 || gamePixelFormat == PixelFormat.DXT1) &&
                     (texturePixelFormat == PixelFormat.ARGB || texturePixelFormat == PixelFormat.RGB) &&
-                    flags != TexProperty.TextureTypes.Normal)
+                    flags == TexProperty.TextureTypes.Normal)
                 {
                     gamePixelFormat = PixelFormat.ARGB;
                 }
