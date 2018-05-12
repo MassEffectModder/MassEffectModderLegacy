@@ -208,16 +208,16 @@ namespace MassEffectModder
                         mainWindow.updateStatusLabel2("File " + (i + 1) + " of " + filesList.Count() + " - " + Path.GetFileName(filesList[i].filenamePath));
                     if (installer != null)
                         installer.updateStatusPrepare("Unpacking DLC " + ((currentProgress + 1) * 100 / totalNumber) + "%");
-					if (ipc)
-					{
-	                    int newProgress = (100 * currentProgress) / totalNumber;
-	                    if (lastProgress != newProgress)
-	                    {
-	                        Console.WriteLine("[IPC]TASK_PROGRESS " + newProgress);
-	                        Console.Out.Flush();
-	                        lastProgress = newProgress;
-	                    }
-					}
+                    if (ipc)
+                    {
+                        int newProgress = (100 * currentProgress) / totalNumber;
+                        if (lastProgress != newProgress)
+                        {
+                            Console.WriteLine("[IPC]TASK_PROGRESS " + newProgress);
+                            Console.Out.Flush();
+                            lastProgress = newProgress;
+                        }
+                    }
 
                     int pos = filesList[i].filenamePath.IndexOf("\\BIOGame\\DLC\\", StringComparison.OrdinalIgnoreCase);
                     string filename = filesList[i].filenamePath.Substring(pos + ("\\BIOGame\\DLC\\").Length).Replace('/', '\\');
@@ -297,7 +297,7 @@ namespace MassEffectModder
                 if (mainWindow != null)
                     MessageBox.Show("No DLCs need to be extracted.");
                 return;
-			}
+            }
             if (ipc)
             {
                 Console.WriteLine("[IPC]STAGE_WEIGHT STAGE_UNPACKDLC " +
@@ -332,7 +332,7 @@ namespace MassEffectModder
             for (int i = 0; i < sfarFiles.Count; i++)
             {
                 string DLCname = Path.GetFileName(Path.GetDirectoryName(Path.GetDirectoryName(sfarFiles[i])));
-				string outPath = Path.Combine(GameData.DLCData, DLCname);
+                string outPath = Path.Combine(GameData.DLCData, DLCname);
                 ME3DLC dlc = new ME3DLC(mainWindow, installer);
                 if (mainWindow != null)
                 {

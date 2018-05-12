@@ -320,7 +320,7 @@ namespace MassEffectModder
                 List<string> addedFiles = new List<string>();
                 List<string> modifiedFiles = new List<string>();
 
-	            loadTexturesMap(gameId, textures);
+                loadTexturesMap(gameId, textures);
 
                 List<string> sortedFiles = new List<string>();
                 for (int i = 0; i < GameData.packageFiles.Count; i++)
@@ -346,11 +346,11 @@ namespace MassEffectModder
                     installer.updateProgressStatus("Scanning packages");
                 if (mainWindow != null)
                     mainWindow.updateStatusLabel("Scanning packages...");
-	            if (ipc)
-	            {
-	                Console.WriteLine("[IPC]STAGE_CONTEXT STAGE_SCAN");
-	                Console.Out.Flush();
-	            }
+                if (ipc)
+                {
+                    Console.WriteLine("[IPC]STAGE_CONTEXT STAGE_SCAN");
+                    Console.Out.Flush();
+                }
                 for (int i = 0; i < GameData.packageFiles.Count; i++)
                 {
                     int index = -1;
@@ -377,32 +377,32 @@ namespace MassEffectModder
                         addedFiles.Add(GameData.RelativeGameData(GameData.packageFiles[i]));
                 }
 
-	            int lastProgress = -1;
+                int lastProgress = -1;
                 int totalPackages = modifiedFiles.Count + addedFiles.Count;
                 int currentPackage = 0;
-	            if (ipc)
-	            {
-	                Console.WriteLine("[IPC]STAGE_WEIGHT STAGE_SCAN " +
-	                    string.Format("{0:0.000000}", ((float)totalPackages / GameData.packageFiles.Count)));
-	                Console.Out.Flush();
-	            }
+                if (ipc)
+                {
+                    Console.WriteLine("[IPC]STAGE_WEIGHT STAGE_SCAN " +
+                        string.Format("{0:0.000000}", ((float)totalPackages / GameData.packageFiles.Count)));
+                    Console.Out.Flush();
+                }
                 for (int i = 0; i < modifiedFiles.Count; i++, currentPackage++)
                 {
                     if (installer != null)
                         installer.updateProgressStatus("Scanning textures " + ((currentPackage + 1) * 100) / totalPackages + "% ");
                     if (mainWindow != null)
                         mainWindow.updateStatusLabel("Finding textures in package " + (currentPackage + 1) + " of " + totalPackages + " - " + modifiedFiles[i]);
-	                if (ipc)
-	                {
-	                    Console.WriteLine("[IPC]PROCESSING_FILE " + modifiedFiles[i]);
-	                	int newProgress = currentPackage * 100 / totalPackages;
-	                	if (lastProgress != newProgress)
-		                {
-		                    Console.WriteLine("[IPC]TASK_PROGRESS " + newProgress);
-	        	            lastProgress = newProgress;
-	            	    }
-	                    Console.Out.Flush();
-	                }
+                    if (ipc)
+                    {
+                        Console.WriteLine("[IPC]PROCESSING_FILE " + modifiedFiles[i]);
+                        int newProgress = currentPackage * 100 / totalPackages;
+                        if (lastProgress != newProgress)
+                        {
+                            Console.WriteLine("[IPC]TASK_PROGRESS " + newProgress);
+                            lastProgress = newProgress;
+                        }
+                        Console.Out.Flush();
+                    }
                     errors += FindTextures(gameId, textures, modifiedFiles[i], true, ref log);
                 }
 
@@ -412,17 +412,17 @@ namespace MassEffectModder
                         installer.updateProgressStatus("Scanning textures " + ((currentPackage + 1) * 100) / totalPackages + "% ");
                     if (mainWindow != null)
                         mainWindow.updateStatusLabel("Finding textures in package " + (currentPackage + 1) + " of " + totalPackages + " - " + addedFiles[i]);
-	                if (ipc)
-	                {
-	                    Console.WriteLine("[IPC]PROCESSING_FILE " + addedFiles[i]);
-	                	int newProgress = currentPackage * 100 / totalPackages;
-		                if (lastProgress != newProgress)
-		                {
-		                    Console.WriteLine("[IPC]TASK_PROGRESS " + newProgress);
-		                    lastProgress = newProgress;
-		                }
-	                    Console.Out.Flush();
-	                }
+                    if (ipc)
+                    {
+                        Console.WriteLine("[IPC]PROCESSING_FILE " + addedFiles[i]);
+                        int newProgress = currentPackage * 100 / totalPackages;
+                        if (lastProgress != newProgress)
+                        {
+                            Console.WriteLine("[IPC]TASK_PROGRESS " + newProgress);
+                            lastProgress = newProgress;
+                        }
+                        Console.Out.Flush();
+                    }
                     errors += FindTextures(gameId, textures, addedFiles[i], false, ref log);
                 }
 
@@ -447,7 +447,7 @@ namespace MassEffectModder
             }
             else
             {
-			    int lastProgress = -1;
+                int lastProgress = -1;
                 for (int i = 0; i < GameData.packageFiles.Count; i++)
                 {
                     if (installer != null)
@@ -457,12 +457,12 @@ namespace MassEffectModder
                     if (ipc)
                     {
                         Console.WriteLine("[IPC]PROCESSING_FILE " + GameData.packageFiles[i]);
-	                    int newProgress = i * 100 / GameData.packageFiles.Count;
-	                    if (lastProgress != newProgress)
-	                    {
-	                        Console.WriteLine("[IPC]TASK_PROGRESS " + newProgress);
-	                        lastProgress = newProgress;
-	                    }
+                        int newProgress = i * 100 / GameData.packageFiles.Count;
+                        if (lastProgress != newProgress)
+                        {
+                            Console.WriteLine("[IPC]TASK_PROGRESS " + newProgress);
+                            lastProgress = newProgress;
+                        }
                         Console.Out.Flush();
                     }
                     FindTextures(gameId, textures, GameData.RelativeGameData(GameData.packageFiles[i]), false, ref log);

@@ -1022,12 +1022,12 @@ namespace MassEffectModder
                 if (ipc)
                 {
                     Console.WriteLine("[IPC]PROCESSING_FILE " + Path.GetFileName(file));
-	                int newProgress = (n * 100) / files.Count();
-	                if (lastProgress != newProgress)
-	                {
-	                    Console.WriteLine("[IPC]TASK_PROGRESS " + newProgress);
-	                    lastProgress = newProgress;
-	                }
+                    int newProgress = (n * 100) / files.Count();
+                    if (lastProgress != newProgress)
+                    {
+                        Console.WriteLine("[IPC]TASK_PROGRESS " + newProgress);
+                        lastProgress = newProgress;
+                    }
                     Console.Out.Flush();
                 }
                 else
@@ -1158,7 +1158,7 @@ namespace MassEffectModder
                                         }
                                         else
                                         {
-                                        	errors += "Skipping not compatible content, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
+                                            errors += "Skipping not compatible content, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                         }
                                         continue;
                                     }
@@ -1190,7 +1190,7 @@ namespace MassEffectModder
                                         }
                                         else
                                         {
-                                        	errors += "Skipping not compatible content, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
+                                            errors += "Skipping not compatible content, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                         }
                                         continue;
                                     }
@@ -1213,7 +1213,7 @@ namespace MassEffectModder
                                         }
                                         else
                                         {
-	                                        errors += "Error in texture: " + f.name + string.Format("_0x{0:X8}", f.crc) + " This texture has wrong aspect ratio, skipping texture, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
+                                            errors += "Error in texture: " + f.name + string.Format("_0x{0:X8}", f.crc) + " This texture has wrong aspect ratio, skipping texture, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                         }
                                         continue;
                                     }
@@ -1266,7 +1266,7 @@ namespace MassEffectModder
                         }
                         else
                         {
-                        	errors += "Mod is not compatible: " + file + Environment.NewLine;
+                            errors += "Mod is not compatible: " + file + Environment.NewLine;
                         }
                         continue;
                     }
@@ -1338,7 +1338,7 @@ namespace MassEffectModder
                         }
                         else
                         {
-                        	errors += "Filename not valid: " + file + Environment.NewLine;
+                            errors += "Filename not valid: " + file + Environment.NewLine;
                         }
                         continue;
                     }
@@ -1412,7 +1412,7 @@ namespace MassEffectModder
                                         }
                                         else
                                         {
-                                        	errors += "Skipping file: " + filename + " not found in definition file, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
+                                            errors += "Skipping file: " + filename + " not found in definition file, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                         }
                                     }
                                     zip.GoToNextFile(handle);
@@ -1444,7 +1444,7 @@ namespace MassEffectModder
                                     }
                                     else
                                     {
-	                                    errors += "Error in texture: " + textureName + string.Format("_0x{0:X8}", crc) + ", skipping texture, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
+                                        errors += "Error in texture: " + textureName + string.Format("_0x{0:X8}", crc) + ", skipping texture, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                     }
                                     continue;
                                 }
@@ -1463,7 +1463,7 @@ namespace MassEffectModder
                                     }
                                     else
                                     {
-	                                    errors += "Error in texture: " + textureName + string.Format("_0x{0:X8}", crc) + " This texture has wrong aspect ratio, skipping texture, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
+                                        errors += "Error in texture: " + textureName + string.Format("_0x{0:X8}", crc) + " This texture has wrong aspect ratio, skipping texture, entry: " + (i + 1) + " - mod: " + file + Environment.NewLine;
                                     }
                                     continue;
                                 }
@@ -1513,7 +1513,7 @@ namespace MassEffectModder
                                 }
                                 else
                                 {
-                                	errors += "Skipping not compatible content, entry: " + (i + 1) + " file: " + fileName + " - mod: " + file + Environment.NewLine;
+                                    errors += "Skipping not compatible content, entry: " + (i + 1) + " file: " + fileName + " - mod: " + file + Environment.NewLine;
                                 }
                             }
                             zip.GoToNextFile(handle);
@@ -1530,7 +1530,7 @@ namespace MassEffectModder
                         }
                         else
                         {
-                        	errors += "Mod is not compatible: " + file + Environment.NewLine;
+                            errors += "Mod is not compatible: " + file + Environment.NewLine;
                         }
                         if (handle != IntPtr.Zero)
                             zip.Close(handle);
@@ -1551,7 +1551,7 @@ namespace MassEffectModder
                         }
                         else
                         {
-                        	errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
+                            errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
                         }
                         continue;
                     }
@@ -1565,7 +1565,7 @@ namespace MassEffectModder
                         }
                         else
                         {
-                        	errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
+                            errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
                         }
                         continue;
                     }
@@ -1584,7 +1584,7 @@ namespace MassEffectModder
                         }
                         else
                         {
-                       		errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
+                            errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
                         }
                         continue;
                     }
@@ -1673,7 +1673,7 @@ namespace MassEffectModder
                         }
                         else
                         {
-                        	errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
+                            errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
                         }
                         continue;
                     }
@@ -1687,7 +1687,7 @@ namespace MassEffectModder
                         }
                         else
                         {
-                        	errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
+                            errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
                         }
                         continue;
                     }
@@ -1706,7 +1706,7 @@ namespace MassEffectModder
                         }
                         else
                         {
-                        	errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
+                            errors += "Texture filename not valid: " + Path.GetFileName(file) + " Texture filename must include texture CRC (0xhhhhhhhh). Skipping texture..." + Environment.NewLine;
                         }
                         continue;
                     }
@@ -1735,8 +1735,8 @@ namespace MassEffectModder
                         }
                         else
                         {
-                        	errors += "Error in texture: " + Path.GetFileName(file) + " This texture has wrong aspect ratio, skipping texture..." + Environment.NewLine;
-						}
+                            errors += "Error in texture: " + Path.GetFileName(file) + " This texture has wrong aspect ratio, skipping texture..." + Environment.NewLine;
+                        }
                         continue;
                     }
 
@@ -2005,8 +2005,8 @@ namespace MassEffectModder
             List<string> tfcFiles = null;
             MD5FileEntry[] entries = null;
 
-			if (mainWindow != null)
-	            startTimer();
+            if (mainWindow != null)
+                startTimer();
 
             if (gameType == MeType.ME1_TYPE)
             {
@@ -2100,16 +2100,16 @@ namespace MassEffectModder
                 {
                     mainWindow.updateStatusLabel("Checking main PCC files - " + (l + 1) + " of " + packageMainFiles.Count);
                 }
-				int newProgress = (l + progress) * 100 / allFilesCount;
-				if (ipc)
-				{
-	                if (lastProgress != newProgress)
-	                {
-	                    Console.WriteLine("[IPC]TASK_PROGRESS " + newProgress);
-	                    Console.Out.Flush();
-	                    lastProgress = newProgress;
-	                }
-				}
+                int newProgress = (l + progress) * 100 / allFilesCount;
+                if (ipc)
+                {
+                    if (lastProgress != newProgress)
+                    {
+                        Console.WriteLine("[IPC]TASK_PROGRESS " + newProgress);
+                        Console.Out.Flush();
+                        lastProgress = newProgress;
+                    }
+                }
                 byte[] md5 = calculateMD5(packageMainFiles[l]);
                 bool found = false;
                 for (int p = 0; p < entries.Count(); p++)
@@ -2208,11 +2208,11 @@ namespace MassEffectModder
                         errors += string.Format("{0:x2}", entries[index].md5[i]);
                     }
                     errors += Environment.NewLine;
-	                if (ipc)
-	                {
-	                    Console.WriteLine("[IPC]ERROR " + packageMainFiles[l]);
-	                    Console.Out.Flush();
-					}
+                    if (ipc)
+                    {
+                        Console.WriteLine("[IPC]ERROR " + packageMainFiles[l]);
+                        Console.Out.Flush();
+                    }
                 }
             }
             progress += packageMainFiles.Count();
@@ -2225,16 +2225,16 @@ namespace MassEffectModder
                     {
                         mainWindow.updateStatusLabel("Checking DLC PCC files - " + (l + 1) + " of " + packageDLCFiles.Count);
                     }
-					if (ipc)
-					{
-						int newProgress = (l + progress) * 100 / allFilesCount;
-	                    if (lastProgress != newProgress)
-	                    {
-	                        Console.WriteLine("[IPC]TASK_PROGRESS " + newProgress);
-	                        Console.Out.Flush();
-	                        lastProgress = newProgress;
-	                    }
-					}
+                    if (ipc)
+                    {
+                        int newProgress = (l + progress) * 100 / allFilesCount;
+                        if (lastProgress != newProgress)
+                        {
+                            Console.WriteLine("[IPC]TASK_PROGRESS " + newProgress);
+                            Console.Out.Flush();
+                            lastProgress = newProgress;
+                        }
+                    }
                     byte[] md5 = calculateMD5(packageDLCFiles[l]);
                     bool found = false;
                     for (int p = 0; p < entries.Count(); p++)
@@ -2334,11 +2334,11 @@ namespace MassEffectModder
                         }
                         errors += Environment.NewLine;
 
-	                    if (ipc)
-	                    {
-	                        Console.WriteLine("[IPC]ERROR " + packageDLCFiles[l]);
-	                        Console.Out.Flush();
-						}
+                        if (ipc)
+                        {
+                            Console.WriteLine("[IPC]ERROR " + packageDLCFiles[l]);
+                            Console.Out.Flush();
+                        }
                     }
                 }
                 progress += packageDLCFiles.Count();
@@ -2352,16 +2352,16 @@ namespace MassEffectModder
                     {
                         mainWindow.updateStatusLabel("Checking DLC archive files - " + (l + 1) + " of " + sfarFiles.Count);
                     }
-					if (ipc)
-					{
-						int newProgress = (l + progress) * 100 / allFilesCount;
-	                    if (lastProgress != newProgress)
-	                    {
-	                        Console.WriteLine("[IPC]TASK_PROGRESS " + newProgress);
-	                        Console.Out.Flush();
-	                        lastProgress = newProgress;
-	                    }
-					}
+                    if (ipc)
+                    {
+                        int newProgress = (l + progress) * 100 / allFilesCount;
+                        if (lastProgress != newProgress)
+                        {
+                            Console.WriteLine("[IPC]TASK_PROGRESS " + newProgress);
+                            Console.Out.Flush();
+                            lastProgress = newProgress;
+                        }
+                    }
                     byte[] md5 = calculateMD5(sfarFiles[l]);
                     bool found = false;
                     for (int p = 0; p < entries.Count(); p++)
@@ -2402,12 +2402,12 @@ namespace MassEffectModder
                         }
                         errors += Environment.NewLine;
 
-	                    if (ipc)
-	                    {
-	                        Console.WriteLine("[IPC]ERROR " + sfarFiles[l]);
-	                        Console.Out.Flush();
-	                    }
-					}
+                        if (ipc)
+                        {
+                            Console.WriteLine("[IPC]ERROR " + sfarFiles[l]);
+                            Console.Out.Flush();
+                        }
+                    }
                 }
                 progress += sfarFiles.Count();
             }
@@ -2420,16 +2420,16 @@ namespace MassEffectModder
                     {
                         mainWindow.updateStatusLabel("Checking TFC archive files - " + (l + 1) + " of " + tfcFiles.Count);
                     }
-					if (ipc)
-					{
-						int newProgress = (l + progress) * 100 / allFilesCount;
-	                    if (lastProgress != newProgress)
-	                    {
-	                        Console.WriteLine("[IPC]TASK_PROGRESS " + newProgress);
-	                        Console.Out.Flush();
-	                        lastProgress = newProgress;
-	                    }
-					}
+                    if (ipc)
+                    {
+                        int newProgress = (l + progress) * 100 / allFilesCount;
+                        if (lastProgress != newProgress)
+                        {
+                            Console.WriteLine("[IPC]TASK_PROGRESS " + newProgress);
+                            Console.Out.Flush();
+                            lastProgress = newProgress;
+                        }
+                    }
                     byte[] md5 = calculateMD5(tfcFiles[l]);
                     bool found = false;
                     for (int p = 0; p < entries.Count(); p++)
@@ -2469,12 +2469,12 @@ namespace MassEffectModder
                             errors += string.Format("{0:x2}", entries[index].md5[i]);
                         }
                         errors += Environment.NewLine;
-	                    if (ipc)
-	                    {
-	                        Console.WriteLine("[IPC]ERROR " + tfcFiles[l]);
-	                        Console.Out.Flush();
-	                    }
-					}
+                        if (ipc)
+                        {
+                            Console.WriteLine("[IPC]ERROR " + tfcFiles[l]);
+                            Console.Out.Flush();
+                        }
+                    }
                 }
                 progress += tfcFiles.Count();
             }
@@ -2482,10 +2482,10 @@ namespace MassEffectModder
                 fs.Close();
 
             if (mainWindow != null)
-			{
-	            var time = stopTimer();
+            {
+                var time = stopTimer();
                 mainWindow.updateStatusLabel("Checking game files. Process total time: " + Misc.getTimerFormat(time));
-			}
+            }
 
             return vanilla;
         }
