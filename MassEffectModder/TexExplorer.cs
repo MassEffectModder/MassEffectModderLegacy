@@ -438,6 +438,10 @@ namespace MassEffectModder
 
             int index = Convert.ToInt32(listViewTextures.FocusedItem.Name);
             PackageTreeNode node = (PackageTreeNode)treeViewPackages.SelectedNode;
+            if (node == null)
+            {
+                return;
+            }
 
             for (int index2 = 0; index2 < node.textures[index].list.Count; index2++)
             {
