@@ -137,6 +137,98 @@ namespace MassEffectModder
             }
         }
 
+        static public void readLODIpc(MeType gameId, ConfIni engineConf)
+        {
+            if (gameId == MeType.ME1_TYPE)
+            {
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_World=" + engineConf.Read("TEXTUREGROUP_World", "TextureLODSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_WorldNormalMap=" + engineConf.Read("TEXTUREGROUP_WorldNormalMap", "TextureLODSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_AmbientLightMap=" + engineConf.Read("TEXTUREGROUP_AmbientLightMap", "TextureLODSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_LightAndShadowMap=" + engineConf.Read("TEXTUREGROUP_LightAndShadowMap", "TextureLODSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_Environment_64=" + engineConf.Read("TEXTUREGROUP_Environment_64", "TextureLODSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_Environment_128=" + engineConf.Read("TEXTUREGROUP_Environment_128", "TextureLODSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_Environment_256=" + engineConf.Read("TEXTUREGROUP_Environment_256", "TextureLODSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_Environment_512=" + engineConf.Read("TEXTUREGROUP_Environment_512", "TextureLODSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_Environment_1024=" + engineConf.Read("TEXTUREGROUP_Environment_1024", "TextureLODSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_VFX_64=" + engineConf.Read("TEXTUREGROUP_VFX_64", "TextureLODSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_VFX_128=" + engineConf.Read("TEXTUREGROUP_VFX_128", "TextureLODSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_VFX_256=" + engineConf.Read("TEXTUREGROUP_VFX_256", "TextureLODSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_VFX_512" + engineConf.Read("TEXTUREGROUP_VFX_512", "TextureLODSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_VFX_1024=" + engineConf.Read("TEXTUREGROUP_VFX_1024", "TextureLODSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_APL_128=" + engineConf.Read("TEXTUREGROUP_APL_128", "TextureLODSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_APL_256=" + engineConf.Read("TEXTUREGROUP_APL_256", "TextureLODSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_APL_512=" + engineConf.Read("TEXTUREGROUP_APL_512", "TextureLODSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_APL_1024=" + engineConf.Read("TEXTUREGROUP_APL_1024", "TextureLODSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_GUI=" + engineConf.Read("TEXTUREGROUP_GUI", "TextureLODSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_Promotional=" + engineConf.Read("TEXTUREGROUP_Promotional", "TextureLODSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_Character_1024=" + engineConf.Read("TEXTUREGROUP_Character_1024", "TextureLODSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_Character_Diff=" + engineConf.Read("TEXTUREGROUP_Character_Diff", "TextureLODSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_Character_Norm=" + engineConf.Read("TEXTUREGROUP_Character_Norm", "TextureLODSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_Character_Spec=" + engineConf.Read("TEXTUREGROUP_Character_Spec", "TextureLODSettings"));
+            }
+            else if (gameId == MeType.ME2_TYPE)
+            {
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_World=" + engineConf.Read("TEXTUREGROUP_World", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_WorldNormalMap=" + engineConf.Read("TEXTUREGROUP_WorldNormalMap", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_AmbientLightMap=" + engineConf.Read("TEXTUREGROUP_AmbientLightMap", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_LightAndShadowMap=" + engineConf.Read("TEXTUREGROUP_LightAndShadowMap", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_RenderTarget=" + engineConf.Read("TEXTUREGROUP_RenderTarget", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_Environment_64=" + engineConf.Read("TEXTUREGROUP_Environment_64", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_Environment_128=" + engineConf.Read("TEXTUREGROUP_Environment_128", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_Environment_256=" + engineConf.Read("TEXTUREGROUP_Environment_256", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_Environment_512=" + engineConf.Read("TEXTUREGROUP_Environment_512", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_Environment_1024=" + engineConf.Read("TEXTUREGROUP_Environment_1024", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_VFX_64=" + engineConf.Read("TEXTUREGROUP_VFX_64", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_VFX_128=" + engineConf.Read("TEXTUREGROUP_VFX_128", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_VFX_256=" + engineConf.Read("TEXTUREGROUP_VFX_256", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_VFX_512=" + engineConf.Read("TEXTUREGROUP_VFX_512", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_VFX_1024=" + engineConf.Read("TEXTUREGROUP_VFX_1024", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_APL_128=" + engineConf.Read("TEXTUREGROUP_APL_128", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_APL_256=" + engineConf.Read("TEXTUREGROUP_APL_256", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_APL_512=" + engineConf.Read("TEXTUREGROUP_APL_512", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_APL_1024=" + engineConf.Read("TEXTUREGROUP_APL_1024", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_UI=" + engineConf.Read("TEXTUREGROUP_UI", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_Promotional=" + engineConf.Read("TEXTUREGROUP_Promotional", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_Character_1024=" + engineConf.Read("TEXTUREGROUP_Character_1024", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_Character_Diff=" + engineConf.Read("TEXTUREGROUP_Character_Diff", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_Character_Norm=" + engineConf.Read("TEXTUREGROUP_Character_Norm", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_Character_Spec=" + engineConf.Read("TEXTUREGROUP_Character_Spec", "SystemSettings"));
+            }
+            else if (gameId == MeType.ME3_TYPE)
+            {
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_World=" + engineConf.Read("TEXTUREGROUP_World", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_WorldSpecular=" + engineConf.Read("TEXTUREGROUP_WorldSpecular", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_WorldNormalMap=" + engineConf.Read("TEXTUREGROUP_WorldNormalMap", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_AmbientLightMap=" + engineConf.Read("TEXTUREGROUP_AmbientLightMap", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_LightAndShadowMap=" + engineConf.Read("TEXTUREGROUP_LightAndShadowMap", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_RenderTarget=" + engineConf.Read("TEXTUREGROUP_RenderTarget", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_Environment_64=" + engineConf.Read("TEXTUREGROUP_Environment_64", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_Environment_128=" + engineConf.Read("TEXTUREGROUP_Environment_128", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_Environment_256=" + engineConf.Read("TEXTUREGROUP_Environment_256", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_Environment_512=" + engineConf.Read("TEXTUREGROUP_Environment_512", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_Environment_1024=" + engineConf.Read("TEXTUREGROUP_Environment_1024", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_VFX_64=" + engineConf.Read("TEXTUREGROUP_VFX_64", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_VFX_128=" + engineConf.Read("TEXTUREGROUP_VFX_128", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_VFX_256=" + engineConf.Read("TEXTUREGROUP_VFX_256", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_VFX_512=" + engineConf.Read("TEXTUREGROUP_VFX_512", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_VFX_1024=" + engineConf.Read("TEXTUREGROUP_VFX_1024", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_APL_128=" + engineConf.Read("TEXTUREGROUP_APL_128", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_APL_256=" + engineConf.Read("TEXTUREGROUP_APL_256", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_APL_512=" + engineConf.Read("TEXTUREGROUP_APL_512", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_APL_1024=" + engineConf.Read("TEXTUREGROUP_APL_1024", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_UI=" + engineConf.Read("TEXTUREGROUP_UI", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_Promotional=" + engineConf.Read("TEXTUREGROUP_Promotional", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_Character_1024=" + engineConf.Read("TEXTUREGROUP_Character_1024", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_Character_Diff=" + engineConf.Read("TEXTUREGROUP_Character_Diff", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_Character_Norm=" + engineConf.Read("TEXTUREGROUP_Character_Norm", "SystemSettings"));
+                Console.WriteLine("[IPC]LODLINE " + "TEXTUREGROUP_Character_Spec=" + engineConf.Read("TEXTUREGROUP_Character_Spec", "SystemSettings"));
+            }
+            else
+            {
+                throw new Exception("");
+            }
+        }
+
         static public void updateLOD(MeType gameId, ConfIni engineConf)
         {
             if (gameId == MeType.ME1_TYPE)
