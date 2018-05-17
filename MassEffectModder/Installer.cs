@@ -428,7 +428,7 @@ namespace MassEffectModder
             return true;
         }
 
-        bool detectMod(int gameId, ref bool allowInstall)
+        bool detectMod(int gameId)
         {
             string path = "";
             if (gameId == (int)MeType.ME1_TYPE)
@@ -964,17 +964,7 @@ namespace MassEffectModder
             }
 
             errors = "";
-            bool allowInstall = false;
-            if (detectMod(gameId, ref allowInstall))
-            {
-                if (!allowInstall)
-                {
-                    customLabelFinalStatus.Text = "Not compatible previous installation, aborting...";
-                    customLabelFinalStatus.ForeColor = Color.FromKnownColor(KnownColor.Yellow);
-                    return false;
-                }
-                updateMode = true;
-            }
+            updateMode = detectMod(gameId);
 
             // unpack DLC
             if (gameId != 3 || !unpackDLC || (updateMode && gameId == 3))
