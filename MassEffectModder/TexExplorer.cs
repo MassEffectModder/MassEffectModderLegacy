@@ -304,6 +304,8 @@ namespace MassEffectModder
                     text += "Node name:     " + node.textures[index].name + "\n";
                     for (int index2 = 0; index2 < (detailedInfo ? node.textures[index].list.Count : 1); index2++)
                     {
+                        if (node.textures[index].list[index2].path == "")
+                            continue;
                         MatchedTexture nodeTexture = node.textures[index].list[index2];
                         Package package = new Package(GameData.GamePath + nodeTexture.path);
                         Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
