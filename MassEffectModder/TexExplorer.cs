@@ -197,6 +197,8 @@ namespace MassEffectModder
             {
                 if (GameData.gameType == entries[i].gameType)
                 {
+                    if (!File.Exists(GameData.GamePath + entries[i].packagePath))
+                        return true;
                     Package package = new Package(GameData.GamePath + entries[i].packagePath);
                     Texture texture = new Texture(package, entries[i].exportId, package.getExportData(entries[i].exportId));
                     if (texture.mipMapsList.Exists(s => s.storageType == Texture.StorageTypes.empty))
