@@ -459,12 +459,12 @@ namespace MassEffectModder
                                         archiveFile = files[0];
                                     else if (files.Count == 0)
                                     {
-                                        DLCArchiveFile = Path.Combine(Path.GetDirectoryName(DLCArchiveFile),
-                                            "Textures_" + Path.GetFileName(Path.GetDirectoryName(Path.GetDirectoryName(GameData.GamePath + matched.path)) + ".tfc"));
-                                        if (File.Exists(DLCArchiveFile))
-                                            archiveFile = DLCArchiveFile;
-                                        else
-                                            archiveFile = Path.Combine(GameData.MainData, "Textures.tfc");
+                                        using (FileStream fs = new FileStream(DLCArchiveFile, FileMode.CreateNew, FileAccess.Write))
+                                        {
+                                            fs.WriteFromBuffer(texture.properties.getProperty("TFCFileGuid").valueStruct);
+                                        }
+                                        archiveFile = DLCArchiveFile;
+                                        newTfcFile = true;
                                     }
                                     else
                                         throw new Exception("");
