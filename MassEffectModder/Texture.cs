@@ -421,8 +421,10 @@ namespace MassEffectModder
                                         SearchOption.AllDirectories).Where(item => item.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase)).ToList();
                                     if (files.Count == 1)
                                         filename = files[0];
+                                    else if (files.Count == 0)
+                                        throw new Exception("Not found TFC file: " + archive + ".tfc");
                                     else
-                                        throw new Exception("");
+                                        throw new Exception("More instnces of TFC file: " + archive + ".tfc");
                                 }
                             }
                         }

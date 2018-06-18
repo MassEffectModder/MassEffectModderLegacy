@@ -467,7 +467,7 @@ namespace MassEffectModder
                                         newTfcFile = true;
                                     }
                                     else
-                                        throw new Exception("");
+                                        throw new Exception("More instnces of TFC file: " + archive + ".tfc");
                                 }
                             }
                             else
