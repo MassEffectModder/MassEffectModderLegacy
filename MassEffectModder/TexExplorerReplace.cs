@@ -632,9 +632,11 @@ namespace MassEffectModder
                                 }
                                 else
                                 {
-                                    if (mod.arcTexture[m].width != mipmap.width ||
-                                        mod.arcTexture[m].height != mipmap.height)
-                                        throw new Exception();
+                                    if ((mipmap.width >= 4 && mod.arcTexture[m].width != mipmap.width) ||
+                                        (mipmap.height >= 4 && mod.arcTexture[m].height != mipmap.height))
+                                    {
+                                        throw new Exception("Dimensions mismatch!");
+                                    }
                                     mipmap.dataOffset = mod.arcTexture[m].dataOffset;
                                 }
                             }
