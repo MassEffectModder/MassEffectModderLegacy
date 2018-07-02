@@ -350,13 +350,9 @@ namespace MassEffectModder
 
         static private void cleanupPreviousUpdate()
         {
-            string baseName = "new-" + Path.GetFileNameWithoutExtension(Application.ExecutablePath);
-            string fileExe = baseName + ".exe";
-            string filePdb = baseName + ".pdb";
+            string fileExe = "new-" + Path.GetFileName(Application.ExecutablePath);
             if (File.Exists(fileExe))
                 File.Delete(fileExe);
-            if (File.Exists(filePdb))
-                File.Delete(filePdb);
         }
 
         static private void performUpdate(string filename)
@@ -372,7 +368,6 @@ namespace MassEffectModder
                 if (File.Exists(filePdb))
                     File.Delete(filePdb);
                 File.Copy(baseName + ".exe", fileExe);
-                File.Copy(baseName + ".pdb", filePdb);
 
                 Process process = new Process();
                 process.StartInfo.FileName = fileExe;
