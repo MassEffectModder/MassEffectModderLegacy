@@ -145,11 +145,20 @@ namespace MassEffectModder
             treeScan = null;
             Misc.MD5FileEntry[] md5Entries;
             if (gameId == MeType.ME1_TYPE)
+            {
+                pkgs = Program.tablePkgsME1;
                 md5Entries = Program.entriesME1;
+            }
             else if (gameId == MeType.ME2_TYPE)
+            {
+                pkgs = Program.tablePkgsME2;
                 md5Entries = Program.entriesME2;
+            }
             else
+            {
+                pkgs = Program.tablePkgsME3;
                 md5Entries = Program.entriesME3;
+            }
 
             List<FoundTexture> textures = new List<FoundTexture>();
             string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
