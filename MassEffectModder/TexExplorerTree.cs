@@ -299,9 +299,9 @@ namespace MassEffectModder
                 Misc.startTimer();
             }
 
+            GameData.packageFiles.Sort();
             if (!GameData.FullScanME1Game)
             {
-                GameData.packageFiles.Sort();
                 int count = GameData.packageFiles.Count;
                 for (int i = 0; i < count; i++)
                 {
