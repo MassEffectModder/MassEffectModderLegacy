@@ -768,7 +768,7 @@ namespace MassEffectModder
             }
 
             memFiles = Directory.GetFiles(".", "*.mem", SearchOption.AllDirectories).Where(item => item.EndsWith(".mem", StringComparison.OrdinalIgnoreCase)).ToList();
-            memFiles.Sort();
+            memFiles.Sort(StringComparer.OrdinalIgnoreCase);
             if (memFiles.Count == 0)
             {
                 customLabelFinalStatus.Text = "No MEM file mods found!, aborting...";

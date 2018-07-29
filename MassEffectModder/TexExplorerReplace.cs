@@ -758,6 +758,14 @@ namespace MassEffectModder
             return errors;
         }
 
+        public class StringComparer : IComparer<MapTexturesToMod>
+        {
+            public int Compare(MapTexturesToMod x, MapTexturesToMod y)
+            {
+                return string.CompareOrdinal(x.packagePath, x.packagePath);
+            }
+        }
+
         public string replaceModsFromList(List<FoundTexture> textures, MainWindow mainWindow, Installer installer,
             bool repack, bool appendMarker, bool verify, bool removeMips, bool ipc)
         {
@@ -833,7 +841,7 @@ namespace MassEffectModder
             }
 
 
-            map.Sort((x, y) => x.packagePath.CompareTo(y.packagePath));
+            map.Sort(new StringComparer());
             List<MapPackagesToMod> mapPackages = new List<MapPackagesToMod>();
             string previousPath = "";
             int packagesIndex = -1;
@@ -869,7 +877,7 @@ namespace MassEffectModder
             }
             map.Clear();
 
-            mapSlaves.Sort((x, y) => x.packagePath.CompareTo(y.packagePath));
+            mapSlaves.Sort(new StringComparer());
             previousPath = "";
             for (int i = 0; i < mapSlaves.Count; i++)
             {

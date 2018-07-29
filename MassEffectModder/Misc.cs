@@ -1063,7 +1063,7 @@ namespace MassEffectModder
             if (!onlyIndividual)
             {
                 list = Directory.GetFiles(inputDir, "*.mem").Where(item => item.EndsWith(".mem", StringComparison.OrdinalIgnoreCase)).ToList();
-                list.Sort();
+                list.Sort(StringComparer.OrdinalIgnoreCase);
                 list2 = Directory.GetFiles(inputDir, "*.tpf").Where(item => item.EndsWith(".tpf", StringComparison.OrdinalIgnoreCase)).ToList();
                 list2.AddRange(Directory.GetFiles(inputDir, "*.mod").Where(item => item.EndsWith(".mod", StringComparison.OrdinalIgnoreCase)));
             }
@@ -1080,7 +1080,7 @@ namespace MassEffectModder
             list2.AddRange(Directory.GetFiles(inputDir, "*.tga").Where(item => item.EndsWith(".tga", StringComparison.OrdinalIgnoreCase)));
             list2.AddRange(Directory.GetFiles(inputDir, "*.jpg").Where(item => item.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)));
             list2.AddRange(Directory.GetFiles(inputDir, "*.jpeg").Where(item => item.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)));
-            list2.Sort();
+            list2.Sort(StringComparer.OrdinalIgnoreCase);
             list.AddRange(list2);
             files = list.ToArray();
 
@@ -2052,11 +2052,11 @@ namespace MassEffectModder
                 packageMainFiles.RemoveAll(s => s.ToLowerInvariant().Contains("guidcache"));
             }
 
-            packageMainFiles.Sort();
+            packageMainFiles.Sort(StringComparer.OrdinalIgnoreCase);
             if (packageDLCFiles != null)
-                packageDLCFiles.Sort();
+                packageDLCFiles.Sort(StringComparer.OrdinalIgnoreCase);
             if (sfarFiles != null)
-                sfarFiles.Sort();
+                sfarFiles.Sort(StringComparer.OrdinalIgnoreCase);
 
             for (int l = 0; l < badMOD.Count(); l++)
             {
@@ -2159,22 +2159,22 @@ namespace MassEffectModder
                 entries = Program.entriesME3;
             }
 
-            packageMainFiles.Sort();
+            packageMainFiles.Sort(StringComparer.OrdinalIgnoreCase);
             int allFilesCount = packageMainFiles.Count();
             int progress = 0;
             if (packageDLCFiles != null)
             {
-                packageDLCFiles.Sort();
+                packageDLCFiles.Sort(StringComparer.OrdinalIgnoreCase);
                 allFilesCount += packageDLCFiles.Count();
             }
             if (sfarFiles != null)
             {
-                sfarFiles.Sort();
+                sfarFiles.Sort(StringComparer.OrdinalIgnoreCase);
                 allFilesCount += sfarFiles.Count();
             }
             if (tfcFiles != null)
             {
-                tfcFiles.Sort();
+                tfcFiles.Sort(StringComparer.OrdinalIgnoreCase);
                 allFilesCount += tfcFiles.Count();
             }
 

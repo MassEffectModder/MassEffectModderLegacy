@@ -1243,7 +1243,7 @@ namespace MassEffectModder
                         return "";
                     List<string> list = Directory.GetFiles(modDir.SelectedPath, "*.tpf").Where(item => item.EndsWith(".tpf", StringComparison.OrdinalIgnoreCase)).ToList();
                     list.AddRange(Directory.GetFiles(modDir.SelectedPath, "*.mod").Where(item => item.EndsWith(".mod", StringComparison.OrdinalIgnoreCase)));
-                    list.Sort();
+                    list.Sort(StringComparer.OrdinalIgnoreCase);
                     files = list.ToArray();
                 }
                 using (FolderBrowserDialog modDir = new FolderBrowserDialog())

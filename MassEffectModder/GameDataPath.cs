@@ -407,6 +407,7 @@ namespace MassEffectModder
                     packageFiles.AddRange(pccs);
                 packageFiles.RemoveAll(s => s.ToLowerInvariant().Contains("guidcache"));
             }
+            packageFiles.Sort(StringComparer.OrdinalIgnoreCase);
             return true;
         }
 
