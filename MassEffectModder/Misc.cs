@@ -1063,7 +1063,7 @@ namespace MassEffectModder
             if (!onlyIndividual)
             {
                 list = Directory.GetFiles(inputDir, "*.mem").Where(item => item.EndsWith(".mem", StringComparison.OrdinalIgnoreCase)).ToList();
-                list.Sort(StringComparer.OrdinalIgnoreCase);
+                list.Sort(new AsciiStringComparer());
                 list2 = Directory.GetFiles(inputDir, "*.tpf").Where(item => item.EndsWith(".tpf", StringComparison.OrdinalIgnoreCase)).ToList();
                 list2.AddRange(Directory.GetFiles(inputDir, "*.mod").Where(item => item.EndsWith(".mod", StringComparison.OrdinalIgnoreCase)));
             }
@@ -1080,7 +1080,7 @@ namespace MassEffectModder
             list2.AddRange(Directory.GetFiles(inputDir, "*.tga").Where(item => item.EndsWith(".tga", StringComparison.OrdinalIgnoreCase)));
             list2.AddRange(Directory.GetFiles(inputDir, "*.jpg").Where(item => item.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)));
             list2.AddRange(Directory.GetFiles(inputDir, "*.jpeg").Where(item => item.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)));
-            list2.Sort(StringComparer.OrdinalIgnoreCase);
+            list2.Sort(new AsciiStringComparer());
             list.AddRange(list2);
             files = list.ToArray();
 
@@ -2052,11 +2052,11 @@ namespace MassEffectModder
                 packageMainFiles.RemoveAll(s => s.ToLowerInvariant().Contains("guidcache"));
             }
 
-            packageMainFiles.Sort(StringComparer.OrdinalIgnoreCase);
+            packageMainFiles.Sort(new AsciiStringComparer());
             if (packageDLCFiles != null)
-                packageDLCFiles.Sort(StringComparer.OrdinalIgnoreCase);
+                packageDLCFiles.Sort(new AsciiStringComparer());
             if (sfarFiles != null)
-                sfarFiles.Sort(StringComparer.OrdinalIgnoreCase);
+                sfarFiles.Sort(new AsciiStringComparer());
 
             for (int l = 0; l < badMOD.Count(); l++)
             {
@@ -2159,22 +2159,22 @@ namespace MassEffectModder
                 entries = Program.entriesME3;
             }
 
-            packageMainFiles.Sort(StringComparer.OrdinalIgnoreCase);
+            packageMainFiles.Sort(new AsciiStringComparer());
             int allFilesCount = packageMainFiles.Count();
             int progress = 0;
             if (packageDLCFiles != null)
             {
-                packageDLCFiles.Sort(StringComparer.OrdinalIgnoreCase);
+                packageDLCFiles.Sort(new AsciiStringComparer());
                 allFilesCount += packageDLCFiles.Count();
             }
             if (sfarFiles != null)
             {
-                sfarFiles.Sort(StringComparer.OrdinalIgnoreCase);
+                sfarFiles.Sort(new AsciiStringComparer());
                 allFilesCount += sfarFiles.Count();
             }
             if (tfcFiles != null)
             {
-                tfcFiles.Sort(StringComparer.OrdinalIgnoreCase);
+                tfcFiles.Sort(new AsciiStringComparer());
                 allFilesCount += tfcFiles.Count();
             }
 

@@ -758,7 +758,7 @@ namespace MassEffectModder
             return errors;
         }
 
-        public class StringComparer : IComparer<MapTexturesToMod>
+        public class MapTexturesToModComparer : IComparer<MapTexturesToMod>
         {
             public int Compare(MapTexturesToMod x, MapTexturesToMod y)
             {
@@ -841,7 +841,7 @@ namespace MassEffectModder
             }
 
 
-            map.Sort(new StringComparer());
+            map.Sort(new MapTexturesToModComparer());
             List<MapPackagesToMod> mapPackages = new List<MapPackagesToMod>();
             string previousPath = "";
             int packagesIndex = -1;
@@ -877,7 +877,7 @@ namespace MassEffectModder
             }
             map.Clear();
 
-            mapSlaves.Sort(new StringComparer());
+            mapSlaves.Sort(new MapTexturesToModComparer());
             previousPath = "";
             for (int i = 0; i < mapSlaves.Count; i++)
             {
