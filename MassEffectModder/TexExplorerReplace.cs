@@ -762,7 +762,7 @@ namespace MassEffectModder
         {
             public int Compare(MapTexturesToMod x, MapTexturesToMod y)
             {
-                return string.CompareOrdinal(x.packagePath, x.packagePath);
+                return string.CompareOrdinal(x.packagePath, y.packagePath);
             }
         }
 
