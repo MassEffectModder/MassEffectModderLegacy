@@ -335,7 +335,7 @@ namespace MassEffectModder
                 {
                     sortedFiles.Add(GameData.RelativeGameData(GameData.packageFiles[i]).ToLowerInvariant());
                 }
-                sortedFiles.Sort(new AsciiStringComparer());
+                sortedFiles.Sort();
 
                 for (int k = 0; k < textures.Count; k++)
                 {
