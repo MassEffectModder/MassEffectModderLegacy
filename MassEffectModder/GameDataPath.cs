@@ -32,7 +32,7 @@ namespace MassEffectModder
     {
         public int Compare(string x, string y)
         {
-            return string.CompareOrdinal(x.ToLowerInvariant(), y.ToLowerInvariant());
+            return string.Compare(x, y, StringComparison.OrdinalIgnoreCase);
         }
     }
 
