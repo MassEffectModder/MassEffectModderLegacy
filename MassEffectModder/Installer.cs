@@ -63,6 +63,7 @@ namespace MassEffectModder
         string indirectSoundPath;
         bool meuitmMode = false;
         bool OptionRepackVisible;
+        bool Option2kLimitVisible;
         bool OptionIndirectSoundVisible;
         bool OptionReshadeVisible;
         bool OptionBikVisible;
@@ -317,6 +318,10 @@ namespace MassEffectModder
                 OptionRepackVisible = checkBoxOptionRepack.Visible = labelOptionRepack.Visible = true;
             else
                 OptionRepackVisible = checkBoxOptionRepack.Visible = labelOptionRepack.Visible = false;
+            if (gameId == 1)
+                Option2kLimitVisible = checkBoxOption2kLimit.Visible = labelOption2kLimit.Visible = true;
+            else
+                Option2kLimitVisible = checkBoxOption2kLimit.Visible = labelOption2kLimit.Visible = false;
             if (gameId == 1 && splashDemiurge != "")
                 OptionBikVisible = checkBoxOptionBik.Visible = labelOptionBik.Visible = true;
             else
@@ -343,10 +348,12 @@ namespace MassEffectModder
             customLabelCurrentStatus.Parent = pictureBoxBG;
             labelOptions.Parent = pictureBoxBG;
             labelOptionRepack.Parent = pictureBoxBG;
+            labelOption2kLimit.Parent = pictureBoxBG;
             labelOptionIndirectSound.Parent = pictureBoxBG;
             labelOptionReshade.Parent = pictureBoxBG;
             labelOptionBik.Parent = pictureBoxBG;
             checkBoxOptionRepack.Parent = pictureBoxBG;
+            checkBoxOption2kLimit.Parent = pictureBoxBG;
             checkBoxOptionIndirectSound.Parent = pictureBoxBG;
             checkBoxOptionReshade.Parent = pictureBoxBG;
             checkBoxOptionBik.Parent = pictureBoxBG;
@@ -355,7 +362,7 @@ namespace MassEffectModder
             comboBoxMod5.Parent = comboBoxMod6.Parent = comboBoxMod7.Parent = comboBoxMod8.Parent = comboBoxMod9.Parent = pictureBoxBG;
             buttonMute.Parent = pictureBoxBG;
 
-            labelOptions.Visible = OptionRepackVisible || OptionReshadeVisible || OptionIndirectSoundVisible || OptionBikVisible;
+            labelOptions.Visible = OptionRepackVisible || Option2kLimitVisible || OptionReshadeVisible || OptionIndirectSoundVisible || OptionBikVisible;
 
             string bgFile = installerIni.Read("BackgroundImage", "Main").ToLowerInvariant();
             if (bgFile != "")
@@ -1307,6 +1314,7 @@ namespace MassEffectModder
             buttonNormal.Visible = false;
             buttonSTART.Visible = false;
             checkBoxOptionRepack.Visible = labelOptionRepack.Visible = false;
+            checkBoxOption2kLimit.Visible = labelOption2kLimit.Visible = false;
             checkBoxOptionIndirectSound.Visible = labelOptionIndirectSound.Visible = false;
             checkBoxOptionReshade.Visible = labelOptionReshade.Visible = false;
             checkBoxOptionBik.Visible = labelOptionBik.Visible = false;
@@ -1477,7 +1485,7 @@ namespace MassEffectModder
             if (!exist)
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
             ConfIni engineConf = new ConfIni(path);
-            LODSettings.updateLOD((MeType)gameId, engineConf);
+            LODSettings.updateLOD((MeType)gameId, engineConf, checkBoxOption2kLimit.Checked);
             LODSettings.updateGFXSettings((MeType)gameId, engineConf, softShadowsModPath != "", meuitmMode);
             log += "Updating GFX settings finished" + Environment.NewLine + Environment.NewLine;
 

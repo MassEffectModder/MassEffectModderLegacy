@@ -289,7 +289,7 @@ namespace MassEffectModder
             enableGameDataMenu(true);
         }
 
-        void updateMEConfig(MeType gameId)
+        void updateMEConfig(MeType gameId, bool limit2k)
         {
             enableGameDataMenu(false);
             string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
@@ -316,24 +316,29 @@ namespace MassEffectModder
             }
             ConfIni engineConf = new ConfIni(path);
             LODSettings.removeLOD(gameId, engineConf);
-            LODSettings.updateLOD(gameId, engineConf);
+            LODSettings.updateLOD(gameId, engineConf, limit2k);
             MessageBox.Show("Game configuration file at " + path + " updated.");
             enableGameDataMenu(true);
         }
 
         private void updateLODSetME1MenuItem_Click(object sender, EventArgs e)
         {
-            updateMEConfig(MeType.ME1_TYPE);
+            updateMEConfig(MeType.ME1_TYPE, false);
+        }
+
+        private void updateLODSet2KME1MenuItem_Click(object sender, EventArgs e)
+        {
+            updateMEConfig(MeType.ME1_TYPE, true);
         }
 
         private void updateLODSetME2MenuItem_Click(object sender, EventArgs e)
         {
-            updateMEConfig(MeType.ME2_TYPE);
+            updateMEConfig(MeType.ME2_TYPE, false);
         }
 
         private void updateLODSetME3MenuItem_Click(object sender, EventArgs e)
         {
-            updateMEConfig(MeType.ME3_TYPE);
+            updateMEConfig(MeType.ME3_TYPE, false);
         }
 
         void removeTreeFile(MeType game)

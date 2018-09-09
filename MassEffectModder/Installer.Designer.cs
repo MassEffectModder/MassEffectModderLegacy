@@ -79,6 +79,8 @@
             this.checkBoxOptionBik = new System.Windows.Forms.CheckBox();
             this.labelOptionRepack = new System.Windows.Forms.Label();
             this.checkBoxOptionRepack = new System.Windows.Forms.CheckBox();
+            this.labelOption2kLimit = new System.Windows.Forms.Label();
+            this.checkBoxOption2kLimit = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxBG)).BeginInit();
             this.SuspendLayout();
             // 
@@ -150,7 +152,7 @@
             this.labelOptions.BackColor = System.Drawing.Color.Black;
             this.labelOptions.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelOptions.ForeColor = System.Drawing.Color.White;
-            this.labelOptions.Location = new System.Drawing.Point(12, 381);
+            this.labelOptions.Location = new System.Drawing.Point(12, 360);
             this.labelOptions.Name = "labelOptions";
             this.labelOptions.Size = new System.Drawing.Size(74, 21);
             this.labelOptions.TabIndex = 54;
@@ -449,7 +451,7 @@
             this.labelOptionRepack.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.labelOptionRepack.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelOptionRepack.ForeColor = System.Drawing.Color.White;
-            this.labelOptionRepack.Location = new System.Drawing.Point(34, 402);
+            this.labelOptionRepack.Location = new System.Drawing.Point(34, 381);
             this.labelOptionRepack.Name = "labelOptionRepack";
             this.labelOptionRepack.Size = new System.Drawing.Size(151, 21);
             this.labelOptionRepack.TabIndex = 79;
@@ -462,18 +464,48 @@
             this.checkBoxOptionRepack.BackColor = System.Drawing.Color.Transparent;
             this.checkBoxOptionRepack.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.checkBoxOptionRepack.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxOptionRepack.Location = new System.Drawing.Point(16, 407);
+            this.checkBoxOptionRepack.Location = new System.Drawing.Point(16, 386);
             this.checkBoxOptionRepack.Name = "checkBoxOptionRepack";
             this.checkBoxOptionRepack.Size = new System.Drawing.Size(15, 14);
             this.checkBoxOptionRepack.TabIndex = 78;
             this.checkBoxOptionRepack.TabStop = false;
             this.checkBoxOptionRepack.UseVisualStyleBackColor = false;
             // 
+            // labelOption2kLimit
+            // 
+            this.labelOption2kLimit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.labelOption2kLimit.AutoSize = true;
+            this.labelOption2kLimit.BackColor = System.Drawing.Color.Black;
+            this.labelOption2kLimit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.labelOption2kLimit.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.labelOption2kLimit.ForeColor = System.Drawing.Color.White;
+            this.labelOption2kLimit.Location = new System.Drawing.Point(34, 402);
+            this.labelOption2kLimit.Name = "labelOption2kLimit";
+            this.labelOption2kLimit.Size = new System.Drawing.Size(160, 21);
+            this.labelOption2kLimit.TabIndex = 81;
+            this.labelOption2kLimit.Text = "Limit Textures to 2K";
+            // 
+            // checkBoxOption2kLimit
+            // 
+            this.checkBoxOption2kLimit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.checkBoxOption2kLimit.AutoSize = true;
+            this.checkBoxOption2kLimit.BackColor = System.Drawing.Color.Transparent;
+            this.checkBoxOption2kLimit.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.checkBoxOption2kLimit.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.checkBoxOption2kLimit.Location = new System.Drawing.Point(16, 407);
+            this.checkBoxOption2kLimit.Name = "checkBoxOption2kLimit";
+            this.checkBoxOption2kLimit.Size = new System.Drawing.Size(15, 14);
+            this.checkBoxOption2kLimit.TabIndex = 80;
+            this.checkBoxOption2kLimit.TabStop = false;
+            this.checkBoxOption2kLimit.UseVisualStyleBackColor = false;
+            // 
             // Installer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(958, 539);
+            this.Controls.Add(this.labelOption2kLimit);
+            this.Controls.Add(this.checkBoxOption2kLimit);
             this.Controls.Add(this.labelOptionRepack);
             this.Controls.Add(this.checkBoxOptionRepack);
             this.Controls.Add(this.labelOptionBik);
@@ -541,5 +573,7 @@
         private System.Windows.Forms.CheckBox checkBoxOptionBik;
         private System.Windows.Forms.Label labelOptionRepack;
         private System.Windows.Forms.CheckBox checkBoxOptionRepack;
+        private System.Windows.Forms.Label labelOption2kLimit;
+        private System.Windows.Forms.CheckBox checkBoxOption2kLimit;
     }
 }
