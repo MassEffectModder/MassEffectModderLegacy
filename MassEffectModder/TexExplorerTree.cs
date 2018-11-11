@@ -473,7 +473,7 @@ namespace MassEffectModder
                         }
                         Console.Out.Flush();
                     }
-                    FindTextures(gameId, textures, GameData.RelativeGameData(GameData.packageFiles[i]), false, ref log);
+                    errors += FindTextures(gameId, textures, GameData.RelativeGameData(GameData.packageFiles[i]), false, ref log);
                 }
             }
 
