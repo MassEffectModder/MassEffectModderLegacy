@@ -842,10 +842,19 @@ namespace MassEffectModder
                     {
                         if (nodeList[n].Name == packageName)
                         {
-                            ViewTexture texture = new ViewTexture();
-                            texture.crc = _textures[t].crc;
-                            texture.name = _textures[t].name;
-                            nodeList[n].textures.Add(texture);
+                            bool found2 = false;
+                            for (int x = 0; x < nodeList[n].textures.Count; x++)
+                            {
+                                if (nodeList[n].textures[x].crc == _textures[t].crc)
+                                    found2 = true;
+                            }
+                            if (!found2)
+                            {
+                                ViewTexture texture = new ViewTexture();
+                                texture.crc = _textures[t].crc;
+                                texture.name = _textures[t].name;
+                                nodeList[n].textures.Add(texture);
+                            }
                             found = true;
                         }
                     }
