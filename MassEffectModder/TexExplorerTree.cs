@@ -724,17 +724,16 @@ namespace MassEffectModder
                     catch (Exception e)
                     {
                         errors += ">>>>>>>>>" + Environment.NewLine;
+                        errors += "Error: Texture " + package.exportsTable[i].objectName + " is broken in package: " +
+                            Environment.NewLine + packagePath + Environment.NewLine;
                         errors += e.Message + Environment.NewLine +
-                            "Error: Texture " + package.exportsTable[i].objectName + " is broken in package: " +
-                            Environment.NewLine + packagePath + Environment.NewLine +
-                            "Export Id: " + (i + 1) + ", skipping..." + Environment.NewLine;
+                            "Export Id: " + (i + 1) + Environment.NewLine + "skipping..." + Environment.NewLine;
                         errors += "<<<<<<<<<" + Environment.NewLine + Environment.NewLine;
-                        log += ">>>>>>>>>" + Environment.NewLine + Environment.NewLine;
+                        log += ">>>>>>>>>" + Environment.NewLine;
+                        log += "Error: Texture " + package.exportsTable[i].objectName + " is broken in package: " +
+                            Environment.NewLine + packagePath + Environment.NewLine;
                         log += e.Message + Environment.NewLine +
-                            "Error: Texture " + package.exportsTable[i].objectName + " is broken in package: " +
-                            Environment.NewLine + packagePath + Environment.NewLine + 
-                            "Export Id: " + (i + 1) + ", skipping..." + Environment.NewLine;
-                        log += "<<<<<<<<<" + Environment.NewLine + Environment.NewLine;
+                            "Export Id: " + (i + 1) + Environment.NewLine + "skipping..." + Environment.NewLine;
                         continue;
                     }
 
