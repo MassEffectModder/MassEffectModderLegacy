@@ -253,18 +253,18 @@ namespace MassEffectModder
             byte[] data = new byte[uncompressedSize];
             uint blockTag = stream.ReadUInt32();
             if (blockTag != textureTag)
-                throw new Exception("not match");
+                throw new Exception("Texture tag wrong");
             uint blockSize = stream.ReadUInt32();
             if (blockSize != maxBlockSize)
-                throw new Exception("not match");
+                throw new Exception("Texture header broken");
             uint compressedChunkSize = stream.ReadUInt32();
             uint uncompressedChunkSize = stream.ReadUInt32();
             if (uncompressedChunkSize != uncompressedSize)
-                throw new Exception("not match");
+                throw new Exception("Texture header broken");
 
             uint blocksCount = (uncompressedChunkSize + maxBlockSize - 1) / maxBlockSize;
             if ((compressedChunkSize + SizeOfChunk + SizeOfChunkBlock * blocksCount) != compressedSize)
-                throw new Exception("not match");
+                throw new Exception("Texture header broken");
 
             List<Package.ChunkBlock> blocks = new List<Package.ChunkBlock>();
             for (uint b = 0; b < blocksCount; b++)
@@ -392,7 +392,15 @@ namespace MassEffectModder
                 case StorageTypes.pccZlib:
                     {
                         textureData.JumpTo(mipmap.internalOffset);
-                        mipMapData = decompressTexture(textureData, mipmap.storageType, mipmap.uncompressedSize, mipmap.compressedSize);
+                        try
+                        {
+                            mipMapData = decompressTexture(textureData, mipmap.storageType, mipmap.uncompressedSize, mipmap.compressedSize);
+                        }
+                        catch (Exception e)
+                        {
+                            throw new Exception(e.Message + "\n" + "StorageType: " + mipmap.storageType + "\n" +
+                                "Internal offset: " + mipmap.internalOffset);
+                        }
                         break;
                     }
                 case StorageTypes.extUnc:
@@ -424,7 +432,7 @@ namespace MassEffectModder
                                     else if (files.Count == 0)
                                         throw new Exception("Not found TFC file: " + archive + ".tfc");
                                     else
-                                        throw new Exception("More instnces of TFC file: " + archive + ".tfc");
+                                        throw new Exception("More instances of TFC file: " + archive + ".tfc");
                                 }
                             }
                         }
@@ -440,7 +448,17 @@ namespace MassEffectModder
                                     {
                                         using (MemoryStream tmpStream = new MemoryStream(fs.ReadToBuffer(mipmap.compressedSize)))
                                         {
-                                            mipMapData = decompressTexture(tmpStream, mipmap.storageType, mipmap.uncompressedSize, mipmap.compressedSize);
+                                            try
+                                            {
+                                                mipMapData = decompressTexture(tmpStream, mipmap.storageType, mipmap.uncompressedSize, mipmap.compressedSize);
+                                            }
+                                            catch (Exception e)
+                                            {
+                                                throw new Exception(e.Message + "\n" + "File: " + filename + "\n" +
+                                                    "TFC: " + properties.getProperty("TextureFileCacheName").valueName + "\n" +
+                                                    "StorageType: " + mipmap.storageType + "\n" +
+                                                    "External file offset: " + mipmap.dataOffset);
+                                            }
                                         }
                                     }
                                     else
@@ -448,15 +466,19 @@ namespace MassEffectModder
                                         mipMapData = fs.ReadToBuffer(mipmap.uncompressedSize);
                                     }
                                 }
-                                catch
+                                catch (Exception e)
                                 {
-                                    return null;
+                                    throw new Exception(e.Message + "\n" + "File: " + filename + "\n" +
+                                        "StorageType: " + mipmap.storageType + "\n" +
+                                        "External file offset: " + mipmap.dataOffset);
                                 }
                             }
                         }
-                        catch
+                        catch (Exception e)
                         {
-                            throw new Exception("Problem with access to file: " + filename);
+                            throw new Exception(e.Message + "\n" + "File: " + filename + "\n" +
+                                "StorageType: " + mipmap.storageType + "\n" +
+                                "External file offset: " + mipmap.dataOffset);
                         }
                         break;
                     }

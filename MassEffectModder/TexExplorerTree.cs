@@ -721,13 +721,18 @@ namespace MassEffectModder
                     {
                         crc = texture.getCrcTopMipmap();
                     }
-                    catch
+                    catch (Exception e)
                     {
-                    }
-                    if (crc == 0)
-                    {
-                        errors += "Error: Texture " + package.exportsTable[i].objectName + " is broken in package: " + packagePath + ", skipping..." + Environment.NewLine;
-                        log += "Error: Texture " + package.exportsTable[i].objectName + " is broken in package: " + packagePath + ", skipping..." + Environment.NewLine;
+                        errors += ">>>>>>>>>" + Environment.NewLine;
+                        errors += e.Message + Environment.NewLine +
+                            "Error: Texture " + package.exportsTable[i].objectName + " is broken in package: " +
+                            packagePath + ", skipping..." + Environment.NewLine;
+                        errors += "<<<<<<<<<" + Environment.NewLine + Environment.NewLine;
+                        log += ">>>>>>>>>" + Environment.NewLine + Environment.NewLine;
+                        log += e.Message + Environment.NewLine +
+                            "Error: Texture " + package.exportsTable[i].objectName + " is broken in package: " +
+                            packagePath + ", skipping..." + Environment.NewLine;
+                        log += "<<<<<<<<<" + Environment.NewLine + Environment.NewLine;
                         continue;
                     }
 
