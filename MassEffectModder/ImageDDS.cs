@@ -553,6 +553,7 @@ namespace MassEffectModder
             }
             else
             {
+                cores = returnPowerOfTwo(cores);
                 if ((cores * 4 * 4) > h)
                     cores = h / 4 / 4;
                 partSize = h / 4 / cores;
@@ -617,6 +618,7 @@ namespace MassEffectModder
             }
             else
             {
+                cores = returnPowerOfTwo(cores);
                 if ((cores * 4 * 4) > h)
                     cores = h / 4 / 4;
                 partSize = h / 4 / cores;
