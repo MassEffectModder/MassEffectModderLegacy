@@ -313,7 +313,7 @@ namespace MassEffectModder
                         Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
                         text += "\nTexture instance: " + (index2 + 1) + "\n";
                         text += "  Texture name:  " + package.exportsTable[nodeTexture.exportID].objectName + "\n";
-                        text += "  Export Id:     " + nodeTexture.exportID + "\n";
+                        text += "  Export Id:     " + (nodeTexture.exportID + 1) + "\n";
                         if (GameData.gameType == MeType.ME1_TYPE)
                         {
                             if (nodeTexture.linkToMaster == -1)

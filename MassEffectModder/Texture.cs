@@ -430,7 +430,7 @@ namespace MassEffectModder
                                     if (files.Count == 1)
                                         filename = files[0];
                                     else if (files.Count == 0)
-                                        throw new Exception("Not found TFC file: " + archive + ".tfc");
+                                        throw new Exception("TFC File Not Found: " + archive + ".tfc");
                                     else
                                         throw new Exception("More instances of TFC file: " + archive + ".tfc");
                                 }
