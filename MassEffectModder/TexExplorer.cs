@@ -46,13 +46,13 @@ namespace MassEffectModder
 
         public class PackageTreeNode : TreeNode
         {
-            public List<FoundTexture> textures;
+            public List<ViewTexture> textures;
 
             public PackageTreeNode(string name)
                 : base()
             {
                 Name = Text = name;
-                textures = new List<FoundTexture>();
+                textures = new List<ViewTexture>();
             }
         };
         List<PackageTreeNode> nodeList;
@@ -235,7 +235,7 @@ namespace MassEffectModder
             listViewTextures.Sort();
             for (int i = 0; i < node.textures.Count; i++)
             {
-                FoundTexture texture = node.textures[i];
+                ViewTexture texture = node.textures[i];
                 ListViewItem item = new ListViewItem();
                 item.Name = i.ToString();
                 item.Text = texture.name;
@@ -282,9 +282,17 @@ namespace MassEffectModder
             {
                 int index = Convert.ToInt32(listViewTextures.FocusedItem.Name);
                 PackageTreeNode node = (PackageTreeNode)treeViewPackages.SelectedNode;
+                int textureIndex = -1;
+                for (int i = 0; i < _textures.Count; i++)
+                {
+                    if (_textures[i].crc == node.textures[index].crc)
+                    {
+                        textureIndex = i;
+                    }
+                }
                 if (previewShow)
                 {
-                    MatchedTexture nodeTexture = node.textures[index].list.Find(s => s.path != "");
+                    MatchedTexture nodeTexture = _textures[textureIndex].list.Find(s => s.path != "");
                     Package package = new Package(GameData.GamePath + nodeTexture.path);
                     Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
                     byte[] textureData = texture.getTopImageData();
@@ -304,11 +312,11 @@ namespace MassEffectModder
                     string text = "";
                     text += "Texture original CRC:  " + string.Format("0x{0:X8}", node.textures[index].crc) + "\n";
                     text += "Node name:     " + node.textures[index].name + "\n";
-                    for (int index2 = 0; index2 < (detailedInfo ? node.textures[index].list.Count : 1); index2++)
+                    for (int index2 = 0; index2 < (detailedInfo ? _textures[textureIndex].list.Count : 1); index2++)
                     {
-                        if (node.textures[index].list[index2].path == "")
+                        if (_textures[textureIndex].list[index2].path == "")
                             continue;
-                        MatchedTexture nodeTexture = node.textures[index].list[index2];
+                        MatchedTexture nodeTexture = _textures[textureIndex].list[index2];
                         Package package = new Package(GameData.GamePath + nodeTexture.path);
                         Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
                         text += "\nTexture instance: " + (index2 + 1) + "\n";
@@ -442,18 +450,26 @@ namespace MassEffectModder
 
             int index = Convert.ToInt32(listViewTextures.FocusedItem.Name);
             PackageTreeNode node = (PackageTreeNode)treeViewPackages.SelectedNode;
+            int textureIndex = -1;
+            for (int i = 0; i < _textures.Count; i++)
+            {
+                if (_textures[i].crc == node.textures[index].crc)
+                {
+                    textureIndex = i;
+                }
+            }
             if (node == null)
             {
                 return;
             }
 
-            for (int index2 = 0; index2 < node.textures[index].list.Count; index2++)
+            for (int index2 = 0; index2 < _textures[textureIndex].list.Count; index2++)
             {
-                if (node.textures[index].list[index2].path == "")
+                if (_textures[textureIndex].list[index2].path == "")
                     continue;
                 ListViewItem item = new ListViewItem();
                 item.Name = index2.ToString();
-                item.Text = (index2 + 1) + ": " + Path.GetFileNameWithoutExtension(node.textures[index].list[index2].path);
+                item.Text = (index2 + 1) + ": " + Path.GetFileNameWithoutExtension(_textures[textureIndex].list[index2].path);
                 listViewPackages.Items.Add(item);
             }
         }
@@ -1169,16 +1185,24 @@ namespace MassEffectModder
                 PackageTreeNode node = (PackageTreeNode)treeViewPackages.SelectedNode;
                 ListViewItem item = listViewTextures.FocusedItem;
                 int index = Convert.ToInt32(item.Name);
+                int textureIndex = -1;
+                for (int i = 0; i < _textures.Count; i++)
+                {
+                    if (_textures[i].crc == node.textures[index].crc)
+                    {
+                        textureIndex = i;
+                    }
+                }
                 MatchedTexture nodeTexture;
                 if (singlePackageMode)
                 {
                     ListViewItem itemPkg = listViewPackages.FocusedItem;
                     int indexPackage = Convert.ToInt32(itemPkg.Name);
-                    nodeTexture = node.textures[index].list[indexPackage];
+                    nodeTexture = _textures[textureIndex].list[indexPackage];
                 }
                 else
                 {
-                    nodeTexture = node.textures[index].list.Find(s => s.path != "");
+                    nodeTexture = _textures[textureIndex].list.Find(s => s.path != "");
                 }
                 saveFile.Title = "Please select output DDS file";
                 saveFile.Filter = "DDS file | *.dds";
@@ -1205,16 +1229,24 @@ namespace MassEffectModder
                 PackageTreeNode node = (PackageTreeNode)treeViewPackages.SelectedNode;
                 ListViewItem item = listViewTextures.FocusedItem;
                 int index = Convert.ToInt32(item.Name);
+                int textureIndex = -1;
+                for (int i = 0; i < _textures.Count; i++)
+                {
+                    if (_textures[i].crc == node.textures[index].crc)
+                    {
+                        textureIndex = i;
+                    }
+                }
                 MatchedTexture nodeTexture;
                 if (singlePackageMode)
                 {
                     ListViewItem itemPkg = listViewPackages.FocusedItem;
                     int indexPackage = Convert.ToInt32(itemPkg.Name);
-                    nodeTexture = node.textures[index].list[indexPackage];
+                    nodeTexture = _textures[textureIndex].list[indexPackage];
                 }
                 else
                 {
-                    nodeTexture = node.textures[index].list.Find(s => s.path != "");
+                    nodeTexture = _textures[textureIndex].list.Find(s => s.path != "");
                 }
                 saveFile.Title = "Please select output PNG file";
                 saveFile.Filter = "PNG file | *.png";

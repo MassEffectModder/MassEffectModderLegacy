@@ -1021,6 +1021,14 @@ namespace MassEffectModder
                 PackageTreeNode node = (PackageTreeNode)treeViewPackages.SelectedNode;
                 ListViewItem item = listViewTextures.FocusedItem;
                 int index = Convert.ToInt32(item.Name);
+                int textureIndex = -1;
+                for (int i = 0; i < _textures.Count; i++)
+                {
+                    if (_textures[i].crc == node.textures[index].crc)
+                    {
+                        textureIndex = i;
+                    }
+                }
                 string errors = "";
                 MipMaps mipMaps = new MipMaps();
                 MipMaps.modsToReplace.Clear();
@@ -1042,11 +1050,11 @@ namespace MassEffectModder
                     MapPackagesToMod mapEntry = new MapPackagesToMod();
                     mapEntry.textures = new List<MapPackagesToModEntry>();
                     mapEntry.textures.Add(entry);
-                    mapEntry.packagePath = node.textures[index].list[indexPackage].path;
+                    mapEntry.packagePath = _textures[textureIndex].list[indexPackage].path;
                     mapEntry.removeMips.exportIDs = new List<int>();
                     List<MapPackagesToMod> mapPackages = new List<MapPackagesToMod>();
                     mapPackages.Add(mapEntry);
-                    errors = mipMaps.replaceTextures(mapPackages, node.textures, _mainWindow, null, false, false, false, false, false);
+                    errors = mipMaps.replaceTextures(mapPackages, _textures, _mainWindow, null, false, false, false, false, false);
                     MipMaps.modsToReplace.Clear();
                 }
                 else
@@ -1059,11 +1067,11 @@ namespace MassEffectModder
 
                 if (!singlePackageMode)
                 {
-                    for (int t = 0; t < node.textures[index].list.Count; t++)
+                    for (int t = 0; t < _textures[textureIndex].list.Count; t++)
                     {
-                        if (node.textures[index].list[t].path == "")
+                        if (_textures[textureIndex].list[t].path == "")
                             continue;
-                        MatchedTexture matchedTexture = node.textures[index].list[t];
+                        MatchedTexture matchedTexture = _textures[textureIndex].list[t];
                         _mainWindow.updateStatusLabel("Verify: " + node.textures[index].name + " in " + matchedTexture.path);
                         Package pkg = new Package(GameData.GamePath + matchedTexture.path);
                         Texture texture = new Texture(pkg, matchedTexture.exportID, pkg.getExportData(matchedTexture.exportID));
@@ -1077,7 +1085,7 @@ namespace MassEffectModder
                             }
                         }
                         matchedTexture.crcs = null;
-                        node.textures[index].list[t] = matchedTexture;
+                        _textures[textureIndex].list[t] = matchedTexture;
                     }
                 }
                 _mainWindow.updateStatusLabel("");

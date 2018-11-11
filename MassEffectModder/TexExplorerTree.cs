@@ -54,6 +54,12 @@ namespace MassEffectModder
         public int width, height;
     }
 
+    public struct ViewTexture
+    {
+        public string name;
+        public uint crc;
+    }
+
     public partial class TreeScan
     {
         public const uint textureMapBinTag = 0x5054454D;
@@ -836,14 +842,20 @@ namespace MassEffectModder
                     {
                         if (nodeList[n].Name == packageName)
                         {
-                            nodeList[n].textures.Add(_textures[t]);
+                            ViewTexture texture = new ViewTexture();
+                            texture.crc = _textures[t].crc;
+                            texture.name = _textures[t].name;
+                            nodeList[n].textures.Add(texture);
                             found = true;
                         }
                     }
                     if (!found)
                     {
                         PackageTreeNode treeNode = new PackageTreeNode(packageName);
-                        treeNode.textures.Add(_textures[t]);
+                        ViewTexture texture = new ViewTexture();
+                        texture.crc = _textures[t].crc;
+                        texture.name = _textures[t].name;
+                        treeNode.textures.Add(texture);
                         rootNode.Nodes.Add(treeNode);
                         nodeList.Add(treeNode);
                     }
