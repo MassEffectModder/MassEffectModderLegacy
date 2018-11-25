@@ -2037,57 +2037,7 @@ namespace MassEffectModder
 
         static public List<string> detectBrokenMod(MeType gameType)
         {
-            List<string> packageMainFiles = null;
-            List<string> packageDLCFiles = null;
-            List<string> sfarFiles = null;
             List<string> mods = new List<string>();
-
-            if (gameType == MeType.ME1_TYPE)
-            {
-                packageMainFiles = Directory.GetFiles(GameData.MainData, "*.*",
-                SearchOption.AllDirectories).Where(s => s.EndsWith(".upk",
-                    StringComparison.OrdinalIgnoreCase) ||
-                    s.EndsWith(".u", StringComparison.OrdinalIgnoreCase) ||
-                    s.EndsWith(".sfm", StringComparison.OrdinalIgnoreCase)).ToList();
-                if (Directory.Exists(GameData.DLCData))
-                {
-                    packageDLCFiles = Directory.GetFiles(GameData.DLCData, "*.*",
-                    SearchOption.AllDirectories).Where(s => s.EndsWith(".upk",
-                        StringComparison.OrdinalIgnoreCase) ||
-                        s.EndsWith(".u", StringComparison.OrdinalIgnoreCase) ||
-                        s.EndsWith(".sfm", StringComparison.OrdinalIgnoreCase)).ToList();
-                }
-                packageMainFiles.RemoveAll(s => s.ToLowerInvariant().Contains("localshadercache-pc-d3d-sm3.upk"));
-                packageMainFiles.RemoveAll(s => s.ToLowerInvariant().Contains("refshadercache-pc-d3d-sm3.upk"));
-            }
-            else if (gameType == MeType.ME2_TYPE)
-            {
-                packageMainFiles = Directory.GetFiles(GameData.MainData, "*.pcc", SearchOption.AllDirectories).Where(item => item.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase)).ToList();
-                if (Directory.Exists(GameData.DLCData))
-                    packageDLCFiles = Directory.GetFiles(GameData.DLCData, "*.pcc", SearchOption.AllDirectories).Where(item => item.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase)).ToList();
-            }
-            else if (gameType == MeType.ME3_TYPE)
-            {
-                packageMainFiles = Directory.GetFiles(GameData.MainData, "*.pcc", SearchOption.AllDirectories).Where(item => item.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase)).ToList();
-                if (Directory.Exists(GameData.DLCData))
-                {
-                    packageDLCFiles = Directory.GetFiles(GameData.DLCData, "*.pcc", SearchOption.AllDirectories).Where(item => item.EndsWith(".pcc", StringComparison.OrdinalIgnoreCase)).ToList();
-                    sfarFiles = Directory.GetFiles(GameData.DLCData, "Default.sfar", SearchOption.AllDirectories).ToList();
-                    for (int i = 0; i < sfarFiles.Count; i++)
-                    {
-                        if (File.Exists(Path.Combine(Path.GetDirectoryName(sfarFiles[i]), "Mount.dlc")))
-                            sfarFiles.RemoveAt(i--);
-                    }
-                    packageDLCFiles.RemoveAll(s => s.ToLowerInvariant().Contains("guidcache"));
-                }
-                packageMainFiles.RemoveAll(s => s.ToLowerInvariant().Contains("guidcache"));
-            }
-
-            packageMainFiles.Sort(new AsciiStringComparer());
-            if (packageDLCFiles != null)
-                packageDLCFiles.Sort(new AsciiStringComparer());
-            if (sfarFiles != null)
-                sfarFiles.Sort(new AsciiStringComparer());
 
             for (int l = 0; l < badMOD.Count(); l++)
             {
