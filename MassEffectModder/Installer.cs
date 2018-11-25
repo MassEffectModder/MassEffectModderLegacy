@@ -336,7 +336,7 @@ namespace MassEffectModder
                 OptionReshadeVisible = checkBoxOptionReshade.Visible = labelOptionReshade.Visible = false;
 
             if (gameId == 1)
-                checkBoxOptionIndirectSound.Checked = true;
+                checkBoxOptionIndirectSound.Checked = false;
             checkBoxOptionReshade.Checked = false;
             checkBoxOptionBik.Checked = false;
 
@@ -440,19 +440,19 @@ namespace MassEffectModder
             string path = "";
             if (gameId == (int)MeType.ME1_TYPE)
             {
-                path = GameData.GamePath + @"\BioGame\CookedPC\testVolumeLight_VFX.upk";
+                path = @"\BioGame\CookedPC\testVolumeLight_VFX.upk";
             }
             if (gameId == (int)MeType.ME2_TYPE)
             {
-                path = GameData.GamePath + @"\BioGame\CookedPC\BIOC_Materials.pcc";
+                path = @"\BioGame\CookedPC\BIOC_Materials.pcc";
             }
             if (gameId == (int)MeType.ME3_TYPE)
             {
-                path = GameData.GamePath + @"\BIOGame\CookedPCConsole\adv_combat_tutorial_xbox_D_Int.afc";
+                path = @"\BIOGame\CookedPCConsole\adv_combat_tutorial_xbox_D_Int.afc";
             }
             try
             {
-                using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+                using (FileStream fs = new FileStream(GameData.GamePath + path, FileMode.Open, FileAccess.Read))
                 {
                     fs.Seek(-16, SeekOrigin.End);
                     int prevMeuitmV = fs.ReadInt32();
@@ -480,19 +480,19 @@ namespace MassEffectModder
             string path = "";
             if (gameId == (int)MeType.ME1_TYPE)
             {
-                path = GameData.GamePath + @"\BioGame\CookedPC\testVolumeLight_VFX.upk";
+                path = @"\BioGame\CookedPC\testVolumeLight_VFX.upk";
             }
             if (gameId == (int)MeType.ME2_TYPE)
             {
-                path = GameData.GamePath + @"\BioGame\CookedPC\BIOC_Materials.pcc";
+                path = @"\BioGame\CookedPC\BIOC_Materials.pcc";
             }
             if (gameId == (int)MeType.ME3_TYPE)
             {
-                path = GameData.GamePath + @"\BIOGame\CookedPCConsole\adv_combat_tutorial_xbox_D_Int.afc";
+                path = @"\BIOGame\CookedPCConsole\adv_combat_tutorial_xbox_D_Int.afc";
             }
             try
             {
-                using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.ReadWrite))
+                using (FileStream fs = new FileStream(GameData.GamePath + path, FileMode.Open, FileAccess.ReadWrite))
                 {
                     fs.Seek(-16, SeekOrigin.End);
                     int prevMeuitmV = fs.ReadInt32();
@@ -531,7 +531,7 @@ namespace MassEffectModder
                 updateProgressStatus("Adding markers " + ((i + 1) * 100 / pkgsToMarker.Count) + "%");
                 try
                 {
-                    using (FileStream fs = new FileStream(pkgsToMarker[i], FileMode.Open, FileAccess.ReadWrite))
+                    using (FileStream fs = new FileStream(GameData.GamePath + pkgsToMarker[i], FileMode.Open, FileAccess.ReadWrite))
                     {
                         fs.SeekEnd();
                         fs.Seek(-Package.MEMendFileMarker.Length, SeekOrigin.Current);
@@ -775,7 +775,7 @@ namespace MassEffectModder
             }
 
             memFiles = Directory.GetFiles(".", "*.mem", SearchOption.AllDirectories).Where(item => item.EndsWith(".mem", StringComparison.OrdinalIgnoreCase)).ToList();
-            memFiles.Sort(new AsciiStringComparer());
+            memFiles.Sort(StringComparer.OrdinalIgnoreCase);
             if (memFiles.Count == 0)
             {
                 customLabelFinalStatus.Text = "No MEM file mods found!, aborting...";
@@ -903,7 +903,7 @@ namespace MassEffectModder
                         unpackDLC = true;
                     for (int i = 0; i < sfarFiles.Count; i++)
                     {
-                        diskUsageDLC += new FileInfo(sfarFiles[i]).Length;
+                        diskUsageDLC += new FileInfo(GameData.GamePath + sfarFiles[i]).Length;
                     }
                     diskUsage = (long)(diskUsageDLC * 2.1);
                 }
@@ -1062,7 +1062,6 @@ namespace MassEffectModder
                 {
                     int len = fs.ReadInt32();
                     string pkgPath = fs.ReadStringASCII(len);
-                    pkgPath = GameData.GamePath + pkgPath;
                     packages.Add(pkgPath);
                 }
                 for (int i = 0; i < packages.Count; i++)
@@ -1366,9 +1365,9 @@ namespace MassEffectModder
                     pkgsToRepack.Add(GameData.packageFiles[i]);
                 }
                 if (GameData.gameType == MeType.ME1_TYPE)
-                    pkgsToRepack.Remove(GameData.GamePath + @"\BioGame\CookedPC\testVolumeLight_VFX.upk");
+                    pkgsToRepack.Remove(@"\BioGame\CookedPC\testVolumeLight_VFX.upk");
                 if (GameData.gameType == MeType.ME2_TYPE)
-                    pkgsToRepack.Remove(GameData.GamePath + @"\BioGame\CookedPC\BIOC_Materials.pcc");
+                    pkgsToRepack.Remove(@"\BioGame\CookedPC\BIOC_Materials.pcc");
             }
 
             if (GameData.gameType != MeType.ME1_TYPE)
@@ -1397,9 +1396,9 @@ namespace MassEffectModder
                     pkgsToMarker.Add(GameData.packageFiles[i]);
                 }
                 if (GameData.gameType == MeType.ME1_TYPE)
-                    pkgsToMarker.Remove(GameData.GamePath + @"\BioGame\CookedPC\testVolumeLight_VFX.upk");
+                    pkgsToMarker.Remove(@"\BioGame\CookedPC\testVolumeLight_VFX.upk");
                 if (GameData.gameType == MeType.ME2_TYPE)
-                    pkgsToMarker.Remove(GameData.GamePath + @"\BioGame\CookedPC\BIOC_Materials.pcc");
+                    pkgsToMarker.Remove(@"\BioGame\CookedPC\BIOC_Materials.pcc");
 
                 customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
 
@@ -1436,21 +1435,21 @@ namespace MassEffectModder
                 customLabelFinalStatus.Text = "Stage " + stage++ + " of " + totalStages;
                 log += "Repack started..." + Environment.NewLine;
                 if (GameData.gameType == MeType.ME2_TYPE)
-                    pkgsToRepack.Remove(GameData.GamePath + @"\BioGame\CookedPC\BIOC_Materials.pcc");
+                    pkgsToRepack.Remove(@"\BioGame\CookedPC\BIOC_Materials.pcc");
                 for (int i = 0; i < pkgsToRepack.Count; i++)
                 {
                     updateProgressStatus("Repack game files " + ((i + 1) * 100 / pkgsToRepack.Count) + "%");
                     try
                     {
-                        Package package = new Package(pkgsToRepack[i], true);
+                        Package package = new Package(GameData.GamePath + pkgsToRepack[i], true);
                         if (!package.compressed || package.compressed && package.compressionType != Package.CompressionType.Zlib)
                         {
                             package.Dispose();
-                            package = new Package(pkgsToRepack[i]);
+                            package = new Package(GameData.GamePath + pkgsToRepack[i]);
                             if (package.SaveToFile(true, false, !updateMode))
                             {
                                 if (pkgsToMarker != null)
-                                    pkgsToMarker.Remove(package.packagePath);
+                                    pkgsToMarker.Remove(GameData.RelativeGameData(package.packagePath));
                             }
                         }
                         package.Dispose();

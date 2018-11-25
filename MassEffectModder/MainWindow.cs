@@ -152,11 +152,11 @@ namespace MassEffectModder
                 updateStatusLabel("Repack PCC file " + (i + 1) + " of " + GameData.packageFiles.Count);
                 try
                 {
-                    Package package = new Package(GameData.packageFiles[i], true);
+                    Package package = new Package(GameData.GamePath + GameData.packageFiles[i], true);
                     if (!package.compressed || package.compressed && package.compressionType != Package.CompressionType.Zlib)
                     {
                         package.Dispose();
-                        package = new Package(GameData.packageFiles[i]);
+                        package = new Package(GameData.GamePath + GameData.packageFiles[i]);
                         package.SaveToFile(true, false, false);
                     }
                     package.Dispose();
@@ -653,8 +653,8 @@ namespace MassEffectModder
                         {
                             if (Path.GetFileName(mods[i]).ToLowerInvariant() == Path.GetFileName(GameData.packageFiles[v]).ToLowerInvariant())
                             {
-                                modPkg = new Package(mods[i]);
-                                vanillaPkg = new Package(GameData.packageFiles[v]);
+                                modPkg = new Package(GameData.GamePath + mods[i]);
+                                vanillaPkg = new Package(GameData.GamePath + GameData.packageFiles[v]);
                                 if (modPkg.exportsTable.Count != vanillaPkg.exportsTable.Count ||
                                     modPkg.namesTable.Count != vanillaPkg.namesTable.Count ||
                                     modPkg.importsTable.Count != vanillaPkg.importsTable.Count)
@@ -703,7 +703,7 @@ namespace MassEffectModder
                         }
 
                         BinaryMod mod = new BinaryMod();
-                        mod.packagePath = GameData.RelativeGameData(vanillaPkg.packagePath);
+                        mod.packagePath = vanillaPkg.packagePath;
                         mod.exportId = e;
 
                         if (vanillaExport.Length == modExport.Length)

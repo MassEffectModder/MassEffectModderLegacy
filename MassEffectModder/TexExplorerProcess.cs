@@ -308,11 +308,11 @@ namespace MassEffectModder
                                     errors += "Skipping not compatible content, entry: " + (i + 1) + " - mod: " + filenameMod + Environment.NewLine;
                                     continue;
                                 }
-                                mod.packagePath = Path.Combine(GameData.GamePath + path, package);
+                                mod.packagePath = Path.Combine(path, package);
                                 len = fs.ReadInt32();
                                 mod.data = fs.ReadToBuffer(len);
 
-                                if (!File.Exists(mod.packagePath))
+                                if (!File.Exists(GameData.GamePath + mod.packagePath))
                                 {
                                     errors += "Warning: File " + mod.packagePath + " not exists in your game setup." + Environment.NewLine;
                                     log += "Warning: File " + mod.packagePath + " not exists in your game setup." + Environment.NewLine;

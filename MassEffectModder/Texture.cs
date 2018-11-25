@@ -413,6 +413,7 @@ namespace MassEffectModder
                             filename = GameData.packageFiles.Find(s => Path.GetFileNameWithoutExtension(s).Equals(basePackageName, StringComparison.OrdinalIgnoreCase));
                             if (filename == null || filename == "")
                                 throw new Exception("File not found in game: " + basePackageName + ".*");
+                            filename = GameData.GamePath + filename;
                         }
                         else
                         {
@@ -420,7 +421,7 @@ namespace MassEffectModder
                             filename = Path.Combine(GameData.MainData, archive + ".tfc");
                             if (packagePath.ToLowerInvariant().Contains("\\dlc"))
                             {
-                                string DLCArchiveFile = Path.Combine(Path.GetDirectoryName(packagePath), archive + ".tfc");
+                                string DLCArchiveFile = Path.Combine(GameData.GamePath + Path.GetDirectoryName(packagePath), archive + ".tfc");
                                 if (File.Exists(DLCArchiveFile))
                                     filename = DLCArchiveFile;
                                 else if (!File.Exists(filename))

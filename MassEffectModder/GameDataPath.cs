@@ -289,6 +289,10 @@ namespace MassEffectModder
                 return true;
 
             tfcFiles = Directory.GetFiles(GamePath, "*.tfc", SearchOption.AllDirectories).Where(item => item.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase)).ToList();
+            for (int i = 0; i < tfcFiles.Count; i++)
+            {
+                tfcFiles[i] = RelativeGameData(tfcFiles[i]);
+            }
             tfcFiles.Sort(new AsciiStringComparer());
             return true;
         }
@@ -429,6 +433,10 @@ namespace MassEffectModder
                 if (pccs != null)
                     packageFiles.AddRange(pccs);
                 packageFiles.RemoveAll(s => s.ToLowerInvariant().Contains("guidcache"));
+            }
+            for (int i = 0; i < packageFiles.Count; i++)
+            {
+                packageFiles[i] = RelativeGameData(packageFiles[i]);
             }
             packageFiles.Sort(new AsciiStringComparer());
             return true;

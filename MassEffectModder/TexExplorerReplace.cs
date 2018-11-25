@@ -740,9 +740,9 @@ namespace MassEffectModder
                     if (package.SaveToFile(repack, false, appendMarker))
                     {
                         if (repack && Installer.pkgsToRepack != null)
-                            Installer.pkgsToRepack.Remove(package.packagePath);
+                            Installer.pkgsToRepack.Remove(GameData.RelativeGameData(package.packagePath));
                         if (appendMarker && Installer.pkgsToMarker != null)
-                            Installer.pkgsToMarker.Remove(package.packagePath);
+                            Installer.pkgsToMarker.Remove(GameData.RelativeGameData(package.packagePath));
                     }
                     package.Dispose();
                 }
@@ -964,9 +964,9 @@ namespace MassEffectModder
                         if (pkg.SaveToFile(repack, false, appendMarker))
                         {
                             if (repack && Installer.pkgsToRepack != null)
-                                Installer.pkgsToRepack.Remove(pkg.packagePath);
+                                Installer.pkgsToRepack.Remove(GameData.RelativeGameData(pkg.packagePath));
                             if (appendMarker && Installer.pkgsToMarker != null)
-                                Installer.pkgsToMarker.Remove(pkg.packagePath);
+                                Installer.pkgsToMarker.Remove(GameData.RelativeGameData(pkg.packagePath));
                         }
                         pkg.Dispose();
                     }
