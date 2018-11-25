@@ -313,11 +313,12 @@ namespace MassEffectModder
                 {
                     diskUsage += new FileInfo(sfarFiles[i]).Length;
                 }
-                diskUsage = (long)(diskUsage * 2.5);
+                diskUsage = (long)(diskUsage * 2.3);
                 if (diskUsage > diskFreeSpace)
                 {
                     if (mainWindow != null)
                         MessageBox.Show("You have not enough disk space remaining. You need about " + Misc.getBytesFormat(diskUsage) + " free.");
+                    return;
                 }
             }
 
