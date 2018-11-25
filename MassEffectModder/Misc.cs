@@ -1093,7 +1093,7 @@ namespace MassEffectModder
             if (!onlyIndividual)
             {
                 list = Directory.GetFiles(inputDir, "*.mem").Where(item => item.EndsWith(".mem", StringComparison.OrdinalIgnoreCase)).ToList();
-                list.Sort(new AsciiStringComparer());
+                list.Sort(StringComparer.OrdinalIgnoreCase);
                 list2 = Directory.GetFiles(inputDir, "*.tpf").Where(item => item.EndsWith(".tpf", StringComparison.OrdinalIgnoreCase)).ToList();
                 list2.AddRange(Directory.GetFiles(inputDir, "*.mod").Where(item => item.EndsWith(".mod", StringComparison.OrdinalIgnoreCase)));
             }
@@ -1110,7 +1110,7 @@ namespace MassEffectModder
             list2.AddRange(Directory.GetFiles(inputDir, "*.tga").Where(item => item.EndsWith(".tga", StringComparison.OrdinalIgnoreCase)));
             list2.AddRange(Directory.GetFiles(inputDir, "*.jpg").Where(item => item.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)));
             list2.AddRange(Directory.GetFiles(inputDir, "*.jpeg").Where(item => item.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)));
-            list2.Sort(new AsciiStringComparer());
+            list2.Sort(StringComparer.OrdinalIgnoreCase);
             list.AddRange(list2);
             files = list.ToArray();
 
