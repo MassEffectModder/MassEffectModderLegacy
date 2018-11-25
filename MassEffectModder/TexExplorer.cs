@@ -450,6 +450,10 @@ namespace MassEffectModder
 
             int index = Convert.ToInt32(listViewTextures.FocusedItem.Name);
             PackageTreeNode node = (PackageTreeNode)treeViewPackages.SelectedNode;
+            if (node == null || node.textures.Count < index)
+            {
+                return;
+            }
             int textureIndex = -1;
             for (int i = 0; i < _textures.Count; i++)
             {
@@ -457,10 +461,6 @@ namespace MassEffectModder
                 {
                     textureIndex = i;
                 }
-            }
-            if (node == null)
-            {
-                return;
             }
 
             for (int index2 = 0; index2 < _textures[textureIndex].list.Count; index2++)
