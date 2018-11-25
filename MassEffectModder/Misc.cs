@@ -2612,6 +2612,5 @@ namespace MassEffectModder
 
             return vanilla;
         }
-
     }
 }
