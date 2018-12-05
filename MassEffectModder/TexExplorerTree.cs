@@ -509,8 +509,17 @@ namespace MassEffectModder
                             }
                         }
                     }
-                    if (!textures[k].list.Exists(s => s.slave) &&
-                        textures[k].list.Exists(s => s.weakSlave))
+                    bool foundWeakSlave = false;
+                    for (int w = 0; w < textures[k].list.Count; w++)
+                    {
+                        if (!textures[k].list[w].slave &&
+                             textures[k].list[w].weakSlave)
+                        {
+                            foundWeakSlave = true;
+                            break;
+                        }
+                    }
+                    if (foundWeakSlave)
                     {
                         List<MatchedTexture> texList = new List<MatchedTexture>();
                         for (int t = 0; t < textures[k].list.Count; t++)
