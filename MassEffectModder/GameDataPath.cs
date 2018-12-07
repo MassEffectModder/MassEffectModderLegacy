@@ -56,6 +56,7 @@ namespace MassEffectModder
         static public MeType gameType;
         static private ConfIni _configIni;
         static public List<string> packageFiles;
+        static public List<string> packageUpperFiles;
         static public List<string> tfcFiles;
         static public bool FullScanME1Game = false;
 
@@ -434,10 +435,15 @@ namespace MassEffectModder
                     packageFiles.AddRange(pccs);
                 packageFiles.RemoveAll(s => s.ToLowerInvariant().Contains("guidcache"));
             }
+            packageUpperFiles = new List<string>();
             for (int i = 0; i < packageFiles.Count; i++)
             {
                 packageFiles[i] = RelativeGameData(packageFiles[i]);
+                if (gameType == MeType.ME1_TYPE)
+                    packageUpperFiles.Add(Path.GetFileNameWithoutExtension(packageFiles[i]).ToUpperInvariant());
             }
+            if (gameType == MeType.ME1_TYPE)
+                packageFiles.Sort();
             packageFiles.Sort(new AsciiStringComparer());
             return true;
         }
@@ -445,6 +451,7 @@ namespace MassEffectModder
         void ClosePackagesList()
         {
             packageFiles.Clear();
+            packageUpperFiles.Clear();
             tfcFiles.Clear();
         }
     }

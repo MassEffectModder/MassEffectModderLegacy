@@ -150,7 +150,7 @@ namespace MassEffectModder
                 else
                 {
                     if (baseName != "" && !properties.exists("NeverStream") &&
-                        GameData.packageFiles.Exists(s => Path.GetFileNameWithoutExtension(s).Equals(baseName, StringComparison.OrdinalIgnoreCase)))
+                        GameData.packageUpperFiles.BinarySearch(baseName) >= 0)
                     {
                         basePackageName = baseName;
                         weakSlave = true;
