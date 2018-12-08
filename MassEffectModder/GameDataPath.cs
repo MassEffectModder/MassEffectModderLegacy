@@ -155,7 +155,7 @@ namespace MassEffectModder
                         case MeType.ME2_TYPE:
                             return Path.Combine(_path, @"BioGame\CookedPC");
                         case MeType.ME3_TYPE:
-                            return Path.Combine(_path, @"BioGame\CookedPCConsole");
+                            return Path.Combine(_path, @"BIOGame\CookedPCConsole");
                         default:
                             return null;
                     }
