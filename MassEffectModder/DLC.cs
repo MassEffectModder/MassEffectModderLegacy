@@ -333,7 +333,7 @@ namespace MassEffectModder
                 }
                 if (ipc)
                 {
-                    Console.WriteLine("[IPC]PROCESSING_FILE " + GameData.RelativeGameData(sfarFiles[i]));
+                    Console.WriteLine("[IPC]PROCESSING_FILE " + sfarFiles[i]);
                     Console.Out.Flush();
                 }
                 dlc.extract(sfarFiles[i], outPath, ipc, ref currentProgress, totalNumFiles);
