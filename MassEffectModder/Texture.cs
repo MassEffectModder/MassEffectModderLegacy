@@ -456,7 +456,6 @@ namespace MassEffectModder
                                             catch (Exception e)
                                             {
                                                 throw new Exception(e.Message + "\n" + "File: " + filename + "\n" +
-                                                    "TFC: " + properties.getProperty("TextureFileCacheName").valueName + "\n" +
                                                     "StorageType: " + mipmap.storageType + "\n" +
                                                     "External file offset: " + mipmap.dataOffset);
                                             }
