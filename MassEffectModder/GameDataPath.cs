@@ -443,7 +443,7 @@ namespace MassEffectModder
                     packageUpperFiles.Add(Path.GetFileNameWithoutExtension(packageFiles[i]).ToUpperInvariant());
             }
             if (gameType == MeType.ME1_TYPE)
-                packageFiles.Sort();
+                packageUpperFiles.Sort();
             packageFiles.Sort(new AsciiStringComparer());
             return true;
         }

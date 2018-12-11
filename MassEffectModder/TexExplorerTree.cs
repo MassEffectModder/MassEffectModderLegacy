@@ -561,6 +561,9 @@ namespace MassEffectModder
                 }
             }
 
+            if (!GameData.FullScanME1Game)
+                GameData.packageFiles.Sort(new AsciiStringComparer());
+
 
             if (File.Exists(filename))
                 File.Delete(filename);
