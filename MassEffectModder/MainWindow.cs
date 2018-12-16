@@ -168,7 +168,8 @@ namespace MassEffectModder
                     errors += "The file is propably broken, skipped: " + GameData.packageFiles[i] + Environment.NewLine;
                 }
             }
-            TOCBinFile.UpdateAllTOCBinFiles();
+            if (gameId == MeType.ME3_TYPE)
+                TOCBinFile.UpdateAllTOCBinFiles();
             if (errors != "")
             {
                 string filename = "pcc-errors.txt";
