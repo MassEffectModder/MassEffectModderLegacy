@@ -903,7 +903,7 @@ namespace MassEffectModder
                         unpackDLC = true;
                     for (int i = 0; i < sfarFiles.Count; i++)
                     {
-                        diskUsageDLC += new FileInfo(GameData.GamePath + sfarFiles[i]).Length;
+                        diskUsageDLC += new FileInfo(sfarFiles[i]).Length;
                     }
                     diskUsage = (long)(diskUsageDLC * 2.1);
                 }
