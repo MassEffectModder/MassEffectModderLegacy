@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime;
+using System.Text;
 using System.Windows.Forms;
 
 namespace MassEffectModder
@@ -762,7 +763,20 @@ namespace MassEffectModder
         {
             public int Compare(MapTexturesToMod x, MapTexturesToMod y)
             {
-                return string.Compare(x.packagePath, y.packagePath, StringComparison.OrdinalIgnoreCase);
+                byte[] asciiX = Encoding.ASCII.GetBytes(x.packagePath.ToLowerInvariant());
+                byte[] asciiY = Encoding.ASCII.GetBytes(y.packagePath.ToLowerInvariant());
+                for (int i = 0; i < asciiX.Length || i < asciiY.Length; i++)
+                {
+                    if (asciiX[i] < asciiY[i])
+                        return -1;
+                    else if (asciiX[i] > asciiY[i])
+                        return 1;
+                }
+                if (asciiX.Length < asciiY.Length)
+                    return -1;
+                else if (asciiX.Length > asciiY.Length)
+                    return 1;
+                return 0;
             }
         }
 
