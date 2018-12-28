@@ -192,7 +192,7 @@ namespace MassEffectModder
                                             break;
                                         }
                                     }
-                                    if (indexPremap != -1)
+                                    if (indexPremap == -1)
                                     {
                                         zip.GoToNextFile(handle);
                                         log += "Texture skipped. File " + filename + string.Format(" - 0x{0:X8}", crc) + " is not present in premap database - mod: " + filenameMod + Environment.NewLine;
