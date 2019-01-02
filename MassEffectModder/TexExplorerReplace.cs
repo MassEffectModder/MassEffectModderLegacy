@@ -1,7 +1,7 @@
 /*
  * MassEffectModder
  *
- * Copyright (C) 2014-2018 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2014-2019 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -774,7 +774,15 @@ namespace MassEffectModder
                 }
                 if (asciiX.Length < asciiY.Length)
                     return -1;
-                else if (asciiX.Length > asciiY.Length)
+                if (asciiX.Length > asciiY.Length)
+                    return 1;
+                if (x.texturesIndex < y.texturesIndex)
+                    return -1;
+                if (x.texturesIndex > y.texturesIndex)
+                    return 1;
+                if (x.listIndex < y.listIndex)
+                    return -1;
+                if (x.listIndex > y.listIndex)
                     return 1;
                 return 0;
             }
