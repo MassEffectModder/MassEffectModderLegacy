@@ -1,7 +1,7 @@
 /*
  * MassEffectModder
  *
- * Copyright (C) 2014-2017 Pawel Kolodziejski <aquadran at users.sourceforge.net>
+ * Copyright (C) 2014-2019 Pawel Kolodziejski <aquadran at users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -59,6 +59,10 @@ namespace MassEffectModder
             SearchOption.AllDirectories).Where(s => s.EndsWith(".bik",
                 StringComparison.OrdinalIgnoreCase)));
 
+            for (int f = 0; f < files.Count; f++)
+                files[f] = files[f].Substring(GameData.GamePath.Length + 1);
+            files.Sort(new AsciiStringComparer());
+
             string tocFile = Path.Combine(GameData.bioGamePath, "PCConsoleTOC.bin");
 
             List<FileEntry> filesList = new List<FileEntry>();
@@ -66,8 +70,8 @@ namespace MassEffectModder
             {
                 FileEntry file = new FileEntry();
                 if (files[f].ToLowerInvariant() != "pcconsoletoc.bin")
-                    file.size = (uint)new FileInfo(files[f]).Length;
-                file.path = files[f].Substring(GameData.GamePath.Length + 1);
+                    file.size = (uint)new FileInfo(GameData.GamePath + "\\" + files[f]).Length;
+                file.path = files[f];
                 filesList.Add(file);
             }
             CreateTocBinFile(tocFile, filesList);
@@ -100,6 +104,11 @@ namespace MassEffectModder
                     s.EndsWith(".bin", StringComparison.OrdinalIgnoreCase)).ToList();
 
                     string DLCname = Path.GetFileName(DLCs[i]);
+
+                    for (int f = 0; f < files.Count; f++)
+                        files[f] = files[f].Substring((GameData.DLCData + "\\" + DLCname).Length + 1);
+                    files.Sort(new AsciiStringComparer());
+
                     string tocFile = Path.Combine(GameData.DLCData, DLCname, "PCConsoleTOC.bin");
 
                     List<FileEntry> filesList = new List<FileEntry>();
@@ -107,8 +116,8 @@ namespace MassEffectModder
                     {
                         FileEntry file = new FileEntry();
                         if (files[f].ToLowerInvariant() != "pcconsoletoc.bin")
-                            file.size = (uint)new FileInfo(files[f]).Length;
-                        file.path = files[f].Substring((GameData.DLCData + "\\" + DLCname).Length + 1);
+                            file.size = (uint)new FileInfo(GameData.DLCData + "\\" + DLCname + "\\" + files[f]).Length;
+                        file.path = files[f];
                         filesList.Add(file);
                     }
                     CreateTocBinFile(tocFile, filesList);
