@@ -108,7 +108,7 @@ namespace MassEffectModder
                 return false;
             }
             updateStatusLabel("Finding packages in game setup...");
-            if (!gameData.getPackages())
+            if (!gameData.getPackages(true))
             {
                 updateStatusLabel("");
                 return false;
@@ -581,7 +581,7 @@ namespace MassEffectModder
                 return;
             }
             updateStatusLabel("Finding packages in game setup...");
-            gameData.getPackages();
+            gameData.getPackages(true);
             updateStatusLabel("");
 
             using (FolderBrowserDialog modDir = new FolderBrowserDialog())
