@@ -317,8 +317,7 @@ namespace MassEffectModder
                         }
                     }
 
-                    bool skip = false;
-                    // reuse lower mipmaps from game data which not exist in source image
+                    // put empty mips if missing
                     for (int t = 0; t < texture.mipMapsList.Count; t++)
                     {
                         if (texture.mipMapsList[t].width <= image.mipMaps[0].origWidth &&
@@ -326,20 +325,11 @@ namespace MassEffectModder
                         {
                             if (!image.mipMaps.Exists(m => m.origWidth == texture.mipMapsList[t].width && m.origHeight == texture.mipMapsList[t].height))
                             {
-                                byte[] data = texture.getMipMapData(texture.mipMapsList[t]);
-                                if (data == null)
-                                {
-                                    errors += "Error in game data: " + matched.path + ", skipping texture..." + Environment.NewLine;
-                                    skip = true;
-                                    break;
-                                }
-                                MipMap mipmap = new MipMap(data, texture.mipMapsList[t].width, texture.mipMapsList[t].height, pixelFormat);
+                                MipMap mipmap = new MipMap(texture.mipMapsList[t].width, texture.mipMapsList[t].height, pixelFormat);
                                 image.mipMaps.Add(mipmap);
                             }
                         }
                     }
-                    if (skip)
-                        continue;
 
                     if (!texture.properties.exists("LODGroup"))
                         texture.properties.setByteValue("LODGroup", "TEXTUREGROUP_Character", "TextureGroup", 1025);

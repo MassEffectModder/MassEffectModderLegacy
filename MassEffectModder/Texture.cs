@@ -70,7 +70,6 @@ namespace MassEffectModder
         public List<MipMap> mipMapsList;
         MemoryStream textureData;
         public TexProperty properties;
-        byte[] mipMapData = null;
         public string packageName;
         public string basePackageName;
         byte[] restOfData;
@@ -364,15 +363,12 @@ namespace MassEffectModder
             if (textureData == null || mipMapsList.Count == 0)
                 return null;
 
-            if (mipMapData != null)
-                return mipMapData;
-
             return getMipMapData(getTopMipmap());
         }
 
         public byte[] getMipMapDataByIndex(int index)
         {
-            if (textureData == null || mipMapsList.Count == 0 || index < 0 || index > mipMapsList.Count)
+            if (textureData == null || mipMapsList.Count == 0 || index < 0 || index >= mipMapsList.Count)
                 return null;
 
             return getMipMapData(mipMapsList[index]);
@@ -380,6 +376,8 @@ namespace MassEffectModder
 
         public byte[] getMipMapData(MipMap mipmap)
         {
+            byte[] mipMapData = null;
+
             switch (mipmap.storageType)
             {
                 case StorageTypes.pccUnc:

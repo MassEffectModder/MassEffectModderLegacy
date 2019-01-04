@@ -44,6 +44,24 @@ namespace MassEffectModder
         public int origWidth { get; private set; }
         public int origHeight { get; private set; }
 
+        public MipMap(int w, int h, PixelFormat format)
+        {
+            width = origWidth = w;
+            height = origHeight = h;
+
+            if (format == PixelFormat.DXT1 ||
+                format == PixelFormat.DXT3 ||
+                format == PixelFormat.DXT5)
+            {
+                if (width < 4)
+                    width = 4;
+                if (height < 4)
+                    height = 4;
+            }
+
+            data = new byte[getBufferSize(width, height, format)];
+        }
+
         public MipMap(byte[] src, int w, int h, PixelFormat format)
         {
             width = origWidth = w;
@@ -521,8 +539,7 @@ namespace MassEffectModder
 
                 if (pixelFormat == PixelFormat.ATI2 && (width < 4 || height < 4))
                 {
-                    tempData = new byte[MipMap.getBufferSize(width, height, dstFormat)];
-                    mipMaps.Add(new MipMap(tempData, width, height, pixelFormat));
+                    mipMaps.Add(new MipMap(width, height, pixelFormat));
                     continue;
                 }
 
@@ -536,8 +553,7 @@ namespace MassEffectModder
                             width = 4;
                         if (height < 4)
                             height = 4;
-                        tempData = new byte[MipMap.getBufferSize(width, height, dstFormat)];
-                        mipMaps.Add(new MipMap(tempData, origW, origH, pixelFormat));
+                        mipMaps.Add(new MipMap(origW, origH, pixelFormat));
                         continue;
                     }
                 }
