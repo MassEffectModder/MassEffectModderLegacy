@@ -1057,7 +1057,7 @@ namespace MassEffectModder
                     int indexPackage = Convert.ToInt32(itemPkg.Name);
                     MapPackagesToModEntry entry = new MapPackagesToModEntry();
                     entry.modIndex = 0;
-                    entry.texturesIndex = index;
+                    entry.texturesIndex = textureIndex;
                     entry.listIndex = indexPackage;
                     MapPackagesToMod mapEntry = new MapPackagesToMod();
                     mapEntry.textures = new List<MapPackagesToModEntry>();
