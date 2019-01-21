@@ -134,6 +134,7 @@ namespace MassEffectModder
                             matched.slave = true;
                             matched.basePackageName = fs.ReadStringASCIINull();
                         }
+                        matched.mipmapOffset = fs.ReadUInt32();
                     }
                     matched.removeEmptyMips = fs.ReadByte() != 0;
                     matched.numMips = fs.ReadByte();
@@ -616,6 +617,7 @@ namespace MassEffectModder
                                 mem.WriteInt16((short)textures[i].list[k].linkToMaster);
                                 if (textures[i].list[k].linkToMaster != -1)
                                     mem.WriteStringASCIINull(textures[i].list[k].basePackageName);
+                                mem.WriteUInt32(textures[i].list[k].mipmapOffset);
                             }
                             mem.WriteByte(textures[i].list[k].removeEmptyMips ? (byte)1 : (byte)0);
                             mem.WriteByte((byte)textures[i].list[k].numMips);
