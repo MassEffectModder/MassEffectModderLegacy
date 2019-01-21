@@ -397,11 +397,6 @@ namespace MassEffectModder
             Process.Start("https://github.com/MassEffectModder/MassEffectModder/releases");
         }
 
-        private void reportIssueToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Process.Start("https://github.com/MassEffectModder/MassEffectModder/issues");
-        }
-
         void checkGameFiles(MeType gameType)
         {
             enableGameDataMenu(false);
