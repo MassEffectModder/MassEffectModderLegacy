@@ -320,16 +320,20 @@ namespace MassEffectModder
                         Package package = new Package(GameData.GamePath + nodeTexture.path);
                         Texture texture = new Texture(package, nodeTexture.exportID, package.getExportData(nodeTexture.exportID));
                         text += "\nTexture instance: " + (index2 + 1) + "\n";
-                        text += "  Texture name:  " + package.exportsTable[nodeTexture.exportID].objectName + "\n";
-                        text += "  Export Id:     " + (nodeTexture.exportID + 1) + "\n";
+                        text += "  Texture name:       " + package.exportsTable[nodeTexture.exportID].objectName + "\n";
+                        text += "  Export Id:          " + (nodeTexture.exportID + 1) + "\n";
                         if (GameData.gameType == MeType.ME1_TYPE)
                         {
                             if (nodeTexture.linkToMaster == -1)
-                                text += "  Package name:  " + texture.packageName + "\n";
+                                text += "  Master Texture\n";
                             else
-                                text += "  Package name:  " + texture.basePackageName + "\n";
+                            {
+                                text += "  Slave Texture\n";
+                                text += "    Refer to package: " + texture.basePackageName + "\n";
+                                text += "    Refer to texture: " + (nodeTexture.linkToMaster + 1) + "\n";
+                            }
                         }
-                        text += "  Package path:  " + nodeTexture.path + "\n";
+                        text += "  Package path:       " + nodeTexture.path + "\n";
                         text += "  Texture properties:\n";
                         for (int l = 0; l < texture.properties.texPropertyList.Count; l++)
                         {
