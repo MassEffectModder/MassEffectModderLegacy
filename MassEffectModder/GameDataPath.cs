@@ -374,19 +374,21 @@ namespace MassEffectModder
 
                 if (packageFiles.FindAll(s => s.Contains("_PLPC.")).Count > 0)
                     FullScanME1Game = true;
-                else if (packageFiles.FindAll(s => s.Contains("_RA.")).Count > 0)
+                else if (packageFiles.FindAll(s => s.Contains("_CS.")).Count > 0)
+                    FullScanME1Game = true;
+                else if (packageFiles.FindAll(s => s.Contains("_HU.")).Count > 0)
                     FullScanME1Game = true;
                 else if (packageFiles.FindAll(s => s.Contains("_RU.")).Count > 0)
                     FullScanME1Game = true;
-                else if (packageFiles.FindAll(s => s.Contains("GlobalTlk_PLPC.upk")).Count > 0)
+                else if (packageFiles.FindAll(s => s.Contains("_RA.")).Count > 0)
                     FullScanME1Game = true;
-                else if (packageFiles.FindAll(s => s.Contains("GlobalTlk_CS.upk")).Count > 0)
+                else if (packageFiles.FindAll(s => s.Contains("_DE.")).Count > 0)
                     FullScanME1Game = true;
-                else if (packageFiles.FindAll(s => s.Contains("GlobalTlk_HU.upk")).Count > 0)
+                else if (packageFiles.FindAll(s => s.Contains("_FR.")).Count > 0)
                     FullScanME1Game = true;
-                else if (packageFiles.FindAll(s => s.Contains("GlobalTlk_RA.upk")).Count > 0)
+                else if (packageFiles.FindAll(s => s.Contains("_IT.")).Count > 0)
                     FullScanME1Game = true;
-                else if (packageFiles.FindAll(s => s.Contains("GlobalTlk_RU.upk")).Count > 0)
+                else if (packageFiles.FindAll(s => s.Contains("_ES.")).Count > 0)
                     FullScanME1Game = true;
                 else if (Directory.GetFiles(MainData + "\\Movies", "niebieska_pl.bik").ToList().Count > 0)
                     FullScanME1Game = true;
