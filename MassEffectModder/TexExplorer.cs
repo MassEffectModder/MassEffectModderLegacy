@@ -1138,7 +1138,7 @@ namespace MassEffectModder
                     for (int i = 0; i < listDirs.Count; i++)
                     {
                         Misc.convertDataModtoMem(listDirs[i], Path.Combine(Path.GetDirectoryName(listDirs[i]), Path.GetFileName(listDirs[i])) + ".mem",
-                            texturesPreMap, GameData.gameType, _mainWindow, ref errors, true, false, false);
+                            texturesPreMap, GameData.gameType, _mainWindow, ref errors, false, false, false);
                     }
                     var time = Misc.stopTimer();
                     richTextBoxInfo.Text = errors;
