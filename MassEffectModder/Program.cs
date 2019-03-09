@@ -403,7 +403,7 @@ namespace MassEffectModder
         static private void processUpdate()
         {
             cleanupPreviousUpdate();
-            string filename = prepareForUpdate();
+            string filename = "";// prepareForUpdate();
             if (filename != "")
                 filename = unpackUpdate(filename);
             if (filename != "")
